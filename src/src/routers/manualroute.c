@@ -248,7 +248,7 @@ manualroute_router_options_block * ob =
 transport_instance * transport = NULL;
 BOOL individual_transport_set = FALSE, randomize;
 
-DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
+DEBUG(D_route) debug_printf_indent("%s router called for %s\n  domain = %s\n",
   rblock->drinst.name, addr->address, addr->domain);
 
 /* The initialization check ensures that either route_list or route_data is
@@ -301,7 +301,7 @@ else
 single host or a list of hosts; options is pointing to the rest of the
 routelist item, which is either empty or contains various option words. */
 
-DEBUG(D_route) debug_printf("original list of hosts = '%s' options = '%s'\n",
+DEBUG(D_route) debug_printf_indent("original list of hosts = '%s' options = '%s'\n",
   hostlist, options);
 
 newhostlist = expand_string_copy(hostlist);
@@ -320,7 +320,7 @@ if (!newhostlist)
   }
 else hostlist = newhostlist;
 
-DEBUG(D_route) debug_printf("expanded list of hosts = '%s' options = '%s'\n",
+DEBUG(D_route) debug_printf_indent("expanded list of hosts = '%s' options = '%s'\n",
   hostlist, options);
 
 /* Get the hosts_randomize router option, expanding if needed */

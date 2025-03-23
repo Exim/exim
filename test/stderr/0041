@@ -68,13 +68,13 @@ LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing ok_with_dom@test.ex
->>> calling system_aliases router
->>> system_aliases router declined for ok_with_dom@test.ex
->>> ok_with_dom in local_parts?
->>>  list element: userx
->>>  list element: ok_with_dom
->>>  ok_with_dom in local_parts? yes (matched "ok_with_dom")
->>> calling localuser router
+>>>  calling system_aliases router
+>>>  system_aliases router declined for ok_with_dom@test.ex
+>>>  ok_with_dom in local_parts?
+>>>   list element: userx
+>>>   list element: ok_with_dom
+>>>   ok_with_dom in local_parts? yes (matched "ok_with_dom")
+>>>  calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
 >>> processing ACL check_expn "accept" (TESTSUITE/test-config 29)
@@ -114,14 +114,14 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing acceptable@test.ex
->>> calling system_aliases router
->>> system_aliases router declined for acceptable@test.ex
->>> acceptable in local_parts?
->>>  list element: userx
->>>  list element: ok_with_dom
->>>  list element: acceptable
->>>  acceptable in local_parts? yes (matched "acceptable")
->>> calling localuser router
+>>>  calling system_aliases router
+>>>  system_aliases router declined for acceptable@test.ex
+>>>  acceptable in local_parts?
+>>>   list element: userx
+>>>   list element: ok_with_dom
+>>>   list element: acceptable
+>>>   acceptable in local_parts? yes (matched "acceptable")
+>>>  calling localuser router
 >>> routed by localuser router
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -146,5 +146,5 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> end of ACL check_expn: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
->>> calling system_aliases router
+>>>  calling system_aliases router
 >>> routed by system_aliases router

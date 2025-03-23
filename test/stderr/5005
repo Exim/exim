@@ -85,15 +85,15 @@ nofile@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing nofile@test.ex
 --------> r1 router <--------
-local_part=nofile domain=test.ex
-calling r1 router
-r1 router called for nofile@test.ex
-  domain = test.ex
-set transport t1
-queued for t1 transport: local_part = nofile
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=nofile domain=test.ex
+ calling r1 router
+ r1 router called for nofile@test.ex
+   domain = test.ex
+ set transport t1
+ queued for t1 transport: local_part = nofile
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	nofile@test.ex
   transport:	t1
@@ -271,15 +271,15 @@ userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> r1 router <--------
-local_part=userx domain=test.ex
-calling r1 router
-r1 router called for userx@test.ex
-  domain = test.ex
-set transport t1
-queued for t1 transport: local_part = userx
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=userx domain=test.ex
+ calling r1 router
+ r1 router called for userx@test.ex
+   domain = test.ex
+ set transport t1
+ queued for t1 transport: local_part = userx
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	userx@test.ex
   transport:	t1
@@ -459,15 +459,15 @@ userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> r1 router <--------
-local_part=userx domain=test.ex
-calling r1 router
-r1 router called for userx@test.ex
-  domain = test.ex
-set transport t1
-queued for t1 transport: local_part = userx
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=userx domain=test.ex
+ calling r1 router
+ r1 router called for userx@test.ex
+   domain = test.ex
+ set transport t1
+ queued for t1 transport: local_part = userx
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	userx@test.ex
   transport:	t1
@@ -657,15 +657,15 @@ userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> r1 router <--------
-local_part=userx domain=test.ex
-calling r1 router
-r1 router called for userx@test.ex
-  domain = test.ex
-set transport t1
-queued for t1 transport: local_part = userx
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=userx domain=test.ex
+ calling r1 router
+ r1 router called for userx@test.ex
+   domain = test.ex
+ set transport t1
+ queued for t1 transport: local_part = userx
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	userx@test.ex
   transport:	t1

@@ -68,11 +68,11 @@
 01:01:01 p1239  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 01:01:01 p1239  routing dest@test.ex
 01:01:01 p1239  --------> r1 router <--------
-01:01:01 p1239  local_part=dest domain=test.ex
-01:01:01 p1239  try option router_home_directory
-01:01:01 p1239  try option set
-01:01:01 p1239  calling r1 router
-01:01:01 p1239  try option qualify_domain
+01:01:01 p1239   local_part=dest domain=test.ex
+01:01:01 p1239   try option router_home_directory
+01:01:01 p1239   try option set
+01:01:01 p1239   calling r1 router
+01:01:01 p1239   try option qualify_domain
 01:01:01 p1239  rda_interpret (string): ':blackhole:'
 01:01:01 p1239  expanded: ':blackhole:'
 01:01:01 p1239  file is not a filter file
@@ -168,11 +168,11 @@
 01:01:01 p1241  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 01:01:01 p1241  routing dest2@test.ex
 01:01:01 p1241  --------> r1 router <--------
-01:01:01 p1241  local_part=dest2 domain=test.ex
-01:01:01 p1241  try option router_home_directory
-01:01:01 p1241  try option set
-01:01:01 p1241  calling r1 router
-01:01:01 p1241  try option qualify_domain
+01:01:01 p1241   local_part=dest2 domain=test.ex
+01:01:01 p1241   try option router_home_directory
+01:01:01 p1241   try option set
+01:01:01 p1241   calling r1 router
+01:01:01 p1241   try option qualify_domain
 01:01:01 p1241  rda_interpret (string): ':blackhole:'
 01:01:01 p1241  expanded: ':blackhole:'
 01:01:01 p1241  file is not a filter file

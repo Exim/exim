@@ -7703,7 +7703,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       delivery. */
 
       DEBUG(D_deliver|D_route)
-        debug_printf("queued for %s transport\n", addr->transport->drinst.name);
+        debug_printf_indent("queued for %s transport\n", addr->transport->drinst.name);
       addr->next = addr_local;
       addr_local = addr;
       continue;       /* with the next new address */

@@ -13,45 +13,45 @@
 >>> using ACL "rcpt"
 >>> processing ACL rcpt "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing list1-request@lists.test.ex
->>> lists.test.ex in domains?
->>>  list element: lists.test.ex
->>>  lists.test.ex in domains? yes (matched "lists.test.ex")
->>> calling r1 router
->>> routed by r1 router
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing manager-list1@test.ex
->>> test.ex in domains?
->>>  list element: lists.test.ex
->>> test.ex in domains? no (end of list)
->>> test.ex in domains?
->>>  list element: lists.test.ex
->>> test.ex in domains? no (end of list)
->>> anyone@anywhere in senders?
->>>  list element: 
->>>  anywhere in ""?
->>>  anywhere in ""? no (end of list)
->>> anyone@anywhere in senders? no (end of list)
->>> calling r5 router
->>> routed by r5 router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing list1-request@lists.test.ex
+>>>   lists.test.ex in domains?
+>>>    list element: lists.test.ex
+>>>    lists.test.ex in domains? yes (matched "lists.test.ex")
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing manager-list1@test.ex
+>>>   test.ex in domains?
+>>>    list element: lists.test.ex
+>>>   test.ex in domains? no (end of list)
+>>>   test.ex in domains?
+>>>    list element: lists.test.ex
+>>>   test.ex in domains? no (end of list)
+>>>   anyone@anywhere in senders?
+>>>    list element: 
+>>>    anywhere in ""?
+>>>    anywhere in ""? no (end of list)
+>>>   anyone@anywhere in senders? no (end of list)
+>>>   calling r5 router
+>>>  routed by r5 router
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in ACL rcpt
 >>> end of ACL rcpt: ACCEPT
 >>> using ACL "rcpt"
 >>> processing ACL rcpt "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing list1@lists.test.ex
->>> lists.test.ex in domains?
->>>  list element: lists.test.ex
->>>  lists.test.ex in domains? yes (matched "lists.test.ex")
->>> sub1@test.ex in senders?
->>>  list element: lsearch;TESTSUITE/aux-fixed/0306/list1
->>>  sub1@test.ex in senders? yes (matched "lsearch;TESTSUITE/aux-fixed/0306/list1")
->>> calling r2 router
->>> routed by r2 router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing list1@lists.test.ex
+>>>   lists.test.ex in domains?
+>>>    list element: lists.test.ex
+>>>    lists.test.ex in domains? yes (matched "lists.test.ex")
+>>>   sub1@test.ex in senders?
+>>>    list element: lsearch;TESTSUITE/aux-fixed/0306/list1
+>>>    sub1@test.ex in senders? yes (matched "lsearch;TESTSUITE/aux-fixed/0306/list1")
+>>>   calling r2 router
+>>>  routed by r2 router
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in ACL rcpt
 >>> end of ACL rcpt: ACCEPT
 >>> host in smtp_accept_max_nonmail_hosts?
@@ -60,45 +60,45 @@
 >>> using ACL "rcpt"
 >>> processing ACL rcpt "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing list1@lists.test.ex
->>> lists.test.ex in domains?
->>>  list element: lists.test.ex
->>>  lists.test.ex in domains? yes (matched "lists.test.ex")
->>> anyone@anywhere in senders?
->>>  list element: lsearch;TESTSUITE/aux-fixed/0306/list1
->>> anyone@anywhere in senders? no (end of list)
->>> lists.test.ex in domains?
->>>  list element: lists.test.ex
->>>  lists.test.ex in domains? yes (matched "lists.test.ex")
->>> calling r3 router
->>> r3 router forced address failure
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing list1@lists.test.ex
+>>>   lists.test.ex in domains?
+>>>    list element: lists.test.ex
+>>>    lists.test.ex in domains? yes (matched "lists.test.ex")
+>>>   anyone@anywhere in senders?
+>>>    list element: lsearch;TESTSUITE/aux-fixed/0306/list1
+>>>   anyone@anywhere in senders? no (end of list)
+>>>   lists.test.ex in domains?
+>>>    list element: lists.test.ex
+>>>    lists.test.ex in domains? yes (matched "lists.test.ex")
+>>>   calling r3 router
+>>>   r3 router forced address failure
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL rcpt
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>: list1@lists.test.ex is a closed mailing list
 >>> using ACL "rcpt"
 >>> processing ACL rcpt "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing nonlist@lists.test.ex
->>> lists.test.ex in domains?
->>>  list element: lists.test.ex
->>>  lists.test.ex in domains? yes (matched "lists.test.ex")
->>> anyone@anywhere in senders?
->>>  list element: *
->>>  anywhere in "*"?
->>>   list element: *
->>>   anywhere in "*"? yes (matched "*")
->>>  anyone@anywhere in senders? yes (matched "*")
->>> calling r2 router
->>> r2 router declined for nonlist@lists.test.ex
->>> lists.test.ex in domains?
->>>  list element: lists.test.ex
->>>  lists.test.ex in domains? yes (matched "lists.test.ex")
->>> calling r3 router
->>> r3 router forced address failure
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing nonlist@lists.test.ex
+>>>   lists.test.ex in domains?
+>>>    list element: lists.test.ex
+>>>    lists.test.ex in domains? yes (matched "lists.test.ex")
+>>>   anyone@anywhere in senders?
+>>>    list element: *
+>>>    anywhere in "*"?
+>>>    ╎list element: *
+>>>    ╎anywhere in "*"? yes (matched "*")
+>>>    anyone@anywhere in senders? yes (matched "*")
+>>>   calling r2 router
+>>>   r2 router declined for nonlist@lists.test.ex
+>>>   lists.test.ex in domains?
+>>>    list element: lists.test.ex
+>>>    lists.test.ex in domains? yes (matched "lists.test.ex")
+>>>   calling r3 router
+>>>   r3 router forced address failure
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL rcpt
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [1.2.3.4] F=<anyone@anywhere> rejected RCPT <nonlist@lists.test.ex>: nonlist@lists.test.ex is a closed mailing list

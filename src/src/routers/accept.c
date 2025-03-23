@@ -112,7 +112,7 @@ const uschar * errors_to;
 uschar * remove_headers;
 header_line * extra_headers;
 
-DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
+DEBUG(D_route) debug_printf_indent("%s router called for %s\n  domain = %s\n",
   rblock->drinst.name, addr->address, addr->domain);
 
 /* Set up the errors address, if any. */

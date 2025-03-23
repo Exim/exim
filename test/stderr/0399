@@ -15,31 +15,31 @@ Considering x@y
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@y
 --------> r1 router <--------
-local_part=x domain=y
-calling r1 router
+ local_part=x domain=y
+ calling r1 router
 rda_interpret (string): ''
 expanded: ''
 file is not a filter file
 parse_forward_list: 
-r1 router declined for x@y
+ r1 router declined for x@y
 expansion of "more" forced failure
 --------> r2 router <--------
-local_part=x domain=y
-calling r2 router
+ local_part=x domain=y
+ calling r2 router
 rda_interpret (string): ''
 expanded: ''
 file is not a filter file
 parse_forward_list: 
-r2 router declined for x@y
+ r2 router declined for x@y
 expansion of "more" yields "yes"
 --------> r3 router <--------
-local_part=x domain=y
-calling r3 router
+ local_part=x domain=y
+ calling r3 router
 rda_interpret (string): ''
 expanded: ''
 file is not a filter file
 parse_forward_list: 
-r3 router declined for x@y
+ r3 router declined for x@y
 failed to expand "more" in r3 router: unknown variable name "unknown_variable"
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>

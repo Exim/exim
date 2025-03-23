@@ -37,33 +37,33 @@ rz.b@outside: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing rz.b@outside
 --------> r1 router <--------
-local_part=rz.b domain=outside
-checking domains
-outside in domains? no (end of list)
-r1 router skipped: domains mismatch
+ local_part=rz.b domain=outside
+ checking domains
+ outside in domains? no (end of list)
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=rz.b domain=outside
-checking domains
-outside in domains? no (end of list)
-r2 router skipped: domains mismatch
+ local_part=rz.b domain=outside
+ checking domains
+ outside in domains? no (end of list)
+ r2 router skipped: domains mismatch
 --------> r3 router <--------
-local_part=rz.b domain=outside
-checking local_parts
-rz.b in local_parts? no (end of list)
-r3 router skipped: local_parts mismatch
+ local_part=rz.b domain=outside
+ checking local_parts
+ rz.b in local_parts? no (end of list)
+ r3 router skipped: local_parts mismatch
 --------> r4 router <--------
-local_part=rz.b domain=outside
-checking local_parts
-rz.b in local_parts? no (end of list)
-r4 router skipped: local_parts mismatch
+ local_part=rz.b domain=outside
+ checking local_parts
+ rz.b in local_parts? no (end of list)
+ r4 router skipped: local_parts mismatch
 --------> r5 router <--------
-local_part=rz.b domain=outside
-checking local_parts
-rz.b in local_parts? no (end of list)
-r5 router skipped: local_parts mismatch
+ local_part=rz.b domain=outside
+ checking local_parts
+ rz.b in local_parts? no (end of list)
+ r5 router skipped: local_parts mismatch
 --------> r_remain router <--------
-local_part=rz.b domain=outside
-calling r_remain router
+ local_part=rz.b domain=outside
+ calling r_remain router
 rda_interpret (string): ':defer: not just now'
 expanded: ':defer: not just now'
 file is not a filter file

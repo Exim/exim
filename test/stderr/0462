@@ -11,32 +11,32 @@ Verifying Ok@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering Ok@localhost
 Attempting full verification using callout
-callout cache: no domain record found for localhost
-callout cache: no address record found for Ok@localhost
+ callout cache: no domain record found for localhost
+ callout cache: no address record found for Ok@localhost
 interface=NULL port=PORT_S
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<Ok@localhost>
-  SMTP<< 250 OK
-Cutthrough cancelled by presence of postmaster verify
-  SMTP>> RSET
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<postmaster@localhost>
-  SMTP<< 550 NO
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<Ok@localhost>
+   SMTP<< 250 OK
+ Cutthrough cancelled by presence of postmaster verify
+   SMTP>> RSET
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<postmaster@localhost>
+   SMTP<< 550 NO
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:550:QUIT:250'
-wrote callout cache domain record for localhost:
-  result=1 postmaster=2 random=0
-wrote positive callout cache address record for Ok@localhost
+ wrote callout cache domain record for localhost:
+   result=1 postmaster=2 random=0
+ wrote positive callout cache address record for Ok@localhost
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify fail for <Ok@localhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<postmaster@localhost>: 550 NO
 created log directory TESTSUITE/spool/log
@@ -47,9 +47,9 @@ Verifying Ok@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering Ok@localhost
 Attempting full verification using callout
-callout cache: found domain record for localhost
-callout cache: found address record for Ok@localhost
-callout cache: address record is positive
+ callout cache: found domain record for localhost
+ callout cache: found address record for Ok@localhost
+ callout cache: address record is positive
 LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -66,25 +66,25 @@ Verifying NOTok@elsewhere
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering NOTok@elsewhere
 Attempting full verification using callout
-callout cache: no domain record found for elsewhere
-callout cache: no address record found for NOTok@elsewhere
+ callout cache: no domain record found for elsewhere
+ callout cache: no address record found for NOTok@elsewhere
 interface=NULL port=PORT_S
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<NOTok@elsewhere>
-  SMTP<< 550 NO
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<NOTok@elsewhere>
+   SMTP<< 550 NO
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
-wrote callout cache domain record for elsewhere:
-  result=1 postmaster=0 random=0
-wrote negative callout cache address record for NOTok@elsewhere
+ wrote callout cache domain record for elsewhere:
+   result=1 postmaster=0 random=0
+ wrote negative callout cache address record for NOTok@elsewhere
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.2] U=root sender verify fail for <NOTok@elsewhere>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<NOTok@elsewhere>: 550 NO
 LOG: MAIN REJECT
@@ -105,25 +105,25 @@ Verifying NOTok2@elsewhere
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering NOTok2@elsewhere
 Attempting full verification using callout
-callout cache: found domain record for elsewhere
-callout cache: no address record found for NOTok2@elsewhere
+ callout cache: found domain record for elsewhere
+ callout cache: no address record found for NOTok2@elsewhere
 interface=NULL port=PORT_S
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<NOTok2@elsewhere>
-  SMTP<< 550 NO
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<NOTok2@elsewhere>
+   SMTP<< 550 NO
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
-wrote callout cache domain record for elsewhere:
-  result=1 postmaster=0 random=0
-wrote negative callout cache address record for NOTok2@elsewhere
+ wrote callout cache domain record for elsewhere:
+   result=1 postmaster=0 random=0
+ wrote negative callout cache address record for NOTok2@elsewhere
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.2] U=root F=<NOTok2@elsewhere> rejected RCPT <nocheckpm@test.ex>: Sender verify failed
 LOG: smtp_connection MAIN

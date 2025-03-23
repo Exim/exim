@@ -39,31 +39,31 @@ d3@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d3@myhost.test.ex
 --------> u1 router <--------
-local_part=d3 domain=myhost.test.ex
-checking local_parts
-d3 in local_parts? no (end of list)
-u1 router skipped: local_parts mismatch
+ local_part=d3 domain=myhost.test.ex
+ checking local_parts
+ d3 in local_parts? no (end of list)
+ u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
-local_part=d3 domain=myhost.test.ex
-checking local_parts
-d3 in local_parts? no (end of list)
-ut2 router skipped: local_parts mismatch
+ local_part=d3 domain=myhost.test.ex
+ checking local_parts
+ d3 in local_parts? no (end of list)
+ ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
-local_part=d3 domain=myhost.test.ex
-checking local_parts
-d3 in local_parts? no (end of list)
-ut3 router skipped: local_parts mismatch
+ local_part=d3 domain=myhost.test.ex
+ checking local_parts
+ d3 in local_parts? no (end of list)
+ ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
-local_part=d3 domain=myhost.test.ex
-checking local_parts
-calling ut4 router
-ut4 router called for d3@myhost.test.ex
-  domain = myhost.test.ex
-set transport ut4
-queued for ut4 transport: local_part = d3
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=^d\d
+ local_part=d3 domain=myhost.test.ex
+ checking local_parts
+ calling ut4 router
+ ut4 router called for d3@myhost.test.ex
+   domain = myhost.test.ex
+ set transport ut4
+ queued for ut4 transport: local_part = d3
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
   envelope to:	d3@myhost.test.ex
   transport:	ut4
@@ -71,30 +71,30 @@ routed by ut4 router (unseen)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d2@myhost.test.ex
 --------> u1 router <--------
-local_part=d2 domain=myhost.test.ex
-checking local_parts
-d2 in local_parts? no (end of list)
-u1 router skipped: local_parts mismatch
+ local_part=d2 domain=myhost.test.ex
+ checking local_parts
+ d2 in local_parts? no (end of list)
+ u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
-local_part=d2 domain=myhost.test.ex
-checking local_parts
-d2 in local_parts? no (end of list)
-ut2 router skipped: local_parts mismatch
+ local_part=d2 domain=myhost.test.ex
+ checking local_parts
+ d2 in local_parts? no (end of list)
+ ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
-local_part=d2 domain=myhost.test.ex
-checking local_parts
-d2 in local_parts? no (end of list)
-ut3 router skipped: local_parts mismatch
+ local_part=d2 domain=myhost.test.ex
+ checking local_parts
+ d2 in local_parts? no (end of list)
+ ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
-local_part=d2 domain=myhost.test.ex
-checking local_parts
-calling ut4 router
-ut4 router called for d2@myhost.test.ex
-  domain = myhost.test.ex
-queued for ut4 transport: local_part = d2
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=^d\d
+ local_part=d2 domain=myhost.test.ex
+ checking local_parts
+ calling ut4 router
+ ut4 router called for d2@myhost.test.ex
+   domain = myhost.test.ex
+ queued for ut4 transport: local_part = d2
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
   envelope to:	d2@myhost.test.ex
   transport:	ut4
@@ -102,30 +102,30 @@ routed by ut4 router (unseen)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d1@myhost.test.ex
 --------> u1 router <--------
-local_part=d1 domain=myhost.test.ex
-checking local_parts
-d1 in local_parts? no (end of list)
-u1 router skipped: local_parts mismatch
+ local_part=d1 domain=myhost.test.ex
+ checking local_parts
+ d1 in local_parts? no (end of list)
+ u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
-local_part=d1 domain=myhost.test.ex
-checking local_parts
-d1 in local_parts? no (end of list)
-ut2 router skipped: local_parts mismatch
+ local_part=d1 domain=myhost.test.ex
+ checking local_parts
+ d1 in local_parts? no (end of list)
+ ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
-local_part=d1 domain=myhost.test.ex
-checking local_parts
-d1 in local_parts? no (end of list)
-ut3 router skipped: local_parts mismatch
+ local_part=d1 domain=myhost.test.ex
+ checking local_parts
+ d1 in local_parts? no (end of list)
+ ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
-local_part=d1 domain=myhost.test.ex
-checking local_parts
-calling ut4 router
-ut4 router called for d1@myhost.test.ex
-  domain = myhost.test.ex
-queued for ut4 transport: local_part = d1
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=^d\d
+ local_part=d1 domain=myhost.test.ex
+ checking local_parts
+ calling ut4 router
+ ut4 router called for d1@myhost.test.ex
+   domain = myhost.test.ex
+ queued for ut4 transport: local_part = d1
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
   envelope to:	d1@myhost.test.ex
   transport:	ut4
@@ -133,26 +133,26 @@ routed by ut4 router (unseen)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing c1@myhost.test.ex
 --------> u1 router <--------
-local_part=c1 domain=myhost.test.ex
-checking local_parts
-c1 in local_parts? no (end of list)
-u1 router skipped: local_parts mismatch
+ local_part=c1 domain=myhost.test.ex
+ checking local_parts
+ c1 in local_parts? no (end of list)
+ u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
-local_part=c1 domain=myhost.test.ex
-checking local_parts
-c1 in local_parts? no (end of list)
-ut2 router skipped: local_parts mismatch
+ local_part=c1 domain=myhost.test.ex
+ checking local_parts
+ c1 in local_parts? no (end of list)
+ ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
-local_part=c1 domain=myhost.test.ex
-checking local_parts
-calling ut3 router
-ut3 router called for c1@myhost.test.ex
-  domain = myhost.test.ex
-set transport ut3
-queued for ut3 transport: local_part = c1
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=^c\d
+ local_part=c1 domain=myhost.test.ex
+ checking local_parts
+ calling ut3 router
+ ut3 router called for c1@myhost.test.ex
+   domain = myhost.test.ex
+ set transport ut3
+ queued for ut3 transport: local_part = c1
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=^c\d
 routed by ut3 router (unseen)
   envelope to:	c1@myhost.test.ex
   transport:	ut3
@@ -160,21 +160,21 @@ routed by ut3 router (unseen)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing b1@myhost.test.ex
 --------> u1 router <--------
-local_part=b1 domain=myhost.test.ex
-checking local_parts
-b1 in local_parts? no (end of list)
-u1 router skipped: local_parts mismatch
+ local_part=b1 domain=myhost.test.ex
+ checking local_parts
+ b1 in local_parts? no (end of list)
+ u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
-local_part=b1 domain=myhost.test.ex
-checking local_parts
-calling ut2 router
-ut2 router called for b1@myhost.test.ex
-  domain = myhost.test.ex
-set transport ut2
-queued for ut2 transport: local_part = b1
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=^b\d
+ local_part=b1 domain=myhost.test.ex
+ checking local_parts
+ calling ut2 router
+ ut2 router called for b1@myhost.test.ex
+   domain = myhost.test.ex
+ set transport ut2
+ queued for ut2 transport: local_part = b1
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=^b\d
 routed by ut2 router (unseen)
   envelope to:	b1@myhost.test.ex
   transport:	ut2
@@ -182,16 +182,16 @@ routed by ut2 router (unseen)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing a1@myhost.test.ex
 --------> u1 router <--------
-local_part=a1 domain=myhost.test.ex
-checking local_parts
-calling u1 router
-u1 router called for a1@myhost.test.ex
-  domain = myhost.test.ex
-set transport ut1
-queued for ut1 transport: local_part = a1
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=^a\d
+ local_part=a1 domain=myhost.test.ex
+ checking local_parts
+ calling u1 router
+ u1 router called for a1@myhost.test.ex
+   domain = myhost.test.ex
+ set transport ut1
+ queued for ut1 transport: local_part = a1
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=^a\d
 routed by u1 router (unseen)
   envelope to:	a1@myhost.test.ex
   transport:	ut1
@@ -224,115 +224,115 @@ d3@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d3@myhost.test.ex
 --------> real router <--------
-local_part=d3 domain=myhost.test.ex
-calling real router
-real router called for d3@myhost.test.ex
-  domain = myhost.test.ex
-set transport real
-queued for real transport: local_part = d3
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=d3 domain=myhost.test.ex
+ calling real router
+ real router called for d3@myhost.test.ex
+   domain = myhost.test.ex
+ set transport real
+ queued for real transport: local_part = d3
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to:	d3@myhost.test.ex
   transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d2@myhost.test.ex
 --------> real router <--------
-local_part=d2 domain=myhost.test.ex
-calling real router
-real router called for d2@myhost.test.ex
-  domain = myhost.test.ex
-queued for real transport: local_part = d2
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=d2 domain=myhost.test.ex
+ calling real router
+ real router called for d2@myhost.test.ex
+   domain = myhost.test.ex
+ queued for real transport: local_part = d2
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to:	d2@myhost.test.ex
   transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d1@myhost.test.ex
 --------> real router <--------
-local_part=d1 domain=myhost.test.ex
-calling real router
-real router called for d1@myhost.test.ex
-  domain = myhost.test.ex
-queued for real transport: local_part = d1
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=d1 domain=myhost.test.ex
+ calling real router
+ real router called for d1@myhost.test.ex
+   domain = myhost.test.ex
+ queued for real transport: local_part = d1
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to:	d1@myhost.test.ex
   transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing c1@myhost.test.ex
 --------> ut4 router <--------
-local_part=c1 domain=myhost.test.ex
-checking local_parts
-c1 in local_parts? no (end of list)
-ut4 router skipped: local_parts mismatch
+ local_part=c1 domain=myhost.test.ex
+ checking local_parts
+ c1 in local_parts? no (end of list)
+ ut4 router skipped: local_parts mismatch
 --------> real router <--------
-local_part=c1 domain=myhost.test.ex
-calling real router
-real router called for c1@myhost.test.ex
-  domain = myhost.test.ex
-queued for real transport: local_part = c1
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=c1 domain=myhost.test.ex
+ calling real router
+ real router called for c1@myhost.test.ex
+   domain = myhost.test.ex
+ queued for real transport: local_part = c1
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to:	c1@myhost.test.ex
   transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing b1@myhost.test.ex
 --------> ut3 router <--------
-local_part=b1 domain=myhost.test.ex
-checking local_parts
-b1 in local_parts? no (end of list)
-ut3 router skipped: local_parts mismatch
+ local_part=b1 domain=myhost.test.ex
+ checking local_parts
+ b1 in local_parts? no (end of list)
+ ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
-local_part=b1 domain=myhost.test.ex
-checking local_parts
-b1 in local_parts? no (end of list)
-ut4 router skipped: local_parts mismatch
+ local_part=b1 domain=myhost.test.ex
+ checking local_parts
+ b1 in local_parts? no (end of list)
+ ut4 router skipped: local_parts mismatch
 --------> real router <--------
-local_part=b1 domain=myhost.test.ex
-calling real router
-real router called for b1@myhost.test.ex
-  domain = myhost.test.ex
-queued for real transport: local_part = b1
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=b1 domain=myhost.test.ex
+ calling real router
+ real router called for b1@myhost.test.ex
+   domain = myhost.test.ex
+ queued for real transport: local_part = b1
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to:	b1@myhost.test.ex
   transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing a1@myhost.test.ex
 --------> ut2 router <--------
-local_part=a1 domain=myhost.test.ex
-checking local_parts
-a1 in local_parts? no (end of list)
-ut2 router skipped: local_parts mismatch
+ local_part=a1 domain=myhost.test.ex
+ checking local_parts
+ a1 in local_parts? no (end of list)
+ ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
-local_part=a1 domain=myhost.test.ex
-checking local_parts
-a1 in local_parts? no (end of list)
-ut3 router skipped: local_parts mismatch
+ local_part=a1 domain=myhost.test.ex
+ checking local_parts
+ a1 in local_parts? no (end of list)
+ ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
-local_part=a1 domain=myhost.test.ex
-checking local_parts
-a1 in local_parts? no (end of list)
-ut4 router skipped: local_parts mismatch
+ local_part=a1 domain=myhost.test.ex
+ checking local_parts
+ a1 in local_parts? no (end of list)
+ ut4 router skipped: local_parts mismatch
 --------> real router <--------
-local_part=a1 domain=myhost.test.ex
-calling real router
-real router called for a1@myhost.test.ex
-  domain = myhost.test.ex
-queued for real transport: local_part = a1
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=a1 domain=myhost.test.ex
+ calling real router
+ real router called for a1@myhost.test.ex
+   domain = myhost.test.ex
+ queued for real transport: local_part = a1
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to:	a1@myhost.test.ex
   transport:	real
@@ -415,35 +415,35 @@ CALLER@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex
 --------> u1 router <--------
-local_part=CALLER domain=myhost.test.ex
-checking local_parts
-CALLER in local_parts? no (end of list)
-u1 router skipped: local_parts mismatch
+ local_part=CALLER domain=myhost.test.ex
+ checking local_parts
+ CALLER in local_parts? no (end of list)
+ u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
-local_part=CALLER domain=myhost.test.ex
-checking local_parts
-CALLER in local_parts? no (end of list)
-ut2 router skipped: local_parts mismatch
+ local_part=CALLER domain=myhost.test.ex
+ checking local_parts
+ CALLER in local_parts? no (end of list)
+ ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
-local_part=CALLER domain=myhost.test.ex
-checking local_parts
-CALLER in local_parts? no (end of list)
-ut3 router skipped: local_parts mismatch
+ local_part=CALLER domain=myhost.test.ex
+ checking local_parts
+ CALLER in local_parts? no (end of list)
+ ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
-local_part=CALLER domain=myhost.test.ex
-checking local_parts
-CALLER in local_parts? no (end of list)
-ut4 router skipped: local_parts mismatch
+ local_part=CALLER domain=myhost.test.ex
+ checking local_parts
+ CALLER in local_parts? no (end of list)
+ ut4 router skipped: local_parts mismatch
 --------> real router <--------
-local_part=CALLER domain=myhost.test.ex
-calling real router
-real router called for CALLER@myhost.test.ex
-  domain = myhost.test.ex
-set transport real
-queued for real transport: local_part = CALLER
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=CALLER domain=myhost.test.ex
+ calling real router
+ real router called for CALLER@myhost.test.ex
+   domain = myhost.test.ex
+ set transport real
+ queued for real transport: local_part = CALLER
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to:	CALLER@myhost.test.ex
   transport:	real

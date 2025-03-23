@@ -14,43 +14,43 @@
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    test.ex in "test.ex"?
->>>    ╎list element: test.ex
->>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
->>>   end sublist local_domains
->>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
->>>  test.ex in domains? no (matched "! +local_domains")
->>> userx in local_parts?
->>>  list element: expan
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
+>>>  test.ex in domains?
+>>>   list element: !░+local_domains
+>>>    start sublist local_domains
+>>>    ╎test.ex in "test.ex"?
+>>>    ╎ list element: test.ex
+>>>    ╎ test.ex in "test.ex"? yes (matched "test.ex")
+>>>    end sublist local_domains
+>>>   data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>   test.ex in domains? no (matched "! +local_domains")
+>>>  userx in local_parts?
+>>>   list element: expan
+>>>  userx in local_parts? no (end of list)
+>>>  userx in local_parts?
+>>>   list element: userx
+>>>   userx in local_parts? yes (matched "userx")
+>>>  calling localuser router
 >>> routed by localuser router
 >>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing junkjunk@test.ex
->>> test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    test.ex in "test.ex"?
->>>    ╎list element: test.ex
->>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
->>>   end sublist local_domains
->>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
->>>  test.ex in domains? no (matched "! +local_domains")
->>> junkjunk in local_parts?
->>>  list element: expan
->>> junkjunk in local_parts? no (end of list)
->>> junkjunk in local_parts?
->>>  list element: userx
->>> junkjunk in local_parts? no (end of list)
+>>>  test.ex in domains?
+>>>   list element: !░+local_domains
+>>>    start sublist local_domains
+>>>    ╎test.ex in "test.ex"?
+>>>    ╎ list element: test.ex
+>>>    ╎ test.ex in "test.ex"? yes (matched "test.ex")
+>>>    end sublist local_domains
+>>>   data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>   test.ex in domains? no (matched "! +local_domains")
+>>>  junkjunk in local_parts?
+>>>   list element: expan
+>>>  junkjunk in local_parts? no (end of list)
+>>>  junkjunk in local_parts?
+>>>   list element: userx
+>>>  junkjunk in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]
 >>> processing inline ACL "accept"
@@ -58,18 +58,18 @@ LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing expan@test.ex
->>> test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    test.ex in "test.ex"?
->>>    ╎list element: test.ex
->>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
->>>   end sublist local_domains
->>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
->>>  test.ex in domains? no (matched "! +local_domains")
->>> expan in local_parts?
->>>  list element: expan
->>>  expan in local_parts? yes (matched "expan")
->>> calling fail_expansion router
+>>>  test.ex in domains?
+>>>   list element: !░+local_domains
+>>>    start sublist local_domains
+>>>    ╎test.ex in "test.ex"?
+>>>    ╎ list element: test.ex
+>>>    ╎ test.ex in "test.ex"? yes (matched "test.ex")
+>>>    end sublist local_domains
+>>>   data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>   test.ex in domains? no (matched "! +local_domains")
+>>>  expan in local_parts?
+>>>   list element: expan
+>>>   expan in local_parts? yes (matched "expan")
+>>>  calling fail_expansion router
 >>> fail_expansion router: defer for expan@test.ex
 >>>   message: failed to expand "${if with syntax error": unknown condition "with"

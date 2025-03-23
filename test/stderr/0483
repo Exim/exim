@@ -7,23 +7,23 @@ LOG: smtp_connection MAIN
 LOG: MAIN
   U=CALLER Warning: sender_data=SenderData recipient_data=RecipData
 created log directory TESTSUITE/spool/log
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing recip@domain2
---------> r1 router <--------
-local_part=recip domain=domain2
-checking senders
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing recip@domain2
+ --------> r1 router <--------
+  local_part=recip domain=domain2
+  checking senders
 sender_data=SenderData
-calling r1 router
-r1 router called for recip@domain2
+  calling r1 router
+  r1 router called for recip@domain2
+    domain = domain2
+  set transport t1
+  queued for t1 transport: local_part = recip
   domain = domain2
-set transport t1
-queued for t1 transport: local_part = recip
-domain = domain2
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
-routed by r1 router
-  envelope to:	recip@domain2
-  transport:	t1
+    errors_to=NULL
+    domain_data=NULL local_part_data=NULL
+ routed by r1 router
+   envelope to:	recip@domain2
+   transport:	t1
 other@domain2 in "lsearch;TESTSUITE/aux-fixed/0483.list"? no (end of list)
 LOG: MAIN REJECT
   U=CALLER F=<sender@domain1> rejected RCPT <other@domain2>

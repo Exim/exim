@@ -24,17 +24,17 @@ y@ten-1.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing y@ten-1.test.ex
 --------> r1 router <--------
-local_part=y domain=ten-1.test.ex
-checking domains
-calling r1 router
-r1 router called for y@ten-1.test.ex
-  domain = ten-1.test.ex
-main lookup for domain
-set transport t1
-queued for t1 transport: local_part = y
-domain = ten-1.test.ex
-  errors_to=NULL
-  domain_data=ten-1.test.ex local_part_data=NULL
+ local_part=y domain=ten-1.test.ex
+ checking domains
+ calling r1 router
+ r1 router called for y@ten-1.test.ex
+   domain = ten-1.test.ex
+ main lookup for domain
+ set transport t1
+ queued for t1 transport: local_part = y
+ domain = ten-1.test.ex
+   errors_to=NULL
+   domain_data=ten-1.test.ex local_part_data=NULL
 routed by r1 router
   envelope to:	y@ten-1.test.ex
   transport:	t1
@@ -84,21 +84,21 @@ y@ten-2.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing y@ten-2.test.ex
 --------> r1 router <--------
-local_part=y domain=ten-2.test.ex
-checking domains
-ten-2.test.ex in domains? no (end of list)
-r1 router skipped: domains mismatch
+ local_part=y domain=ten-2.test.ex
+ checking domains
+ ten-2.test.ex in domains? no (end of list)
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=y domain=ten-2.test.ex
-calling r2 router
-r2 router called for y@ten-2.test.ex
-  domain = ten-2.test.ex
-main lookup for domain
-set transport t1
-queued for t1 transport: local_part = y
-domain = ten-2.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=y domain=ten-2.test.ex
+ calling r2 router
+ r2 router called for y@ten-2.test.ex
+   domain = ten-2.test.ex
+ main lookup for domain
+ set transport t1
+ queued for t1 transport: local_part = y
+ domain = ten-2.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r2 router
   envelope to:	y@ten-2.test.ex
   transport:	t1
@@ -106,20 +106,20 @@ routed by r2 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@ten-2.test.ex
 --------> r1 router <--------
-local_part=x domain=ten-2.test.ex
-checking domains
-ten-2.test.ex in domains? no (end of list)
-r1 router skipped: domains mismatch
+ local_part=x domain=ten-2.test.ex
+ checking domains
+ ten-2.test.ex in domains? no (end of list)
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=x domain=ten-2.test.ex
-calling r2 router
-r2 router called for x@ten-2.test.ex
-  domain = ten-2.test.ex
-main lookup for domain
-queued for t1 transport: local_part = x
-domain = ten-2.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=x domain=ten-2.test.ex
+ calling r2 router
+ r2 router called for x@ten-2.test.ex
+   domain = ten-2.test.ex
+ main lookup for domain
+ queued for t1 transport: local_part = x
+ domain = ten-2.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r2 router
   envelope to:	x@ten-2.test.ex
   transport:	t1

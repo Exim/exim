@@ -18,31 +18,31 @@ Considering x@y.z
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@y.z
 --------> smart1 router <--------
-local_part=x domain=y.z
-checking domains
-y.z in domains?
- list element: smart.domain
-y.z in domains? no (end of list)
-smart1 router skipped: domains mismatch
+ local_part=x domain=y.z
+ checking domains
+ y.z in domains?
+  list element: smart.domain
+ y.z in domains? no (end of list)
+ smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
-local_part=x domain=y.z
-checking domains
-y.z in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   y.z in "test.ex : myhost.test.ex"?
-   ╎list element: test.ex
-   ╎list element: myhost.test.ex
-   y.z in "test.ex : myhost.test.ex"? no (end of list)
-  end sublist local_domains
-y.z in domains? yes (end of list)
-calling fail_remote_domains router
+ local_part=x domain=y.z
+ checking domains
+ y.z in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎y.z in "test.ex : myhost.test.ex"?
+   ╎ list element: test.ex
+   ╎ list element: myhost.test.ex
+   ╎y.z in "test.ex : myhost.test.ex"? no (end of list)
+   end sublist local_domains
+ y.z in domains? yes (end of list)
+ calling fail_remote_domains router
 rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
 expanded: ':fail: unrouteable mail domain "y.z"' (tainted)
 file is not a filter file
 parse_forward_list: :fail: unrouteable mail domain "y.z"
 extract item: :fail: unrouteable mail domain "y.z"
-fail_remote_domains router forced address failure
+ fail_remote_domains router forced address failure
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@smart.domain
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -50,70 +50,70 @@ Considering x@smart.domain
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@smart.domain
 --------> smart1 router <--------
-local_part=x domain=smart.domain
-checking domains
-smart.domain in domains?
- list element: smart.domain
- smart.domain in domains? yes (matched "smart.domain")
-checking local_parts
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="smart.domain" opts=NULL
- file lookup required for smart.domain
-   in TESTSUITE/aux-fixed/0085.data
- creating new cache entry
- lookup yielded: x░:░y░:░abc@d.e.f
-x in local_parts?
- list element: x
- x in local_parts? yes (matched "x")
-checking senders
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-   cached open
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="smart.domain" opts=NULL
- cached data used for lookup of smart.domain
-   in TESTSUITE/aux-fixed/0085.data
- lookup yielded: x░:░y░:░abc@d.e.f
-abc@d.e.f in senders?
- list element: x
- address match test: subject=abc@d.e.f pattern=x
- d.e.f in "x"?
+ local_part=x domain=smart.domain
+ checking domains
+ smart.domain in domains?
+  list element: smart.domain
+  smart.domain in domains? yes (matched "smart.domain")
+ checking local_parts
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="smart.domain" opts=NULL
+  file lookup required for smart.domain
+    in TESTSUITE/aux-fixed/0085.data
+  creating new cache entry
+  lookup yielded: x░:░y░:░abc@d.e.f
+ x in local_parts?
   list element: x
- d.e.f in "x"? no (end of list)
- list element: y
- address match test: subject=abc@d.e.f pattern=y
- d.e.f in "y"?
+  x in local_parts? yes (matched "x")
+ checking senders
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+    cached open
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="smart.domain" opts=NULL
+  cached data used for lookup of smart.domain
+    in TESTSUITE/aux-fixed/0085.data
+  lookup yielded: x░:░y░:░abc@d.e.f
+ abc@d.e.f in senders?
+  list element: x
+  address match test: subject=abc@d.e.f pattern=x
+  d.e.f in "x"?
+   list element: x
+  d.e.f in "x"? no (end of list)
   list element: y
- d.e.f in "y"? no (end of list)
- list element: abc@d.e.f
- address match test: subject=abc@d.e.f pattern=abc@d.e.f
- d.e.f in "d.e.f"?
-  list element: d.e.f
-  d.e.f in "d.e.f"? yes (matched "d.e.f")
- abc@d.e.f in senders? yes (matched "abc@d.e.f")
-calling smart1 router
-smart1 router called for x@smart.domain
-  domain = smart.domain
+  address match test: subject=abc@d.e.f pattern=y
+  d.e.f in "y"?
+   list element: y
+  d.e.f in "y"? no (end of list)
+  list element: abc@d.e.f
+  address match test: subject=abc@d.e.f pattern=abc@d.e.f
+  d.e.f in "d.e.f"?
+   list element: d.e.f
+   d.e.f in "d.e.f"? yes (matched "d.e.f")
+  abc@d.e.f in senders? yes (matched "abc@d.e.f")
+ calling smart1 router
+ smart1 router called for x@smart.domain
+   domain = smart.domain
 route_item = *
-smart.domain in "*"?
- list element: *
- smart.domain in "*"? yes (matched "*")
-original list of hosts = '' options = ''
-expanded list of hosts = '' options = ''
-queued for <unset> transport: local_part = x
-domain = smart.domain
-  errors_to=NULL
-  domain_data=smart.domain local_part_data=x
+ smart.domain in "*"?
+  list element: *
+  smart.domain in "*"? yes (matched "*")
+ original list of hosts = '' options = ''
+ expanded list of hosts = '' options = ''
+ queued for <unset> transport: local_part = x
+ domain = smart.domain
+   errors_to=NULL
+   domain_data=smart.domain local_part_data=x
 routed by smart1 router
   envelope to:	x@smart.domain
   transport:	<none>
@@ -124,103 +124,103 @@ Considering x@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@test.ex
 --------> smart1 router <--------
-local_part=x domain=test.ex
-checking domains
-test.ex in domains?
- list element: smart.domain
-test.ex in domains? no (end of list)
-smart1 router skipped: domains mismatch
+ local_part=x domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: smart.domain
+ test.ex in domains? no (end of list)
+ smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
-local_part=x domain=test.ex
-checking domains
-test.ex in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   test.ex in "test.ex : myhost.test.ex"?
-   ╎list element: test.ex
-   ╎test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
-  end sublist local_domains
- data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
- test.ex in domains? no (matched "! +local_domains")
-fail_remote_domains router skipped: domains mismatch
+ local_part=x domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎test.ex in "test.ex : myhost.test.ex"?
+   ╎ list element: test.ex
+   ╎ test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
+   end sublist local_domains
+  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+  test.ex in domains? no (matched "! +local_domains")
+ fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
-local_part=x domain=test.ex
-checking domains
-test.ex in domains?
- list element: test.ex
- test.ex in domains? yes (matched "test.ex")
-checking local_parts
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-   cached open
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex" opts=NULL
- file lookup required for test.ex
-   in TESTSUITE/aux-fixed/0085.data
- creating new cache entry
- lookup yielded: x░:░y░:░abc@d.e.f
-x in local_parts?
- list element: x
- x in local_parts? yes (matched "x")
-checking senders
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-   cached open
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex" opts=NULL
- cached data used for lookup of test.ex
-   in TESTSUITE/aux-fixed/0085.data
- lookup yielded: x░:░y░:░abc@d.e.f
-abc@d.e.f in senders?
- list element: x
- address match test: subject=abc@d.e.f pattern=x
- d.e.f in "x"?
+ local_part=x domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: test.ex
+  test.ex in domains? yes (matched "test.ex")
+ checking local_parts
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+    cached open
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="test.ex" opts=NULL
+  file lookup required for test.ex
+    in TESTSUITE/aux-fixed/0085.data
+  creating new cache entry
+  lookup yielded: x░:░y░:░abc@d.e.f
+ x in local_parts?
   list element: x
- d.e.f in "x"? no (end of list)
- list element: y
- address match test: subject=abc@d.e.f pattern=y
- d.e.f in "y"?
+  x in local_parts? yes (matched "x")
+ checking senders
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+    cached open
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="test.ex" opts=NULL
+  cached data used for lookup of test.ex
+    in TESTSUITE/aux-fixed/0085.data
+  lookup yielded: x░:░y░:░abc@d.e.f
+ abc@d.e.f in senders?
+  list element: x
+  address match test: subject=abc@d.e.f pattern=x
+  d.e.f in "x"?
+   list element: x
+  d.e.f in "x"? no (end of list)
   list element: y
- d.e.f in "y"? no (end of list)
- list element: abc@d.e.f
- address match test: subject=abc@d.e.f pattern=abc@d.e.f
- d.e.f in "d.e.f"?
-  list element: d.e.f
-  d.e.f in "d.e.f"? yes (matched "d.e.f")
- abc@d.e.f in senders? yes (matched "abc@d.e.f")
-checking require_files
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-   cached open
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex.files" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex.files" opts=NULL
- file lookup required for test.ex.files
-   in TESTSUITE/aux-fixed/0085.data
- creating new cache entry
- lookup yielded: /etc/passwd
-file check: ${lookup{$domain.files}lsearch{TESTSUITE/aux-fixed/0085.data}{$value}}
-expanded file: /etc/passwd
-stat() yielded 0
-calling smart2 router
-smart2 router called for x@test.ex
-  domain = test.ex
-set transport dummy
-queued for dummy transport: local_part = x
-domain = test.ex
-  errors_to=NULL
-  domain_data=test.ex local_part_data=x
+  address match test: subject=abc@d.e.f pattern=y
+  d.e.f in "y"?
+   list element: y
+  d.e.f in "y"? no (end of list)
+  list element: abc@d.e.f
+  address match test: subject=abc@d.e.f pattern=abc@d.e.f
+  d.e.f in "d.e.f"?
+   list element: d.e.f
+   d.e.f in "d.e.f"? yes (matched "d.e.f")
+  abc@d.e.f in senders? yes (matched "abc@d.e.f")
+ checking require_files
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+    cached open
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="test.ex.files" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="test.ex.files" opts=NULL
+  file lookup required for test.ex.files
+    in TESTSUITE/aux-fixed/0085.data
+  creating new cache entry
+  lookup yielded: /etc/passwd
+ file check: ${lookup{$domain.files}lsearch{TESTSUITE/aux-fixed/0085.data}{$value}}
+ expanded file: /etc/passwd
+ stat() yielded 0
+ calling smart2 router
+ smart2 router called for x@test.ex
+   domain = test.ex
+ set transport dummy
+ queued for dummy transport: local_part = x
+ domain = test.ex
+   errors_to=NULL
+   domain_data=test.ex local_part_data=x
 routed by smart2 router
   envelope to:	x@test.ex
   transport:	dummy
@@ -231,33 +231,33 @@ Considering x@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@myhost.test.ex
 --------> smart1 router <--------
-local_part=x domain=myhost.test.ex
-checking domains
-myhost.test.ex in domains?
- list element: smart.domain
-myhost.test.ex in domains? no (end of list)
-smart1 router skipped: domains mismatch
+ local_part=x domain=myhost.test.ex
+ checking domains
+ myhost.test.ex in domains?
+  list element: smart.domain
+ myhost.test.ex in domains? no (end of list)
+ smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
-local_part=x domain=myhost.test.ex
-checking domains
-myhost.test.ex in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   myhost.test.ex in "test.ex : myhost.test.ex"?
-   ╎list element: test.ex
-   ╎list element: myhost.test.ex
-   ╎myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
-  end sublist local_domains
- data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
- myhost.test.ex in domains? no (matched "! +local_domains")
-fail_remote_domains router skipped: domains mismatch
+ local_part=x domain=myhost.test.ex
+ checking domains
+ myhost.test.ex in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎myhost.test.ex in "test.ex : myhost.test.ex"?
+   ╎ list element: test.ex
+   ╎ list element: myhost.test.ex
+   ╎ myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
+   end sublist local_domains
+  data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
+  myhost.test.ex in domains? no (matched "! +local_domains")
+ fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
-local_part=x domain=myhost.test.ex
-checking domains
-myhost.test.ex in domains?
- list element: test.ex
-myhost.test.ex in domains? no (end of list)
-smart2 router skipped: domains mismatch
+ local_part=x domain=myhost.test.ex
+ checking domains
+ myhost.test.ex in domains?
+  list element: test.ex
+ myhost.test.ex in domains? no (end of list)
+ smart2 router skipped: domains mismatch
 no more routers
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
@@ -281,31 +281,31 @@ Considering x@y.z
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@y.z
 --------> smart1 router <--------
-local_part=x domain=y.z
-checking domains
-y.z in domains?
- list element: smart.domain
-y.z in domains? no (end of list)
-smart1 router skipped: domains mismatch
+ local_part=x domain=y.z
+ checking domains
+ y.z in domains?
+  list element: smart.domain
+ y.z in domains? no (end of list)
+ smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
-local_part=x domain=y.z
-checking domains
-y.z in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   y.z in "test.ex : myhost.test.ex"?
-   ╎list element: test.ex
-   ╎list element: myhost.test.ex
-   y.z in "test.ex : myhost.test.ex"? no (end of list)
-  end sublist local_domains
-y.z in domains? yes (end of list)
-calling fail_remote_domains router
+ local_part=x domain=y.z
+ checking domains
+ y.z in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎y.z in "test.ex : myhost.test.ex"?
+   ╎ list element: test.ex
+   ╎ list element: myhost.test.ex
+   ╎y.z in "test.ex : myhost.test.ex"? no (end of list)
+   end sublist local_domains
+ y.z in domains? yes (end of list)
+ calling fail_remote_domains router
 rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
 expanded: ':fail: unrouteable mail domain "y.z"' (tainted)
 file is not a filter file
 parse_forward_list: :fail: unrouteable mail domain "y.z"
 extract item: :fail: unrouteable mail domain "y.z"
-fail_remote_domains router forced address failure
+ fail_remote_domains router forced address failure
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@smart.domain
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -313,74 +313,74 @@ Considering x@smart.domain
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@smart.domain
 --------> smart1 router <--------
-local_part=x domain=smart.domain
-checking domains
-smart.domain in domains?
- list element: smart.domain
- smart.domain in domains? yes (matched "smart.domain")
-checking local_parts
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="smart.domain" opts=NULL
- file lookup required for smart.domain
-   in TESTSUITE/aux-fixed/0085.data
- creating new cache entry
- lookup yielded: x░:░y░:░abc@d.e.f
-x in local_parts?
- list element: x
- x in local_parts? yes (matched "x")
-checking senders
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-   cached open
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="smart.domain" opts=NULL
- cached data used for lookup of smart.domain
-   in TESTSUITE/aux-fixed/0085.data
- lookup yielded: x░:░y░:░abc@d.e.f
-CALLER@myhost.test.ex in senders?
- list element: x
- address match test: subject=CALLER@myhost.test.ex pattern=x
- myhost.test.ex in "x"?
+ local_part=x domain=smart.domain
+ checking domains
+ smart.domain in domains?
+  list element: smart.domain
+  smart.domain in domains? yes (matched "smart.domain")
+ checking local_parts
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="smart.domain" opts=NULL
+  file lookup required for smart.domain
+    in TESTSUITE/aux-fixed/0085.data
+  creating new cache entry
+  lookup yielded: x░:░y░:░abc@d.e.f
+ x in local_parts?
   list element: x
- myhost.test.ex in "x"? no (end of list)
- list element: y
- address match test: subject=CALLER@myhost.test.ex pattern=y
- myhost.test.ex in "y"?
+  x in local_parts? yes (matched "x")
+ checking senders
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+    cached open
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="smart.domain" opts=NULL
+  cached data used for lookup of smart.domain
+    in TESTSUITE/aux-fixed/0085.data
+  lookup yielded: x░:░y░:░abc@d.e.f
+ CALLER@myhost.test.ex in senders?
+  list element: x
+  address match test: subject=CALLER@myhost.test.ex pattern=x
+  myhost.test.ex in "x"?
+   list element: x
+  myhost.test.ex in "x"? no (end of list)
   list element: y
- myhost.test.ex in "y"? no (end of list)
- list element: abc@d.e.f
- address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
-CALLER@myhost.test.ex in senders? no (end of list)
-smart1 router skipped: senders mismatch
+  address match test: subject=CALLER@myhost.test.ex pattern=y
+  myhost.test.ex in "y"?
+   list element: y
+  myhost.test.ex in "y"? no (end of list)
+  list element: abc@d.e.f
+  address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
+ CALLER@myhost.test.ex in senders? no (end of list)
+ smart1 router skipped: senders mismatch
 --------> fail_remote_domains router <--------
-local_part=x domain=smart.domain
-checking domains
-smart.domain in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   smart.domain in "test.ex : myhost.test.ex"?
-   ╎list element: test.ex
-   ╎list element: myhost.test.ex
-   smart.domain in "test.ex : myhost.test.ex"? no (end of list)
-  end sublist local_domains
-smart.domain in domains? yes (end of list)
-calling fail_remote_domains router
+ local_part=x domain=smart.domain
+ checking domains
+ smart.domain in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎smart.domain in "test.ex : myhost.test.ex"?
+   ╎ list element: test.ex
+   ╎ list element: myhost.test.ex
+   ╎smart.domain in "test.ex : myhost.test.ex"? no (end of list)
+   end sublist local_domains
+ smart.domain in domains? yes (end of list)
+ calling fail_remote_domains router
 rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
 expanded: ':fail: unrouteable mail domain "smart.domain"' (tainted)
 file is not a filter file
 parse_forward_list: :fail: unrouteable mail domain "smart.domain"
 extract item: :fail: unrouteable mail domain "smart.domain"
-fail_remote_domains router forced address failure
+ fail_remote_domains router forced address failure
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -388,76 +388,76 @@ Considering x@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@test.ex
 --------> smart1 router <--------
-local_part=x domain=test.ex
-checking domains
-test.ex in domains?
- list element: smart.domain
-test.ex in domains? no (end of list)
-smart1 router skipped: domains mismatch
+ local_part=x domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: smart.domain
+ test.ex in domains? no (end of list)
+ smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
-local_part=x domain=test.ex
-checking domains
-test.ex in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   test.ex in "test.ex : myhost.test.ex"?
-   ╎list element: test.ex
-   ╎test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
-  end sublist local_domains
- data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
- test.ex in domains? no (matched "! +local_domains")
-fail_remote_domains router skipped: domains mismatch
+ local_part=x domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎test.ex in "test.ex : myhost.test.ex"?
+   ╎ list element: test.ex
+   ╎ test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
+   end sublist local_domains
+  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+  test.ex in domains? no (matched "! +local_domains")
+ fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
-local_part=x domain=test.ex
-checking domains
-test.ex in domains?
- list element: test.ex
- test.ex in domains? yes (matched "test.ex")
-checking local_parts
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-   cached open
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex" opts=NULL
- file lookup required for test.ex
-   in TESTSUITE/aux-fixed/0085.data
- creating new cache entry
- lookup yielded: x░:░y░:░abc@d.e.f
-x in local_parts?
- list element: x
- x in local_parts? yes (matched "x")
-checking senders
- search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-   cached open
- search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0085.data
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex" opts=NULL
- cached data used for lookup of test.ex
-   in TESTSUITE/aux-fixed/0085.data
- lookup yielded: x░:░y░:░abc@d.e.f
-CALLER@myhost.test.ex in senders?
- list element: x
- address match test: subject=CALLER@myhost.test.ex pattern=x
- myhost.test.ex in "x"?
+ local_part=x domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: test.ex
+  test.ex in domains? yes (matched "test.ex")
+ checking local_parts
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+    cached open
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="test.ex" opts=NULL
+  file lookup required for test.ex
+    in TESTSUITE/aux-fixed/0085.data
+  creating new cache entry
+  lookup yielded: x░:░y░:░abc@d.e.f
+ x in local_parts?
   list element: x
- myhost.test.ex in "x"? no (end of list)
- list element: y
- address match test: subject=CALLER@myhost.test.ex pattern=y
- myhost.test.ex in "y"?
+  x in local_parts? yes (matched "x")
+ checking senders
+  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+    cached open
+  search_find: file="TESTSUITE/aux-fixed/0085.data"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0085.data
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+    type=lsearch key="test.ex" opts=NULL
+  cached data used for lookup of test.ex
+    in TESTSUITE/aux-fixed/0085.data
+  lookup yielded: x░:░y░:░abc@d.e.f
+ CALLER@myhost.test.ex in senders?
+  list element: x
+  address match test: subject=CALLER@myhost.test.ex pattern=x
+  myhost.test.ex in "x"?
+   list element: x
+  myhost.test.ex in "x"? no (end of list)
   list element: y
- myhost.test.ex in "y"? no (end of list)
- list element: abc@d.e.f
- address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
-CALLER@myhost.test.ex in senders? no (end of list)
-smart2 router skipped: senders mismatch
+  address match test: subject=CALLER@myhost.test.ex pattern=y
+  myhost.test.ex in "y"?
+   list element: y
+  myhost.test.ex in "y"? no (end of list)
+  list element: abc@d.e.f
+  address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
+ CALLER@myhost.test.ex in senders? no (end of list)
+ smart2 router skipped: senders mismatch
 no more routers
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@myhost.test.ex
@@ -466,33 +466,33 @@ Considering x@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@myhost.test.ex
 --------> smart1 router <--------
-local_part=x domain=myhost.test.ex
-checking domains
-myhost.test.ex in domains?
- list element: smart.domain
-myhost.test.ex in domains? no (end of list)
-smart1 router skipped: domains mismatch
+ local_part=x domain=myhost.test.ex
+ checking domains
+ myhost.test.ex in domains?
+  list element: smart.domain
+ myhost.test.ex in domains? no (end of list)
+ smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
-local_part=x domain=myhost.test.ex
-checking domains
-myhost.test.ex in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   myhost.test.ex in "test.ex : myhost.test.ex"?
-   ╎list element: test.ex
-   ╎list element: myhost.test.ex
-   ╎myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
-  end sublist local_domains
- data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
- myhost.test.ex in domains? no (matched "! +local_domains")
-fail_remote_domains router skipped: domains mismatch
+ local_part=x domain=myhost.test.ex
+ checking domains
+ myhost.test.ex in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎myhost.test.ex in "test.ex : myhost.test.ex"?
+   ╎ list element: test.ex
+   ╎ list element: myhost.test.ex
+   ╎ myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
+   end sublist local_domains
+  data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
+  myhost.test.ex in domains? no (matched "! +local_domains")
+ fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
-local_part=x domain=myhost.test.ex
-checking domains
-myhost.test.ex in domains?
- list element: test.ex
-myhost.test.ex in domains? no (end of list)
-smart2 router skipped: domains mismatch
+ local_part=x domain=myhost.test.ex
+ checking domains
+ myhost.test.ex in domains?
+  list element: test.ex
+ myhost.test.ex in domains? no (end of list)
+ smart2 router skipped: domains mismatch
 no more routers
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

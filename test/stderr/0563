@@ -16,39 +16,39 @@ Considering joe-real@testexim.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing joe-real@testexim.test.ex
 --------> router1 router <--------
-local_part=joe-real domain=testexim.test.ex
-checking local_parts
-joe-real in local_parts?
- list element: +aliases
-  start sublist aliases
-   joe-real in "joe:sam:tom"?
-   ╎list element: joe
-   ╎list element: sam
-   ╎list element: tom
-   joe-real in "joe:sam:tom"? no (end of list)
-  end sublist aliases
-joe-real in local_parts? no (end of list)
-router1 router skipped: local_parts mismatch
+ local_part=joe-real domain=testexim.test.ex
+ checking local_parts
+ joe-real in local_parts?
+  list element: +aliases
+   start sublist aliases
+   ╎joe-real in "joe:sam:tom"?
+   ╎ list element: joe
+   ╎ list element: sam
+   ╎ list element: tom
+   ╎joe-real in "joe:sam:tom"? no (end of list)
+   end sublist aliases
+ joe-real in local_parts? no (end of list)
+ router1 router skipped: local_parts mismatch
 --------> router2 router <--------
-local_part=joe-real domain=testexim.test.ex
-stripped suffix -real
-checking local_parts
-joe in local_parts?
- list element: +aliases
-  start sublist aliases
-   joe in "joe:sam:tom"?
-   ╎list element: joe
-   ╎joe in "joe:sam:tom"? yes (matched "joe")
-  end sublist aliases
- joe in local_parts? yes (matched "+aliases")
-calling router2 router
-router2 router called for joe-real@testexim.test.ex
-  domain = testexim.test.ex
-set transport local_delivery
-queued for local_delivery transport: local_part = joe
-domain = testexim.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=joe
+ local_part=joe-real domain=testexim.test.ex
+ stripped suffix -real
+ checking local_parts
+ joe in local_parts?
+  list element: +aliases
+   start sublist aliases
+   ╎joe in "joe:sam:tom"?
+   ╎ list element: joe
+   ╎ joe in "joe:sam:tom"? yes (matched "joe")
+   end sublist aliases
+  joe in local_parts? yes (matched "+aliases")
+ calling router2 router
+ router2 router called for joe-real@testexim.test.ex
+   domain = testexim.test.ex
+ set transport local_delivery
+ queued for local_delivery transport: local_part = joe
+ domain = testexim.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=joe
 routed by router2 router
   envelope to:	joe-real@testexim.test.ex
   transport:	local_delivery

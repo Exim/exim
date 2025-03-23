@@ -19,25 +19,25 @@ aaaa@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing aaaa@myhost.test.ex
 --------> bounce router <--------
-local_part=aaaa domain=myhost.test.ex
-checking senders
-myhost.test.ex in ""? no (end of list)
-CALLER@myhost.test.ex in senders? no (end of list)
-bounce router skipped: senders mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking senders
+ myhost.test.ex in ""? no (end of list)
+ CALLER@myhost.test.ex in senders? no (end of list)
+ bounce router skipped: senders mismatch
 --------> defer router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-aaaa in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ aaaa in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> aaaa_2nd_time router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{no}{yes}}"...
-aaaa_2nd_time router skipped: condition failure
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{no}{yes}}"...
+ aaaa_2nd_time router skipped: condition failure
 --------> aaaa router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-calling aaaa router
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ calling aaaa router
 rda_interpret (string): '# Exim filter\ndeliver defer_aaaa@$domain\nsave TESTSUITE/test-mail/file\npipe "/bin/sh -c exit"\nmail subject autoreply\ntext "This is an autoreply"'
 expanded: '# Exim filter
 deliver defer_aaaa@myhost.test.ex
@@ -50,17 +50,17 @@ Filter: start of processing
 Filter: end of processing
 >>>>>>>>>>>>>>>> Exim pid=p1237 (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
 rda_interpret: subprocess yield=0 error=NULL
-set transport t3
+ set transport t3
 aaaa router generated >CALLER@myhost.test.ex
   pipe, file, or autoreply
   errors_to=NULL transport=t3
   uid=CALLER_UID gid=CALLER_GID home=NULL
-set transport t2
+ set transport t2
 aaaa router generated |/bin/sh -c exit
   pipe, file, or autoreply
   errors_to=NULL transport=t2
   uid=CALLER_UID gid=CALLER_GID home=NULL
-set transport t1
+ set transport t1
 aaaa router generated TESTSUITE/test-mail/file
   pipe, file, or autoreply
   errors_to=NULL transport=t1
@@ -91,15 +91,15 @@ queued for t3 transport
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer_aaaa@myhost.test.ex
 --------> bounce router <--------
-local_part=defer_aaaa domain=myhost.test.ex
-checking senders
-myhost.test.ex in ""? no (end of list)
-CALLER@myhost.test.ex in senders? no (end of list)
-bounce router skipped: senders mismatch
+ local_part=defer_aaaa domain=myhost.test.ex
+ checking senders
+ myhost.test.ex in ""? no (end of list)
+ CALLER@myhost.test.ex in senders? no (end of list)
+ bounce router skipped: senders mismatch
 --------> defer router <--------
-local_part=defer_aaaa domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer_aaaa domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file
@@ -139,9 +139,9 @@ CALLER@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex
 --------> bounce router <--------
-local_part=CALLER domain=myhost.test.ex
-checking senders
-calling bounce router
+ local_part=CALLER domain=myhost.test.ex
+ checking senders
+ calling bounce router
 rda_interpret (string): ':blackhole:'
 expanded: ':blackhole:'
 file is not a filter file
@@ -186,21 +186,21 @@ aaaa@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing aaaa@myhost.test.ex
 --------> bounce router <--------
-local_part=aaaa domain=myhost.test.ex
-checking senders
-myhost.test.ex in ""? no (end of list)
-CALLER@myhost.test.ex in senders? no (end of list)
-bounce router skipped: senders mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking senders
+ myhost.test.ex in ""? no (end of list)
+ CALLER@myhost.test.ex in senders? no (end of list)
+ bounce router skipped: senders mismatch
 --------> defer router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-aaaa in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ aaaa in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> aaaa_2nd_time router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{no}{yes}}"...
-calling aaaa_2nd_time router
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{no}{yes}}"...
+ calling aaaa_2nd_time router
 rda_interpret (string): 'aaaa@$domain'
 expanded: 'aaaa@myhost.test.ex' (tainted)
 file is not a filter file
@@ -219,22 +219,22 @@ aaaa@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing aaaa@myhost.test.ex
 --------> bounce router <--------
-local_part=aaaa domain=myhost.test.ex
-checking senders
-myhost.test.ex in ""? no (end of list)
-CALLER@myhost.test.ex in senders? no (end of list)
-bounce router skipped: senders mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking senders
+ myhost.test.ex in ""? no (end of list)
+ CALLER@myhost.test.ex in senders? no (end of list)
+ bounce router skipped: senders mismatch
 --------> defer router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-aaaa in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ aaaa in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> aaaa_2nd_time router <--------
-aaaa_2nd_time router skipped: previously routed aaaa@myhost.test.ex
+ aaaa_2nd_time router skipped: previously routed aaaa@myhost.test.ex
 --------> aaaa router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-calling aaaa router
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ calling aaaa router
 rda_interpret (string): '# Exim filter\ndeliver defer_aaaa@$domain\nsave TESTSUITE/test-mail/file\npipe "/bin/sh -c exit"\nmail subject autoreply\ntext "This is an autoreply"'
 expanded: '# Exim filter
 deliver defer_aaaa@myhost.test.ex
@@ -247,17 +247,17 @@ Filter: start of processing
 Filter: end of processing
 >>>>>>>>>>>>>>>> Exim pid=p1243 (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
 rda_interpret: subprocess yield=0 error=NULL
-set transport t3
+ set transport t3
 aaaa router generated >CALLER@myhost.test.ex
   pipe, file, or autoreply
   errors_to=NULL transport=t3
   uid=CALLER_UID gid=CALLER_GID home=NULL
-set transport t2
+ set transport t2
 aaaa router generated |/bin/sh -c exit
   pipe, file, or autoreply
   errors_to=NULL transport=t2
   uid=CALLER_UID gid=CALLER_GID home=NULL
-set transport t1
+ set transport t1
 aaaa router generated TESTSUITE/test-mail/file
   pipe, file, or autoreply
   errors_to=NULL transport=t1
@@ -287,15 +287,15 @@ unique = >CALLER@myhost.test.ex:aaaa@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer_aaaa@myhost.test.ex
 --------> bounce router <--------
-local_part=defer_aaaa domain=myhost.test.ex
-checking senders
-myhost.test.ex in ""? no (end of list)
-CALLER@myhost.test.ex in senders? no (end of list)
-bounce router skipped: senders mismatch
+ local_part=defer_aaaa domain=myhost.test.ex
+ checking senders
+ myhost.test.ex in ""? no (end of list)
+ CALLER@myhost.test.ex in senders? no (end of list)
+ bounce router skipped: senders mismatch
 --------> defer router <--------
-local_part=defer_aaaa domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer_aaaa domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file

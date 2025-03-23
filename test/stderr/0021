@@ -84,11 +84,11 @@ ok@test1 in "ok@test1 : ok@test3"?
   test1 in "test1"? yes (matched "test1")
  ok@test1 in "ok@test1 : ok@test3"? yes (matched "ok@test1")
 check verify = sender
-ok in local_parts?
- list element: !bad
-ok in local_parts? yes (end of list)
------------ end verify ------------
-sender ok@test1 verified ok
+  ok in local_parts?
+   list element: !bad
+  ok in local_parts? yes (end of list)
+ ----------- end verify ------------
+ sender ok@test1 verified ok
 check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argument"
                = :main,reject: mail accepted "mail from:<ok@test1>" "<ok@test1>"
 LOG: MAIN REJECT
@@ -224,11 +224,11 @@ ok@test3 in "ok@test1 : ok@test3"?
   test3 in "test3"? yes (matched "test3")
  ok@test3 in "ok@test1 : ok@test3"? yes (matched "ok@test3")
 check verify = sender
-ok in local_parts?
- list element: !bad
-ok in local_parts? yes (end of list)
------------ end verify ------------
-sender ok@test3 verified ok
+  ok in local_parts?
+   list element: !bad
+  ok in local_parts? yes (end of list)
+ ----------- end verify ------------
+ sender ok@test3 verified ok
 check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argument"
                = :main,reject: mail accepted "mail from:<ok@test3>" "<ok@test3>"
 LOG: MAIN REJECT
@@ -289,9 +289,9 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-x in local_parts?
- list element: !bad
-x in local_parts? yes (end of list)
+ x in local_parts?
+  list element: !bad
+ x in local_parts? yes (end of list)
 >>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => x <x@y> R=accept T=appendfile

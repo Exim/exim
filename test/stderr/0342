@@ -14,27 +14,27 @@
 >>> processing ACL check_rcpt "deny" (TESTSUITE/test-config 17)
 >>>   message: unverifiable
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@ten-1
->>> calling dnslookup router
->>>  check dnssec require list
->>>   ten-1 in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   ten-1 in dnssec_request_domains?
->>>    list element: *
->>>    ten-1 in dnssec_request_domains? yes (matched "*")
->>> re-routed to x@ten-1.test.ex
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@ten-1.test.ex
->>> calling dnslookup router
->>>  check dnssec require list
->>>   ten-1.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   ten-1.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    ten-1.test.ex in dnssec_request_domains? yes (matched "*")
->>> routed by dnslookup router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@ten-1
+>>>   calling dnslookup router
+>>>    check dnssec require list
+>>>    ╎ten-1 in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎ten-1 in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ ten-1 in dnssec_request_domains? yes (matched "*")
+>>>  re-routed to x@ten-1.test.ex
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@ten-1.test.ex
+>>>   calling dnslookup router
+>>>    check dnssec require list
+>>>    ╎ten-1.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎ten-1.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+>>>  routed by dnslookup router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_rcpt
 >>> processing ACL check_rcpt "accept" (TESTSUITE/test-config 19)
 >>> accept: condition test succeeded in ACL check_rcpt

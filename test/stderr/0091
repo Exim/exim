@@ -35,12 +35,12 @@
 >>> processing ACL check_message "require" (TESTSUITE/test-config 24)
 >>> check verify = header_sender
 >>> verifying From: header address <junk@jink.jonk.test.ex>
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing junk@jink.jonk.test.ex
->>> junk in local_parts?
->>>  list element: userx
->>> junk in local_parts? no (end of list)
->>> no more routers
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing junk@jink.jonk.test.ex
+>>>   junk in local_parts?
+>>>    list element: userx
+>>>   junk in local_parts? no (end of list)
+>>>  no more routers
 >>> require: condition test failed in ACL check_message
 >>> end of ACL check_message: not OK
 LOG: 10HmaY-000000005vi-0000 H=(test) [V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected after DATA: there is no valid sender in any header line
@@ -63,13 +63,13 @@ LOG: 10HmaY-000000005vi-0000 H=(test) [V4NET.0.0.1] F=<junk@jink.jonk.test.ex> r
 >>>  list element: !░V4NET.0.0.1
 >>> host in "! V4NET.0.0.1"? yes (end of list)
 >>> check !verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing junk@jink.jonk.test.ex
->>> junk in local_parts?
->>>  list element: userx
->>> junk in local_parts? no (end of list)
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing junk@jink.jonk.test.ex
+>>>   junk in local_parts?
+>>>    list element: userx
+>>>   junk in local_parts? no (end of list)
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> deny: condition test succeeded in ACL check_recipient
 >>> end of ACL check_recipient: DENY
 LOG: H=(test) [V4NET.0.0.2] sender verify fail for <junk@jink.jonk.test.ex>: Unrouteable address
@@ -93,14 +93,14 @@ LOG: H=(test) [V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.
 >>>  list element: !░V4NET.0.0.1
 >>> host in "! V4NET.0.0.1"? yes (end of list)
 >>> check !verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -120,12 +120,12 @@ LOG: H=(test) [V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.
 >>> processing ACL check_message "require" (TESTSUITE/test-config 24)
 >>> check verify = header_sender
 >>> verifying From: header address <junk@jink.jonk.test.ex>
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing junk@jink.jonk.test.ex
->>> junk in local_parts?
->>>  list element: userx
->>> junk in local_parts? no (end of list)
->>> no more routers
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing junk@jink.jonk.test.ex
+>>>   junk in local_parts?
+>>>    list element: userx
+>>>   junk in local_parts? no (end of list)
+>>>  no more routers
 >>> require: condition test failed in ACL check_message
 >>> end of ACL check_message: not OK
 LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
@@ -148,14 +148,14 @@ LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.0.0.2] F=<userx@test.ex> rejected a
 >>>  list element: !░V4NET.0.0.1
 >>> host in "! V4NET.0.0.1"? yes (end of list)
 >>> check !verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -175,13 +175,13 @@ LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.0.0.2] F=<userx@test.ex> rejected a
 >>> processing ACL check_message "require" (TESTSUITE/test-config 24)
 >>> check verify = header_sender
 >>> verifying From: header address <userx@test.ex>
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
 >>> require: condition test succeeded in ACL check_message
 >>> processing ACL check_message "accept" (TESTSUITE/test-config 25)
 >>> accept: condition test succeeded in ACL check_message

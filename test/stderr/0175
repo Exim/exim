@@ -13,27 +13,27 @@
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing user@bad.domain
->>> bad.domain in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    bad.domain in "test.ex"?
->>>    ╎list element: test.ex
->>>    bad.domain in "test.ex"? no (end of list)
->>>   end sublist local_domains
->>> bad.domain in domains? yes (end of list)
->>> calling fail_sender router
->>> bad.domain in "bad.domain"?
->>>  list element: bad.domain
->>>  bad.domain in "bad.domain"? yes (matched "bad.domain")
->>> local host found for non-MX address
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing user@bad.domain
+>>>   bad.domain in domains?
+>>>    list element: !░+local_domains
+>>>     start sublist local_domains
+>>>    ╎ bad.domain in "test.ex"?
+>>>    ╎  list element: test.ex
+>>>    ╎ bad.domain in "test.ex"? no (end of list)
+>>>     end sublist local_domains
+>>>   bad.domain in domains? yes (end of list)
+>>>   calling fail_sender router
+>>>   bad.domain in "bad.domain"?
+>>>    list element: bad.domain
+>>>    bad.domain in "bad.domain"? yes (matched "bad.domain")
+>>>   local host found for non-MX address
 >>> fully qualified name = localhost
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=localhost address=127.0.0.1
->>> fail_sender router forced address failure
->>> ----------- end verify ------------
+>>>   fail_sender router forced address failure
+>>>  ----------- end verify ------------
 >>> require: condition test failed in ACL check_recipient
 >>> end of ACL check_recipient: not OK
 LOG: H=(test) [V4NET.0.0.0] sender verify fail for <user@bad.domain>: remote host address is the local host
@@ -53,37 +53,37 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: S
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing user@bad.domain2
->>> bad.domain2 in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    bad.domain2 in "test.ex"?
->>>    ╎list element: test.ex
->>>    bad.domain2 in "test.ex"? no (end of list)
->>>   end sublist local_domains
->>> bad.domain2 in domains? yes (end of list)
->>> calling fail_sender router
->>> bad.domain2 in "bad.domain"?
->>>  list element: bad.domain
->>> bad.domain2 in "bad.domain"? no (end of list)
->>> fail_sender router declined for user@bad.domain2
->>> bad.domain2 in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>  cached no match for +local_domains
->>>  cached lookup data = NULL
->>> bad.domain2 in domains? yes (end of list)
->>> calling fail_sender2 router
->>> bad.domain2 in "bad.domain2"?
->>>  list element: bad.domain2
->>>  bad.domain2 in "bad.domain2"? yes (matched "bad.domain2")
->>> local host found for non-MX address
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing user@bad.domain2
+>>>   bad.domain2 in domains?
+>>>    list element: !░+local_domains
+>>>     start sublist local_domains
+>>>    ╎ bad.domain2 in "test.ex"?
+>>>    ╎  list element: test.ex
+>>>    ╎ bad.domain2 in "test.ex"? no (end of list)
+>>>     end sublist local_domains
+>>>   bad.domain2 in domains? yes (end of list)
+>>>   calling fail_sender router
+>>>   bad.domain2 in "bad.domain"?
+>>>    list element: bad.domain
+>>>   bad.domain2 in "bad.domain"? no (end of list)
+>>>   fail_sender router declined for user@bad.domain2
+>>>   bad.domain2 in domains?
+>>>    list element: !░+local_domains
+>>>     start sublist local_domains
+>>>    cached no match for +local_domains
+>>>    cached lookup data = NULL
+>>>   bad.domain2 in domains? yes (end of list)
+>>>   calling fail_sender2 router
+>>>   bad.domain2 in "bad.domain2"?
+>>>    list element: bad.domain2
+>>>    bad.domain2 in "bad.domain2"? yes (matched "bad.domain2")
+>>>   local host found for non-MX address
 >>> fully qualified name = localhost
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=localhost address=127.0.0.1
->>> ----------- end verify ------------
+>>>  ----------- end verify ------------
 >>> require: condition test failed in ACL check_recipient
 >>> end of ACL check_recipient: not OK
 LOG: H=(test) [V4NET.0.0.0] sender verify fail for <user@bad.domain2>: fail_sender2 router forced verify failure
@@ -103,47 +103,47 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: 
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing user@ten-1.test.ex
->>> ten-1.test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    ten-1.test.ex in "test.ex"?
->>>    ╎list element: test.ex
->>>    ten-1.test.ex in "test.ex"? no (end of list)
->>>   end sublist local_domains
->>> ten-1.test.ex in domains? yes (end of list)
->>> calling fail_sender router
->>> ten-1.test.ex in "bad.domain"?
->>>  list element: bad.domain
->>> ten-1.test.ex in "bad.domain"? no (end of list)
->>> fail_sender router declined for user@ten-1.test.ex
->>> ten-1.test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>  cached no match for +local_domains
->>>  cached lookup data = NULL
->>> ten-1.test.ex in domains? yes (end of list)
->>> calling fail_sender2 router
->>> ten-1.test.ex in "bad.domain2"?
->>>  list element: bad.domain2
->>> ten-1.test.ex in "bad.domain2"? no (end of list)
->>> fail_sender2 router declined for user@ten-1.test.ex
->>> ten-1.test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>  cached no match for +local_domains
->>>  cached lookup data = NULL
->>> ten-1.test.ex in domains? yes (end of list)
->>> calling lookuphost router
->>>  check dnssec require list
->>>   ten-1.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   ten-1.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    ten-1.test.ex in dnssec_request_domains? yes (matched "*")
->>> routed by lookuphost router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing user@ten-1.test.ex
+>>>   ten-1.test.ex in domains?
+>>>    list element: !░+local_domains
+>>>     start sublist local_domains
+>>>    ╎ ten-1.test.ex in "test.ex"?
+>>>    ╎  list element: test.ex
+>>>    ╎ ten-1.test.ex in "test.ex"? no (end of list)
+>>>     end sublist local_domains
+>>>   ten-1.test.ex in domains? yes (end of list)
+>>>   calling fail_sender router
+>>>   ten-1.test.ex in "bad.domain"?
+>>>    list element: bad.domain
+>>>   ten-1.test.ex in "bad.domain"? no (end of list)
+>>>   fail_sender router declined for user@ten-1.test.ex
+>>>   ten-1.test.ex in domains?
+>>>    list element: !░+local_domains
+>>>     start sublist local_domains
+>>>    cached no match for +local_domains
+>>>    cached lookup data = NULL
+>>>   ten-1.test.ex in domains? yes (end of list)
+>>>   calling fail_sender2 router
+>>>   ten-1.test.ex in "bad.domain2"?
+>>>    list element: bad.domain2
+>>>   ten-1.test.ex in "bad.domain2"? no (end of list)
+>>>   fail_sender2 router declined for user@ten-1.test.ex
+>>>   ten-1.test.ex in domains?
+>>>    list element: !░+local_domains
+>>>     start sublist local_domains
+>>>    cached no match for +local_domains
+>>>    cached lookup data = NULL
+>>>   ten-1.test.ex in domains? yes (end of list)
+>>>   calling lookuphost router
+>>>    check dnssec require list
+>>>    ╎ten-1.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎ten-1.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+>>>  routed by lookuphost router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 19)
 >>> check domains = +local_domains

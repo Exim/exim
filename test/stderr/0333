@@ -10,16 +10,16 @@ ok@no.delay: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing ok@no.delay
 --------> r1 router <--------
-local_part=ok domain=no.delay
-checking domains
-calling r1 router
-r1 router called for ok@no.delay
-  domain = no.delay
-set transport t1
-queued for t1 transport: local_part = ok
-domain = no.delay
-  errors_to=NULL
-  domain_data=no.delay local_part_data=NULL
+ local_part=ok domain=no.delay
+ checking domains
+ calling r1 router
+ r1 router called for ok@no.delay
+   domain = no.delay
+ set transport t1
+ queued for t1 transport: local_part = ok
+ domain = no.delay
+   errors_to=NULL
+   domain_data=no.delay local_part_data=NULL
 routed by r1 router
   envelope to:	ok@no.delay
   transport:	t1
@@ -49,15 +49,15 @@ ok@no.delay: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing ok@no.delay
 --------> r1 router <--------
-local_part=ok domain=no.delay
-checking domains
-calling r1 router
-r1 router called for ok@no.delay
-  domain = no.delay
-queued for t1 transport: local_part = ok
-domain = no.delay
-  errors_to=NULL
-  domain_data=no.delay local_part_data=NULL
+ local_part=ok domain=no.delay
+ checking domains
+ calling r1 router
+ r1 router called for ok@no.delay
+   domain = no.delay
+ queued for t1 transport: local_part = ok
+ domain = no.delay
+   errors_to=NULL
+   domain_data=no.delay local_part_data=NULL
 routed by r1 router
   envelope to:	ok@no.delay
   transport:	t1

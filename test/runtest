@@ -1265,7 +1265,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/\b(gethostbyname2?|\bgetipnodebyname)(\(af=inet\))?/get[host|ipnode]byname[2]/;
 
     # Extra lookups done when ipv6 is supported
-    next if /^host_fake_gethostbyname\(af=inet6\) returned 1 \(HOST_NOT_FOUND\)$/;
+    next if /^\s*host_fake_gethostbyname\(af=inet6\) returned 1 \(HOST_NOT_FOUND\)$/;
 
     # we don't care what TZ enviroment the testhost was running
     next if /^Reset TZ to/;
@@ -1587,7 +1587,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /\w+ in keep_environment\? (yes|no)/;
 
     # Sizes vary with test hostname
-    s/^cmd buf flush \d+ bytes/cmd buf flush ddd bytes/;
+    s/^\s*cmd buf flush \d+ bytes/cmd buf flush ddd bytes/;
 
     # Different platforms put different error messages into retry records
     s/dbfn_write: key=.* datalen \K\d{2,3}$/nn/;
@@ -1750,7 +1750,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/  SMTP\(Operation timed out\)<</  SMTP(Connection timed out)<</;
 
     # Platform differences for errno values (eg. Hurd)
-    s/^errno = \d+$/errno = EEE/;
+    s/^\s*errno = \d+$/errno = EEE/;
     s/^writing error \d+: /writing error EEE: /;
 
     # Time-only, in debug output

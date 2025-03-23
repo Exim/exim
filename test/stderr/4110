@@ -24,25 +24,25 @@ filter-userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing filter-userx@test.ex
 --------> check_vars router <--------
-local_part=filter-userx domain=test.ex
-checking local_parts
-filter-userx in local_parts? no (end of list)
-check_vars router skipped: local_parts mismatch
+ local_part=filter-userx domain=test.ex
+ checking local_parts
+ filter-userx in local_parts? no (end of list)
+ check_vars router skipped: local_parts mismatch
 --------> fail_read_filter router <--------
-local_part=filter-userx domain=test.ex
-checking local_parts
-filter-userx in local_parts? no (end of list)
-fail_read_filter router skipped: local_parts mismatch
+ local_part=filter-userx domain=test.ex
+ checking local_parts
+ filter-userx in local_parts? no (end of list)
+ fail_read_filter router skipped: local_parts mismatch
 --------> prepend_filter router <--------
-local_part=filter-userx domain=test.ex
-checking local_parts
-filter-userx in local_parts? no (end of list)
-prepend_filter router skipped: local_parts mismatch
+ local_part=filter-userx domain=test.ex
+ checking local_parts
+ filter-userx in local_parts? no (end of list)
+ prepend_filter router skipped: local_parts mismatch
 --------> userfilter router <--------
-local_part=filter-userx domain=test.ex
-checking local_parts
+ local_part=filter-userx domain=test.ex
+ checking local_parts
 $home = >/usr<
-calling userfilter router
+ calling userfilter router
 rda_interpret (file): 'TESTSUITE/aux-var/4110.f-user'
 expanded: 'TESTSUITE/aux-var/4110.f-user'
 ssss bytes read from TESTSUITE/aux-var/4110.f-user
@@ -64,41 +64,41 @@ userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> check_vars router <--------
-local_part=userx domain=test.ex
-checking local_parts
-userx in local_parts? no (end of list)
-check_vars router skipped: local_parts mismatch
+ local_part=userx domain=test.ex
+ checking local_parts
+ userx in local_parts? no (end of list)
+ check_vars router skipped: local_parts mismatch
 --------> fail_read_filter router <--------
-local_part=userx domain=test.ex
-checking local_parts
-userx in local_parts? no (end of list)
-fail_read_filter router skipped: local_parts mismatch
+ local_part=userx domain=test.ex
+ checking local_parts
+ userx in local_parts? no (end of list)
+ fail_read_filter router skipped: local_parts mismatch
 --------> prepend_filter router <--------
-local_part=userx domain=test.ex
-checking local_parts
-userx in local_parts? no (end of list)
-prepend_filter router skipped: local_parts mismatch
+ local_part=userx domain=test.ex
+ checking local_parts
+ userx in local_parts? no (end of list)
+ prepend_filter router skipped: local_parts mismatch
 --------> userfilter router <--------
-local_part=userx domain=test.ex
-checking local_parts
-userx in local_parts? no (end of list)
-userfilter router skipped: local_parts mismatch
+ local_part=userx domain=test.ex
+ checking local_parts
+ userx in local_parts? no (end of list)
+ userfilter router skipped: local_parts mismatch
 --------> user_accept1 router <--------
-local_part=userx domain=test.ex
-checking local_parts
-userx in local_parts? no (end of list)
-user_accept1 router skipped: local_parts mismatch
+ local_part=userx domain=test.ex
+ checking local_parts
+ userx in local_parts? no (end of list)
+ user_accept1 router skipped: local_parts mismatch
 --------> user_accept2 router <--------
-local_part=userx domain=test.ex
-checking local_parts
-calling user_accept2 router
-user_accept2 router called for userx@test.ex
-  domain = test.ex
-set transport appendfile
-queued for appendfile transport: local_part = userx
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=userx
+ local_part=userx domain=test.ex
+ checking local_parts
+ calling user_accept2 router
+ user_accept2 router called for userx@test.ex
+   domain = test.ex
+ set transport appendfile
+ queued for appendfile transport: local_part = userx
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=userx
 routed by user_accept2 router
   envelope to:	userx@test.ex
   transport:	appendfile

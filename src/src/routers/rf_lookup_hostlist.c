@@ -72,7 +72,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
   if (h->address) { prev = h; continue; }
 
   DEBUG(D_route|D_host_lookup)
-    debug_printf("finding IP address for %s\n", h->name);
+    debug_printf_indent("finding IP address for %s\n", h->name);
 
   /* Handle any port setting that may be on the name; it will be removed
   from the end of the name. */
@@ -119,7 +119,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
 
   else if (lookup_type & LK_BYNAME || string_is_ip_address(h->name, NULL) != 0)
     {
-    DEBUG(D_route|D_host_lookup) debug_printf("calling host_find_byname\n");
+    DEBUG(D_route|D_host_lookup) debug_printf_indent("calling host_find_byname\n");
     rc = host_find_byname(h, ignore_target_hosts, HOST_FIND_QUALIFY_SINGLE,
       &canonical_name, TRUE);
     }

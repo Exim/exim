@@ -851,47 +851,47 @@ ph10@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing ph10@myhost.test.ex
 --------> r1 router <--------
-local_part=ph10 domain=myhost.test.ex
- search_open: mysql "NULL"
- search_find: file="NULL"
-   key="select name from them where id='ph10@myhost.test.ex'" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=mysql key="select name from them where id='ph10@myhost.test.ex'" opts=NULL
- database lookup required for select name from them where id='ph10@myhost.test.ex'
-                              (tainted, quoted:mysql)
- MySQL query: "select name from them where id='ph10@myhost.test.ex'" opts 'NULL'
- MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
- MYSQL: no data found
- creating new cache entry
- lookup failed
+ local_part=ph10 domain=myhost.test.ex
+  search_open: mysql "NULL"
+  search_find: file="NULL"
+    key="select name from them where id='ph10@myhost.test.ex'" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=mysql key="select name from them where id='ph10@myhost.test.ex'" opts=NULL
+  database lookup required for select name from them where id='ph10@myhost.test.ex'
+                               (tainted, quoted:mysql)
+  MySQL query: "select name from them where id='ph10@myhost.test.ex'" opts 'NULL'
+  MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
+  MYSQL: no data found
+  creating new cache entry
+  lookup failed
 acl_m_qtest: <ph10@myhost.test.ex> lkup: <>
-processing address_data
- search_open: mysql "NULL"
-   cached open
- search_find: file="NULL"
-   key="select name from them where id='ph10' limit 1" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=mysql key="select name from them where id='ph10' limit 1" opts=NULL
- database lookup required for select name from them where id='ph10' limit 1
-                              (tainted)
+ processing address_data
+  search_open: mysql "NULL"
+    cached open
+  search_find: file="NULL"
+    key="select name from them where id='ph10' limit 1" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=mysql key="select name from them where id='ph10' limit 1" opts=NULL
+  database lookup required for select name from them where id='ph10' limit 1
+                               (tainted)
 No quoter name for addr
 LOG: MAIN PANIC
   tainted search query is not properly quoted (router r1, TESTSUITE/test-config 69): select name from them where id='ph10' limit 1
- required_quoter_id (mysql) quoting -1 (NULL)
- MySQL query: "select name from them where id='ph10' limit 1" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
- creating new cache entry
- lookup yielded: Philip░Hazel
-calling r1 router
-r1 router called for ph10@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = ph10
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+  required_quoter_id (mysql) quoting -1 (NULL)
+  MySQL query: "select name from them where id='ph10' limit 1" opts 'NULL'
+  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
+  creating new cache entry
+  lookup yielded: Philip░Hazel
+ calling r1 router
+ r1 router called for ph10@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = ph10
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	ph10@myhost.test.ex
   transport:	t1

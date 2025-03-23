@@ -211,21 +211,21 @@ exim: timed out while reading - message abandoned
 >>>   test.ex in "test.ex"? yes (matched "test.ex")
 >>>  verify@test.ex in "verify@test.ex"? yes (matched "verify@test.ex")
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing verify@test.ex
->>> test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    test.ex in "test.ex : *.test.ex"?
->>>    ╎list element: test.ex
->>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>   end sublist local_domains
->>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
->>>  test.ex in domains? no (matched "! +local_domains")
->>> calling forward router
->>> forward router declined for verify@test.ex
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing verify@test.ex
+>>>   test.ex in domains?
+>>>    list element: !░+local_domains
+>>>     start sublist local_domains
+>>>    ╎ test.ex in "test.ex : *.test.ex"?
+>>>    ╎  list element: test.ex
+>>>    ╎  test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>     end sublist local_domains
+>>>    data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>    test.ex in domains? no (matched "! +local_domains")
+>>>   calling forward router
+>>>   forward router declined for verify@test.ex
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> deny: condition test succeeded in ACL check_recipient
 >>> end of ACL check_recipient: DENY
 LOG: H=(test) [V4NET.0.0.1] F=<userx@test.ex> rejected RCPT verify@test.ex: Unrouteable address

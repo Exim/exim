@@ -19,29 +19,29 @@ x@uppercase.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@uppercase.test.ex
 --------> r0 router <--------
-local_part=x domain=uppercase.test.ex
-checking senders
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
-r0 router skipped: senders mismatch
+ local_part=x domain=uppercase.test.ex
+ checking senders
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
+ r0 router skipped: senders mismatch
 --------> r1 router <--------
-local_part=x domain=uppercase.test.ex
-calling r1 router
-r1 router called for x@uppercase.test.ex
-  domain = uppercase.test.ex
-main lookup for domain
- check dnssec require list
- check dnssec request list
- uppercase.test.ex (MX resp) DNSSEC
- local host found for non-MX address
- fully qualified name = UpperCase.test.ex
- uppercase.test.ex 127.0.0.1 mx=-1 sort=xx 
+ local_part=x domain=uppercase.test.ex
+ calling r1 router
+ r1 router called for x@uppercase.test.ex
+   domain = uppercase.test.ex
+ main lookup for domain
+  check dnssec require list
+  check dnssec request list
+  uppercase.test.ex (MX resp) DNSSEC
+  local host found for non-MX address
+  fully qualified name = UpperCase.test.ex
+  uppercase.test.ex 127.0.0.1 mx=-1 sort=xx 
 remote host address is the local host: uppercase.test.ex: configured to try delivery anyway
-set transport t1
-queued for t1 transport: local_part = x
-domain = uppercase.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ set transport t1
+ queued for t1 transport: local_part = x
+ domain = uppercase.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	x@UpperCase.test.ex
   transport:	t1
@@ -78,9 +78,9 @@ CALLER@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@test.ex
 --------> r0 router <--------
-local_part=CALLER domain=test.ex
-checking senders
-calling r0 router
+ local_part=CALLER domain=test.ex
+ checking senders
+ calling r0 router
 rda_interpret (string): ':blackhole:'
 expanded: ':blackhole:'
 file is not a filter file

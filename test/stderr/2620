@@ -790,27 +790,27 @@ CALLER@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex
 --------> r1 router <--------
-local_part=CALLER domain=myhost.test.ex
-processing address_data
- search_open: pgsql "NULL"
- search_find: file="NULL"
-   key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id='ph10'" opts=NULL
- database lookup required for select name from them where id='ph10'
- PostgreSQL query: "select name from them where id='ph10'" opts 'NULL'
- PGSQL new connection: host=localhost port=PORT_N database=test user=CALLER
- creating new cache entry
- lookup yielded: Philip░Hazel
-calling r1 router
-r1 router called for CALLER@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = CALLER
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=CALLER domain=myhost.test.ex
+ processing address_data
+  search_open: pgsql "NULL"
+  search_find: file="NULL"
+    key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=pgsql key="select name from them where id='ph10'" opts=NULL
+  database lookup required for select name from them where id='ph10'
+  PostgreSQL query: "select name from them where id='ph10'" opts 'NULL'
+  PGSQL new connection: host=localhost port=PORT_N database=test user=CALLER
+  creating new cache entry
+  lookup yielded: Philip░Hazel
+ calling r1 router
+ r1 router called for CALLER@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = CALLER
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	CALLER@myhost.test.ex
   transport:	t1

@@ -173,7 +173,7 @@ const pcre2_code *re = ob->re_response_pattern;
 int count, query_len, rc;
 int sep = 0;
 
-DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
+DEBUG(D_route) debug_printf_indent("%s router called for %s: domain = %s\n",
   rblock->drinst.name, addr->address, addr->domain);
 
 reply = store_get(256, GET_TAINTED);

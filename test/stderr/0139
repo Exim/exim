@@ -62,34 +62,34 @@
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 53)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing postmaster@exim.test.ex
->>> calling system_aliases router
->>> routed by system_aliases router
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@exim.test.ex
->>> calling system_aliases router
->>> system_aliases router declined for userx@exim.test.ex
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing postmaster@exim.test.ex
+>>>   calling system_aliases router
+>>>  routed by system_aliases router
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@exim.test.ex
+>>>   calling system_aliases router
+>>>   system_aliases router declined for userx@exim.test.ex
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "deny" (TESTSUITE/test-config 54)
 >>>   message: unrouteable address
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@exim.test.ex
->>> calling system_aliases router
->>> system_aliases router declined for userx@exim.test.ex
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@exim.test.ex
+>>>   calling system_aliases router
+>>>   system_aliases router declined for userx@exim.test.ex
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 56)
 >>> check domains = +local_domains
@@ -124,16 +124,16 @@
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 53)
 >>> check verify = sender
->>> using cached sender verify result
+>>>  using cached sender verify result
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "deny" (TESTSUITE/test-config 54)
 >>>   message: unrouteable address
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing list@exim.test.ex
->>> calling system_aliases router
->>> routed by system_aliases router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing list@exim.test.ex
+>>>   calling system_aliases router
+>>>  routed by system_aliases router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 56)
 >>> check domains = +local_domains
@@ -419,11 +419,11 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
->>> calling system_aliases router
->>> system_aliases router declined for a@b
->>> a in local_parts?
->>>  list element: userx
->>> a in local_parts? no (end of list)
+>>>  calling system_aliases router
+>>>  system_aliases router declined for a@b
+>>>  a in local_parts?
+>>>   list element: userx
+>>>  a in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for a@b H=[V4NET.13.13.2]
 >>> host in hosts_connection_nolog? no (option unset)
@@ -510,11 +510,11 @@ LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; not in
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
->>> calling system_aliases router
->>> system_aliases router declined for a@b
->>> a in local_parts?
->>>  list element: userx
->>> a in local_parts? no (end of list)
+>>>  calling system_aliases router
+>>>  system_aliases router declined for a@b
+>>>  a in local_parts?
+>>>   list element: userx
+>>>  a in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for a@b H=[V4NET.13.13.100]
 >>> host in hosts_connection_nolog? no (option unset)
@@ -601,11 +601,11 @@ LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
->>> calling system_aliases router
->>> system_aliases router declined for a@b
->>> a in local_parts?
->>>  list element: userx
->>> a in local_parts? no (end of list)
+>>>  calling system_aliases router
+>>>  system_aliases router declined for a@b
+>>>  a in local_parts?
+>>>   list element: userx
+>>>  a in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for a@b H=[V4NET.13.13.101]
 >>> host in hosts_connection_nolog? no (option unset)
@@ -692,11 +692,11 @@ LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; not 
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
->>> calling system_aliases router
->>> system_aliases router declined for a@b
->>> a in local_parts?
->>>  list element: userx
->>> a in local_parts? no (end of list)
+>>>  calling system_aliases router
+>>>  system_aliases router declined for a@b
+>>>  a in local_parts?
+>>>   list element: userx
+>>>  a in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for a@b H=[V4NET.13.13.102]
 >>> host in hosts_connection_nolog? no (option unset)
@@ -783,11 +783,11 @@ LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
->>> calling system_aliases router
->>> system_aliases router declined for a@b
->>> a in local_parts?
->>>  list element: userx
->>> a in local_parts? no (end of list)
+>>>  calling system_aliases router
+>>>  system_aliases router declined for a@b
+>>>  a in local_parts?
+>>>   list element: userx
+>>>  a in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for a@b H=[V4NET.13.13.103]
 >>> host in hosts_connection_nolog? no (option unset)
@@ -875,11 +875,11 @@ LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
->>> calling system_aliases router
->>> system_aliases router declined for a@b
->>> a in local_parts?
->>>  list element: userx
->>> a in local_parts? no (end of list)
+>>>  calling system_aliases router
+>>>  system_aliases router declined for a@b
+>>>  a in local_parts?
+>>>   list element: userx
+>>>  a in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for a@b H=[V4NET.13.13.104]
 >>> host in hosts_connection_nolog? no (option unset)
@@ -967,10 +967,10 @@ LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
->>> calling system_aliases router
->>> system_aliases router declined for a@b
->>> a in local_parts?
->>>  list element: userx
->>> a in local_parts? no (end of list)
+>>>  calling system_aliases router
+>>>  system_aliases router declined for a@b
+>>>  a in local_parts?
+>>>   list element: userx
+>>>  a in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for a@b H=[V4NET.13.13.105]

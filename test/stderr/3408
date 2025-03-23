@@ -135,31 +135,31 @@ LOG: 10HmaX-000000005vi-0000 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 23)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing postmaster@exim.test.ex
->>> calling system_aliases router
->>> routed by system_aliases router
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing CALLER@exim.test.ex
->>> calling system_aliases router
->>> system_aliases router declined for CALLER@exim.test.ex
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing postmaster@exim.test.ex
+>>>   calling system_aliases router
+>>>  routed by system_aliases router
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing CALLER@exim.test.ex
+>>>   calling system_aliases router
+>>>   system_aliases router declined for CALLER@exim.test.ex
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "deny" (TESTSUITE/test-config 24)
 >>>   message: unrouteable address
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@exim.test.ex
->>> calling system_aliases router
->>> system_aliases router declined for userx@exim.test.ex
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling list router
->>> routed by list router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@exim.test.ex
+>>>   calling system_aliases router
+>>>   system_aliases router declined for userx@exim.test.ex
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling list router
+>>>  routed by list router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 26)
 >>> check domains = +local_domains

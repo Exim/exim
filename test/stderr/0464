@@ -50,18 +50,18 @@ check verify = recipient
 Verifying abc@domain1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering abc@domain1
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing abc@domain1
---------> r1 router <--------
-local_part=abc domain=domain1
-checking domains
-domain1 in domains?
- list element: +special_domains
-  start sublist special_domains
- cached yes match for +special_domains
- cached lookup data = data for domain1
- domain1 in domains? yes (matched "+special_domains" - cached)
-calling r1 router
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing abc@domain1
+ --------> r1 router <--------
+  local_part=abc domain=domain1
+  checking domains
+  domain1 in domains?
+   list element: +special_domains
+    start sublist special_domains
+   cached yes match for +special_domains
+   cached lookup data = data for domain1
+   domain1 in domains? yes (matched "+special_domains" - cached)
+  calling r1 router
 rda_interpret (string): '$local_part@xxx.$domain'
 expanded: 'abc@xxx.domain1' (tainted)
 file is not a filter file
@@ -70,52 +70,52 @@ extract item: abc@xxx.domain1
 r1 router generated abc@xxx.domain1
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
-routed by r1 router
-  envelope to:	abc@domain1
-  transport:	<none>
+ routed by r1 router
+   envelope to:	abc@domain1
+   transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering abc@xxx.domain1
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing abc@xxx.domain1
---------> r1 router <--------
-local_part=abc domain=xxx.domain1
-checking domains
-xxx.domain1 in domains?
- list element: +special_domains
-  start sublist special_domains
-   xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
-   ╎list element: lsearch;TESTSUITE/aux-fixed/0464.domains
-   ╎search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
-   ╎  cached open
-   ╎search_find: file="TESTSUITE/aux-fixed/0464.domains"
-   ╎  key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
-   ╎LRU list:
-   ╎  0TESTSUITE/aux-fixed/0464.domains
-   ╎  End
-   ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
-   ╎  type=lsearch key="xxx.domain1" opts=NULL
-   ╎file lookup required for xxx.domain1
-   ╎  in TESTSUITE/aux-fixed/0464.domains
-   ╎creating new cache entry
-   ╎lookup failed
-   xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
-  end sublist special_domains
-xxx.domain1 in domains? no (end of list)
-r1 router skipped: domains mismatch
---------> r2 router <--------
-local_part=abc domain=xxx.domain1
-calling r2 router
-r2 router called for abc@xxx.domain1
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing abc@xxx.domain1
+ --------> r1 router <--------
+  local_part=abc domain=xxx.domain1
+  checking domains
+  xxx.domain1 in domains?
+   list element: +special_domains
+    start sublist special_domains
+   ╎ xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
+   ╎  list element: lsearch;TESTSUITE/aux-fixed/0464.domains
+   ╎  search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
+   ╎    cached open
+   ╎  search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎    key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎  LRU list:
+   ╎    0TESTSUITE/aux-fixed/0464.domains
+   ╎    End
+   ╎  internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎    type=lsearch key="xxx.domain1" opts=NULL
+   ╎  file lookup required for xxx.domain1
+   ╎    in TESTSUITE/aux-fixed/0464.domains
+   ╎  creating new cache entry
+   ╎  lookup failed
+   ╎ xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
+    end sublist special_domains
+  xxx.domain1 in domains? no (end of list)
+  r1 router skipped: domains mismatch
+ --------> r2 router <--------
+  local_part=abc domain=xxx.domain1
+  calling r2 router
+  r2 router called for abc@xxx.domain1
+    domain = xxx.domain1
+  set transport smtp
+  queued for smtp transport: local_part = abc
   domain = xxx.domain1
-set transport smtp
-queued for smtp transport: local_part = abc
-domain = xxx.domain1
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
-routed by r2 router
-  envelope to:	abc@xxx.domain1
-  transport:	smtp
------------ end verify ------------
+    errors_to=NULL
+    domain_data=NULL local_part_data=NULL
+ routed by r2 router
+   envelope to:	abc@xxx.domain1
+   transport:	smtp
+ ----------- end verify ------------
 require: condition test succeeded in ACL rcpt
 processing ACL rcpt "require" (TESTSUITE/test-config 23)
 check domains = +special_domains
@@ -130,18 +130,18 @@ check verify = recipient
 Verifying abc@domain1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering abc@domain1
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing abc@domain1
---------> r1 router <--------
-local_part=abc domain=domain1
-checking domains
-domain1 in domains?
- list element: +special_domains
-  start sublist special_domains
- cached yes match for +special_domains
- cached lookup data = data for domain1
- domain1 in domains? yes (matched "+special_domains" - cached)
-calling r1 router
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing abc@domain1
+ --------> r1 router <--------
+  local_part=abc domain=domain1
+  checking domains
+  domain1 in domains?
+   list element: +special_domains
+    start sublist special_domains
+   cached yes match for +special_domains
+   cached lookup data = data for domain1
+   domain1 in domains? yes (matched "+special_domains" - cached)
+  calling r1 router
 rda_interpret (string): '$local_part@xxx.$domain'
 expanded: 'abc@xxx.domain1' (tainted)
 file is not a filter file
@@ -150,50 +150,50 @@ extract item: abc@xxx.domain1
 r1 router generated abc@xxx.domain1
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
-routed by r1 router
-  envelope to:	abc@domain1
-  transport:	<none>
+ routed by r1 router
+   envelope to:	abc@domain1
+   transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering abc@xxx.domain1
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing abc@xxx.domain1
---------> r1 router <--------
-local_part=abc domain=xxx.domain1
-checking domains
-xxx.domain1 in domains?
- list element: +special_domains
-  start sublist special_domains
-   xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
-   ╎list element: lsearch;TESTSUITE/aux-fixed/0464.domains
-   ╎search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
-   ╎  cached open
-   ╎search_find: file="TESTSUITE/aux-fixed/0464.domains"
-   ╎  key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
-   ╎LRU list:
-   ╎  0TESTSUITE/aux-fixed/0464.domains
-   ╎  End
-   ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
-   ╎  type=lsearch key="xxx.domain1" opts=NULL
-   ╎cached data used for lookup of xxx.domain1
-   ╎  in TESTSUITE/aux-fixed/0464.domains
-   ╎lookup failed
-   xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
-  end sublist special_domains
-xxx.domain1 in domains? no (end of list)
-r1 router skipped: domains mismatch
---------> r2 router <--------
-local_part=abc domain=xxx.domain1
-calling r2 router
-r2 router called for abc@xxx.domain1
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing abc@xxx.domain1
+ --------> r1 router <--------
+  local_part=abc domain=xxx.domain1
+  checking domains
+  xxx.domain1 in domains?
+   list element: +special_domains
+    start sublist special_domains
+   ╎ xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
+   ╎  list element: lsearch;TESTSUITE/aux-fixed/0464.domains
+   ╎  search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
+   ╎    cached open
+   ╎  search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎    key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎  LRU list:
+   ╎    0TESTSUITE/aux-fixed/0464.domains
+   ╎    End
+   ╎  internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎    type=lsearch key="xxx.domain1" opts=NULL
+   ╎  cached data used for lookup of xxx.domain1
+   ╎    in TESTSUITE/aux-fixed/0464.domains
+   ╎  lookup failed
+   ╎ xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
+    end sublist special_domains
+  xxx.domain1 in domains? no (end of list)
+  r1 router skipped: domains mismatch
+ --------> r2 router <--------
+  local_part=abc domain=xxx.domain1
+  calling r2 router
+  r2 router called for abc@xxx.domain1
+    domain = xxx.domain1
+  queued for smtp transport: local_part = abc
   domain = xxx.domain1
-queued for smtp transport: local_part = abc
-domain = xxx.domain1
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
-routed by r2 router
-  envelope to:	abc@xxx.domain1
-  transport:	smtp
------------ end verify ------------
+    errors_to=NULL
+    domain_data=NULL local_part_data=NULL
+ routed by r2 router
+   envelope to:	abc@xxx.domain1
+   transport:	smtp
+ ----------- end verify ------------
 require: condition test succeeded in ACL rcpt
 processing ACL rcpt "accept" (TESTSUITE/test-config 25)
 accept: condition test succeeded in ACL rcpt

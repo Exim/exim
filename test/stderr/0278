@@ -17,75 +17,75 @@ Considering CALLER@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@test.ex
 --------> r1 router <--------
-local_part=CALLER domain=test.ex
-checking local_parts
-CALLER in local_parts?
- list element: +never_localparts
-  start sublist never_localparts
-   CALLER in "never"?
-   ╎list element: never
-   CALLER in "never"? no (end of list)
-  end sublist never_localparts
- list element: +n1_localparts
-  start sublist n1_localparts
-   CALLER in "never1"?
-   ╎list element: never1
-   CALLER in "never1"? no (end of list)
-  end sublist n1_localparts
- list element: !░+local_localparts
-  start sublist local_localparts
-   CALLER in "CALLER"?
-   ╎list element: CALLER
-   ╎CALLER in "CALLER"? yes (matched "CALLER")
-  end sublist local_localparts
- data from lookup saved for cache for +local_localparts: key 'CALLER' value 'CALLER'
- CALLER in local_parts? no (matched "! +local_localparts")
-r1 router skipped: local_parts mismatch
+ local_part=CALLER domain=test.ex
+ checking local_parts
+ CALLER in local_parts?
+  list element: +never_localparts
+   start sublist never_localparts
+   ╎CALLER in "never"?
+   ╎ list element: never
+   ╎CALLER in "never"? no (end of list)
+   end sublist never_localparts
+  list element: +n1_localparts
+   start sublist n1_localparts
+   ╎CALLER in "never1"?
+   ╎ list element: never1
+   ╎CALLER in "never1"? no (end of list)
+   end sublist n1_localparts
+  list element: !░+local_localparts
+   start sublist local_localparts
+   ╎CALLER in "CALLER"?
+   ╎ list element: CALLER
+   ╎ CALLER in "CALLER"? yes (matched "CALLER")
+   end sublist local_localparts
+  data from lookup saved for cache for +local_localparts: key 'CALLER' value 'CALLER'
+  CALLER in local_parts? no (matched "! +local_localparts")
+ r1 router skipped: local_parts mismatch
 --------> r2 router <--------
-local_part=CALLER domain=test.ex
-checking local_parts
-CALLER in local_parts?
- list element: +never_localparts
-  start sublist never_localparts
- cached no match for +never_localparts
- cached lookup data = NULL
- list element: +n2_localparts
-  start sublist n2_localparts
-   list separator: ';'
-   CALLER in " never2 ; +n1_localparts"?
-   ╎list element: never2
-   ╎list element: +n1_localparts
-   ╎ start sublist n1_localparts
-   ╎cached no match for +n1_localparts
-   ╎cached lookup data = NULL
-   CALLER in " never2 ; +n1_localparts"? no (end of list)
-  end sublist n2_localparts
- list element: !+local_localparts
-  start sublist local_localparts
- cached yes match for +local_localparts
- cached lookup data = CALLER
- CALLER in local_parts? no (matched "!+local_localparts" - cached)
-r2 router skipped: local_parts mismatch
+ local_part=CALLER domain=test.ex
+ checking local_parts
+ CALLER in local_parts?
+  list element: +never_localparts
+   start sublist never_localparts
+  cached no match for +never_localparts
+  cached lookup data = NULL
+  list element: +n2_localparts
+   start sublist n2_localparts
+   ╎list separator: ';'
+   ╎CALLER in " never2 ; +n1_localparts"?
+   ╎ list element: never2
+   ╎ list element: +n1_localparts
+   ╎  start sublist n1_localparts
+   ╎ cached no match for +n1_localparts
+   ╎ cached lookup data = NULL
+   ╎CALLER in " never2 ; +n1_localparts"? no (end of list)
+   end sublist n2_localparts
+  list element: !+local_localparts
+   start sublist local_localparts
+  cached yes match for +local_localparts
+  cached lookup data = CALLER
+  CALLER in local_parts? no (matched "!+local_localparts" - cached)
+ r2 router skipped: local_parts mismatch
 --------> r3 router <--------
-local_part=CALLER domain=test.ex
-checking local_parts
-CALLER in local_parts?
- list element: +local_localparts
-  start sublist local_localparts
- cached yes match for +local_localparts
- cached lookup data = CALLER
- CALLER in local_parts? yes (matched "+local_localparts" - cached)
-checking for local user
-seeking password data for user "CALLER": using cached result
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-calling r3 router
-r3 router called for CALLER@test.ex
-  domain = test.ex
-set transport t1
-queued for t1 transport: local_part = CALLER
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=CALLER
+ local_part=CALLER domain=test.ex
+ checking local_parts
+ CALLER in local_parts?
+  list element: +local_localparts
+   start sublist local_localparts
+  cached yes match for +local_localparts
+  cached lookup data = CALLER
+  CALLER in local_parts? yes (matched "+local_localparts" - cached)
+ checking for local user
+ seeking password data for user "CALLER": using cached result
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+ calling r3 router
+ r3 router called for CALLER@test.ex
+   domain = test.ex
+ set transport t1
+ queued for t1 transport: local_part = CALLER
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=CALLER
 routed by r3 router
   envelope to:	CALLER@test.ex
   transport:	t1
@@ -177,75 +177,75 @@ CALLER@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@test.ex
 --------> r1 router <--------
-local_part=CALLER domain=test.ex
-checking local_parts
-CALLER in local_parts?
- list element: +never_localparts
-  start sublist never_localparts
-   CALLER in "never"?
-   ╎list element: never
-   CALLER in "never"? no (end of list)
-  end sublist never_localparts
- list element: +n1_localparts
-  start sublist n1_localparts
-   CALLER in "never1"?
-   ╎list element: never1
-   CALLER in "never1"? no (end of list)
-  end sublist n1_localparts
- list element: !░+local_localparts
-  start sublist local_localparts
-   CALLER in "CALLER"?
-   ╎list element: CALLER
-   ╎CALLER in "CALLER"? yes (matched "CALLER")
-  end sublist local_localparts
- data from lookup saved for cache for +local_localparts: key 'CALLER' value 'CALLER'
- CALLER in local_parts? no (matched "! +local_localparts")
-r1 router skipped: local_parts mismatch
+ local_part=CALLER domain=test.ex
+ checking local_parts
+ CALLER in local_parts?
+  list element: +never_localparts
+   start sublist never_localparts
+   ╎CALLER in "never"?
+   ╎ list element: never
+   ╎CALLER in "never"? no (end of list)
+   end sublist never_localparts
+  list element: +n1_localparts
+   start sublist n1_localparts
+   ╎CALLER in "never1"?
+   ╎ list element: never1
+   ╎CALLER in "never1"? no (end of list)
+   end sublist n1_localparts
+  list element: !░+local_localparts
+   start sublist local_localparts
+   ╎CALLER in "CALLER"?
+   ╎ list element: CALLER
+   ╎ CALLER in "CALLER"? yes (matched "CALLER")
+   end sublist local_localparts
+  data from lookup saved for cache for +local_localparts: key 'CALLER' value 'CALLER'
+  CALLER in local_parts? no (matched "! +local_localparts")
+ r1 router skipped: local_parts mismatch
 --------> r2 router <--------
-local_part=CALLER domain=test.ex
-checking local_parts
-CALLER in local_parts?
- list element: +never_localparts
-  start sublist never_localparts
- cached no match for +never_localparts
- cached lookup data = NULL
- list element: +n2_localparts
-  start sublist n2_localparts
-   list separator: ';'
-   CALLER in " never2 ; +n1_localparts"?
-   ╎list element: never2
-   ╎list element: +n1_localparts
-   ╎ start sublist n1_localparts
-   ╎cached no match for +n1_localparts
-   ╎cached lookup data = NULL
-   CALLER in " never2 ; +n1_localparts"? no (end of list)
-  end sublist n2_localparts
- list element: !+local_localparts
-  start sublist local_localparts
- cached yes match for +local_localparts
- cached lookup data = CALLER
- CALLER in local_parts? no (matched "!+local_localparts" - cached)
-r2 router skipped: local_parts mismatch
+ local_part=CALLER domain=test.ex
+ checking local_parts
+ CALLER in local_parts?
+  list element: +never_localparts
+   start sublist never_localparts
+  cached no match for +never_localparts
+  cached lookup data = NULL
+  list element: +n2_localparts
+   start sublist n2_localparts
+   ╎list separator: ';'
+   ╎CALLER in " never2 ; +n1_localparts"?
+   ╎ list element: never2
+   ╎ list element: +n1_localparts
+   ╎  start sublist n1_localparts
+   ╎ cached no match for +n1_localparts
+   ╎ cached lookup data = NULL
+   ╎CALLER in " never2 ; +n1_localparts"? no (end of list)
+   end sublist n2_localparts
+  list element: !+local_localparts
+   start sublist local_localparts
+  cached yes match for +local_localparts
+  cached lookup data = CALLER
+  CALLER in local_parts? no (matched "!+local_localparts" - cached)
+ r2 router skipped: local_parts mismatch
 --------> r3 router <--------
-local_part=CALLER domain=test.ex
-checking local_parts
-CALLER in local_parts?
- list element: +local_localparts
-  start sublist local_localparts
- cached yes match for +local_localparts
- cached lookup data = CALLER
- CALLER in local_parts? yes (matched "+local_localparts" - cached)
-checking for local user
-seeking password data for user "CALLER": using cached result
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-calling r3 router
-r3 router called for CALLER@test.ex
-  domain = test.ex
-set transport t1
-queued for t1 transport: local_part = CALLER
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=CALLER
+ local_part=CALLER domain=test.ex
+ checking local_parts
+ CALLER in local_parts?
+  list element: +local_localparts
+   start sublist local_localparts
+  cached yes match for +local_localparts
+  cached lookup data = CALLER
+  CALLER in local_parts? yes (matched "+local_localparts" - cached)
+ checking for local user
+ seeking password data for user "CALLER": using cached result
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+ calling r3 router
+ r3 router called for CALLER@test.ex
+   domain = test.ex
+ set transport t1
+ queued for t1 transport: local_part = CALLER
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=CALLER
 routed by r3 router
   envelope to:	CALLER@test.ex
   transport:	t1
@@ -325,134 +325,134 @@ Considering unknown@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing unknown@test.ex
 --------> r1 router <--------
-local_part=unknown domain=test.ex
-checking local_parts
-unknown in local_parts?
- list element: +never_localparts
-  start sublist never_localparts
-   unknown in "never"?
-   ╎list element: never
-   unknown in "never"? no (end of list)
-  end sublist never_localparts
- list element: +n1_localparts
-  start sublist n1_localparts
-   unknown in "never1"?
-   ╎list element: never1
-   unknown in "never1"? no (end of list)
-  end sublist n1_localparts
- list element: !░+local_localparts
-  start sublist local_localparts
-   unknown in "CALLER"?
-   ╎list element: CALLER
-   unknown in "CALLER"? no (end of list)
-  end sublist local_localparts
-unknown in local_parts? yes (end of list)
-calling r1 router
-r1 router called for unknown@test.ex
-  domain = test.ex
+ local_part=unknown domain=test.ex
+ checking local_parts
+ unknown in local_parts?
+  list element: +never_localparts
+   start sublist never_localparts
+   ╎unknown in "never"?
+   ╎ list element: never
+   ╎unknown in "never"? no (end of list)
+   end sublist never_localparts
+  list element: +n1_localparts
+   start sublist n1_localparts
+   ╎unknown in "never1"?
+   ╎ list element: never1
+   ╎unknown in "never1"? no (end of list)
+   end sublist n1_localparts
+  list element: !░+local_localparts
+   start sublist local_localparts
+   ╎unknown in "CALLER"?
+   ╎ list element: CALLER
+   ╎unknown in "CALLER"? no (end of list)
+   end sublist local_localparts
+ unknown in local_parts? yes (end of list)
+ calling r1 router
+ r1 router called for unknown@test.ex
+   domain = test.ex
 route_item = never
-test.ex in "never"?
- list element: never
-test.ex in "never"? no (end of list)
-r1 router declined for unknown@test.ex
+ test.ex in "never"?
+  list element: never
+ test.ex in "never"? no (end of list)
+ r1 router declined for unknown@test.ex
 --------> r2 router <--------
-local_part=unknown domain=test.ex
-checking local_parts
-unknown in local_parts?
- list element: +never_localparts
-  start sublist never_localparts
- cached no match for +never_localparts
- cached lookup data = NULL
- list element: +n2_localparts
-  start sublist n2_localparts
-   list separator: ';'
-   unknown in " never2 ; +n1_localparts"?
-   ╎list element: never2
-   ╎list element: +n1_localparts
-   ╎ start sublist n1_localparts
-   ╎cached no match for +n1_localparts
-   ╎cached lookup data = NULL
-   unknown in " never2 ; +n1_localparts"? no (end of list)
-  end sublist n2_localparts
- list element: !+local_localparts
-  start sublist local_localparts
- cached no match for +local_localparts
- cached lookup data = NULL
-unknown in local_parts? yes (end of list)
-calling r2 router
-r2 router called for unknown@test.ex
-  domain = test.ex
-main lookup for domain
- check dnssec require list
-  test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.ex in dnssec_request_domains?
-   list element: *
-   test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.ex (MX) using fakens
- DNS lookup of test.ex (MX) gave NO_DATA
- returning DNS_NODATA
- faking res_search(MX) response length as 65535
-  writing neg-cache entry for test.ex-MX-xxxx, ttl 3000
- test.ex (MX resp) DNSSEC
- DNS lookup of test.ex (A) using fakens
- DNS lookup of test.ex (A) gave NO_DATA
- returning DNS_NODATA
- faking res_search(A) response length as 65535
-  writing neg-cache entry for test.ex-A-xxxx, ttl 3000
-r2 router declined for unknown@test.ex
+ local_part=unknown domain=test.ex
+ checking local_parts
+ unknown in local_parts?
+  list element: +never_localparts
+   start sublist never_localparts
+  cached no match for +never_localparts
+  cached lookup data = NULL
+  list element: +n2_localparts
+   start sublist n2_localparts
+   ╎list separator: ';'
+   ╎unknown in " never2 ; +n1_localparts"?
+   ╎ list element: never2
+   ╎ list element: +n1_localparts
+   ╎  start sublist n1_localparts
+   ╎ cached no match for +n1_localparts
+   ╎ cached lookup data = NULL
+   ╎unknown in " never2 ; +n1_localparts"? no (end of list)
+   end sublist n2_localparts
+  list element: !+local_localparts
+   start sublist local_localparts
+  cached no match for +local_localparts
+  cached lookup data = NULL
+ unknown in local_parts? yes (end of list)
+ calling r2 router
+ r2 router called for unknown@test.ex
+   domain = test.ex
+ main lookup for domain
+  check dnssec require list
+   test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.ex (MX) using fakens
+  DNS lookup of test.ex (MX) gave NO_DATA
+  returning DNS_NODATA
+  faking res_search(MX) response length as 65535
+   writing neg-cache entry for test.ex-MX-xxxx, ttl 3000
+  test.ex (MX resp) DNSSEC
+  DNS lookup of test.ex (A) using fakens
+  DNS lookup of test.ex (A) gave NO_DATA
+  returning DNS_NODATA
+  faking res_search(A) response length as 65535
+   writing neg-cache entry for test.ex-A-xxxx, ttl 3000
+ r2 router declined for unknown@test.ex
 --------> r3 router <--------
-local_part=unknown domain=test.ex
-checking local_parts
-unknown in local_parts?
- list element: +local_localparts
-  start sublist local_localparts
- cached no match for +local_localparts
- cached lookup data = NULL
-unknown in local_parts? no (end of list)
-r3 router skipped: local_parts mismatch
+ local_part=unknown domain=test.ex
+ checking local_parts
+ unknown in local_parts?
+  list element: +local_localparts
+   start sublist local_localparts
+  cached no match for +local_localparts
+  cached lookup data = NULL
+ unknown in local_parts? no (end of list)
+ r3 router skipped: local_parts mismatch
 --------> r4 router <--------
-local_part=unknown domain=test.ex
-checking local_parts
-unknown in local_parts?
- list element: +local_localparts
-  start sublist local_localparts
- cached no match for +local_localparts
- cached lookup data = NULL
- list element: +expanded
-  start sublist expanded
-   unknown in "test.ex"?
-   ╎list element: test.ex
-   unknown in "test.ex"? no (end of list)
-  end sublist expanded
- list element: +unexpanded
-  start sublist unexpanded
-   unknown in "unexpanded"?
-   ╎list element: unexpanded
-   unknown in "unexpanded"? no (end of list)
-  end sublist unexpanded
-unknown in local_parts? no (end of list)
-r4 router skipped: local_parts mismatch
+ local_part=unknown domain=test.ex
+ checking local_parts
+ unknown in local_parts?
+  list element: +local_localparts
+   start sublist local_localparts
+  cached no match for +local_localparts
+  cached lookup data = NULL
+  list element: +expanded
+   start sublist expanded
+   ╎unknown in "test.ex"?
+   ╎ list element: test.ex
+   ╎unknown in "test.ex"? no (end of list)
+   end sublist expanded
+  list element: +unexpanded
+   start sublist unexpanded
+   ╎unknown in "unexpanded"?
+   ╎ list element: unexpanded
+   ╎unknown in "unexpanded"? no (end of list)
+   end sublist unexpanded
+ unknown in local_parts? no (end of list)
+ r4 router skipped: local_parts mismatch
 --------> r5 router <--------
-local_part=unknown domain=test.ex
-checking local_parts
-unknown in local_parts?
- list element: +local_localparts
-  start sublist local_localparts
- cached no match for +local_localparts
- cached lookup data = NULL
- list element: +expanded
-  start sublist expanded
-   unknown in "test.ex"?
-   ╎list element: test.ex
-   unknown in "test.ex"? no (end of list)
-  end sublist expanded
- list element: +unexpanded
-  start sublist unexpanded
- cached no match for +unexpanded
- cached lookup data = NULL
-unknown in local_parts? no (end of list)
-r5 router skipped: local_parts mismatch
+ local_part=unknown domain=test.ex
+ checking local_parts
+ unknown in local_parts?
+  list element: +local_localparts
+   start sublist local_localparts
+  cached no match for +local_localparts
+  cached lookup data = NULL
+  list element: +expanded
+   start sublist expanded
+   ╎unknown in "test.ex"?
+   ╎ list element: test.ex
+   ╎unknown in "test.ex"? no (end of list)
+   end sublist expanded
+  list element: +unexpanded
+   start sublist unexpanded
+  cached no match for +unexpanded
+  cached lookup data = NULL
+ unknown in local_parts? no (end of list)
+ r5 router skipped: local_parts mismatch
 no more routers
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

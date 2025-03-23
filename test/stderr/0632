@@ -80,7 +80,7 @@ p1235   compiled RE 'static_RE' not found in local cache
 p1235   compiling RE 'static_RE'
 p1235   compiled RE 'static_RE' saved in local cache
 p1235   sending RE 'static_RE' to daemon
-p1235 try option notifier_socket
+p1235   try option notifier_socket
 p1235    ╭considering: $spool_directory/exim_daemon_notify
 p1235    ├──────value: TESTSUITE/spool
 p1235    ├considering: /exim_daemon_notify
@@ -109,7 +109,7 @@ p1235   compiled RE 'tricky_static_RE$' not found in local cache
 p1235   compiling RE 'tricky_static_RE$'
 p1235   compiled RE 'tricky_static_RE$' saved in local cache
 p1235   sending RE 'tricky_static_RE$' to daemon
-p1235 try option notifier_socket
+p1235   try option notifier_socket
 p1235    ╭considering: $spool_directory/exim_daemon_notify
 p1235    ├──────value: TESTSUITE/spool
 p1235    ├considering: /exim_daemon_notify

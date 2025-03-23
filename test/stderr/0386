@@ -72,23 +72,23 @@ check acl = TESTSUITE/aux-fixed/0386.acl1
 Verifying x@y
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering x@y
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing x@y
---------> r1 router <--------
-local_part=x domain=y
-calling r1 router
-r1 router called for x@y
-  domain = y
-set transport t1
-queued for t1 transport: local_part = x
-domain = y
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
-routed by r1 router
-  envelope to:	x@y
-  transport:	t1
- ----------- end verify ------------
- sender x@y verified ok
+  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  routing x@y
+  --------> r1 router <--------
+   local_part=x domain=y
+   calling r1 router
+   r1 router called for x@y
+     domain = y
+   set transport t1
+   queued for t1 transport: local_part = x
+   domain = y
+     errors_to=NULL
+     domain_data=NULL local_part_data=NULL
+  routed by r1 router
+    envelope to:	x@y
+    transport:	t1
+  ----------- end verify ------------
+  sender x@y verified ok
  require: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl1
  processing ACL TESTSUITE/aux-fixed/0386.acl1 "deny" (TESTSUITE/test-config 18)
    message: No such user here
@@ -135,22 +135,22 @@ check acl = TESTSUITE/aux-fixed/0386.acl1
 Verifying x@y
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering x@y
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing x@y
---------> r1 router <--------
-local_part=x domain=y
-calling r1 router
-r1 router called for x@y
-  domain = y
-queued for t1 transport: local_part = x
-domain = y
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
-routed by r1 router
-  envelope to:	x@y
-  transport:	t1
- ----------- end verify ------------
- sender x@y verified ok
+  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  routing x@y
+  --------> r1 router <--------
+   local_part=x domain=y
+   calling r1 router
+   r1 router called for x@y
+     domain = y
+   queued for t1 transport: local_part = x
+   domain = y
+     errors_to=NULL
+     domain_data=NULL local_part_data=NULL
+  routed by r1 router
+    envelope to:	x@y
+    transport:	t1
+  ----------- end verify ------------
+  sender x@y verified ok
  require: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl1
  processing ACL TESTSUITE/aux-fixed/0386.acl1 "deny" (TESTSUITE/test-config 18)
    message: No such user here
@@ -324,15 +324,15 @@ checking router retry status
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing 2@b
 --------> r1 router <--------
-local_part=2 domain=b
-calling r1 router
-r1 router called for 2@b
-  domain = b
-set transport t1
-queued for t1 transport: local_part = 2
-domain = b
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=2 domain=b
+ calling r1 router
+ r1 router called for 2@b
+   domain = b
+ set transport t1
+ queued for t1 transport: local_part = 2
+ domain = b
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	2@b
   transport:	t1
@@ -515,15 +515,15 @@ checking router retry status
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing 2@b
 --------> r1 router <--------
-local_part=2 domain=b
-calling r1 router
-r1 router called for 2@b
-  domain = b
-set transport t1
-queued for t1 transport: local_part = 2
-domain = b
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=2 domain=b
+ calling r1 router
+ r1 router called for 2@b
+   domain = b
+ set transport t1
+ queued for t1 transport: local_part = 2
+ domain = b
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	2@b
   transport:	t1

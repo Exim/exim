@@ -84,73 +84,73 @@ userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> r1 router <--------
-local_part=userx domain=test.ex
-checking domains
-  search_open: lsearch "TESTSUITE/aux-fixed/0403.accountfile"
-  search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
-    key="userx@test.ex" partial=-1 affix=NULL starflags=0 opts="ret=key"
+ local_part=userx domain=test.ex
+ checking domains
+   search_open: lsearch "TESTSUITE/aux-fixed/0403.accountfile"
+   search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
+     key="userx@test.ex" partial=-1 affix=NULL starflags=0 opts="ret=key"
+   LRU list:
+     0TESTSUITE/aux-fixed/0403.accountfile
+     End
+   internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
+     type=lsearch key="userx@test.ex" opts=NULL
+   file lookup required for userx@test.ex
+     in TESTSUITE/aux-fixed/0403.accountfile
+   creating new cache entry
+   lookup failed
+ test.ex in domains?
+ test.ex in domains? no (end of list)
+ r1 router skipped: domains mismatch
+--------> r2 router <--------
+ local_part=userx domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: lsearch;TESTSUITE/aux-fixed/0403.data
+  search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
+  search_find: file="TESTSUITE/aux-fixed/0403.data"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
+    0TESTSUITE/aux-fixed/0403.data
     0TESTSUITE/aux-fixed/0403.accountfile
     End
-  internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
-    type=lsearch key="userx@test.ex" opts=NULL
-  file lookup required for userx@test.ex
-    in TESTSUITE/aux-fixed/0403.accountfile
+  internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
+    type=lsearch key="test.ex" opts=NULL
+  file lookup required for test.ex
+    in TESTSUITE/aux-fixed/0403.data
   creating new cache entry
-  lookup failed
-test.ex in domains?
-test.ex in domains? no (end of list)
-r1 router skipped: domains mismatch
---------> r2 router <--------
-local_part=userx domain=test.ex
-checking domains
-test.ex in domains?
- list element: lsearch;TESTSUITE/aux-fixed/0403.data
- search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
- search_find: file="TESTSUITE/aux-fixed/0403.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0403.data
-   0TESTSUITE/aux-fixed/0403.accountfile
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
-   type=lsearch key="test.ex" opts=NULL
- file lookup required for test.ex
-   in TESTSUITE/aux-fixed/0403.data
- creating new cache entry
- lookup yielded: [DOMAINDATA_test.ex]
- test.ex in domains? yes (matched "lsearch;TESTSUITE/aux-fixed/0403.data")
-checking local_parts
-userx in local_parts?
- list element: lsearch;TESTSUITE/aux-fixed/0403.data
- search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
-   cached open
- search_find: file="TESTSUITE/aux-fixed/0403.data"
-   key="userx" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
-   0TESTSUITE/aux-fixed/0403.data
-   0TESTSUITE/aux-fixed/0403.accountfile
-   End
- internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
-   type=lsearch key="userx" opts=NULL
- file lookup required for userx
-   in TESTSUITE/aux-fixed/0403.data
- creating new cache entry
- lookup yielded: [LOCALPARTDATA_userx]
- userx in local_parts? yes (matched "lsearch;TESTSUITE/aux-fixed/0403.data")
+  lookup yielded: [DOMAINDATA_test.ex]
+  test.ex in domains? yes (matched "lsearch;TESTSUITE/aux-fixed/0403.data")
+ checking local_parts
+ userx in local_parts?
+  list element: lsearch;TESTSUITE/aux-fixed/0403.data
+  search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
+    cached open
+  search_find: file="TESTSUITE/aux-fixed/0403.data"
+    key="userx" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+    0TESTSUITE/aux-fixed/0403.data
+    0TESTSUITE/aux-fixed/0403.accountfile
+    End
+  internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
+    type=lsearch key="userx" opts=NULL
+  file lookup required for userx
+    in TESTSUITE/aux-fixed/0403.data
+  creating new cache entry
+  lookup yielded: [LOCALPARTDATA_userx]
+  userx in local_parts? yes (matched "lsearch;TESTSUITE/aux-fixed/0403.data")
 +++ROUTER:
 +++domain_data=[DOMAINDATA_test.ex]
 +++local_part_data=[LOCALPARTDATA_userx]
 +++address_data=
 +++home=/usr
-processing address_data
-calling r2 router
+ processing address_data
+ calling r2 router
 rda_interpret (string): 'TESTSUITE/test-mail/junk'
 expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
-set transport t1
+ set transport t1
 r2 router generated TESTSUITE/test-mail/junk
   pipe, file, or autoreply
   errors_to=NULL transport=t1
@@ -315,51 +315,51 @@ charlie@dom1.ain: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing charlie@dom1.ain
 --------> r1 router <--------
-local_part=charlie domain=dom1.ain
-checking domains
-  search_open: lsearch "TESTSUITE/aux-fixed/0403.accountfile"
-  search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
-    key="charlie@dom1.ain" partial=-1 affix=NULL starflags=0 opts="ret=key"
-  LRU list:
-    0TESTSUITE/aux-fixed/0403.accountfile
-    End
-  internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
-    type=lsearch key="charlie@dom1.ain" opts=NULL
-  file lookup required for charlie@dom1.ain
-    in TESTSUITE/aux-fixed/0403.accountfile
-  creating new cache entry
-  lookup yielded: 
-  lookup yield replace by key: charlie@dom1.ain
-dom1.ain in domains?
- list element: dom1.ain
- dom1.ain in domains? yes (matched "dom1.ain")
-checking local_parts
-  search_open: lsearch "TESTSUITE/aux-fixed/0403.accountfile"
-    cached open
-  search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
-    key="charlie@dom1.ain" partial=-1 affix=NULL starflags=0 opts="ret=key"
-  LRU list:
-    0TESTSUITE/aux-fixed/0403.accountfile
-    End
-  internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
-    type=lsearch key="charlie@dom1.ain" opts=NULL
-  cached data used for lookup of charlie@dom1.ain
-    in TESTSUITE/aux-fixed/0403.accountfile
-  lookup yielded: 
-  lookup yield replace by key: charlie@dom1.ain
-charlie in local_parts?
- list element: charlie
- charlie in local_parts? yes (matched "charlie")
+ local_part=charlie domain=dom1.ain
+ checking domains
+   search_open: lsearch "TESTSUITE/aux-fixed/0403.accountfile"
+   search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
+     key="charlie@dom1.ain" partial=-1 affix=NULL starflags=0 opts="ret=key"
+   LRU list:
+     0TESTSUITE/aux-fixed/0403.accountfile
+     End
+   internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
+     type=lsearch key="charlie@dom1.ain" opts=NULL
+   file lookup required for charlie@dom1.ain
+     in TESTSUITE/aux-fixed/0403.accountfile
+   creating new cache entry
+   lookup yielded: 
+   lookup yield replace by key: charlie@dom1.ain
+ dom1.ain in domains?
+  list element: dom1.ain
+  dom1.ain in domains? yes (matched "dom1.ain")
+ checking local_parts
+   search_open: lsearch "TESTSUITE/aux-fixed/0403.accountfile"
+     cached open
+   search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
+     key="charlie@dom1.ain" partial=-1 affix=NULL starflags=0 opts="ret=key"
+   LRU list:
+     0TESTSUITE/aux-fixed/0403.accountfile
+     End
+   internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
+     type=lsearch key="charlie@dom1.ain" opts=NULL
+   cached data used for lookup of charlie@dom1.ain
+     in TESTSUITE/aux-fixed/0403.accountfile
+   lookup yielded: 
+   lookup yield replace by key: charlie@dom1.ain
+ charlie in local_parts?
+  list element: charlie
+  charlie in local_parts? yes (matched "charlie")
 +++ROUTER:
 +++domain_data=dom1.ain
 +++local_part_data=charlie
-calling r1 router
+ calling r1 router
 rda_interpret (string): 'TESTSUITE/test-mail/junk'
 expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
-set transport t1
+ set transport t1
 r1 router generated TESTSUITE/test-mail/junk
   pipe, file, or autoreply
   errors_to=NULL transport=t1

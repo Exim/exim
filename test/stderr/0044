@@ -318,17 +318,17 @@ check verify = sender
 Verifying postmaster@exim.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering postmaster@exim.test.ex
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing postmaster@exim.test.ex
---------> localuser router <--------
-local_part=postmaster domain=exim.test.ex
-checking local_parts
-postmaster in local_parts?
- list element: userx
-postmaster in local_parts? no (end of list)
-localuser router skipped: local_parts mismatch
-no more routers
------------ end verify ------------
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing postmaster@exim.test.ex
+ --------> localuser router <--------
+  local_part=postmaster domain=exim.test.ex
+  checking local_parts
+  postmaster in local_parts?
+   list element: userx
+  postmaster in local_parts? no (end of list)
+  localuser router skipped: local_parts mismatch
+ no more routers
+ ----------- end verify ------------
 require: condition test failed in ACL check_recipient
 end of ACL check_recipient: not OK
 LOG: MAIN REJECT

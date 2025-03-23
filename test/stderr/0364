@@ -6,10 +6,10 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing kilos@thishost
 --------> r1 router <--------
-local_part=kilos domain=thishost
-checking domains
-processing address_data
-calling r1 router
+ local_part=kilos domain=thishost
+ checking domains
+ processing address_data
+ calling r1 router
 rda_interpret (string): '$local_part@$domain.test.ex'
 expanded: 'kilos@thishost.test.ex' (tainted)
 file is not a filter file
@@ -24,37 +24,37 @@ routed by r1 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing kilos@thishost.test.ex
 --------> r2 router <--------
-local_part=kilos domain=thishost.test.ex
-checking domains
-r2 router skipped: domains mismatch
+ local_part=kilos domain=thishost.test.ex
+ checking domains
+ r2 router skipped: domains mismatch
 --------> r3 router <--------
-local_part=kilos domain=thishost.test.ex
-checking domains
-r3 router skipped: domains mismatch
+ local_part=kilos domain=thishost.test.ex
+ checking domains
+ r3 router skipped: domains mismatch
 --------> r4 router <--------
-local_part=kilos domain=thishost.test.ex
-checking domains
-r4 router skipped: domains mismatch
+ local_part=kilos domain=thishost.test.ex
+ checking domains
+ r4 router skipped: domains mismatch
 --------> r5 router <--------
-local_part=kilos domain=thishost.test.ex
-calling r5 router
-r5 router called for kilos@thishost.test.ex
-  domain = thishost.test.ex
-set transport t2
-queued for t2 transport: local_part = kilos
-domain = thishost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=kilos domain=thishost.test.ex
+ calling r5 router
+ r5 router called for kilos@thishost.test.ex
+   domain = thishost.test.ex
+ set transport t2
+ queued for t2 transport: local_part = kilos
+ domain = thishost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r5 router
   envelope to:	kilos@thishost.test.ex
   transport:	t2
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing solik@otherhost
 --------> r1 router <--------
-local_part=solik domain=otherhost
-checking domains
-processing address_data
-calling r1 router
+ local_part=solik domain=otherhost
+ checking domains
+ processing address_data
+ calling r1 router
 rda_interpret (string): '$local_part@$domain.test.ex'
 expanded: 'solik@otherhost.test.ex' (tainted)
 file is not a filter file
@@ -69,21 +69,21 @@ routed by r1 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing solik@otherhost.test.ex
 --------> r2 router <--------
-local_part=solik domain=otherhost.test.ex
-checking domains
-otherhost.test.ex in domains? yes (end of list)
-calling r2 router
-r2 router called for solik@otherhost.test.ex
-  domain = otherhost.test.ex
-main lookup for domain
-r2 router declined for solik@otherhost.test.ex
+ local_part=solik domain=otherhost.test.ex
+ checking domains
+ otherhost.test.ex in domains? yes (end of list)
+ calling r2 router
+ r2 router called for solik@otherhost.test.ex
+   domain = otherhost.test.ex
+ main lookup for domain
+ r2 router declined for solik@otherhost.test.ex
 --------> r3 router <--------
-local_part=solik domain=otherhost.test.ex
-checking domains
-otherhost.test.ex in domains? yes (end of list)
-checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
-processing address_data
-calling r3 router
+ local_part=solik domain=otherhost.test.ex
+ checking domains
+ otherhost.test.ex in domains? yes (end of list)
+ checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
+ processing address_data
+ calling r3 router
 rda_interpret (string): '$local_part@$original_domain.sub.test.ex'
 expanded: 'solik@otherhost.sub.test.ex' (tainted)
 file is not a filter file
@@ -98,38 +98,38 @@ routed by r3 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing solik@otherhost.sub.test.ex
 --------> r2 router <--------
-local_part=solik domain=otherhost.sub.test.ex
-checking domains
-otherhost.sub.test.ex in domains? yes (end of list)
-calling r2 router
-r2 router called for solik@otherhost.sub.test.ex
-  domain = otherhost.sub.test.ex
-main lookup for domain
-r2 router declined for solik@otherhost.sub.test.ex
+ local_part=solik domain=otherhost.sub.test.ex
+ checking domains
+ otherhost.sub.test.ex in domains? yes (end of list)
+ calling r2 router
+ r2 router called for solik@otherhost.sub.test.ex
+   domain = otherhost.sub.test.ex
+ main lookup for domain
+ r2 router declined for solik@otherhost.sub.test.ex
 --------> r3 router <--------
-local_part=solik domain=otherhost.sub.test.ex
-checking domains
-otherhost.sub.test.ex in domains? yes (end of list)
-checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
-r3 router skipped: condition failure
+ local_part=solik domain=otherhost.sub.test.ex
+ checking domains
+ otherhost.sub.test.ex in domains? yes (end of list)
+ checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
+ r3 router skipped: condition failure
 --------> r4 router <--------
-local_part=solik domain=otherhost.sub.test.ex
-checking domains
-otherhost.sub.test.ex in domains? yes (end of list)
-calling r4 router
+ local_part=solik domain=otherhost.sub.test.ex
+ checking domains
+ otherhost.sub.test.ex in domains? yes (end of list)
+ calling r4 router
 rda_interpret (string): ':fail:Can't route to $domain'
 expanded: ':fail:Can't route to otherhost.sub.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: :fail:Can't route to otherhost.sub.test.ex
 extract item: :fail:Can't route to otherhost.sub.test.ex
-r4 router forced address failure
+ r4 router forced address failure
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@ten-1
 --------> r1 router <--------
-local_part=xxx domain=ten-1
-checking domains
-processing address_data
-calling r1 router
+ local_part=xxx domain=ten-1
+ checking domains
+ processing address_data
+ calling r1 router
 rda_interpret (string): '$local_part@$domain.test.ex'
 expanded: 'xxx@ten-1.test.ex' (tainted)
 file is not a filter file
@@ -144,18 +144,18 @@ routed by r1 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@ten-1.test.ex
 --------> r2 router <--------
-local_part=xxx domain=ten-1.test.ex
-checking domains
-ten-1.test.ex in domains? yes (end of list)
-calling r2 router
-r2 router called for xxx@ten-1.test.ex
-  domain = ten-1.test.ex
-main lookup for domain
-set transport t1
-queued for t1 transport: local_part = xxx
-domain = ten-1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xxx domain=ten-1.test.ex
+ checking domains
+ ten-1.test.ex in domains? yes (end of list)
+ calling r2 router
+ r2 router called for xxx@ten-1.test.ex
+   domain = ten-1.test.ex
+ main lookup for domain
+ set transport t1
+ queued for t1 transport: local_part = xxx
+ domain = ten-1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r2 router
   envelope to:	xxx@ten-1.test.ex
   transport:	t1
@@ -163,10 +163,10 @@ routed by r2 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@testsub
 --------> r1 router <--------
-local_part=xxx domain=testsub
-checking domains
-processing address_data
-calling r1 router
+ local_part=xxx domain=testsub
+ checking domains
+ processing address_data
+ calling r1 router
 rda_interpret (string): '$local_part@$domain.test.ex'
 expanded: 'xxx@testsub.test.ex' (tainted)
 file is not a filter file
@@ -181,21 +181,21 @@ routed by r1 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@testsub.test.ex
 --------> r2 router <--------
-local_part=xxx domain=testsub.test.ex
-checking domains
-testsub.test.ex in domains? yes (end of list)
-calling r2 router
-r2 router called for xxx@testsub.test.ex
-  domain = testsub.test.ex
-main lookup for domain
-r2 router declined for xxx@testsub.test.ex
+ local_part=xxx domain=testsub.test.ex
+ checking domains
+ testsub.test.ex in domains? yes (end of list)
+ calling r2 router
+ r2 router called for xxx@testsub.test.ex
+   domain = testsub.test.ex
+ main lookup for domain
+ r2 router declined for xxx@testsub.test.ex
 --------> r3 router <--------
-local_part=xxx domain=testsub.test.ex
-checking domains
-testsub.test.ex in domains? yes (end of list)
-checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
-processing address_data
-calling r3 router
+ local_part=xxx domain=testsub.test.ex
+ checking domains
+ testsub.test.ex in domains? yes (end of list)
+ checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
+ processing address_data
+ calling r3 router
 rda_interpret (string): '$local_part@$original_domain.sub.test.ex'
 expanded: 'xxx@testsub.sub.test.ex' (tainted)
 file is not a filter file
@@ -210,17 +210,17 @@ routed by r3 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@testsub.sub.test.ex
 --------> r2 router <--------
-local_part=xxx domain=testsub.sub.test.ex
-checking domains
-testsub.sub.test.ex in domains? yes (end of list)
-calling r2 router
-r2 router called for xxx@testsub.sub.test.ex
-  domain = testsub.sub.test.ex
-main lookup for domain
-queued for t1 transport: local_part = xxx
-domain = testsub.sub.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xxx domain=testsub.sub.test.ex
+ checking domains
+ testsub.sub.test.ex in domains? yes (end of list)
+ calling r2 router
+ r2 router called for xxx@testsub.sub.test.ex
+   domain = testsub.sub.test.ex
+ main lookup for domain
+ queued for t1 transport: local_part = xxx
+ domain = testsub.sub.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r2 router
   envelope to:	xxx@testsub.sub.test.ex
   transport:	t1

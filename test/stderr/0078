@@ -6,19 +6,19 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@mxt6.test.ex
 --------> lookuphost router <--------
-local_part=xx domain=mxt6.test.ex
-checking domains
-mxt6.test.ex in "test.ex : myhost.test.ex"? no (end of list)
-mxt6.test.ex in domains? yes (end of list)
-calling lookuphost router
-lookuphost router called for xx@mxt6.test.ex
-  domain = mxt6.test.ex
-main lookup for domain
-set transport remote_smtp
-queued for remote_smtp transport: local_part = xx
-domain = mxt6.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xx domain=mxt6.test.ex
+ checking domains
+ mxt6.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+ mxt6.test.ex in domains? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for xx@mxt6.test.ex
+   domain = mxt6.test.ex
+ main lookup for domain
+ set transport remote_smtp
+ queued for remote_smtp transport: local_part = xx
+ domain = mxt6.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	xx@mxt6.test.ex
   transport:	remote_smtp
@@ -32,34 +32,34 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing myhost.test.ex@mxt1.test.ex
 --------> lookuphost router <--------
-local_part=myhost.test.ex domain=mxt1.test.ex
-checking domains
-mxt1.test.ex in "test.ex : myhost.test.ex"? no (end of list)
-mxt1.test.ex in domains? yes (end of list)
-calling lookuphost router
-lookuphost router called for myhost.test.ex@mxt1.test.ex
-  domain = mxt1.test.ex
-main lookup for domain
+ local_part=myhost.test.ex domain=mxt1.test.ex
+ checking domains
+ mxt1.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+ mxt1.test.ex in domains? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for myhost.test.ex@mxt1.test.ex
+   domain = mxt1.test.ex
+ main lookup for domain
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
-lookuphost router passed for myhost.test.ex@mxt1.test.ex
+ lookuphost router passed for myhost.test.ex@mxt1.test.ex
 --------> self router <--------
-local_part=myhost.test.ex domain=mxt1.test.ex
-checking domains
-mxt1.test.ex in domains? yes (end of list)
+ local_part=myhost.test.ex domain=mxt1.test.ex
+ checking domains
+ mxt1.test.ex in domains? yes (end of list)
 self_hostname=eximtesthost.test.ex
-calling self router
-self router called for myhost.test.ex@mxt1.test.ex
-  domain = mxt1.test.ex
+ calling self router
+ self router called for myhost.test.ex@mxt1.test.ex
+   domain = mxt1.test.ex
 route_item = * $local_part byname
-original list of hosts = '$local_part' options = 'byname'
-expanded list of hosts = 'myhost.test.ex' options = 'byname'
-set transport remote_smtp
-finding IP address for myhost.test.ex
-calling host_find_byname
-queued for remote_smtp transport: local_part = myhost.test.ex
-domain = mxt1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ original list of hosts = '$local_part' options = 'byname'
+ expanded list of hosts = 'myhost.test.ex' options = 'byname'
+ set transport remote_smtp
+ finding IP address for myhost.test.ex
+ calling host_find_byname
+ queued for remote_smtp transport: local_part = myhost.test.ex
+ domain = mxt1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by self router
   envelope to:	myhost.test.ex@mxt1.test.ex
   transport:	remote_smtp
@@ -73,49 +73,49 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@mxt1.test.ex
 --------> lookuphost router <--------
-local_part=xx domain=mxt1.test.ex
-checking domains
-mxt1.test.ex in "test.ex : myhost.test.ex"? no (end of list)
-mxt1.test.ex in domains? yes (end of list)
-calling lookuphost router
-lookuphost router called for xx@mxt1.test.ex
-  domain = mxt1.test.ex
-main lookup for domain
+ local_part=xx domain=mxt1.test.ex
+ checking domains
+ mxt1.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+ mxt1.test.ex in domains? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for xx@mxt1.test.ex
+   domain = mxt1.test.ex
+ main lookup for domain
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
-lookuphost router passed for xx@mxt1.test.ex
+ lookuphost router passed for xx@mxt1.test.ex
 --------> self router <--------
-local_part=xx domain=mxt1.test.ex
-checking domains
-mxt1.test.ex in domains? yes (end of list)
+ local_part=xx domain=mxt1.test.ex
+ checking domains
+ mxt1.test.ex in domains? yes (end of list)
 self_hostname=eximtesthost.test.ex
-calling self router
-self router called for xx@mxt1.test.ex
-  domain = mxt1.test.ex
+ calling self router
+ self router called for xx@mxt1.test.ex
+   domain = mxt1.test.ex
 route_item = * $local_part byname
-original list of hosts = '$local_part' options = 'byname'
-expanded list of hosts = 'xx' options = 'byname'
-set transport remote_smtp
-finding IP address for xx
-calling host_find_byname
-self router passed for xx@mxt1.test.ex
+ original list of hosts = '$local_part' options = 'byname'
+ expanded list of hosts = 'xx' options = 'byname'
+ set transport remote_smtp
+ finding IP address for xx
+ calling host_find_byname
+ self router passed for xx@mxt1.test.ex
 --------> self2 router <--------
-local_part=xx domain=mxt1.test.ex
-checking domains
-mxt1.test.ex in domains? yes (end of list)
+ local_part=xx domain=mxt1.test.ex
+ checking domains
+ mxt1.test.ex in domains? yes (end of list)
 self_hostname=eximtesthost.test.ex
-calling self2 router
-self2 router called for xx@mxt1.test.ex
-  domain = mxt1.test.ex
+ calling self2 router
+ self2 router called for xx@mxt1.test.ex
+   domain = mxt1.test.ex
 route_item = * myhost.test.ex byname
-original list of hosts = 'myhost.test.ex' options = 'byname'
-expanded list of hosts = 'myhost.test.ex' options = 'byname'
-set transport remote_smtp
-finding IP address for myhost.test.ex
-calling host_find_byname
-queued for remote_smtp transport: local_part = xx
-domain = mxt1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ original list of hosts = 'myhost.test.ex' options = 'byname'
+ expanded list of hosts = 'myhost.test.ex' options = 'byname'
+ set transport remote_smtp
+ finding IP address for myhost.test.ex
+ calling host_find_byname
+ queued for remote_smtp transport: local_part = xx
+ domain = mxt1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by self2 router
   envelope to:	xx@mxt1.test.ex
   transport:	remote_smtp
@@ -129,15 +129,15 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@not-exist.test.ex
 --------> lookuphost router <--------
-local_part=xx domain=not-exist.test.ex
-checking domains
-not-exist.test.ex in "test.ex : myhost.test.ex"? no (end of list)
-not-exist.test.ex in domains? yes (end of list)
-calling lookuphost router
-lookuphost router called for xx@not-exist.test.ex
-  domain = not-exist.test.ex
-main lookup for domain
-lookuphost router declined for xx@not-exist.test.ex
-"more" is false: skipping remaining routers
+ local_part=xx domain=not-exist.test.ex
+ checking domains
+ not-exist.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+ not-exist.test.ex in domains? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for xx@not-exist.test.ex
+   domain = not-exist.test.ex
+ main lookup for domain
+ lookuphost router declined for xx@not-exist.test.ex
+ "more" is false: skipping remaining routers
 no more routers
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

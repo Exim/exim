@@ -40,19 +40,19 @@
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    test.ex in "test.ex : *.test.ex"?
->>>    ╎list element: test.ex
->>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>   end sublist local_domains
->>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
->>>  test.ex in domains? no (matched "! +local_domains")
->>> userx in local_parts?
->>>  list element: ^userx
->>>  userx in local_parts? yes (matched "^userx")
->>> calling localuser router
+>>>  test.ex in domains?
+>>>   list element: !░+local_domains
+>>>    start sublist local_domains
+>>>    ╎test.ex in "test.ex : *.test.ex"?
+>>>    ╎ list element: test.ex
+>>>    ╎ test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>    end sublist local_domains
+>>>   data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>   test.ex in domains? no (matched "! +local_domains")
+>>>  userx in local_parts?
+>>>   list element: ^userx
+>>>   userx in local_parts? yes (matched "^userx")
+>>>  calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
 >>> processing ACL check_expn "deny" (TESTSUITE/test-config 64)
@@ -73,18 +73,18 @@
 >>> end of ACL check_expn: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
->>> test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    test.ex in "test.ex : *.test.ex"?
->>>    ╎list element: test.ex
->>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>   end sublist local_domains
->>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
->>>  test.ex in domains? no (matched "! +local_domains")
->>> list in local_parts?
->>>  list element: ^userx
->>> list in local_parts? no (end of list)
+>>>  test.ex in domains?
+>>>   list element: !░+local_domains
+>>>    start sublist local_domains
+>>>    ╎test.ex in "test.ex : *.test.ex"?
+>>>    ╎ list element: test.ex
+>>>    ╎ test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>    end sublist local_domains
+>>>   data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>   test.ex in domains? no (matched "! +local_domains")
+>>>  list in local_parts?
+>>>   list element: ^userx
+>>>  list in local_parts? no (end of list)
 >>> no more routers
 LOG: ETRN #abcd received from (test) [10.0.0.2]
 >>> using ACL "check_etrn"
@@ -380,19 +380,19 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    test.ex in "test.ex : *.test.ex"?
->>>    ╎list element: test.ex
->>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>   end sublist local_domains
->>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
->>>  test.ex in domains? no (matched "! +local_domains")
->>> userx in local_parts?
->>>  list element: ^userx
->>>  userx in local_parts? yes (matched "^userx")
->>> calling localuser router
+>>>  test.ex in domains?
+>>>   list element: !░+local_domains
+>>>    start sublist local_domains
+>>>    ╎test.ex in "test.ex : *.test.ex"?
+>>>    ╎ list element: test.ex
+>>>    ╎ test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>    end sublist local_domains
+>>>   data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>   test.ex in domains? no (matched "! +local_domains")
+>>>  userx in local_parts?
+>>>   list element: ^userx
+>>>   userx in local_parts? yes (matched "^userx")
+>>>  calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
 >>> processing ACL check_expn "deny" (TESTSUITE/test-config 64)
@@ -418,18 +418,18 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> end of ACL check_expn: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
->>> test.ex in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    test.ex in "test.ex : *.test.ex"?
->>>    ╎list element: test.ex
->>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>   end sublist local_domains
->>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
->>>  test.ex in domains? no (matched "! +local_domains")
->>> list in local_parts?
->>>  list element: ^userx
->>> list in local_parts? no (end of list)
+>>>  test.ex in domains?
+>>>   list element: !░+local_domains
+>>>    start sublist local_domains
+>>>    ╎test.ex in "test.ex : *.test.ex"?
+>>>    ╎ list element: test.ex
+>>>    ╎ test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>    end sublist local_domains
+>>>   data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>   test.ex in domains? no (matched "! +local_domains")
+>>>  list in local_parts?
+>>>   list element: ^userx
+>>>  list in local_parts? no (end of list)
 >>> no more routers
 LOG: ETRN #abcd received from (test.host) [10.0.0.1]
 >>> using ACL "check_etrn"

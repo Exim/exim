@@ -1038,20 +1038,20 @@ LOG: H=(test) [V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.e
 >>> processing ACL acl_20_20_20 "accept" (TESTSUITE/test-config 111)
 >>>   message: sender verify failure
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@y
->>> x in local_parts?
->>>  list element: ^ok
->>> x in local_parts? no (end of list)
->>> x in local_parts?
->>>  list element: ^userx
->>>  list element: ^cond-
->>> x in local_parts? no (end of list)
->>> x in local_parts?
->>>  list element: fail
->>> x in local_parts? no (end of list)
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@y
+>>>   x in local_parts?
+>>>    list element: ^ok
+>>>   x in local_parts? no (end of list)
+>>>   x in local_parts?
+>>>    list element: ^userx
+>>>    list element: ^cond-
+>>>   x in local_parts? no (end of list)
+>>>   x in local_parts?
+>>>    list element: fail
+>>>   x in local_parts? no (end of list)
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL acl_20_20_20
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [20.20.20.20] sender verify fail for <x@y>: Unrouteable address
@@ -1060,7 +1060,7 @@ LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> processing ACL acl_20_20_20 "accept" (TESTSUITE/test-config 111)
 >>>   message: sender verify failure
 >>> check verify = sender
->>> using cached sender verify result
+>>>  using cached sender verify result
 >>> accept: condition test failed in ACL acl_20_20_20
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
@@ -1080,33 +1080,33 @@ LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> processing ACL acl_20_20_20 "accept" (TESTSUITE/test-config 111)
 >>>   message: sender verify failure
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@y
->>> userx in local_parts?
->>>  list element: ^ok
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: ^userx
->>>  userx in local_parts? yes (matched "^userx")
->>> calling r1 router
->>> routed by r1 router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@y
+>>>   userx in local_parts?
+>>>    list element: ^ok
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: ^userx
+>>>    userx in local_parts? yes (matched "^userx")
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  ----------- end verify ------------
 >>>   message: recipient verify failure
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x1@y
->>> x1 in local_parts?
->>>  list element: ^ok
->>> x1 in local_parts? no (end of list)
->>> x1 in local_parts?
->>>  list element: ^userx
->>>  list element: ^cond-
->>> x1 in local_parts? no (end of list)
->>> x1 in local_parts?
->>>  list element: fail
->>> x1 in local_parts? no (end of list)
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x1@y
+>>>   x1 in local_parts?
+>>>    list element: ^ok
+>>>   x1 in local_parts? no (end of list)
+>>>   x1 in local_parts?
+>>>    list element: ^userx
+>>>    list element: ^cond-
+>>>   x1 in local_parts? no (end of list)
+>>>   x1 in local_parts?
+>>>    list element: fail
+>>>   x1 in local_parts? no (end of list)
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL acl_20_20_20
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
@@ -1114,20 +1114,20 @@ LOG: H=(test) [20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> processing ACL acl_20_20_20 "accept" (TESTSUITE/test-config 111)
 >>>   message: sender verify failure
 >>> check verify = sender
->>> using cached sender verify result
+>>>  using cached sender verify result
 >>>   message: recipient verify failure
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@y
->>> userx in local_parts?
->>>  list element: ^ok
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: ^userx
->>>  userx in local_parts? yes (matched "^userx")
->>> calling r1 router
->>> routed by r1 router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@y
+>>>   userx in local_parts?
+>>>    list element: ^ok
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: ^userx
+>>>    userx in local_parts? yes (matched "^userx")
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in ACL acl_20_20_20
 >>> end of ACL acl_20_20_20: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -1145,93 +1145,93 @@ LOG: H=(test) [20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> using ACL "acl_21_21_21"
 >>> processing ACL acl_21_21_21 "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@y
->>> userx in local_parts?
->>>  list element: ^ok
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: ^userx
->>>  userx in local_parts? yes (matched "^userx")
->>> calling r1 router
->>> routed by r1 router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@y
+>>>   userx in local_parts?
+>>>    list element: ^ok
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: ^userx
+>>>    userx in local_parts? yes (matched "^userx")
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  ----------- end verify ------------
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x1@y
->>> x1 in local_parts?
->>>  list element: ^ok
->>> x1 in local_parts? no (end of list)
->>> x1 in local_parts?
->>>  list element: ^userx
->>>  list element: ^cond-
->>> x1 in local_parts? no (end of list)
->>> x1 in local_parts?
->>>  list element: fail
->>> x1 in local_parts? no (end of list)
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x1@y
+>>>   x1 in local_parts?
+>>>    list element: ^ok
+>>>   x1 in local_parts? no (end of list)
+>>>   x1 in local_parts?
+>>>    list element: ^userx
+>>>    list element: ^cond-
+>>>   x1 in local_parts? no (end of list)
+>>>   x1 in local_parts?
+>>>    list element: fail
+>>>   x1 in local_parts? no (end of list)
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL acl_21_21_21
 >>> end of ACL acl_21_21_21: implicit DENY
 LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> using ACL "acl_21_21_21"
 >>> processing ACL acl_21_21_21 "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
->>> using cached sender verify result
+>>>  using cached sender verify result
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@y
->>> userx in local_parts?
->>>  list element: ^ok
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: ^userx
->>>  userx in local_parts? yes (matched "^userx")
->>> calling r1 router
->>> routed by r1 router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@y
+>>>   userx in local_parts?
+>>>    list element: ^ok
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: ^userx
+>>>    userx in local_parts? yes (matched "^userx")
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in ACL acl_21_21_21
 >>> end of ACL acl_21_21_21: ACCEPT
 >>> using ACL "acl_21_21_21"
 >>> processing ACL acl_21_21_21 "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
->>> using cached sender verify result
+>>>  using cached sender verify result
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing fail@y
->>> fail in local_parts?
->>>  list element: ^ok
->>> fail in local_parts? no (end of list)
->>> fail in local_parts?
->>>  list element: ^userx
->>>  list element: ^cond-
->>> fail in local_parts? no (end of list)
->>> fail in local_parts?
->>>  list element: fail
->>>  fail in local_parts? yes (matched "fail")
->>> calling r2 router
->>> r2 router forced address failure
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing fail@y
+>>>   fail in local_parts?
+>>>    list element: ^ok
+>>>   fail in local_parts? no (end of list)
+>>>   fail in local_parts?
+>>>    list element: ^userx
+>>>    list element: ^cond-
+>>>   fail in local_parts? no (end of list)
+>>>   fail in local_parts?
+>>>    list element: fail
+>>>    fail in local_parts? yes (matched "fail")
+>>>   calling r2 router
+>>>   r2 router forced address failure
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL acl_21_21_21
 >>> end of ACL acl_21_21_21: implicit DENY
 LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <fail@y>: here is a fail message
 >>> using ACL "acl_21_21_21"
 >>> processing ACL acl_21_21_21 "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@y
->>> x in local_parts?
->>>  list element: ^ok
->>> x in local_parts? no (end of list)
->>> x in local_parts?
->>>  list element: ^userx
->>>  list element: ^cond-
->>> x in local_parts? no (end of list)
->>> x in local_parts?
->>>  list element: fail
->>> x in local_parts? no (end of list)
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@y
+>>>   x in local_parts?
+>>>    list element: ^ok
+>>>   x in local_parts? no (end of list)
+>>>   x in local_parts?
+>>>    list element: ^userx
+>>>    list element: ^cond-
+>>>   x in local_parts? no (end of list)
+>>>   x in local_parts?
+>>>    list element: fail
+>>>   x in local_parts? no (end of list)
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL acl_21_21_21
 >>> end of ACL acl_21_21_21: implicit DENY
 LOG: H=(test) [21.21.21.21] sender verify fail for <x@y>: Unrouteable address
@@ -1239,7 +1239,7 @@ LOG: H=(test) [21.21.21.21] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> using ACL "acl_21_21_21"
 >>> processing ACL acl_21_21_21 "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
->>> using cached sender verify result
+>>>  using cached sender verify result
 >>> accept: condition test failed in ACL acl_21_21_21
 >>> end of ACL acl_21_21_21: implicit DENY
 LOG: H=(test) [21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
@@ -1249,21 +1249,21 @@ LOG: H=(test) [21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> using ACL "acl_21_21_21"
 >>> processing ACL acl_21_21_21 "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing fail@y
->>> fail in local_parts?
->>>  list element: ^ok
->>> fail in local_parts? no (end of list)
->>> fail in local_parts?
->>>  list element: ^userx
->>>  list element: ^cond-
->>> fail in local_parts? no (end of list)
->>> fail in local_parts?
->>>  list element: fail
->>>  fail in local_parts? yes (matched "fail")
->>> calling r2 router
->>> r2 router forced address failure
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing fail@y
+>>>   fail in local_parts?
+>>>    list element: ^ok
+>>>   fail in local_parts? no (end of list)
+>>>   fail in local_parts?
+>>>    list element: ^userx
+>>>    list element: ^cond-
+>>>   fail in local_parts? no (end of list)
+>>>   fail in local_parts?
+>>>    list element: fail
+>>>    fail in local_parts? yes (matched "fail")
+>>>   calling r2 router
+>>>   r2 router forced address failure
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL acl_21_21_21
 >>> end of ACL acl_21_21_21: implicit DENY
 LOG: H=(test) [21.21.21.21] sender verify fail for <fail@y>: here is a fail message
@@ -1320,20 +1320,20 @@ LOG: H=(test) [22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>>  host in "23.23.23.0"? yes (matched "23.23.23.0")
 >>>   message: sender must verify
 >>> check !verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@y
->>> x in local_parts?
->>>  list element: ^ok
->>> x in local_parts? no (end of list)
->>> x in local_parts?
->>>  list element: ^userx
->>>  list element: ^cond-
->>> x in local_parts? no (end of list)
->>> x in local_parts?
->>>  list element: fail
->>> x in local_parts? no (end of list)
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@y
+>>>   x in local_parts?
+>>>    list element: ^ok
+>>>   x in local_parts? no (end of list)
+>>>   x in local_parts?
+>>>    list element: ^userx
+>>>    list element: ^cond-
+>>>   x in local_parts? no (end of list)
+>>>   x in local_parts?
+>>>    list element: fail
+>>>   x in local_parts? no (end of list)
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> deny: condition test succeeded in ACL acl_23_23_23
 >>> end of ACL acl_23_23_23: DENY
 LOG: H=(test) [23.23.23.0] sender verify fail for <x@y>: Unrouteable address
@@ -1346,17 +1346,17 @@ LOG: H=(test) [23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>>  host in "23.23.23.0"? yes (matched "23.23.23.0")
 >>>   message: sender must verify
 >>> check !verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@y
->>> userx in local_parts?
->>>  list element: ^ok
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: ^userx
->>>  userx in local_parts? yes (matched "^userx")
->>> calling r1 router
->>> routed by r1 router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@y
+>>>   userx in local_parts?
+>>>    list element: ^ok
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: ^userx
+>>>    userx in local_parts? yes (matched "^userx")
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL acl_23_23_23
 >>> processing ACL acl_23_23_23 "accept" (TESTSUITE/test-config 129)
 >>> accept: condition test succeeded in ACL acl_23_23_23
@@ -1550,21 +1550,21 @@ LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> using ACL "acl_V4NET_0_0"
 >>> processing ACL acl_V4NET_0_0 "require" (TESTSUITE/test-config 97)
 >>> check verify = reverse_host_lookup
->>> looking up host name to force name/address consistency check
->>> looking up host name for V4NET.0.0.3
->>>  IP address lookup yielded "ten-3.test.ex"
->>>    alias "ten-3-alias.test.ex"
->>>  check dnssec require list
->>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
->>>  check dnssec request list
->>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
->>>  checking addresses for ten-3.test.ex
+>>>  looking up host name to force name/address consistency check
+>>>  looking up host name for V4NET.0.0.3
+>>>   IP address lookup yielded "ten-3.test.ex"
+>>>     alias "ten-3-alias.test.ex"
+>>>   check dnssec require list
+>>>    ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>>   check dnssec request list
+>>>    ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>>   checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
->>>  check dnssec require list
->>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
->>>  check dnssec request list
->>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
->>>  checking addresses for ten-3-alias.test.ex
+>>>   check dnssec require list
+>>>    ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>>   check dnssec request list
+>>>    ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>>   checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> require: condition test succeeded in ACL acl_V4NET_0_0
 >>> processing ACL acl_V4NET_0_0 "accept" (TESTSUITE/test-config 98)
@@ -1585,8 +1585,8 @@ LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> using ACL "acl_V4NET_0_0"
 >>> processing ACL acl_V4NET_0_0 "require" (TESTSUITE/test-config 97)
 >>> check verify = reverse_host_lookup
->>> looking up host name to force name/address consistency check
->>> looking up host name for V4NET.0.0.97
+>>>  looking up host name to force name/address consistency check
+>>>  looking up host name for V4NET.0.0.97
 LOG: no host name found for IP address V4NET.0.0.97
 >>> require: condition test failed in ACL acl_V4NET_0_0
 >>> end of ACL acl_V4NET_0_0: not OK
@@ -1612,14 +1612,14 @@ LOG: H=(test) [V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for re
 >>> accept: condition test failed in ACL acl_V4NET_99_99
 >>> processing ACL acl_V4NET_99_99 "accept" (TESTSUITE/test-config 102)
 >>> check verify = reverse_host_lookup
->>> looking up host name to force name/address consistency check
->>> looking up host name for V4NET.99.99.96
->>>  IP address lookup yielded "x.test.again.dns"
->>>  check dnssec require list
->>>   x.test.again.dns not in empty list (option unset? cannot trace name)
->>>  check dnssec request list
->>>   x.test.again.dns not in empty list (option unset? cannot trace name)
->>>  x.test.again.dns in dns_again_means_nonexist? no (option unset)
+>>>  looking up host name to force name/address consistency check
+>>>  looking up host name for V4NET.99.99.96
+>>>   IP address lookup yielded "x.test.again.dns"
+>>>   check dnssec require list
+>>>    x.test.again.dns not in empty list (option unset? cannot trace name)
+>>>   check dnssec request list
+>>>    x.test.again.dns not in empty list (option unset? cannot trace name)
+>>>   x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test deferred in ACL acl_V4NET_99_99
 LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferred for reverse lookup check
@@ -1642,14 +1642,14 @@ LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup
 >>>  list element: defer_ok
 >>>  defer_ok in "defer_ok"? yes (matched "defer_ok")
 >>> check verify = reverse_host_lookup/defer_ok
->>> looking up host name to force name/address consistency check
->>> looking up host name for V4NET.99.99.96
->>>  IP address lookup yielded "x.test.again.dns"
->>>  check dnssec require list
->>>   x.test.again.dns not in empty list (option unset? cannot trace name)
->>>  check dnssec request list
->>>   x.test.again.dns not in empty list (option unset? cannot trace name)
->>>  x.test.again.dns in dns_again_means_nonexist? no (option unset)
+>>>  looking up host name to force name/address consistency check
+>>>  looking up host name for V4NET.99.99.96
+>>>   IP address lookup yielded "x.test.again.dns"
+>>>   check dnssec require list
+>>>    x.test.again.dns not in empty list (option unset? cannot trace name)
+>>>   check dnssec request list
+>>>    x.test.again.dns not in empty list (option unset? cannot trace name)
+>>>   x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test succeeded in ACL acl_V4NET_99_99
 >>> end of ACL acl_V4NET_99_99: ACCEPT
@@ -1784,20 +1784,20 @@ LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+
 >>> processing ACL acl_33_33_33 "accept" (TESTSUITE/test-config 184)
 >>>   message: sender verify failure
 >>> check verify = sender/no_details
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@y
->>> x in local_parts?
->>>  list element: ^ok
->>> x in local_parts? no (end of list)
->>> x in local_parts?
->>>  list element: ^userx
->>>  list element: ^cond-
->>> x in local_parts? no (end of list)
->>> x in local_parts?
->>>  list element: fail
->>> x in local_parts? no (end of list)
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@y
+>>>   x in local_parts?
+>>>    list element: ^ok
+>>>   x in local_parts? no (end of list)
+>>>   x in local_parts?
+>>>    list element: ^userx
+>>>    list element: ^cond-
+>>>   x in local_parts? no (end of list)
+>>>   x in local_parts?
+>>>    list element: fail
+>>>   x in local_parts? no (end of list)
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> accept: condition test failed in ACL acl_33_33_33
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [33.33.33.33] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
@@ -1805,7 +1805,7 @@ LOG: H=(test) [33.33.33.33] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> processing ACL acl_33_33_33 "accept" (TESTSUITE/test-config 184)
 >>>   message: sender verify failure
 >>> check verify = sender/no_details
->>> using cached sender verify result
+>>>  using cached sender verify result
 >>> accept: condition test failed in ACL acl_33_33_33
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [33.33.33.33] F=<x@y> rejected RCPT <x2@y>: Sender verify failed

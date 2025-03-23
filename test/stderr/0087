@@ -19,17 +19,17 @@
 >>> accept: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: defer
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: defer
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
@@ -76,17 +76,17 @@ LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> accept: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: defer
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: defer
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
@@ -134,17 +134,17 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> accept: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: defer
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: defer
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
@@ -164,15 +164,15 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> processing ACL check_message "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
 >>> verifying From: header address badbad@test.ex
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing badbad@test.ex
->>> badbad in local_parts?
->>>  list element: defer
->>> badbad in local_parts? no (end of list)
->>> badbad in local_parts?
->>>  list element: userx
->>> badbad in local_parts? no (end of list)
->>> no more routers
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing badbad@test.ex
+>>>   badbad in local_parts?
+>>>    list element: defer
+>>>   badbad in local_parts? no (end of list)
+>>>   badbad in local_parts?
+>>>    list element: userx
+>>>   badbad in local_parts? no (end of list)
+>>>  no more routers
 >>> require: condition test failed in ACL check_message
 >>> end of ACL check_message: not OK
 LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
@@ -197,17 +197,17 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>> accept: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: defer
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: defer
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
@@ -227,15 +227,15 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>> processing ACL check_message "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
 >>> verifying From: header address badbad@test.ex
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing badbad@test.ex
->>> badbad in local_parts?
->>>  list element: defer
->>> badbad in local_parts? no (end of list)
->>> badbad in local_parts?
->>>  list element: userx
->>> badbad in local_parts? no (end of list)
->>> no more routers
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing badbad@test.ex
+>>>   badbad in local_parts?
+>>>    list element: defer
+>>>   badbad in local_parts? no (end of list)
+>>>   badbad in local_parts?
+>>>    list element: userx
+>>>   badbad in local_parts? no (end of list)
+>>>  no more routers
 >>> verifying From: header address userx@test.ex
 >>> previously checked as envelope sender
 >>> require: condition test succeeded in ACL check_message
@@ -264,17 +264,17 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> accept: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: defer
->>> userx in local_parts? no (end of list)
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling localuser router
->>> routed by localuser router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: defer
+>>>   userx in local_parts? no (end of list)
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling localuser router
+>>>  routed by localuser router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
@@ -294,13 +294,13 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> processing ACL check_message "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
 >>> verifying From: header address defer@test.ex
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing defer@test.ex
->>> defer in local_parts?
->>>  list element: defer
->>>  defer in local_parts? yes (matched "defer")
->>> calling defer router
->>> defer router: defer for defer@test.ex
->>>   message: this is a forced defer
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing defer@test.ex
+>>>   defer in local_parts?
+>>>    list element: defer
+>>>    defer in local_parts? yes (matched "defer")
+>>>   calling defer router
+>>>  defer router: defer for defer@test.ex
+>>>    message: this is a forced defer
 >>> require: condition test deferred in ACL check_message
 LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> temporarily rejected after DATA: all attempts to verify a sender in a header line deferred

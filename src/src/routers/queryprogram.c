@@ -226,7 +226,7 @@ gid_t gid = ob->cmd_gid;
 uid_t *puid = &uid;
 gid_t *pgid = &gid;
 
-DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
+DEBUG(D_route) debug_printf_indent("%s router called for %s: domain = %s\n",
   rblock->drinst.name, addr->address, addr->domain);
 
 ugid.uid_set = ugid.gid_set = FALSE;

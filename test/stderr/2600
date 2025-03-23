@@ -599,26 +599,26 @@ userx@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@myhost.test.ex
 --------> r1 router <--------
-local_part=userx domain=myhost.test.ex
-processing address_data
- search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
- search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select name from them where id='userx'" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select name from them where id='userx'" opts=NULL
- file lookup required for select name from them where id='userx'
-   in TESTSUITE/aux-fixed/sqlitedb
- creating new cache entry
- lookup yielded: Ayen░Other
-calling r1 router
-r1 router called for userx@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = userx
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=userx domain=myhost.test.ex
+ processing address_data
+  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+    key="select name from them where id='userx'" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+    type=sqlite key="select name from them where id='userx'" opts=NULL
+  file lookup required for select name from them where id='userx'
+    in TESTSUITE/aux-fixed/sqlitedb
+  creating new cache entry
+  lookup yielded: Ayen░Other
+ calling r1 router
+ r1 router called for userx@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = userx
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	userx@myhost.test.ex
   transport:	t1

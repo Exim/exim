@@ -13,14 +13,14 @@
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 20)
 >>> check verify = sender=userx@test.ex
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling goodroute router
->>> routed by goodroute router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling goodroute router
+>>>  routed by goodroute router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 21)
 >>> accept: condition test succeeded in ACL check_recipient
@@ -42,13 +42,13 @@ LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [127.0.0.1] P=smtp S=sss
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 20)
 >>> check verify = sender=fail@test.ex
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing fail@test.ex
->>> fail in local_parts?
->>>  list element: userx
->>> fail in local_parts? no (end of list)
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing fail@test.ex
+>>>   fail in local_parts?
+>>>    list element: userx
+>>>   fail in local_parts? no (end of list)
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> require: condition test failed in ACL check_recipient
 >>> end of ACL check_recipient: not OK
 LOG: H=(test) [127.0.0.1] sender verify fail for <fail@test.ex>: Unrouteable address
@@ -69,14 +69,14 @@ LOG: H=(test) [127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: Sende
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 20)
 >>> check verify = sender=$sender_address/defer_ok
 >>>              = sender=userx@test.ex/defer_ok
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.ex
->>> userx in local_parts?
->>>  list element: userx
->>>  userx in local_parts? yes (matched "userx")
->>> calling goodroute router
->>> routed by goodroute router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.ex
+>>>   userx in local_parts?
+>>>    list element: userx
+>>>    userx in local_parts? yes (matched "userx")
+>>>   calling goodroute router
+>>>  routed by goodroute router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 21)
 >>> accept: condition test succeeded in ACL check_recipient

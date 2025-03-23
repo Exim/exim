@@ -13,19 +13,19 @@
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@mxt10.test.ex
->>> calling domainlist router
->>>  check dnssec require list
->>>   mxt10.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   mxt10.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    mxt10.test.ex in dnssec_request_domains? yes (matched "*")
->>> domainlist router declined for x@mxt10.test.ex
->>> "more" is false: skipping remaining routers
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@mxt10.test.ex
+>>>   calling domainlist router
+>>>    check dnssec require list
+>>>    ╎mxt10.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎mxt10.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ mxt10.test.ex in dnssec_request_domains? yes (matched "*")
+>>>   domainlist router declined for x@mxt10.test.ex
+>>>   "more" is false: skipping remaining routers
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> require: condition test failed in ACL check_recipient
 >>> end of ACL check_recipient: not OK
 LOG: H=(test) [V4NET.9.8.7] sender verify fail for <x@mxt10.test.ex>: all relevant MX records point to non-existent hosts or (invalidly) to IP addresses
@@ -45,33 +45,33 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@ten-1.test.ex
->>> calling domainlist router
->>>  check dnssec require list
->>>   ten-1.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   ten-1.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    ten-1.test.ex in dnssec_request_domains? yes (matched "*")
->>> routed by domainlist router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@ten-1.test.ex
+>>>   calling domainlist router
+>>>    check dnssec require list
+>>>    ╎ten-1.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎ten-1.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+>>>  routed by domainlist router
+>>>  ----------- end verify ------------
 >>> require: condition test succeeded in ACL check_recipient
 >>> processing ACL check_recipient "require" (TESTSUITE/test-config 19)
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@mxt10.test.ex
->>> calling domainlist router
->>>  check dnssec require list
->>>   mxt10.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   mxt10.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    mxt10.test.ex in dnssec_request_domains? yes (matched "*")
->>> domainlist router declined for x@mxt10.test.ex
->>> "more" is false: skipping remaining routers
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@mxt10.test.ex
+>>>   calling domainlist router
+>>>    check dnssec require list
+>>>    ╎mxt10.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎mxt10.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ mxt10.test.ex in dnssec_request_domains? yes (matched "*")
+>>>   domainlist router declined for x@mxt10.test.ex
+>>>   "more" is false: skipping remaining routers
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>> require: condition test failed in ACL check_recipient
 >>> end of ACL check_recipient: not OK
 LOG: H=(test) [V4NET.9.8.7] F=<x@ten-1.test.ex> rejected RCPT <x@mxt10.test.ex>: all relevant MX records point to non-existent hosts or (invalidly) to IP addresses

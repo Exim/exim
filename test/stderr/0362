@@ -65,55 +65,55 @@ a.b.c in "+relay_domains"?
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@a.b.c
-x@a.b.c in "x@a.b.c"?
- list element: x@a.b.c
- address match test: subject=x@a.b.c pattern=x@a.b.c
- a.b.c in "a.b.c"?
-  list element: a.b.c
-  a.b.c in "a.b.c"? yes (matched "a.b.c")
- x@a.b.c in "x@a.b.c"? yes (matched "x@a.b.c")
+ x@a.b.c in "x@a.b.c"?
+  list element: x@a.b.c
+  address match test: subject=x@a.b.c pattern=x@a.b.c
+  a.b.c in "a.b.c"?
+   list element: a.b.c
+   a.b.c in "a.b.c"? yes (matched "a.b.c")
+  x@a.b.c in "x@a.b.c"? yes (matched "x@a.b.c")
 LOG: address_rewrite MAIN
   "x@a.b.c" from env-to rewritten as "x@x.test.ex" by rule 1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering x@x.test.ex
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing x@x.test.ex
---------> r1 router <--------
-local_part=x domain=x.test.ex
-checking domains
-x.test.ex in domains?
- list element: +relay_domains
-  start sublist relay_domains
-   x.test.ex in "a.b.c"?
-   ╎list element: a.b.c
-   x.test.ex in "a.b.c"? no (end of list)
-  end sublist relay_domains
-x.test.ex in domains? no (end of list)
-r1 router skipped: domains mismatch
---------> r2 router <--------
-local_part=x domain=x.test.ex
-checking domains
-x.test.ex in domains?
- list element: +local_domains
-  start sublist local_domains
-   x.test.ex in "*.test.ex"?
-   ╎list element: *.test.ex
-   ╎x.test.ex in "*.test.ex"? yes (matched "*.test.ex")
-  end sublist local_domains
- data from lookup saved for cache for +local_domains: key 'x.test.ex' value '*.test.ex'
- x.test.ex in domains? yes (matched "+local_domains")
-calling r2 router
-r2 router called for x@x.test.ex
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing x@x.test.ex
+ --------> r1 router <--------
+  local_part=x domain=x.test.ex
+  checking domains
+  x.test.ex in domains?
+   list element: +relay_domains
+    start sublist relay_domains
+   ╎ x.test.ex in "a.b.c"?
+   ╎  list element: a.b.c
+   ╎ x.test.ex in "a.b.c"? no (end of list)
+    end sublist relay_domains
+  x.test.ex in domains? no (end of list)
+  r1 router skipped: domains mismatch
+ --------> r2 router <--------
+  local_part=x domain=x.test.ex
+  checking domains
+  x.test.ex in domains?
+   list element: +local_domains
+    start sublist local_domains
+   ╎ x.test.ex in "*.test.ex"?
+   ╎  list element: *.test.ex
+   ╎  x.test.ex in "*.test.ex"? yes (matched "*.test.ex")
+    end sublist local_domains
+   data from lookup saved for cache for +local_domains: key 'x.test.ex' value '*.test.ex'
+   x.test.ex in domains? yes (matched "+local_domains")
+  calling r2 router
+  r2 router called for x@x.test.ex
+    domain = x.test.ex
+  set transport t2
+  queued for t2 transport: local_part = x
   domain = x.test.ex
-set transport t2
-queued for t2 transport: local_part = x
-domain = x.test.ex
-  errors_to=NULL
-  domain_data=*.test.ex local_part_data=NULL
-routed by r2 router
-  envelope to:	x@x.test.ex
-  transport:	t2
------------ end verify ------------
+    errors_to=NULL
+    domain_data=*.test.ex local_part_data=NULL
+ routed by r2 router
+   envelope to:	x@x.test.ex
+   transport:	t2
+ ----------- end verify ------------
 accept: condition test succeeded in ACL check_rcpt
 end of ACL check_rcpt: ACCEPT
 SMTP>> 250 Accepted

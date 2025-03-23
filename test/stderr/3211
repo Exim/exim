@@ -13,23 +13,23 @@
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 17)
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing userx@test.again.dns
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing userx@test.again.dns
 >>> +++ sender_address = <userx@test.ex>
->>> calling skipped router
->>> skipped router declined for userx@test.again.dns
->>> calling temp router
->>>  check dnssec require list
->>>   test.again.dns in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   test.again.dns in dnssec_request_domains?
->>>    list element: *
->>>    test.again.dns in dnssec_request_domains? yes (matched "*")
->>>  test.again.dns in dns_again_means_nonexist? no (option unset)
->>>  test.again.dns not in empty list (option unset? cannot trace name)
->>> temp router: defer for userx@test.again.dns
->>>   message: host lookup did not complete
->>> ----------- end verify ------------
+>>>   calling skipped router
+>>>   skipped router declined for userx@test.again.dns
+>>>   calling temp router
+>>>    check dnssec require list
+>>>    ╎test.again.dns in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎test.again.dns in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ test.again.dns in dnssec_request_domains? yes (matched "*")
+>>>    test.again.dns in dns_again_means_nonexist? no (option unset)
+>>>    test.again.dns not in empty list (option unset? cannot trace name)
+>>>  temp router: defer for userx@test.again.dns
+>>>    message: host lookup did not complete
+>>>  ----------- end verify ------------
 >>> accept: condition test deferred in ACL check_recipient
 LOG: H=(test) [1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.again.dns>: host lookup did not complete
 >>> host in hosts_connection_nolog? no (option unset)
@@ -47,22 +47,22 @@ LOG: H=(test) [1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 17)
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing r1-userx@test.again.dns
->>> test.again.dns in domains?
->>>  list element: !testdb;fail
->>> test.again.dns in domains? yes (end of list)
->>> calling r1 router
->>>  check dnssec require list
->>>   test.again.dns in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   test.again.dns in dnssec_request_domains?
->>>    list element: *
->>>    test.again.dns in dnssec_request_domains? yes (matched "*")
->>>  test.again.dns in dns_again_means_nonexist? no (option unset)
->>>  test.again.dns not in empty list (option unset? cannot trace name)
->>> r1 router: defer for r1-userx@test.again.dns
->>>   message: host lookup did not complete
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing r1-userx@test.again.dns
+>>>   test.again.dns in domains?
+>>>    list element: !testdb;fail
+>>>   test.again.dns in domains? yes (end of list)
+>>>   calling r1 router
+>>>    check dnssec require list
+>>>    ╎test.again.dns in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎test.again.dns in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ test.again.dns in dnssec_request_domains? yes (matched "*")
+>>>    test.again.dns in dns_again_means_nonexist? no (option unset)
+>>>    test.again.dns not in empty list (option unset? cannot trace name)
+>>>  r1 router: defer for r1-userx@test.again.dns
+>>>    message: host lookup did not complete
+>>>  ----------- end verify ------------
 >>> accept: condition test deferred in ACL check_recipient
 LOG: H=(test) [1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <r1-userx@test.again.dns>: host lookup did not complete

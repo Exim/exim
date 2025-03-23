@@ -75,65 +75,65 @@ using ACL "cutthrough"
 processing ACL cutthrough "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   domain.com in "test.ex : *.test.ex"?
-   ╎list element: test.ex
-   ╎list element: *.test.ex
-   domain.com in "test.ex : *.test.ex"? no (end of list)
-  end sublist local_domains
-domain.com in domains? yes (end of list)
-try option router_home_directory
-try option set
-processing address_data
- ╭considering: $local_part
- ├──────value: userx
-            ╰──(tainted)
- ├───expanded: $local_part
- ╰─────result: userx
-            ╰──(tainted)
-domain.com in "*"?
- list element: *
- domain.com in "*"? yes (matched "*")
-try option hosts_randomize
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-try option fallback_hosts
-try option unseen
------------ end verify ------------
+  domain.com in domains?
+   list element: !░+local_domains
+    start sublist local_domains
+   ╎ domain.com in "test.ex : *.test.ex"?
+   ╎  list element: test.ex
+   ╎  list element: *.test.ex
+   ╎ domain.com in "test.ex : *.test.ex"? no (end of list)
+    end sublist local_domains
+  domain.com in domains? yes (end of list)
+  try option router_home_directory
+  try option set
+  processing address_data
+   ╭considering: $local_part
+   ├──────value: userx
+              ╰──(tainted)
+   ├───expanded: $local_part
+   ╰─────result: userx
+              ╰──(tainted)
+  domain.com in "*"?
+   list element: *
+   domain.com in "*"? yes (matched "*")
+  try option hosts_randomize
+  try option errors_to
+  try option headers_add
+  try option headers_remove
+  try option transport
+  try option fallback_hosts
+ try option unseen
+ ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
 end of ACL cutthrough: ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   domain.com in "test.ex : *.test.ex"?
-   ╎list element: test.ex
-   ╎list element: *.test.ex
-   domain.com in "test.ex : *.test.ex"? no (end of list)
-  end sublist local_domains
-domain.com in domains? yes (end of list)
-try option router_home_directory
-try option set
-processing address_data
- ╭considering: $local_part
- ├──────value: userx
-            ╰──(tainted)
- ├───expanded: $local_part
- ╰─────result: userx
-            ╰──(tainted)
-domain.com in "*"?
- list element: *
- domain.com in "*"? yes (matched "*")
-try option hosts_randomize
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-try option fallback_hosts
+ domain.com in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎domain.com in "test.ex : *.test.ex"?
+   ╎ list element: test.ex
+   ╎ list element: *.test.ex
+   ╎domain.com in "test.ex : *.test.ex"? no (end of list)
+   end sublist local_domains
+ domain.com in domains? yes (end of list)
+ try option router_home_directory
+ try option set
+ processing address_data
+  ╭considering: $local_part
+  ├──────value: userx
+             ╰──(tainted)
+  ├───expanded: $local_part
+  ╰─────result: userx
+             ╰──(tainted)
+ domain.com in "*"?
+  list element: *
+  domain.com in "*"? yes (matched "*")
+ try option hosts_randomize
+ try option errors_to
+ try option headers_add
+ try option headers_remove
+ try option transport
+ try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface
@@ -756,65 +756,65 @@ using ACL "cutthrough"
 processing ACL cutthrough "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   domain.com in "test.ex : *.test.ex"?
-   ╎list element: test.ex
-   ╎list element: *.test.ex
-   domain.com in "test.ex : *.test.ex"? no (end of list)
-  end sublist local_domains
-domain.com in domains? yes (end of list)
-try option router_home_directory
-try option set
-processing address_data
- ╭considering: $local_part
- ├──────value: usery
-            ╰──(tainted)
- ├───expanded: $local_part
- ╰─────result: usery
-            ╰──(tainted)
-domain.com in "*"?
- list element: *
- domain.com in "*"? yes (matched "*")
-try option hosts_randomize
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-try option fallback_hosts
-try option unseen
------------ end verify ------------
+  domain.com in domains?
+   list element: !░+local_domains
+    start sublist local_domains
+   ╎ domain.com in "test.ex : *.test.ex"?
+   ╎  list element: test.ex
+   ╎  list element: *.test.ex
+   ╎ domain.com in "test.ex : *.test.ex"? no (end of list)
+    end sublist local_domains
+  domain.com in domains? yes (end of list)
+  try option router_home_directory
+  try option set
+  processing address_data
+   ╭considering: $local_part
+   ├──────value: usery
+              ╰──(tainted)
+   ├───expanded: $local_part
+   ╰─────result: usery
+              ╰──(tainted)
+  domain.com in "*"?
+   list element: *
+   domain.com in "*"? yes (matched "*")
+  try option hosts_randomize
+  try option errors_to
+  try option headers_add
+  try option headers_remove
+  try option transport
+  try option fallback_hosts
+ try option unseen
+ ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
 end of ACL cutthrough: ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   domain.com in "test.ex : *.test.ex"?
-   ╎list element: test.ex
-   ╎list element: *.test.ex
-   domain.com in "test.ex : *.test.ex"? no (end of list)
-  end sublist local_domains
-domain.com in domains? yes (end of list)
-try option router_home_directory
-try option set
-processing address_data
- ╭considering: $local_part
- ├──────value: usery
-            ╰──(tainted)
- ├───expanded: $local_part
- ╰─────result: usery
-            ╰──(tainted)
-domain.com in "*"?
- list element: *
- domain.com in "*"? yes (matched "*")
-try option hosts_randomize
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-try option fallback_hosts
+ domain.com in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎domain.com in "test.ex : *.test.ex"?
+   ╎ list element: test.ex
+   ╎ list element: *.test.ex
+   ╎domain.com in "test.ex : *.test.ex"? no (end of list)
+   end sublist local_domains
+ domain.com in domains? yes (end of list)
+ try option router_home_directory
+ try option set
+ processing address_data
+  ╭considering: $local_part
+  ├──────value: usery
+             ╰──(tainted)
+  ├───expanded: $local_part
+  ╰─────result: usery
+             ╰──(tainted)
+ domain.com in "*"?
+  list element: *
+  domain.com in "*"? yes (matched "*")
+ try option hosts_randomize
+ try option errors_to
+ try option headers_add
+ try option headers_remove
+ try option transport
+ try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface
@@ -1386,65 +1386,65 @@ using ACL "cutthrough"
 processing ACL cutthrough "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   domain.com in "test.ex : *.test.ex"?
-   ╎list element: test.ex
-   ╎list element: *.test.ex
-   domain.com in "test.ex : *.test.ex"? no (end of list)
-  end sublist local_domains
-domain.com in domains? yes (end of list)
-try option router_home_directory
-try option set
-processing address_data
- ╭considering: $local_part
- ├──────value: usery
-            ╰──(tainted)
- ├───expanded: $local_part
- ╰─────result: usery
-            ╰──(tainted)
-domain.com in "*"?
- list element: *
- domain.com in "*"? yes (matched "*")
-try option hosts_randomize
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-try option fallback_hosts
-try option unseen
------------ end verify ------------
+  domain.com in domains?
+   list element: !░+local_domains
+    start sublist local_domains
+   ╎ domain.com in "test.ex : *.test.ex"?
+   ╎  list element: test.ex
+   ╎  list element: *.test.ex
+   ╎ domain.com in "test.ex : *.test.ex"? no (end of list)
+    end sublist local_domains
+  domain.com in domains? yes (end of list)
+  try option router_home_directory
+  try option set
+  processing address_data
+   ╭considering: $local_part
+   ├──────value: usery
+              ╰──(tainted)
+   ├───expanded: $local_part
+   ╰─────result: usery
+              ╰──(tainted)
+  domain.com in "*"?
+   list element: *
+   domain.com in "*"? yes (matched "*")
+  try option hosts_randomize
+  try option errors_to
+  try option headers_add
+  try option headers_remove
+  try option transport
+  try option fallback_hosts
+ try option unseen
+ ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
 end of ACL cutthrough: ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   domain.com in "test.ex : *.test.ex"?
-   ╎list element: test.ex
-   ╎list element: *.test.ex
-   domain.com in "test.ex : *.test.ex"? no (end of list)
-  end sublist local_domains
-domain.com in domains? yes (end of list)
-try option router_home_directory
-try option set
-processing address_data
- ╭considering: $local_part
- ├──────value: usery
-            ╰──(tainted)
- ├───expanded: $local_part
- ╰─────result: usery
-            ╰──(tainted)
-domain.com in "*"?
- list element: *
- domain.com in "*"? yes (matched "*")
-try option hosts_randomize
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-try option fallback_hosts
+ domain.com in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎domain.com in "test.ex : *.test.ex"?
+   ╎ list element: test.ex
+   ╎ list element: *.test.ex
+   ╎domain.com in "test.ex : *.test.ex"? no (end of list)
+   end sublist local_domains
+ domain.com in domains? yes (end of list)
+ try option router_home_directory
+ try option set
+ processing address_data
+  ╭considering: $local_part
+  ├──────value: usery
+             ╰──(tainted)
+  ├───expanded: $local_part
+  ╰─────result: usery
+             ╰──(tainted)
+ domain.com in "*"?
+  list element: *
+  domain.com in "*"? yes (matched "*")
+ try option hosts_randomize
+ try option errors_to
+ try option headers_add
+ try option headers_remove
+ try option transport
+ try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface

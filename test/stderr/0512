@@ -5,8 +5,8 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1234 -qf
-myhost.test.ex in ""? no (end of list)
-CALLER@myhost.test.ex in senders? no (end of list)
+ myhost.test.ex in ""? no (end of list)
+ CALLER@myhost.test.ex in senders? no (end of list)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------
 t1 transport entered
@@ -110,8 +110,8 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1235 -qf
-myhost.test.ex in ""? no (end of list)
-CALLER@myhost.test.ex in senders? no (end of list)
+ myhost.test.ex in ""? no (end of list)
+ CALLER@myhost.test.ex in senders? no (end of list)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------
 t1 transport entered

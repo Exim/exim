@@ -42,34 +42,34 @@ processing ACL acl_rcpt "accept" (TESTSUITE/test-config 18)
 check verify = sender
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying U@W.x.y
-U@W.x.y in "*@*.x.y"?
- list element: *@*.x.y
- address match test: subject=U@w.x.y pattern=*@*.x.y
- w.x.y in "*.x.y"?
-  list element: *.x.y
-  w.x.y in "*.x.y"? yes (matched "*.x.y")
- U@W.x.y in "*@*.x.y"? yes (matched "*@*.x.y")
+ U@W.x.y in "*@*.x.y"?
+  list element: *@*.x.y
+  address match test: subject=U@w.x.y pattern=*@*.x.y
+  w.x.y in "*.x.y"?
+   list element: *.x.y
+   w.x.y in "*.x.y"? yes (matched "*.x.y")
+  U@W.x.y in "*@*.x.y"? yes (matched "*@*.x.y")
 LOG: address_rewrite MAIN
   "U@W.x.y" from env-from rewritten as "U@x.y" by rule 1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering U@x.y
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing U@x.y
---------> r1 router <--------
-local_part=u domain=x.y
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing U@x.y
+ --------> r1 router <--------
+  local_part=u domain=x.y
 sender_address=<> local_part=u domain=x.y
-calling r1 router
-r1 router called for U@x.y
+  calling r1 router
+  r1 router called for U@x.y
+    domain = x.y
+  queued for <unset> transport: local_part = u
   domain = x.y
-queued for <unset> transport: local_part = u
-domain = x.y
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
-routed by r1 router
-  envelope to:	U@x.y
-  transport:	<none>
------------ end verify ------------
-sender U@W.x.y verified ok as U@x.y
+    errors_to=NULL
+    domain_data=NULL local_part_data=NULL
+ routed by r1 router
+   envelope to:	U@x.y
+   transport:	<none>
+ ----------- end verify ------------
+ sender U@W.x.y verified ok as U@x.y
 accept: condition test succeeded in ACL acl_rcpt
 end of ACL acl_rcpt: ACCEPT
 SMTP>> 250 Accepted

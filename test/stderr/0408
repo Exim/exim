@@ -84,46 +84,46 @@ userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> r1 router <--------
-local_part=userx domain=test.ex
-checking local_parts
-userx in local_parts?
- list element: userx
- userx in local_parts? yes (matched "userx")
-calling r1 router
-r1 router called for userx@test.ex
-  domain = test.ex
+ local_part=userx domain=test.ex
+ checking local_parts
+ userx in local_parts?
+  list element: userx
+  userx in local_parts? yes (matched "userx")
+ calling r1 router
+ r1 router called for userx@test.ex
+   domain = test.ex
 ------ Verifying errors address usery ------
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying usery@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering usery@test.ex
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing usery@test.ex
---------> r1 router <--------
-local_part=usery domain=test.ex
-checking local_parts
-usery in local_parts?
- list element: userx
- list element: usery
- usery in local_parts? yes (matched "usery")
-calling r1 router
-r1 router called for usery@test.ex
-  domain = test.ex
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing usery@test.ex
+ --------> r1 router <--------
+  local_part=usery domain=test.ex
+  checking local_parts
+  usery in local_parts?
+   list element: userx
+   list element: usery
+   usery in local_parts? yes (matched "usery")
+  calling r1 router
+  r1 router called for usery@test.ex
+    domain = test.ex
 skipped verify errors_to address: already verifying
-set transport t1
-queued for t1 transport: local_part = usery
-domain = test.ex
-  errors_to=usery
-  domain_data=NULL local_part_data=usery
-routed by r1 router
-  envelope to:	usery@test.ex
-  transport:	t1
-  errors to:	usery
+  set transport t1
+  queued for t1 transport: local_part = usery
+  domain = test.ex
+    errors_to=usery
+    domain_data=NULL local_part_data=usery
+ routed by r1 router
+   envelope to:	usery@test.ex
+   transport:	t1
+   errors to:	usery
 ------ End verifying errors address usery ------
-queued for t1 transport: local_part = userx
-domain = test.ex
-  errors_to=usery@test.ex
-  domain_data=NULL local_part_data=userx
+ queued for t1 transport: local_part = userx
+ domain = test.ex
+   errors_to=usery@test.ex
+   domain_data=NULL local_part_data=userx
 routed by r1 router
   envelope to:	userx@test.ex
   transport:	t1

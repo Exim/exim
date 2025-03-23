@@ -9,15 +9,15 @@ LOG: queue_run MAIN
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaX-000000005vi-0000 (queue run pid p1234)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1237 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1239 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -26,8 +26,8 @@ queue_run phase 2 start
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaX-000000005vi-0000 (queue run pid p1234)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
@@ -53,8 +53,8 @@ LOG: MAIN
 LOG: MAIN
   Completed
 delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP|> MAIL FROM:<CALLER@test.ex>
@@ -91,15 +91,15 @@ LOG: queue_run MAIN
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaZ-000000005vi-0000 (queue run pid p1235)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1244 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1245 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1235)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1246 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -108,8 +108,8 @@ queue_run phase 2 start
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaZ-000000005vi-0000 (queue run pid p1235)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
@@ -144,8 +144,8 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1250 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1235)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
@@ -168,8 +168,8 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1236 -qqf
 delivering 10HmbA-000000005vi-0000 (queue run pid p1236)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1253 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -184,15 +184,15 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1255 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbC-000000005vi-0000 (queue run pid p1236)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1256 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1257 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1236)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
@@ -225,8 +225,8 @@ LOG: MAIN
 LOG: MAIN
   Completed
 delivering 10HmbC-000000005vi-0000 (queue run pid p1236)
-test.ex in ""? no (end of list)
-CALLER@test.ex in senders? no (end of list)
+ test.ex in ""? no (end of list)
+ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP|> MAIL FROM:<CALLER@test.ex>

@@ -14,36 +14,36 @@
 >>> processing ACL check_recipient "deny" (TESTSUITE/test-config 20)
 >>>   message: unrouteable address
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing oklist@listr.test.ex
->>> listr.test.ex in domains?
->>>  list element: listr.test.ex
->>>  listr.test.ex in domains? yes (matched "listr.test.ex")
->>> ok@sender in senders?
->>>  list element: TESTSUITE/aux-fixed/0251.restrict.oklist
->>>  sender in "sender"?
->>>   list element: sender
->>>   sender in "sender"? yes (matched "sender")
->>>  ok@sender in senders? yes (matched "ok@sender" in TESTSUITE/aux-fixed/0251.restrict.oklist)
->>> calling exeter_listr router
->>> routed by exeter_listr router
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing xxx@listr.test.ex
->>> listr.test.ex in domains?
->>>  list element: listr.test.ex
->>>  listr.test.ex in domains? yes (matched "listr.test.ex")
->>> ok@sender in senders?
->>>  list element: zzzz
->>>  sender in "zzzz"?
->>>   list element: zzzz
->>>  sender in "zzzz"? no (end of list)
->>> ok@sender in senders? no (end of list)
->>> listr.test.ex in domains?
->>>  list element: listr.test.ex
->>>  listr.test.ex in domains? yes (matched "listr.test.ex")
->>> calling exeter_listf router
->>> routed by exeter_listf router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing oklist@listr.test.ex
+>>>   listr.test.ex in domains?
+>>>    list element: listr.test.ex
+>>>    listr.test.ex in domains? yes (matched "listr.test.ex")
+>>>   ok@sender in senders?
+>>>    list element: TESTSUITE/aux-fixed/0251.restrict.oklist
+>>>    sender in "sender"?
+>>>    ╎list element: sender
+>>>    ╎sender in "sender"? yes (matched "sender")
+>>>    ok@sender in senders? yes (matched "ok@sender" in TESTSUITE/aux-fixed/0251.restrict.oklist)
+>>>   calling exeter_listr router
+>>>  routed by exeter_listr router
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing xxx@listr.test.ex
+>>>   listr.test.ex in domains?
+>>>    list element: listr.test.ex
+>>>    listr.test.ex in domains? yes (matched "listr.test.ex")
+>>>   ok@sender in senders?
+>>>    list element: zzzz
+>>>    sender in "zzzz"?
+>>>    ╎list element: zzzz
+>>>    sender in "zzzz"? no (end of list)
+>>>   ok@sender in senders? no (end of list)
+>>>   listr.test.ex in domains?
+>>>    list element: listr.test.ex
+>>>    listr.test.ex in domains? yes (matched "listr.test.ex")
+>>>   calling exeter_listf router
+>>>  routed by exeter_listf router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
@@ -63,20 +63,20 @@
 >>> processing ACL check_recipient "deny" (TESTSUITE/test-config 20)
 >>>   message: unrouteable address
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing oklist@listr.test.ex
->>> listr.test.ex in domains?
->>>  list element: listr.test.ex
->>>  listr.test.ex in domains? yes (matched "listr.test.ex")
->>> bad@sender in senders?
->>>  list element: TESTSUITE/aux-fixed/0251.restrict.oklist
->>> bad@sender in senders? no (end of list)
->>> listr.test.ex in domains?
->>>  list element: listr.test.ex
->>>  listr.test.ex in domains? yes (matched "listr.test.ex")
->>> calling exeter_listf router
->>> routed by exeter_listf router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing oklist@listr.test.ex
+>>>   listr.test.ex in domains?
+>>>    list element: listr.test.ex
+>>>    listr.test.ex in domains? yes (matched "listr.test.ex")
+>>>   bad@sender in senders?
+>>>    list element: TESTSUITE/aux-fixed/0251.restrict.oklist
+>>>   bad@sender in senders? no (end of list)
+>>>   listr.test.ex in domains?
+>>>    list element: listr.test.ex
+>>>    listr.test.ex in domains? yes (matched "listr.test.ex")
+>>>   calling exeter_listf router
+>>>  routed by exeter_listf router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains

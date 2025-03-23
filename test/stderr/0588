@@ -12,19 +12,19 @@
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing inline ACL "accept"
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing should_log@delay1500.test.ex
->>> calling all router
->>>  check dnssec require list
->>>   delay1500.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   delay1500.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    delay1500.test.ex in dnssec_request_domains? yes (matched "*")
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing should_log@delay1500.test.ex
+>>>   calling all router
+>>>    check dnssec require list
+>>>    ╎delay1500.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎delay1500.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ delay1500.test.ex in dnssec_request_domains? yes (matched "*")
 LOG: Long A lookup for 'delay1500.test.ex': ssss msec
->>>  local host found for non-MX address
->>> routed by all router
->>> ----------- end verify ------------
+>>>    local host found for non-MX address
+>>>  routed by all router
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -41,17 +41,17 @@ LOG: Long A lookup for 'delay1500.test.ex': ssss msec
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing inline ACL "accept"
 >>> check verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing should_not_log@delay500.test.ex
->>> calling all router
->>>  check dnssec require list
->>>   delay500.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   delay500.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    delay500.test.ex in dnssec_request_domains? yes (matched "*")
->>>  local host found for non-MX address
->>> routed by all router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing should_not_log@delay500.test.ex
+>>>   calling all router
+>>>    check dnssec require list
+>>>    ╎delay500.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎delay500.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ delay500.test.ex in dnssec_request_domains? yes (matched "*")
+>>>    local host found for non-MX address
+>>>  routed by all router
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT

@@ -17,73 +17,73 @@ Considering x@b.domain
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@b.domain
 --------> r1 router <--------
-local_part=x domain=b.domain
-checking domains
-b.domain in domains?
- list element: !+C
-  start sublist C
-   b.domain in "+A : +B"?
-   ╎list element: +A
-   ╎ start sublist A
-   ╎  b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"?
-   ╎   list element: lsearch;TESTSUITE/aux-fixed/0414.list1
-   ╎   search_open: lsearch "TESTSUITE/aux-fixed/0414.list1"
-   ╎   search_find: file="TESTSUITE/aux-fixed/0414.list1"
-   ╎     key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
-   ╎   LRU list:
-   ╎     0TESTSUITE/aux-fixed/0414.list1
-   ╎     End
-   ╎   internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
-   ╎     type=lsearch key="b.domain" opts=NULL
-   ╎   file lookup required for b.domain
-   ╎     in TESTSUITE/aux-fixed/0414.list1
-   ╎   creating new cache entry
-   ╎   lookup failed
-   ╎  b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? no (end of list)
-   ╎ end sublist A
-   ╎list element: +B
-   ╎ start sublist B
-   ╎  b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"?
-   ╎   list element: lsearch;TESTSUITE/aux-fixed/0414.list2
-   ╎   search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
-   ╎   search_find: file="TESTSUITE/aux-fixed/0414.list2"
-   ╎     key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
-   ╎   LRU list:
-   ╎     0TESTSUITE/aux-fixed/0414.list2
-   ╎     0TESTSUITE/aux-fixed/0414.list1
-   ╎     End
-   ╎   internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
-   ╎     type=lsearch key="b.domain" opts=NULL
-   ╎   file lookup required for b.domain
-   ╎     in TESTSUITE/aux-fixed/0414.list2
-   ╎   creating new cache entry
-   ╎   lookup yielded: b.domain-data
-   ╎   b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list2")
-   ╎ end sublist B
-   ╎data from lookup saved for cache for +B: key 'b.domain' value 'b.domain-data'
-   ╎b.domain in "+A : +B"? yes (matched "+B")
-  end sublist C
- data from lookup saved for cache for +C: key 'b.domain' value 'b.domain-data'
- b.domain in domains? no (matched "!+C")
-r1 router skipped: domains mismatch
+ local_part=x domain=b.domain
+ checking domains
+ b.domain in domains?
+  list element: !+C
+   start sublist C
+   ╎b.domain in "+A : +B"?
+   ╎ list element: +A
+   ╎  start sublist A
+   ╎   b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"?
+   ╎   ╎list element: lsearch;TESTSUITE/aux-fixed/0414.list1
+   ╎   ╎search_open: lsearch "TESTSUITE/aux-fixed/0414.list1"
+   ╎   ╎search_find: file="TESTSUITE/aux-fixed/0414.list1"
+   ╎   ╎  key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎   ╎LRU list:
+   ╎   ╎  0TESTSUITE/aux-fixed/0414.list1
+   ╎   ╎  End
+   ╎   ╎internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
+   ╎   ╎  type=lsearch key="b.domain" opts=NULL
+   ╎   ╎file lookup required for b.domain
+   ╎   ╎  in TESTSUITE/aux-fixed/0414.list1
+   ╎   ╎creating new cache entry
+   ╎   ╎lookup failed
+   ╎   b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? no (end of list)
+   ╎  end sublist A
+   ╎ list element: +B
+   ╎  start sublist B
+   ╎   b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"?
+   ╎   ╎list element: lsearch;TESTSUITE/aux-fixed/0414.list2
+   ╎   ╎search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
+   ╎   ╎search_find: file="TESTSUITE/aux-fixed/0414.list2"
+   ╎   ╎  key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎   ╎LRU list:
+   ╎   ╎  0TESTSUITE/aux-fixed/0414.list2
+   ╎   ╎  0TESTSUITE/aux-fixed/0414.list1
+   ╎   ╎  End
+   ╎   ╎internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
+   ╎   ╎  type=lsearch key="b.domain" opts=NULL
+   ╎   ╎file lookup required for b.domain
+   ╎   ╎  in TESTSUITE/aux-fixed/0414.list2
+   ╎   ╎creating new cache entry
+   ╎   ╎lookup yielded: b.domain-data
+   ╎   ╎b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list2")
+   ╎  end sublist B
+   ╎ data from lookup saved for cache for +B: key 'b.domain' value 'b.domain-data'
+   ╎ b.domain in "+A : +B"? yes (matched "+B")
+   end sublist C
+  data from lookup saved for cache for +C: key 'b.domain' value 'b.domain-data'
+  b.domain in domains? no (matched "!+C")
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=x domain=b.domain
-checking domains
-b.domain in domains?
- list element: +B
-  start sublist B
- cached yes match for +B
- cached lookup data = b.domain-data
- b.domain in domains? yes (matched "+B" - cached)
+ local_part=x domain=b.domain
+ checking domains
+ b.domain in domains?
+  list element: +B
+   start sublist B
+  cached yes match for +B
+  cached lookup data = b.domain-data
+  b.domain in domains? yes (matched "+B" - cached)
 domain_data=b.domain-data
-calling r2 router
-r2 router called for x@b.domain
-  domain = b.domain
-set transport t1
-queued for t1 transport: local_part = x
-domain = b.domain
-  errors_to=NULL
-  domain_data=b.domain-data local_part_data=NULL
+ calling r2 router
+ r2 router called for x@b.domain
+   domain = b.domain
+ set transport t1
+ queued for t1 transport: local_part = x
+ domain = b.domain
+   errors_to=NULL
+   domain_data=b.domain-data local_part_data=NULL
 routed by r2 router
   envelope to:	x@b.domain
   transport:	t1
@@ -94,82 +94,82 @@ Considering x@a.domain
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@a.domain
 --------> r1 router <--------
-local_part=x domain=a.domain
-checking domains
-a.domain in domains?
- list element: !+C
-  start sublist C
-   a.domain in "+A : +B"?
-   ╎list element: +A
-   ╎ start sublist A
-   ╎  a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"?
-   ╎   list element: lsearch;TESTSUITE/aux-fixed/0414.list1
-   ╎   search_open: lsearch "TESTSUITE/aux-fixed/0414.list1"
-   ╎     cached open
-   ╎   search_find: file="TESTSUITE/aux-fixed/0414.list1"
-   ╎     key="a.domain" partial=-1 affix=NULL starflags=0 opts=NULL
-   ╎   LRU list:
-   ╎     0TESTSUITE/aux-fixed/0414.list1
-   ╎     0TESTSUITE/aux-fixed/0414.list2
-   ╎     End
-   ╎   internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
-   ╎     type=lsearch key="a.domain" opts=NULL
-   ╎   file lookup required for a.domain
-   ╎     in TESTSUITE/aux-fixed/0414.list1
-   ╎   creating new cache entry
-   ╎   lookup yielded: a.domain-data
-   ╎   a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list1")
-   ╎ end sublist A
-   ╎data from lookup saved for cache for +A: key 'a.domain' value 'a.domain-data'
-   ╎a.domain in "+A : +B"? yes (matched "+A")
-  end sublist C
- data from lookup saved for cache for +C: key 'a.domain' value 'a.domain-data'
- a.domain in domains? no (matched "!+C")
-r1 router skipped: domains mismatch
+ local_part=x domain=a.domain
+ checking domains
+ a.domain in domains?
+  list element: !+C
+   start sublist C
+   ╎a.domain in "+A : +B"?
+   ╎ list element: +A
+   ╎  start sublist A
+   ╎   a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"?
+   ╎   ╎list element: lsearch;TESTSUITE/aux-fixed/0414.list1
+   ╎   ╎search_open: lsearch "TESTSUITE/aux-fixed/0414.list1"
+   ╎   ╎  cached open
+   ╎   ╎search_find: file="TESTSUITE/aux-fixed/0414.list1"
+   ╎   ╎  key="a.domain" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎   ╎LRU list:
+   ╎   ╎  0TESTSUITE/aux-fixed/0414.list1
+   ╎   ╎  0TESTSUITE/aux-fixed/0414.list2
+   ╎   ╎  End
+   ╎   ╎internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
+   ╎   ╎  type=lsearch key="a.domain" opts=NULL
+   ╎   ╎file lookup required for a.domain
+   ╎   ╎  in TESTSUITE/aux-fixed/0414.list1
+   ╎   ╎creating new cache entry
+   ╎   ╎lookup yielded: a.domain-data
+   ╎   ╎a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list1")
+   ╎  end sublist A
+   ╎ data from lookup saved for cache for +A: key 'a.domain' value 'a.domain-data'
+   ╎ a.domain in "+A : +B"? yes (matched "+A")
+   end sublist C
+  data from lookup saved for cache for +C: key 'a.domain' value 'a.domain-data'
+  a.domain in domains? no (matched "!+C")
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=x domain=a.domain
-checking domains
-a.domain in domains?
- list element: +B
-  start sublist B
-   a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"?
-   ╎list element: lsearch;TESTSUITE/aux-fixed/0414.list2
-   ╎search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
-   ╎  cached open
-   ╎search_find: file="TESTSUITE/aux-fixed/0414.list2"
-   ╎  key="a.domain" partial=-1 affix=NULL starflags=0 opts=NULL
-   ╎LRU list:
-   ╎  0TESTSUITE/aux-fixed/0414.list2
-   ╎  0TESTSUITE/aux-fixed/0414.list1
-   ╎  End
-   ╎internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
-   ╎  type=lsearch key="a.domain" opts=NULL
-   ╎file lookup required for a.domain
-   ╎  in TESTSUITE/aux-fixed/0414.list2
-   ╎creating new cache entry
-   ╎lookup failed
-   a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? no (end of list)
-  end sublist B
-a.domain in domains? no (end of list)
-r2 router skipped: domains mismatch
+ local_part=x domain=a.domain
+ checking domains
+ a.domain in domains?
+  list element: +B
+   start sublist B
+   ╎a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"?
+   ╎ list element: lsearch;TESTSUITE/aux-fixed/0414.list2
+   ╎ search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
+   ╎   cached open
+   ╎ search_find: file="TESTSUITE/aux-fixed/0414.list2"
+   ╎   key="a.domain" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎ LRU list:
+   ╎   0TESTSUITE/aux-fixed/0414.list2
+   ╎   0TESTSUITE/aux-fixed/0414.list1
+   ╎   End
+   ╎ internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
+   ╎   type=lsearch key="a.domain" opts=NULL
+   ╎ file lookup required for a.domain
+   ╎   in TESTSUITE/aux-fixed/0414.list2
+   ╎ creating new cache entry
+   ╎ lookup failed
+   ╎a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? no (end of list)
+   end sublist B
+ a.domain in domains? no (end of list)
+ r2 router skipped: domains mismatch
 --------> r3 router <--------
-local_part=x domain=a.domain
-checking domains
-a.domain in domains?
- list element: +A
-  start sublist A
- cached yes match for +A
- cached lookup data = a.domain-data
- a.domain in domains? yes (matched "+A" - cached)
+ local_part=x domain=a.domain
+ checking domains
+ a.domain in domains?
+  list element: +A
+   start sublist A
+  cached yes match for +A
+  cached lookup data = a.domain-data
+  a.domain in domains? yes (matched "+A" - cached)
 domain_data=a.domain-data
-calling r3 router
-r3 router called for x@a.domain
-  domain = a.domain
-set transport t1
-queued for t1 transport: local_part = x
-domain = a.domain
-  errors_to=NULL
-  domain_data=a.domain-data local_part_data=NULL
+ calling r3 router
+ r3 router called for x@a.domain
+   domain = a.domain
+ set transport t1
+ queued for t1 transport: local_part = x
+ domain = a.domain
+   errors_to=NULL
+   domain_data=a.domain-data local_part_data=NULL
 routed by r3 router
   envelope to:	x@a.domain
   transport:	t1

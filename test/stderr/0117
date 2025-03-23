@@ -5,15 +5,15 @@ admin user
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@mxt9.test.ex
 --------> lookuphost router <--------
-local_part=xxx domain=mxt9.test.ex
-calling lookuphost router
-lookuphost router called for xxx@mxt9.test.ex
-  domain = mxt9.test.ex
-main lookup for domain
-queued for <unset> transport: local_part = xxx
-domain = mxt9.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xxx domain=mxt9.test.ex
+ calling lookuphost router
+ lookuphost router called for xxx@mxt9.test.ex
+   domain = mxt9.test.ex
+ main lookup for domain
+ queued for <unset> transport: local_part = xxx
+ domain = mxt9.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	xxx@mxt9.test.ex
   transport:	<none>
@@ -28,15 +28,15 @@ admin user
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@mxt9a.test.ex
 --------> lookuphost router <--------
-local_part=xxx domain=mxt9a.test.ex
-calling lookuphost router
-lookuphost router called for xxx@mxt9a.test.ex
-  domain = mxt9a.test.ex
-main lookup for domain
-queued for <unset> transport: local_part = xxx
-domain = mxt9a.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xxx domain=mxt9a.test.ex
+ calling lookuphost router
+ lookuphost router called for xxx@mxt9a.test.ex
+   domain = mxt9a.test.ex
+ main lookup for domain
+ queued for <unset> transport: local_part = xxx
+ domain = mxt9a.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	xxx@mxt9a.test.ex
   transport:	<none>
@@ -51,15 +51,15 @@ admin user
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@mxt9b.test.ex
 --------> lookuphost router <--------
-local_part=xxx domain=mxt9b.test.ex
-calling lookuphost router
-lookuphost router called for xxx@mxt9b.test.ex
-  domain = mxt9b.test.ex
-main lookup for domain
-queued for <unset> transport: local_part = xxx
-domain = mxt9b.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xxx domain=mxt9b.test.ex
+ calling lookuphost router
+ lookuphost router called for xxx@mxt9b.test.ex
+   domain = mxt9b.test.ex
+ main lookup for domain
+ queued for <unset> transport: local_part = xxx
+ domain = mxt9b.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	xxx@mxt9b.test.ex
   transport:	<none>

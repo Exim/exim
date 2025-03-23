@@ -13,21 +13,21 @@
 >>> using ACL "rcpt"
 >>> processing ACL rcpt "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@ten-1.test.ex
->>> calling r1 router
->>>  check dnssec require list
->>>   ten-1.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   ten-1.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    ten-1.test.ex in dnssec_request_domains? yes (matched "*")
->>> routed by r1 router
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@ten-1.test.ex
+>>>   calling r1 router
+>>>    check dnssec require list
+>>>    ╎ten-1.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎ten-1.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+>>>  routed by r1 router
 >>> Attempting full verification using callout
->>> callout cache: no domain record found for ten-1.test.ex
->>> callout cache: no address record found for x@ten-1.test.ex
+>>>  callout cache: no domain record found for ten-1.test.ex
+>>>  callout cache: no address record found for x@ten-1.test.ex
 >>> cannot callout via null transport
->>> ----------- end verify ------------
+>>>  ----------- end verify ------------
 >>> accept: condition test deferred in ACL rcpt
 LOG: H=(test) [V4NET.0.0.1] sender verify defer for <x@ten-1.test.ex>: Could not complete sender verify callout
 LOG: H=(test) [V4NET.0.0.1] F=<x@ten-1.test.ex> temporarily rejected RCPT x@y: Could not complete sender verify callout

@@ -20,15 +20,15 @@ cms@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cms@test.ex
 --------> v0 router <--------
-local_part=cms domain=test.ex
-v0 router skipped: verify_only set
+ local_part=cms domain=test.ex
+ v0 router skipped: verify_only set
 --------> r1 router <--------
-local_part=cms domain=test.ex
-checking domains
-r1 router skipped: domains mismatch
+ local_part=cms domain=test.ex
+ checking domains
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=cms domain=test.ex
-calling r2 router
+ local_part=cms domain=test.ex
+ calling r2 router
 rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}'
 expanded: 'unknown@recurse.test.ex, defer'
 file is not a filter file
@@ -36,21 +36,21 @@ parse_forward_list: unknown@recurse.test.ex, defer
 extract item: unknown@recurse.test.ex
 extract item: defer
 ------ Verifying errors address postmaster@test.ex ------
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing postmaster@test.ex
---------> v0 router <--------
-local_part=postmaster domain=test.ex
-checking local_parts
-calling v0 router
-v0 router called for postmaster@test.ex
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing postmaster@test.ex
+ --------> v0 router <--------
+  local_part=postmaster domain=test.ex
+  checking local_parts
+  calling v0 router
+  v0 router called for postmaster@test.ex
+    domain = test.ex
+  queued for <unset> transport: local_part = postmaster
   domain = test.ex
-queued for <unset> transport: local_part = postmaster
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=postmaster
-routed by v0 router
-  envelope to:	postmaster@test.ex
-  transport:	<none>
+    errors_to=NULL
+    domain_data=NULL local_part_data=postmaster
+ routed by v0 router
+   envelope to:	postmaster@test.ex
+   transport:	<none>
 ------ End verifying errors address postmaster@test.ex ------
 r2 router generated defer@test.ex
   errors_to=postmaster@test.ex transport=NULL
@@ -74,15 +74,15 @@ defer@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer@test.ex
 --------> v0 router <--------
-local_part=defer domain=test.ex
-v0 router skipped: verify_only set
+ local_part=defer domain=test.ex
+ v0 router skipped: verify_only set
 --------> r1 router <--------
-local_part=defer domain=test.ex
-checking domains
-r1 router skipped: domains mismatch
+ local_part=defer domain=test.ex
+ checking domains
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=defer domain=test.ex
-calling r2 router
+ local_part=defer domain=test.ex
+ calling r2 router
 rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}'
 expanded: ':defer: Forcibly deferred'
 file is not a filter file
@@ -95,18 +95,18 @@ LOG: MAIN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing unknown@recurse.test.ex
 --------> v0 router <--------
-local_part=unknown domain=recurse.test.ex
-v0 router skipped: verify_only set
+ local_part=unknown domain=recurse.test.ex
+ v0 router skipped: verify_only set
 --------> r1 router <--------
-local_part=unknown domain=recurse.test.ex
-checking domains
-recurse.test.ex in domains? yes (end of list)
-calling r1 router
-r1 router called for unknown@recurse.test.ex
-  domain = recurse.test.ex
-main lookup for domain
+ local_part=unknown domain=recurse.test.ex
+ checking domains
+ recurse.test.ex in domains? yes (end of list)
+ calling r1 router
+ r1 router called for unknown@recurse.test.ex
+   domain = recurse.test.ex
+ main lookup for domain
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
-main lookup for domain
+ main lookup for domain
 domain changed to recurse.test.ex.test.ex
 rewriting header lines
 re-routed to unknown@recurse.test.ex.test.ex
@@ -118,21 +118,21 @@ unknown@recurse.test.ex.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing unknown@recurse.test.ex.test.ex
 --------> v0 router <--------
-local_part=unknown domain=recurse.test.ex.test.ex
-v0 router skipped: verify_only set
+ local_part=unknown domain=recurse.test.ex.test.ex
+ v0 router skipped: verify_only set
 --------> r1 router <--------
-local_part=unknown domain=recurse.test.ex.test.ex
-checking domains
-recurse.test.ex.test.ex in domains? yes (end of list)
-calling r1 router
-r1 router called for unknown@recurse.test.ex.test.ex
-  domain = recurse.test.ex.test.ex
-main lookup for domain
-set transport t1
-queued for t1 transport: local_part = unknown
-domain = recurse.test.ex.test.ex
-  errors_to=postmaster@test.ex
-  domain_data=NULL local_part_data=NULL
+ local_part=unknown domain=recurse.test.ex.test.ex
+ checking domains
+ recurse.test.ex.test.ex in domains? yes (end of list)
+ calling r1 router
+ r1 router called for unknown@recurse.test.ex.test.ex
+   domain = recurse.test.ex.test.ex
+ main lookup for domain
+ set transport t1
+ queued for t1 transport: local_part = unknown
+ domain = recurse.test.ex.test.ex
+   errors_to=postmaster@test.ex
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	unknown@recurse.test.ex.test.ex
   transport:	t1
@@ -166,15 +166,15 @@ cms@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cms@test.ex
 --------> v0 router <--------
-local_part=cms domain=test.ex
-v0 router skipped: verify_only set
+ local_part=cms domain=test.ex
+ v0 router skipped: verify_only set
 --------> r1 router <--------
-local_part=cms domain=test.ex
-checking domains
-r1 router skipped: domains mismatch
+ local_part=cms domain=test.ex
+ checking domains
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=cms domain=test.ex
-calling r2 router
+ local_part=cms domain=test.ex
+ calling r2 router
 rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}'
 expanded: 'unknown@recurse.test.ex, defer'
 file is not a filter file
@@ -182,21 +182,21 @@ parse_forward_list: unknown@recurse.test.ex, defer
 extract item: unknown@recurse.test.ex
 extract item: defer
 ------ Verifying errors address postmaster@test.ex ------
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing postmaster@test.ex
---------> v0 router <--------
-local_part=postmaster domain=test.ex
-checking local_parts
-calling v0 router
-v0 router called for postmaster@test.ex
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing postmaster@test.ex
+ --------> v0 router <--------
+  local_part=postmaster domain=test.ex
+  checking local_parts
+  calling v0 router
+  v0 router called for postmaster@test.ex
+    domain = test.ex
+  queued for <unset> transport: local_part = postmaster
   domain = test.ex
-queued for <unset> transport: local_part = postmaster
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=postmaster
-routed by v0 router
-  envelope to:	postmaster@test.ex
-  transport:	<none>
+    errors_to=NULL
+    domain_data=NULL local_part_data=postmaster
+ routed by v0 router
+   envelope to:	postmaster@test.ex
+   transport:	<none>
 ------ End verifying errors address postmaster@test.ex ------
 r2 router generated defer@test.ex
   errors_to=postmaster@test.ex transport=NULL
@@ -220,15 +220,15 @@ defer@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer@test.ex
 --------> v0 router <--------
-local_part=defer domain=test.ex
-v0 router skipped: verify_only set
+ local_part=defer domain=test.ex
+ v0 router skipped: verify_only set
 --------> r1 router <--------
-local_part=defer domain=test.ex
-checking domains
-r1 router skipped: domains mismatch
+ local_part=defer domain=test.ex
+ checking domains
+ r1 router skipped: domains mismatch
 --------> r2 router <--------
-local_part=defer domain=test.ex
-calling r2 router
+ local_part=defer domain=test.ex
+ calling r2 router
 rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}'
 expanded: ':defer: Forcibly deferred'
 file is not a filter file

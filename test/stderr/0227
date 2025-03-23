@@ -1,17 +1,17 @@
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<ok@localhost>
-  SMTP<< 250 OK
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<ok@localhost>
+   SMTP<< 250 OK
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:250'
 LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
@@ -21,18 +21,18 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<bad@localhost>
-  SMTP<< 550 Unknown user
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<bad@localhost>
+   SMTP<< 550 Unknown user
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify fail for <bad@localhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<bad@localhost>: 550 Unknown user
@@ -42,18 +42,18 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<uncheckable@localhost1>
-  SMTP<< 450 Temporary error
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<uncheckable@localhost1>
+   SMTP<< 450 Temporary error
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:450:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify defer for <uncheckable@localhost1>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<uncheckable@localhost1>: 450 Temporary error
@@ -63,16 +63,16 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 550 Error for <>
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 550 Error for <>
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify fail for <uncheckable2@localhost1>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550 Error for <>
@@ -82,17 +82,17 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 550-Multiline error for <>
-         550 Here's the second line
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 550-Multiline error for <>
+          550 Here's the second line
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:550-:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify fail for <uncheckable@localhost1>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550-Multiline error for <>\n550 Here's the second line
@@ -102,16 +102,16 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 550 Bad-char error for <> topbitchar:€ÿÿ
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 550 Bad-char error for <> topbitchar:€ÿÿ
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify fail for <uncheckable2@localhost1>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550 Bad-char error for <> topbitchar:\200\377\377
@@ -121,11 +121,11 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from 1.1.1.1 ...
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from 1.1.1.1 ...
 LOG: MAIN
   bind of [1.1.1.1]:10001 failed
-unable to bind outgoing SMTP call to 1.1.1.1: Netwk addr not available
- failed: Netwk addr not available
+ unable to bind outgoing SMTP call to 1.1.1.1: Netwk addr not available
+  failed: Netwk addr not available
 cmdlog: (unset)
 LOG: MAIN PANIC
   recipient verify defer (making callout connection): T=smtp Netwk addr not available
@@ -137,18 +137,18 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<z@remote.domain>
-  SMTP<< 550 Recipient not liked
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<z@remote.domain>
+   SMTP<< 550 Recipient not liked
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550 Recipient not liked
@@ -156,19 +156,19 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<z@remote.domain>
-  SMTP<< 550-Recipient not liked on two lines
-         550 Here's the second
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<z@remote.domain>
+   SMTP<< 550-Recipient not liked on two lines
+          550 Here's the second
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550-:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550-Recipient not liked on two lines\n550 Here's the second
@@ -176,18 +176,18 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<z@remote.domain>
-  SMTP<< 550 Recipient not liked, with bad char:€ÿÿ
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<z@remote.domain>
+   SMTP<< 550 Recipient not liked, with bad char:€ÿÿ
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550 Recipient not liked, with bad char:\200\377\377
@@ -195,11 +195,11 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+  failed: Connection refused
 cmdlog: (unset)
-Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_S ...
- failed: Connection refused
+ Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_S ...
+  failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> temporarily rejected RCPT <z@remote.domain>: Could not complete recipient verify callout
@@ -207,18 +207,18 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<abcd@x.y.z>
-  SMTP<< 550 Not liked
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<abcd@x.y.z>
+   SMTP<< 550 Not liked
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
@@ -226,18 +226,18 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<abcd@x.y.z>
-  SMTP<< 550 Not liked
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<abcd@x.y.z>
+   SMTP<< 550 Not liked
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
@@ -245,25 +245,25 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<ok@localhost1>
-  SMTP<< 250 OK
-Cutthrough cancelled by presence of postmaster verify
-  SMTP>> RSET
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<postmaster@localhost1>
-  SMTP<< 250 OK
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<ok@localhost1>
+   SMTP<< 250 OK
+ Cutthrough cancelled by presence of postmaster verify
+   SMTP>> RSET
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<postmaster@localhost1>
+   SMTP<< 250 OK
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
@@ -271,25 +271,25 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<ok@localhost1>
-  SMTP<< 250 OK
-Cutthrough cancelled by presence of postmaster verify
-  SMTP>> RSET
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<postmaster@localhost1>
-  SMTP<< 550 Don't like postmaster
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<ok@localhost1>
+   SMTP<< 250 OK
+ Cutthrough cancelled by presence of postmaster verify
+   SMTP>> RSET
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<postmaster@localhost1>
+   SMTP<< 550 Don't like postmaster
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.5] U=root sender verify fail for <ok@localhost1>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<postmaster@localhost1>: 550 Don't like postmaster
@@ -299,60 +299,39 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250- wotcher sverifier
-         250-SIZE
-         250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<ok@localhost1>
-  SMTP<< 250 OK
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250- wotcher sverifier
+          250-SIZE
+          250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<ok@localhost1>
+   SMTP<< 250 OK
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:QUIT:250'
 LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250- wotcher rverifier
-         250-SIZE
-         250 OK
-  SMTP>> MAIL FROM:<> SIZE=ssss
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<z@remote.domain>
-  SMTP<< 250 OK
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
-cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:QUIT:250'
-LOG: MAIN REJECT
-  H=(me) [V4NET.0.0.3] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
-LOG: smtp_connection MAIN
-  SMTP connection from root D=qqs closed by QUIT
-LOG: smtp_connection MAIN
-  SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250- wotcher rverifier
-         250-SIZE
-         250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<z@remote.domain>
-  SMTP<< 250 OK
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250- wotcher rverifier
+          250-SIZE
+          250 OK
+   SMTP>> MAIL FROM:<> SIZE=ssss
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<z@remote.domain>
+   SMTP<< 250 OK
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:QUIT:250'
 LOG: MAIN REJECT
   H=(me) [V4NET.0.0.3] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
@@ -360,26 +339,47 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> EHLO myhost.test.ex
-  SMTP<< 250- wotcher rverifier
-         250-SIZE
-         250 OK
-  SMTP>> MAIL FROM:<ok@localhost1>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@remote.domain>
-  SMTP<< 550 RANDOM NOT OK
-  SMTP>> RSET
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<ok@localhost1> SIZE=ssss
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<z@remote.domain>
-  SMTP<< 250 OK
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250- wotcher rverifier
+          250-SIZE
+          250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<z@remote.domain>
+   SMTP<< 250 OK
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:QUIT:250'
+LOG: MAIN REJECT
+  H=(me) [V4NET.0.0.3] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
+LOG: smtp_connection MAIN
+  SMTP connection from root D=qqs closed by QUIT
+LOG: smtp_connection MAIN
+  SMTP connection from root
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> EHLO myhost.test.ex
+   SMTP<< 250- wotcher rverifier
+          250-SIZE
+          250 OK
+   SMTP>> MAIL FROM:<ok@localhost1>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@remote.domain>
+   SMTP<< 550 RANDOM NOT OK
+   SMTP>> RSET
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<ok@localhost1> SIZE=ssss
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<z@remote.domain>
+   SMTP<< 250 OK
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250-:MAIL:250:RCPT:550:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 LOG: MAIN REJECT
   H=(me) [V4NET.0.0.7] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
@@ -387,18 +387,18 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-  SMTP>> LHLO myhost.test.ex
-  SMTP<< 250 OK
-  SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<z@remote.lmtp>
-  SMTP<< 550 Recipient not liked
-  SMTP>> QUIT
-  SMTP<< 250 OK
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+   SMTP>> LHLO myhost.test.ex
+   SMTP<< 250 OK
+   SMTP>> MAIL FROM:<>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<z@remote.lmtp>
+   SMTP<< 550 Recipient not liked
+   SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:LHLO:250:MAIL:250:RCPT:550:QUIT:250'
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.lmtp>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.lmtp>: 550 Recipient not liked
@@ -406,10 +406,10 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP(closed)<<
-  SMTP(close)>>
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP(closed)<<
+   SMTP(close)>>
 cmdlog: (unset)
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify defer for <bad@localhost1>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : Remote host closed connection in response to initial connection
@@ -419,8 +419,8 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+  failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify defer for <bad@localhost1>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : Connection refused

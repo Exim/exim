@@ -5,19 +5,19 @@ admin user
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing yes@myhost.test.ex
 --------> smart router <--------
-local_part=yes domain=myhost.test.ex
-checking require_files
-file check: ! TESTSUITE/aux-fixed/0084.$local_part
-expanded file: TESTSUITE/aux-fixed/0084.yes
-stat() yielded 0
-smart router skipped: file check
+ local_part=yes domain=myhost.test.ex
+ checking require_files
+ file check: ! TESTSUITE/aux-fixed/0084.$local_part
+ expanded file: TESTSUITE/aux-fixed/0084.yes
+ stat() yielded 0
+ smart router skipped: file check
 --------> forward router <--------
-local_part=yes domain=myhost.test.ex
-checking require_files
-file check: TESTSUITE/aux-fixed/0084.$local_part
-expanded file: TESTSUITE/aux-fixed/0084.yes
-stat() yielded 0
-calling forward router
+ local_part=yes domain=myhost.test.ex
+ checking require_files
+ file check: TESTSUITE/aux-fixed/0084.$local_part
+ expanded file: TESTSUITE/aux-fixed/0084.yes
+ stat() yielded 0
+ calling forward router
 rda_interpret (file): '${lookup {0084.$local_part} dsearch,ret=full {TESTSUITE/aux-fixed}}'
 expanded: 'TESTSUITE/aux-fixed/0084.yes'
 ssss bytes read from TESTSUITE/aux-fixed/0084.yes
@@ -34,34 +34,34 @@ routed by forward router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> localuser router <--------
-local_part=userx domain=test.ex
-checking local_parts
-calling localuser router
-localuser router called for userx@test.ex
-  domain = test.ex
-queued for <unset> transport: local_part = userx
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=userx
+ local_part=userx domain=test.ex
+ checking local_parts
+ calling localuser router
+ localuser router called for userx@test.ex
+   domain = test.ex
+ queued for <unset> transport: local_part = userx
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=userx
 routed by localuser router
   envelope to:	userx@test.ex
   transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing no@myhost.test.ex
 --------> smart router <--------
-local_part=no domain=myhost.test.ex
-checking require_files
-file check: ! TESTSUITE/aux-fixed/0084.$local_part
-expanded file: TESTSUITE/aux-fixed/0084.no
-stat() yielded -1
+ local_part=no domain=myhost.test.ex
+ checking require_files
+ file check: ! TESTSUITE/aux-fixed/0084.$local_part
+ expanded file: TESTSUITE/aux-fixed/0084.no
+ stat() yielded -1
 errno = EEE
-calling smart router
-smart router called for no@myhost.test.ex
-  domain = myhost.test.ex
-queued for <unset> transport: local_part = no
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ calling smart router
+ smart router called for no@myhost.test.ex
+   domain = myhost.test.ex
+ queued for <unset> transport: local_part = no
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by smart router
   envelope to:	no@myhost.test.ex
   transport:	<none>

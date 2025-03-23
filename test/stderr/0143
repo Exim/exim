@@ -11,8 +11,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-domain.com in "test.ex : *.test.ex"? no (end of list)
-domain.com in domains? yes (end of list)
+ domain.com in "test.ex : *.test.ex"? no (end of list)
+ domain.com in domains? yes (end of list)
 router_name <my_main_router>
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@domain.com <--------

@@ -495,64 +495,64 @@ rd+usery@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing rd+usery@test.ex
 --------> r1 router <--------
-local_part=rd+usery domain=test.ex
-checking local_parts
-rd+usery in local_parts?
- list element: CALLER
-rd+usery in local_parts? no (end of list)
-r1 router skipped: local_parts mismatch
+ local_part=rd+usery domain=test.ex
+ checking local_parts
+ rd+usery in local_parts?
+  list element: CALLER
+ rd+usery in local_parts? no (end of list)
+ r1 router skipped: local_parts mismatch
 --------> r2 router <--------
-local_part=rd+usery domain=test.ex
-checking local_parts
-rd+usery in local_parts?
- list element: usery
-rd+usery in local_parts? no (end of list)
-r2 router skipped: local_parts mismatch
+ local_part=rd+usery domain=test.ex
+ checking local_parts
+ rd+usery in local_parts?
+  list element: usery
+ rd+usery in local_parts? no (end of list)
+ r2 router skipped: local_parts mismatch
 --------> r3 router <--------
-local_part=rd+usery domain=test.ex
-checking local_parts
-rd+usery in local_parts?
- list element: userz
-rd+usery in local_parts? no (end of list)
-r3 router skipped: local_parts mismatch
+ local_part=rd+usery domain=test.ex
+ checking local_parts
+ rd+usery in local_parts?
+  list element: userz
+ rd+usery in local_parts? no (end of list)
+ r3 router skipped: local_parts mismatch
 --------> r4 router <--------
-local_part=rd+usery domain=test.ex
-stripped prefix rd+
-checking local_parts
-usery in local_parts?
- list element: CALLER
-usery in local_parts? no (end of list)
-r4 router skipped: local_parts mismatch
+ local_part=rd+usery domain=test.ex
+ stripped prefix rd+
+ checking local_parts
+ usery in local_parts?
+  list element: CALLER
+ usery in local_parts? no (end of list)
+ r4 router skipped: local_parts mismatch
 --------> r5 router <--------
-local_part=rd+usery domain=test.ex
-stripped prefix rd+
-checking local_parts
-usery in local_parts?
- list element: usery
- usery in local_parts? yes (matched "usery")
-try option router_home_directory
- ╭considering: /non-exist/$domain
- ├───────text: /non-exist/
- ├considering: $domain
- ├──────value: test.ex
-            ╰──(tainted)
- ├───expanded: /non-exist/$domain
- ╰─────result: /non-exist/test.ex
-            ╰──(tainted)
-try option set
-calling r5 router
-try option qualify_domain
+ local_part=rd+usery domain=test.ex
+ stripped prefix rd+
+ checking local_parts
+ usery in local_parts?
+  list element: usery
+  usery in local_parts? yes (matched "usery")
+ try option router_home_directory
+  ╭considering: /non-exist/$domain
+  ├───────text: /non-exist/
+  ├considering: $domain
+  ├──────value: test.ex
+             ╰──(tainted)
+  ├───expanded: /non-exist/$domain
+  ╰─────result: /non-exist/test.ex
+             ╰──(tainted)
+ try option set
+ calling r5 router
+ try option qualify_domain
 rda_interpret (string): 'TESTSUITE/test-mail/junk'
 expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
-try option errors_to
-try option headers_add
-try option headers_remove
-try option file_transport
-try option transport
-set transport ft1
+ try option errors_to
+ try option headers_add
+ try option headers_remove
+ try option file_transport
+ try option transport
+ set transport ft1
 r5 router generated TESTSUITE/test-mail/junk
   pipe, file, or autoreply
   errors_to=NULL transport=ft1
@@ -564,56 +564,56 @@ routed by r5 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing rd+CALLER@test.ex
 --------> r1 router <--------
-local_part=rd+CALLER domain=test.ex
-checking local_parts
-rd+CALLER in local_parts?
- list element: CALLER
-rd+CALLER in local_parts? no (end of list)
-r1 router skipped: local_parts mismatch
+ local_part=rd+CALLER domain=test.ex
+ checking local_parts
+ rd+CALLER in local_parts?
+  list element: CALLER
+ rd+CALLER in local_parts? no (end of list)
+ r1 router skipped: local_parts mismatch
 --------> r2 router <--------
-local_part=rd+CALLER domain=test.ex
-checking local_parts
-rd+CALLER in local_parts?
- list element: usery
-rd+CALLER in local_parts? no (end of list)
-r2 router skipped: local_parts mismatch
+ local_part=rd+CALLER domain=test.ex
+ checking local_parts
+ rd+CALLER in local_parts?
+  list element: usery
+ rd+CALLER in local_parts? no (end of list)
+ r2 router skipped: local_parts mismatch
 --------> r3 router <--------
-local_part=rd+CALLER domain=test.ex
-checking local_parts
-rd+CALLER in local_parts?
- list element: userz
-rd+CALLER in local_parts? no (end of list)
-r3 router skipped: local_parts mismatch
+ local_part=rd+CALLER domain=test.ex
+ checking local_parts
+ rd+CALLER in local_parts?
+  list element: userz
+ rd+CALLER in local_parts? no (end of list)
+ r3 router skipped: local_parts mismatch
 --------> r4 router <--------
-local_part=rd+CALLER domain=test.ex
-stripped prefix rd+
-checking local_parts
-CALLER in local_parts?
- list element: CALLER
- CALLER in local_parts? yes (matched "CALLER")
-try option router_home_directory
- ╭considering: /non-exist/$local_part
- ├───────text: /non-exist/
- ├considering: $local_part
- ├──────value: CALLER
-            ╰──(tainted)
- ├───expanded: /non-exist/$local_part
- ╰─────result: /non-exist/CALLER
-            ╰──(tainted)
-try option set
-calling r4 router
-try option qualify_domain
+ local_part=rd+CALLER domain=test.ex
+ stripped prefix rd+
+ checking local_parts
+ CALLER in local_parts?
+  list element: CALLER
+  CALLER in local_parts? yes (matched "CALLER")
+ try option router_home_directory
+  ╭considering: /non-exist/$local_part
+  ├───────text: /non-exist/
+  ├considering: $local_part
+  ├──────value: CALLER
+             ╰──(tainted)
+  ├───expanded: /non-exist/$local_part
+  ╰─────result: /non-exist/CALLER
+             ╰──(tainted)
+ try option set
+ calling r4 router
+ try option qualify_domain
 rda_interpret (string): 'TESTSUITE/test-mail/junk'
 expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
-try option errors_to
-try option headers_add
-try option headers_remove
-try option file_transport
-try option transport
-set transport ft1
+ try option errors_to
+ try option headers_add
+ try option headers_remove
+ try option file_transport
+ try option transport
+ set transport ft1
 r4 router generated TESTSUITE/test-mail/junk
   pipe, file, or autoreply
   errors_to=NULL transport=ft1
@@ -625,47 +625,47 @@ routed by r4 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userz@test.ex
 --------> r1 router <--------
-local_part=userz domain=test.ex
-checking local_parts
-userz in local_parts?
- list element: CALLER
-userz in local_parts? no (end of list)
-r1 router skipped: local_parts mismatch
+ local_part=userz domain=test.ex
+ checking local_parts
+ userz in local_parts?
+  list element: CALLER
+ userz in local_parts? no (end of list)
+ r1 router skipped: local_parts mismatch
 --------> r2 router <--------
-local_part=userz domain=test.ex
-checking local_parts
-userz in local_parts?
- list element: usery
-userz in local_parts? no (end of list)
-r2 router skipped: local_parts mismatch
+ local_part=userz domain=test.ex
+ checking local_parts
+ userz in local_parts?
+  list element: usery
+ userz in local_parts? no (end of list)
+ r2 router skipped: local_parts mismatch
 --------> r3 router <--------
-local_part=userz domain=test.ex
-checking local_parts
-userz in local_parts?
- list element: userz
- userz in local_parts? yes (matched "userz")
-try option router_home_directory
- ╭considering: /non-exist/$domain
- ├───────text: /non-exist/
- ├considering: $domain
- ├──────value: test.ex
-            ╰──(tainted)
- ├───expanded: /non-exist/$domain
- ╰─────result: /non-exist/test.ex
-            ╰──(tainted)
-try option set
-calling r3 router
-r3 router called for userz@test.ex
-  domain = test.ex
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-set transport t2
-queued for t2 transport: local_part = userz
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=userz
+ local_part=userz domain=test.ex
+ checking local_parts
+ userz in local_parts?
+  list element: userz
+  userz in local_parts? yes (matched "userz")
+ try option router_home_directory
+  ╭considering: /non-exist/$domain
+  ├───────text: /non-exist/
+  ├considering: $domain
+  ├──────value: test.ex
+             ╰──(tainted)
+  ├───expanded: /non-exist/$domain
+  ╰─────result: /non-exist/test.ex
+             ╰──(tainted)
+ try option set
+ calling r3 router
+ r3 router called for userz@test.ex
+   domain = test.ex
+ try option errors_to
+ try option headers_add
+ try option headers_remove
+ try option transport
+ set transport t2
+ queued for t2 transport: local_part = userz
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=userz
 try option unseen
 routed by r3 router
   envelope to:	userz@test.ex
@@ -673,40 +673,40 @@ routed by r3 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing usery@test.ex
 --------> r1 router <--------
-local_part=usery domain=test.ex
-checking local_parts
-usery in local_parts?
- list element: CALLER
-usery in local_parts? no (end of list)
-r1 router skipped: local_parts mismatch
+ local_part=usery domain=test.ex
+ checking local_parts
+ usery in local_parts?
+  list element: CALLER
+ usery in local_parts? no (end of list)
+ r1 router skipped: local_parts mismatch
 --------> r2 router <--------
-local_part=usery domain=test.ex
-checking local_parts
-usery in local_parts?
- list element: usery
- usery in local_parts? yes (matched "usery")
-try option router_home_directory
- ╭considering: /non-exist/$domain
- ├───────text: /non-exist/
- ├considering: $domain
- ├──────value: test.ex
-            ╰──(tainted)
- ├───expanded: /non-exist/$domain
- ╰─────result: /non-exist/test.ex
-            ╰──(tainted)
-try option set
-calling r2 router
-r2 router called for usery@test.ex
-  domain = test.ex
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-set transport t1
-queued for t1 transport: local_part = usery
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=usery
+ local_part=usery domain=test.ex
+ checking local_parts
+ usery in local_parts?
+  list element: usery
+  usery in local_parts? yes (matched "usery")
+ try option router_home_directory
+  ╭considering: /non-exist/$domain
+  ├───────text: /non-exist/
+  ├considering: $domain
+  ├──────value: test.ex
+             ╰──(tainted)
+  ├───expanded: /non-exist/$domain
+  ╰─────result: /non-exist/test.ex
+             ╰──(tainted)
+ try option set
+ calling r2 router
+ r2 router called for usery@test.ex
+   domain = test.ex
+ try option errors_to
+ try option headers_add
+ try option headers_remove
+ try option transport
+ set transport t1
+ queued for t1 transport: local_part = usery
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=usery
 try option unseen
 routed by r2 router
   envelope to:	usery@test.ex
@@ -714,33 +714,33 @@ routed by r2 router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@test.ex
 --------> r1 router <--------
-local_part=CALLER domain=test.ex
-checking local_parts
-CALLER in local_parts?
- list element: CALLER
- CALLER in local_parts? yes (matched "CALLER")
-try option router_home_directory
- ╭considering: /non-exist/$local_part
- ├───────text: /non-exist/
- ├considering: $local_part
- ├──────value: CALLER
-            ╰──(tainted)
- ├───expanded: /non-exist/$local_part
- ╰─────result: /non-exist/CALLER
-            ╰──(tainted)
-try option set
-calling r1 router
-r1 router called for CALLER@test.ex
-  domain = test.ex
-try option errors_to
-try option headers_add
-try option headers_remove
-try option transport
-set transport t1
-queued for t1 transport: local_part = CALLER
-domain = test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=CALLER
+ local_part=CALLER domain=test.ex
+ checking local_parts
+ CALLER in local_parts?
+  list element: CALLER
+  CALLER in local_parts? yes (matched "CALLER")
+ try option router_home_directory
+  ╭considering: /non-exist/$local_part
+  ├───────text: /non-exist/
+  ├considering: $local_part
+  ├──────value: CALLER
+             ╰──(tainted)
+  ├───expanded: /non-exist/$local_part
+  ╰─────result: /non-exist/CALLER
+             ╰──(tainted)
+ try option set
+ calling r1 router
+ r1 router called for CALLER@test.ex
+   domain = test.ex
+ try option errors_to
+ try option headers_add
+ try option headers_remove
+ try option transport
+ set transport t1
+ queued for t1 transport: local_part = CALLER
+ domain = test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=CALLER
 try option unseen
 routed by r1 router
   envelope to:	CALLER@test.ex

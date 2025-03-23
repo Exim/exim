@@ -1821,6 +1821,7 @@ const uschar * list = arg;
 uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
 verify_type_t * vp;
 
+acl_level++;
 if (!ss) goto BAD_VERIFY;
 
 /* Handle name/address consistency verification in a separate function. */
@@ -1839,35 +1840,37 @@ if (vp->no_options && slash)
   {
   *log_msgptr = string_sprintf("unexpected '/' found in \"%s\" "
     "(this verify item has no options)", arg);
-  return ERROR;
+  rc = ERROR; goto OUT;
   }
 if (!(vp->where_allowed & BIT(where)))
   {
   *log_msgptr = string_sprintf("cannot verify %s in ACL for %s",
 		  vp->name, acl_wherenames[where]);
-  return ERROR;
+  rc = ERROR; goto OUT;
   }
 switch(vp->value)
   {
   case VERIFY_REV_HOST_LKUP:
-    if (!sender_host_address) return OK;
+    if (!sender_host_address) { rc = OK; goto OUT; }
     if ((rc = acl_verify_reverse(user_msgptr, log_msgptr)) == DEFER)
       while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
 	if (strcmpic(ss, US"defer_ok") == 0)
-	  return OK;
-    return rc;
+	  { rc = OK; goto OUT; }
+    goto OUT;
 
   case VERIFY_CERT:
     /* TLS certificate verification is done at STARTTLS time; here we just
     test whether it was successful or not. (This is for optional verification; for
     mandatory verification, the connection doesn't last this long.) */
 
-    if (tls_in.certificate_verified) return OK;
+    if (tls_in.certificate_verified) { rc = OK; goto OUT; }
     *user_msgptr = US"no verified certificate";
-    return FAIL;
+    rc = FAIL;
+    goto OUT;
 
   case VERIFY_HELO:
-    return sender_helo_verified_cond();
+    rc = sender_helo_verified_cond();
+    goto OUT;
 
   case VERIFY_CSA:
     /* Do Client SMTP Authorization checks in a separate function, and turn the
@@ -1878,15 +1881,18 @@ switch(vp->value)
                                               csa_reason_string[rc]);
     csa_status = csa_status_string[rc];
     DEBUG(D_acl) debug_printf_indent("CSA result %s\n", csa_status);
-    return csa_return_code[rc];
+    rc = csa_return_code[rc];
+    goto OUT;
 
 #ifdef EXPERIMENTAL_ARC
   case VERIFY_ARC:
     {
     const misc_module_info * mi = misc_mod_findonly(US"arc");
     typedef int (*fn_t)(const uschar *);
-    if (mi) return (((fn_t *) mi->functions)[ARC_VERIFY])
-				(CUS string_nextinlist(&list, &sep, NULL, 0));
+    rc = mi ? (((fn_t *) mi->functions)[ARC_VERIFY])
+				(CUS string_nextinlist(&list, &sep, NULL, 0))
+	    : DEFER;
+    goto OUT;
     }
 #endif
 
@@ -1902,7 +1908,7 @@ switch(vp->value)
 	*user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
       else
 	acl_verify_message = *log_msgptr;
-    return rc;
+    goto OUT;
 
   case VERIFY_HDR_NAMES_ASCII:
     /* Check that all header names are true 7 bit strings
@@ -1911,7 +1917,7 @@ switch(vp->value)
     rc = verify_check_header_names_ascii(log_msgptr);
     if (rc != OK && smtp_return_error_details && *log_msgptr)
       *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
-    return rc;
+    goto OUT;
 
   case VERIFY_NOT_BLIND:
     /* Check that no recipient of this message is "blind", that is, every envelope
@@ -1926,7 +1932,7 @@ switch(vp->value)
         {
         *log_msgptr = string_sprintf("unknown option \"%s\" in ACL "
            "condition \"verify %s\"", ss, arg);
-        return ERROR;
+        rc = ERROR; goto OUT;
         }
 
     if ((rc = verify_check_notblind(case_sensitive)) != OK)
@@ -1935,7 +1941,7 @@ switch(vp->value)
       if (smtp_return_error_details)
         *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
       }
-    return rc;
+    goto OUT;
     }
 
   /* The remaining verification tests check recipient and sender addresses,
@@ -2025,12 +2031,12 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
               {
               *log_msgptr = string_sprintf("'=' expected after "
                 "\"%s\" in ACL verify condition \"%s\"", op->name, arg);
-              return ERROR;
+              rc = ERROR; goto OUT;
               }
             Uskip_whitespace(&opt);
 	    }
 	  if (op->timeval && (period = v_period(opt, arg, log_msgptr)) < 0)
-	    return ERROR;
+	    { rc = ERROR; goto OUT; }
 
 	  switch(op->value)
 	    {
@@ -2043,7 +2049,7 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
                 *log_msgptr = string_sprintf("\"mailfrom\" is allowed as a "
                   "callout option only for verify=header_sender (detected in ACL "
                   "condition \"%s\")", arg);
-                return ERROR;
+                rc = ERROR; goto OUT;
                 }
               se_mailfrom = string_copy(opt);
   	      break;
@@ -2058,7 +2064,7 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
         {
         *log_msgptr = string_sprintf("'=' expected after \"callout\" in "
           "ACL condition \"%s\"", arg);
-        return ERROR;
+        rc = ERROR; goto OUT;
         }
       }
     }
@@ -2081,12 +2087,12 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
         for (uschar * opt; opt = string_nextinlist(&sublist, &optsep, NULL, 0); )
 	  if (Ustrncmp(opt, "cachepos=", 9) == 0)
 	    if ((period = v_period(opt += 9, arg, log_msgptr)) < 0)
-	      return ERROR;
+	      { rc = ERROR; goto OUT; }
 	    else
 	      quota_pos_cache = period;
 	  else if (Ustrncmp(opt, "cacheneg=", 9) == 0)
 	    if ((period = v_period(opt += 9, arg, log_msgptr)) < 0)
-	      return ERROR;
+	      { rc = ERROR; goto OUT; }
 	    else
 	      quota_neg_cache = period;
 	  else if (Ustrcmp(opt, "no_cache") == 0)
@@ -2101,7 +2107,7 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
     {
     *log_msgptr = string_sprintf("unknown option \"%s\" in ACL "
       "condition \"verify %s\"", ss, arg);
-    return ERROR;
+    rc = ERROR; goto OUT;
     }
   }
 
@@ -2112,13 +2118,13 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
     {
     *log_msgptr = US"use_sender, use_tptsender or use_postmaster cannot be used"
       "for a sender verify callout";
-    return ERROR;
+    rc = ERROR; goto OUT;
     }
   if ((ropts-1) & -ropts)		/* more than one bit set */
     {
     *log_msgptr = US"only one of use_sender, use_tptsender and use_postmaster"
       " can be set for a recipient callout";
-    return ERROR;
+    rc = ERROR; goto OUT;
     }
  }
 
@@ -2128,7 +2134,7 @@ if (quota)
   if (vp->value != VERIFY_RCPT)
     {
     *log_msgptr = US"can only verify quota of recipient";
-    return ERROR;
+    rc = ERROR; goto OUT;
     }
 
   if ((rc = verify_quota_call(addr->address,
@@ -2145,7 +2151,7 @@ if (quota)
       }
     }
 
-  return rc;
+  goto OUT;
   }
 
 /* Handle sender-in-header verification. Default the user message to the log
@@ -2229,7 +2235,7 @@ else if (verify_sender_address)
       }
 #endif
     if (no_details) setflag(sender_vaddr, af_sverify_told);
-    if (verify_sender_address[0] != 0)
+    if (*verify_sender_address)
       {
       /* If this is the real sender address, save the unrewritten version
       for use later in receive. Otherwise, set a flag so that rewriting the
@@ -2263,7 +2269,10 @@ else if (verify_sender_address)
 	      verify_sender_address);
       }
     else
-      rc = OK;  /* Null sender */
+      {
+      DEBUG(D_acl) debug_printf_indent(" null sender\n");
+      rc = OK;
+      }
 
     /* Cache the result code */
 
@@ -2352,16 +2361,19 @@ if (addr)
   deliver_domain = addr->domain;
   deliver_localpart = addr->local_part;
   }
-return rc;
+
+OUT:
+  acl_level--;
+  return rc;
 
 /* Syntax errors in the verify argument come here. */
 
 BAD_VERIFY:
-*log_msgptr = string_sprintf("expected \"sender[=address]\", \"recipient\", "
-  "\"helo\", \"header_syntax\", \"header_sender\", \"header_names_ascii\" "
-  "or \"reverse_host_lookup\" at start of ACL condition "
-  "\"verify %s\"", arg);
-return ERROR;
+  *log_msgptr = string_sprintf("expected \"sender[=address]\", \"recipient\", "
+    "\"helo\", \"header_syntax\", \"header_sender\", \"header_names_ascii\" "
+    "or \"reverse_host_lookup\" at start of ACL condition "
+    "\"verify %s\"", arg);
+  rc = ERROR; goto OUT;
 }
 
 

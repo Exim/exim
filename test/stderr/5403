@@ -66,54 +66,54 @@ LOG: rcpt for verify@domain.com
 >>> check condition = ${if eq {verify}{$local_part}}
 >>>                 = true
 >>> check verify = recipient/callout=use_sender
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing verify@domain.com
->>> domain.com in domains?
->>>  list element: localhost.test.ex
->>>  list element: localhost4.test.ex
->>>  list element: thishost.test.ex
->>> domain.com in domains? no (end of list)
->>> domain.com in domains?
->>>  list element: !░+local_domains
->>>   start sublist local_domains
->>>    domain.com in "test.ex : *.test.ex"?
->>>    ╎list element: test.ex
->>>    ╎list element: *.test.ex
->>>    domain.com in "test.ex : *.test.ex"? no (end of list)
->>>   end sublist local_domains
->>> domain.com in domains? yes (end of list)
->>> calling all router
->>> domain.com in "special.com"?
->>>  list element: special.com
->>> domain.com in "special.com"? no (end of list)
->>> domain.com in "*"?
->>>  list element: *
->>>  domain.com in "*"? yes (matched "*")
->>> local host found for non-MX address
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing verify@domain.com
+>>>   domain.com in domains?
+>>>    list element: localhost.test.ex
+>>>    list element: localhost4.test.ex
+>>>    list element: thishost.test.ex
+>>>   domain.com in domains? no (end of list)
+>>>   domain.com in domains?
+>>>    list element: !░+local_domains
+>>>     start sublist local_domains
+>>>    ╎ domain.com in "test.ex : *.test.ex"?
+>>>    ╎  list element: test.ex
+>>>    ╎  list element: *.test.ex
+>>>    ╎ domain.com in "test.ex : *.test.ex"? no (end of list)
+>>>     end sublist local_domains
+>>>   domain.com in domains? yes (end of list)
+>>>   calling all router
+>>>   domain.com in "special.com"?
+>>>    list element: special.com
+>>>   domain.com in "special.com"? no (end of list)
+>>>   domain.com in "*"?
+>>>    list element: *
+>>>    domain.com in "*"? yes (matched "*")
+>>>   local host found for non-MX address
 >>> fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
->>> routed by all router
+>>>  routed by all router
 >>> Attempting full verification using callout
->>> callout cache: disabled by no_cache
+>>>  callout cache: disabled by no_cache
 >>> interface=ip4.ip4.ip4.ip4 port=PORT_S
->>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from ip4.ip4.ip4.ip4 ...
->>> connected
->>>   SMTP<< 220 server ready
->>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
->>>   SMTP>> EHLO myhost.test.ex
->>> cmd buf flush 21 bytes
->>>   SMTP<< 250 OK
->>> 127.0.0.1 in hosts_require_auth? no (option unset)
->>>   SMTP>> MAIL FROM:<sender@myhost.test.ex>
->>> cmd buf flush 35 bytes
->>>   SMTP<< 250 OK
->>>   SMTP>> RCPT TO:<verify@domain.com>
->>> cmd buf flush 29 bytes
->>>   SMTP<< 250 OK
->>> holding verify callout open for cutthrough delivery
->>> ----------- end verify ------------
+>>>  Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from ip4.ip4.ip4.ip4 ...
+>>>  connected
+>>>    SMTP<< 220 server ready
+>>>  127.0.0.1 in hosts_avoid_esmtp? no (option unset)
+>>>    SMTP>> EHLO myhost.test.ex
+>>>  cmd buf flush 21 bytes
+>>>    SMTP<< 250 OK
+>>>  127.0.0.1 in hosts_require_auth? no (option unset)
+>>>    SMTP>> MAIL FROM:<sender@myhost.test.ex>
+>>>  cmd buf flush 35 bytes
+>>>    SMTP<< 250 OK
+>>>    SMTP>> RCPT TO:<verify@domain.com>
+>>>  cmd buf flush 29 bytes
+>>>    SMTP<< 250 OK
+>>>  holding verify callout open for cutthrough delivery
+>>>  ----------- end verify ------------
 >>> warn: condition test succeeded in ACL ar
 >>> processing ACL ar "accept" (TESTSUITE/test-config 25)
 >>> accept: condition test succeeded in ACL ar

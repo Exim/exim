@@ -17,30 +17,30 @@ Considering userx@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> r1 router <--------
-local_part=userx domain=test.ex
-checking domains
-test.ex in domains?
- list element: !░+local_domains
-  start sublist local_domains
-   test.ex in "+defer_lookup : test.ex"?
-   ╎list element: +defer_lookup
-   ╎ start sublist defer_lookup
-   ╎  test.ex in "testdb;defer"?
-   ╎   list element: testdb;defer
-   ╎   search_open: testdb "NULL"
-   ╎   search_find: file="NULL"
-   ╎     key="defer" partial=-1 affix=NULL starflags=0 opts=NULL
-   ╎   LRU list:
-   ╎   internal_search_find: file="NULL"
-   ╎     type=testdb key="defer" opts=NULL
-   ╎   database lookup required for defer
-   ╎   testdb lookup forced DEFER
-   ╎   lookup deferred: testdb lookup forced DEFER
-   ╎  test.ex in "testdb;defer"? list match deferred for testdb;defer
-   ╎ end sublist defer_lookup
-   test.ex in "+defer_lookup : test.ex"? list match deferred for +defer_lookup
-  end sublist local_domains
-test.ex in domains? list match deferred for ! +local_domains
-domains check lookup or other defer
+ local_part=userx domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: !░+local_domains
+   start sublist local_domains
+   ╎test.ex in "+defer_lookup : test.ex"?
+   ╎ list element: +defer_lookup
+   ╎  start sublist defer_lookup
+   ╎   test.ex in "testdb;defer"?
+   ╎   ╎list element: testdb;defer
+   ╎   ╎search_open: testdb "NULL"
+   ╎   ╎search_find: file="NULL"
+   ╎   ╎  key="defer" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎   ╎LRU list:
+   ╎   ╎internal_search_find: file="NULL"
+   ╎   ╎  type=testdb key="defer" opts=NULL
+   ╎   ╎database lookup required for defer
+   ╎   ╎testdb lookup forced DEFER
+   ╎   ╎lookup deferred: testdb lookup forced DEFER
+   ╎   test.ex in "testdb;defer"? list match deferred for testdb;defer
+   ╎  end sublist defer_lookup
+   ╎test.ex in "+defer_lookup : test.ex"? list match deferred for +defer_lookup
+   end sublist local_domains
+ test.ex in domains? list match deferred for ! +local_domains
+ domains check lookup or other defer
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>

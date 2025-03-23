@@ -20,53 +20,53 @@ Considering test.ex@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing test.ex@test.ex
 --------> r0 router <--------
-local_part=test.ex domain=test.ex
-checking senders
-CALLER@myhost.test.ex in senders?
- list element: a@shorthost.test.ex
- address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
-CALLER@myhost.test.ex in senders? no (end of list)
-r0 router skipped: senders mismatch
+ local_part=test.ex domain=test.ex
+ checking senders
+ CALLER@myhost.test.ex in senders?
+  list element: a@shorthost.test.ex
+  address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
+ CALLER@myhost.test.ex in senders? no (end of list)
+ r0 router skipped: senders mismatch
 --------> r1 router <--------
-local_part=test.ex domain=test.ex
-checking domains
-test.ex in domains?
- list element: dnsdb;test.ex
- search_open: dnsdb "NULL"
- search_find: file="NULL"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=dnsdb key="test.ex" opts=NULL
- database lookup required for test.ex
-                              (tainted)
- dnsdb key: test.ex
- DNS lookup of test.ex (TXT) using fakens
- DNS lookup of test.ex (TXT) succeeded
- creating new cache entry
- lookup yielded: A░TXT░record░for░test.ex.
- test.ex in domains? yes (matched "dnsdb;test.ex")
-checking local_parts
-test.ex in local_parts?
- list element: dnsdb;test.ex
- search_open: dnsdb "NULL"
-   cached open
- search_find: file="NULL"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=dnsdb key="test.ex" opts=NULL
- cached data used for lookup of test.ex
- lookup yielded: A░TXT░record░for░test.ex.
- test.ex in local_parts? yes (matched "dnsdb;test.ex")
-calling r1 router
-r1 router called for test.ex@test.ex
-  domain = test.ex
-set transport local_delivery
-queued for local_delivery transport: local_part = test.ex
-domain = test.ex
-  errors_to=NULL
-  domain_data=A TXT record for test.ex. local_part_data=A TXT record for test.ex.
+ local_part=test.ex domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: dnsdb;test.ex
+  search_open: dnsdb "NULL"
+  search_find: file="NULL"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=dnsdb key="test.ex" opts=NULL
+  database lookup required for test.ex
+                               (tainted)
+  dnsdb key: test.ex
+  DNS lookup of test.ex (TXT) using fakens
+  DNS lookup of test.ex (TXT) succeeded
+  creating new cache entry
+  lookup yielded: A░TXT░record░for░test.ex.
+  test.ex in domains? yes (matched "dnsdb;test.ex")
+ checking local_parts
+ test.ex in local_parts?
+  list element: dnsdb;test.ex
+  search_open: dnsdb "NULL"
+    cached open
+  search_find: file="NULL"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=dnsdb key="test.ex" opts=NULL
+  cached data used for lookup of test.ex
+  lookup yielded: A░TXT░record░for░test.ex.
+  test.ex in local_parts? yes (matched "dnsdb;test.ex")
+ calling r1 router
+ r1 router called for test.ex@test.ex
+   domain = test.ex
+ set transport local_delivery
+ queued for local_delivery transport: local_part = test.ex
+ domain = test.ex
+   errors_to=NULL
+   domain_data=A TXT record for test.ex. local_part_data=A TXT record for test.ex.
 routed by r1 router
   envelope to:	test.ex@test.ex
   transport:	local_delivery
@@ -77,91 +77,91 @@ Considering unknown@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing unknown@test.ex
 --------> r0 router <--------
-local_part=unknown domain=test.ex
-checking senders
-CALLER@myhost.test.ex in senders?
- list element: a@shorthost.test.ex
- address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
-CALLER@myhost.test.ex in senders? no (end of list)
-r0 router skipped: senders mismatch
+ local_part=unknown domain=test.ex
+ checking senders
+ CALLER@myhost.test.ex in senders?
+  list element: a@shorthost.test.ex
+  address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
+ CALLER@myhost.test.ex in senders? no (end of list)
+ r0 router skipped: senders mismatch
 --------> r1 router <--------
-local_part=unknown domain=test.ex
-checking domains
-test.ex in domains?
- list element: dnsdb;test.ex
- search_open: dnsdb "NULL"
-   cached open
- search_find: file="NULL"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=dnsdb key="test.ex" opts=NULL
- cached data used for lookup of test.ex
- lookup yielded: A░TXT░record░for░test.ex.
- test.ex in domains? yes (matched "dnsdb;test.ex")
-checking local_parts
-unknown in local_parts?
- list element: dnsdb;unknown
- search_open: dnsdb "NULL"
-   cached open
- search_find: file="NULL"
-   key="unknown" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=dnsdb key="unknown" opts=NULL
- database lookup required for unknown
-                              (tainted)
- dnsdb key: unknown
- DNS lookup of unknown (TXT) using fakens
- DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
- returning DNS_NOMATCH
- faking res_search(TXT) response length as 65535
-  writing neg-cache entry for unknown-TXT-xxxx, ttl 3000
- creating new cache entry
- lookup failed
-unknown in local_parts? no (end of list)
-r1 router skipped: local_parts mismatch
+ local_part=unknown domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: dnsdb;test.ex
+  search_open: dnsdb "NULL"
+    cached open
+  search_find: file="NULL"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=dnsdb key="test.ex" opts=NULL
+  cached data used for lookup of test.ex
+  lookup yielded: A░TXT░record░for░test.ex.
+  test.ex in domains? yes (matched "dnsdb;test.ex")
+ checking local_parts
+ unknown in local_parts?
+  list element: dnsdb;unknown
+  search_open: dnsdb "NULL"
+    cached open
+  search_find: file="NULL"
+    key="unknown" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=dnsdb key="unknown" opts=NULL
+  database lookup required for unknown
+                               (tainted)
+  dnsdb key: unknown
+  DNS lookup of unknown (TXT) using fakens
+  DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
+  returning DNS_NOMATCH
+  faking res_search(TXT) response length as 65535
+   writing neg-cache entry for unknown-TXT-xxxx, ttl 3000
+  creating new cache entry
+  lookup failed
+ unknown in local_parts? no (end of list)
+ r1 router skipped: local_parts mismatch
 --------> r2 router <--------
-local_part=unknown domain=test.ex
-checking domains
-test.ex in domains?
- list element: dnsdb;test.ex
- search_open: dnsdb "NULL"
-   cached open
- search_find: file="NULL"
-   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=dnsdb key="test.ex" opts=NULL
- cached data used for lookup of test.ex
- lookup yielded: A░TXT░record░for░test.ex.
- test.ex in domains? yes (matched "dnsdb;test.ex")
-checking senders
-CALLER@myhost.test.ex in senders?
- list element: dnsdb;A=myhost.test.ex
- address match test: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
- search_open: dnsdb "NULL"
-   cached open
- search_find: file="NULL"
-   key="A=myhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=dnsdb key="A=myhost.test.ex" opts=NULL
- database lookup required for A=myhost.test.ex
- dnsdb key: myhost.test.ex
- DNS lookup of myhost.test.ex (A) using fakens
- DNS lookup of myhost.test.ex (A) succeeded
- creating new cache entry
- lookup yielded: V4NET.10.10.10
- CALLER@myhost.test.ex in senders? yes (matched "dnsdb;A=myhost.test.ex")
-calling r2 router
-r2 router called for unknown@test.ex
-  domain = test.ex
-set transport local_delivery
-queued for local_delivery transport: local_part = unknown
-domain = test.ex
-  errors_to=NULL
-  domain_data=A TXT record for test.ex. local_part_data=NULL
+ local_part=unknown domain=test.ex
+ checking domains
+ test.ex in domains?
+  list element: dnsdb;test.ex
+  search_open: dnsdb "NULL"
+    cached open
+  search_find: file="NULL"
+    key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=dnsdb key="test.ex" opts=NULL
+  cached data used for lookup of test.ex
+  lookup yielded: A░TXT░record░for░test.ex.
+  test.ex in domains? yes (matched "dnsdb;test.ex")
+ checking senders
+ CALLER@myhost.test.ex in senders?
+  list element: dnsdb;A=myhost.test.ex
+  address match test: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
+  search_open: dnsdb "NULL"
+    cached open
+  search_find: file="NULL"
+    key="A=myhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+  LRU list:
+  internal_search_find: file="NULL"
+    type=dnsdb key="A=myhost.test.ex" opts=NULL
+  database lookup required for A=myhost.test.ex
+  dnsdb key: myhost.test.ex
+  DNS lookup of myhost.test.ex (A) using fakens
+  DNS lookup of myhost.test.ex (A) succeeded
+  creating new cache entry
+  lookup yielded: V4NET.10.10.10
+  CALLER@myhost.test.ex in senders? yes (matched "dnsdb;A=myhost.test.ex")
+ calling r2 router
+ r2 router called for unknown@test.ex
+   domain = test.ex
+ set transport local_delivery
+ queued for local_delivery transport: local_part = unknown
+ domain = test.ex
+   errors_to=NULL
+   domain_data=A TXT record for test.ex. local_part_data=NULL
 routed by r2 router
   envelope to:	unknown@test.ex
   transport:	local_delivery

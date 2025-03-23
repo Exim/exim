@@ -27,39 +27,39 @@ cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb_0 router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{no}{yes}}"...
-cccc_2nd_time router skipped: condition failure
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{no}{yes}}"...
+ cccc_2nd_time router skipped: condition failure
 --------> cccc_redirect router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-calling cccc_redirect router
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ calling cccc_redirect router
 rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
 expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex' (tainted)
 file is not a filter file
@@ -78,25 +78,25 @@ routed by cccc_redirect router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing bbbb@myhost.test.ex
 --------> defer router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{yes}{no}}"...
-calling bbbb router
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{yes}{no}}"...
+ calling bbbb router
 rda_interpret (string): 'bbbb@$domain, defer_bbbb@$domain'
 expanded: 'bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex' (tainted)
 file is not a filter file
@@ -115,15 +115,15 @@ routed by bbbb router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing aaaa@myhost.test.ex
 --------> defer router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-aaaa in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ aaaa in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{yes}{no}}"...
-calling unseen_aaaa router
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{yes}{no}}"...
+ calling unseen_aaaa router
 rda_interpret (string): 'defer_aaaa@$domain'
 expanded: 'defer_aaaa@myhost.test.ex' (tainted)
 file is not a filter file
@@ -164,9 +164,9 @@ defer_cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer_cccc@myhost.test.ex
 --------> defer router <--------
-local_part=defer_cccc domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer_cccc domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file
@@ -179,57 +179,57 @@ LOG: MAIN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb_0 router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{no}{yes}}"...
-cccc_2nd_time router skipped: condition failure
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{no}{yes}}"...
+ cccc_2nd_time router skipped: condition failure
 --------> cccc_redirect router <--------
-cccc_redirect router skipped: previously routed cccc@myhost.test.ex
+ cccc_redirect router skipped: previously routed cccc@myhost.test.ex
 --------> cccc_accept router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-calling cccc_accept router
-cccc_accept router called for cccc@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = cccc
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=cccc
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ calling cccc_accept router
+ cccc_accept router called for cccc@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = cccc
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=cccc
 routed by cccc_accept router
   envelope to:	cccc@myhost.test.ex
   transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer_bbbb@myhost.test.ex
 --------> defer router <--------
-local_part=defer_bbbb domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer_bbbb domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file
@@ -242,42 +242,42 @@ LOG: MAIN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing bbbb@myhost.test.ex
 --------> defer router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-bbbb router skipped: previously routed bbbb@myhost.test.ex
+ bbbb router skipped: previously routed bbbb@myhost.test.ex
 --------> bbbb_0 router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-calling bbbb_0 router
-bbbb_0 router called for bbbb@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = bbbb
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=bbbb
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ calling bbbb_0 router
+ bbbb_0 router called for bbbb@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = bbbb
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=bbbb
 routed by bbbb_0 router
   envelope to:	bbbb@myhost.test.ex
   transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer_aaaa@myhost.test.ex
 --------> defer router <--------
-local_part=defer_aaaa domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer_aaaa domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file
@@ -290,16 +290,16 @@ LOG: MAIN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing aaaa@myhost.test.ex
 --------> seen_aaaa router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-calling seen_aaaa router
-seen_aaaa router called for aaaa@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = aaaa
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=aaaa
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ calling seen_aaaa router
+ seen_aaaa router called for aaaa@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = aaaa
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=aaaa
 routed by seen_aaaa router
   envelope to:	aaaa@myhost.test.ex
   transport:	t1
@@ -348,35 +348,35 @@ cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb_0 router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{no}{yes}}"...
-calling cccc_2nd_time router
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{no}{yes}}"...
+ calling cccc_2nd_time router
 rda_interpret (string): '$local_part@$domain'
 expanded: 'cccc@myhost.test.ex' (tainted)
 file is not a filter file
@@ -391,62 +391,62 @@ routed by cccc_2nd_time router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing bbbb@myhost.test.ex
 --------> defer router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{yes}{no}}"...
-bbbb router skipped: condition failure
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{yes}{no}}"...
+ bbbb router skipped: condition failure
 --------> bbbb_0 router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-calling bbbb_0 router
-bbbb_0 router called for bbbb@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = bbbb
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=bbbb
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ calling bbbb_0 router
+ bbbb_0 router called for bbbb@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = bbbb
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=bbbb
 routed by bbbb_0 router
   envelope to:	bbbb@myhost.test.ex
   transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing aaaa@myhost.test.ex
 --------> defer router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-aaaa in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ aaaa in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{yes}{no}}"...
-unseen_aaaa router skipped: condition failure
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{yes}{no}}"...
+ unseen_aaaa router skipped: condition failure
 --------> seen_aaaa router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-calling seen_aaaa router
-seen_aaaa router called for aaaa@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = aaaa
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=aaaa
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ calling seen_aaaa router
+ seen_aaaa router called for aaaa@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = aaaa
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=aaaa
 routed by seen_aaaa router
   envelope to:	aaaa@myhost.test.ex
   transport:	t1
@@ -457,36 +457,36 @@ cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb_0 router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
-cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
+ cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
 --------> cccc_redirect router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-calling cccc_redirect router
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ calling cccc_redirect router
 rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
 expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex' (tainted)
 file is not a filter file
@@ -513,9 +513,9 @@ defer_cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer_cccc@myhost.test.ex
 --------> defer router <--------
-local_part=defer_cccc domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer_cccc domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file
@@ -528,45 +528,45 @@ LOG: MAIN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb_0 router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
-cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
+ cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
 --------> cccc_redirect router <--------
-cccc_redirect router skipped: previously routed cccc@myhost.test.ex
+ cccc_redirect router skipped: previously routed cccc@myhost.test.ex
 --------> cccc_accept router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-calling cccc_accept router
-cccc_accept router called for cccc@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = cccc
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=cccc
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ calling cccc_accept router
+ cccc_accept router called for cccc@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = cccc
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=cccc
 routed by cccc_accept router
   envelope to:	cccc@myhost.test.ex
   transport:	t1
@@ -609,35 +609,35 @@ cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb_0 router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{no}{yes}}"...
-calling cccc_2nd_time router
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{no}{yes}}"...
+ calling cccc_2nd_time router
 rda_interpret (string): '$local_part@$domain'
 expanded: 'cccc@myhost.test.ex' (tainted)
 file is not a filter file
@@ -652,62 +652,62 @@ routed by cccc_2nd_time router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing bbbb@myhost.test.ex
 --------> defer router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{yes}{no}}"...
-bbbb router skipped: condition failure
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{yes}{no}}"...
+ bbbb router skipped: condition failure
 --------> bbbb_0 router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-calling bbbb_0 router
-bbbb_0 router called for bbbb@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = bbbb
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=bbbb
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ calling bbbb_0 router
+ bbbb_0 router called for bbbb@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = bbbb
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=bbbb
 routed by bbbb_0 router
   envelope to:	bbbb@myhost.test.ex
   transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing aaaa@myhost.test.ex
 --------> defer router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-aaaa in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ aaaa in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-checking "condition" "${if first_delivery{yes}{no}}"...
-unseen_aaaa router skipped: condition failure
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ checking "condition" "${if first_delivery{yes}{no}}"...
+ unseen_aaaa router skipped: condition failure
 --------> seen_aaaa router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-calling seen_aaaa router
-seen_aaaa router called for aaaa@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = aaaa
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=aaaa
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ calling seen_aaaa router
+ seen_aaaa router called for aaaa@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = aaaa
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=aaaa
 routed by seen_aaaa router
   envelope to:	aaaa@myhost.test.ex
   transport:	t1
@@ -718,36 +718,36 @@ cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb_0 router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
-cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
+ cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
 --------> cccc_redirect router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-calling cccc_redirect router
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ calling cccc_redirect router
 rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
 expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex' (tainted)
 file is not a filter file
@@ -774,9 +774,9 @@ defer_cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer_cccc@myhost.test.ex
 --------> defer router <--------
-local_part=defer_cccc domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer_cccc domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file
@@ -789,45 +789,45 @@ LOG: MAIN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-unseen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-seen_aaaa router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-bbbb_0 router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
-cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
+ cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
 --------> cccc_redirect router <--------
-cccc_redirect router skipped: previously routed cccc@myhost.test.ex
+ cccc_redirect router skipped: previously routed cccc@myhost.test.ex
 --------> cccc_accept router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-calling cccc_accept router
-cccc_accept router called for cccc@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = cccc
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=cccc
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ calling cccc_accept router
+ cccc_accept router called for cccc@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = cccc
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=cccc
 routed by cccc_accept router
   envelope to:	cccc@myhost.test.ex
   transport:	t1

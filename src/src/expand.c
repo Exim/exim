@@ -8852,7 +8852,7 @@ exp_bool(address_item * addr,
 {
 const uschar * expanded;
 
-DEBUG(D_expand) debug_printf("try option %s\n", oname);
+DEBUG(D_expand) debug_printf_indent("try option %s\n", oname);
 if (!svalue) { *rvalue = bvalue; return OK; }
 
 if (!(expanded = expand_string(svalue)))

@@ -22,21 +22,21 @@
 >>> processing ACL check_recipient "deny" (TESTSUITE/test-config 20)
 >>>   message: unrouteable address
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing faq@nl.demon.net
->>> nl.demon.net in domains?
->>>  list element: *.demon.net
->>>  nl.demon.net in domains? yes (matched "*.demon.net")
->>> calling auto_antwoord router
->>> routed by auto_antwoord router (unseen)
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing faq@nl.demon.net
->>> nl.demon.net in domains?
->>>  list element: nl.demon.net
->>>  nl.demon.net in domains? yes (matched "nl.demon.net")
->>> calling algemeen_aliases router
->>> routed by algemeen_aliases router
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing faq@nl.demon.net
+>>>   nl.demon.net in domains?
+>>>    list element: *.demon.net
+>>>    nl.demon.net in domains? yes (matched "*.demon.net")
+>>>   calling auto_antwoord router
+>>>  routed by auto_antwoord router (unseen)
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing faq@nl.demon.net
+>>>   nl.demon.net in domains?
+>>>    list element: nl.demon.net
+>>>    nl.demon.net in domains? yes (matched "nl.demon.net")
+>>>   calling algemeen_aliases router
+>>>  routed by algemeen_aliases router
+>>>  ----------- end verify ------------
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains

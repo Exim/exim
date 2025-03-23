@@ -21,18 +21,18 @@
 >>> using ACL "check_rcpt"
 >>> processing ACL check_rcpt "defer" (TESTSUITE/test-config 19)
 >>> check !verify = recipient
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@mxt2.test.ex
->>> calling r1 router
->>>  check dnssec require list
->>>   mxt2.test.ex in dnssec_require_domains? no (option unset)
->>>  check dnssec request list
->>>   mxt2.test.ex in dnssec_request_domains?
->>>    list element: *
->>>    mxt2.test.ex in dnssec_request_domains? yes (matched "*")
->>> r1 router declined for x@mxt2.test.ex
->>> no more routers
->>> ----------- end verify ------------
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@mxt2.test.ex
+>>>   calling r1 router
+>>>    check dnssec require list
+>>>    ╎mxt2.test.ex in dnssec_require_domains? no (option unset)
+>>>    check dnssec request list
+>>>    ╎mxt2.test.ex in dnssec_request_domains?
+>>>    ╎ list element: *
+>>>    ╎ mxt2.test.ex in dnssec_request_domains? yes (matched "*")
+>>>   r1 router declined for x@mxt2.test.ex
+>>>  no more routers
+>>>  ----------- end verify ------------
 >>>   message: >$acl_verify_message< ++++
 >>> defer: condition test succeeded in ACL check_rcpt
 >>> end of ACL check_rcpt: DEFER

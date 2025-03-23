@@ -89,14 +89,14 @@ userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> r1 router <--------
-local_part=userx domain=test.ex
-calling r1 router
+ local_part=userx domain=test.ex
+ calling r1 router
 rda_interpret (string): 'TESTSUITE/test-mail'
 expanded: 'TESTSUITE/test-mail'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail
 extract item: TESTSUITE/test-mail
-set transport t1
+ set transport t1
 r1 router generated TESTSUITE/test-mail
   pipe, file, or autoreply
   errors_to=NULL transport=t1

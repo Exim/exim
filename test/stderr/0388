@@ -18,44 +18,44 @@ x@y: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@y
 --------> r0 router <--------
-local_part=x domain=y
-checking local_parts
-x in local_parts?
- list element: CALLER
-x in local_parts? no (end of list)
-r0 router skipped: local_parts mismatch
+ local_part=x domain=y
+ checking local_parts
+ x in local_parts?
+  list element: CALLER
+ x in local_parts? no (end of list)
+ r0 router skipped: local_parts mismatch
 --------> r1 router <--------
-local_part=x domain=y
-calling r1 router
-r1 router called for x@y
-  domain = y
+ local_part=x domain=y
+ calling r1 router
+ r1 router called for x@y
+   domain = y
 route_item = * "127.0.0.1 : V4NET.0.0.0"
-y in "*"?
- list element: *
- y in "*"? yes (matched "*")
-original list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
-expanded list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
-set transport smtp
-finding IP address for 127.0.0.1
-calling host_find_byname
-using host_fake_gethostbyname for 127.0.0.1 (IPv4)
-local host found for non-MX address
+ y in "*"?
+  list element: *
+  y in "*"? yes (matched "*")
+ original list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
+ expanded list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
+ set transport smtp
+ finding IP address for 127.0.0.1
+ calling host_find_byname
+ using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+ local host found for non-MX address
 fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 remote host address is the local host: y: configured to try delivery anyway
-finding IP address for V4NET.0.0.0
-calling host_find_byname
-using host_fake_gethostbyname for V4NET.0.0.0 (IPv4)
+ finding IP address for V4NET.0.0.0
+ calling host_find_byname
+ using host_fake_gethostbyname for V4NET.0.0.0 (IPv4)
 fully qualified name = V4NET.0.0.0
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=V4NET.0.0.0 address=V4NET.0.0.0
-queued for smtp transport: local_part = x
-domain = y
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ queued for smtp transport: local_part = x
+ domain = y
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to:	x@y
   transport:	smtp
@@ -266,17 +266,17 @@ CALLER@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex
 --------> r0 router <--------
-local_part=CALLER domain=myhost.test.ex
-checking local_parts
-CALLER in local_parts?
- list element: CALLER
- CALLER in local_parts? yes (matched "CALLER")
-checking senders
- in senders?
- list element: 
- address match test: subject= pattern=
-  in senders? yes (matched "")
-calling r0 router
+ local_part=CALLER domain=myhost.test.ex
+ checking local_parts
+ CALLER in local_parts?
+  list element: CALLER
+  CALLER in local_parts? yes (matched "CALLER")
+ checking senders
+  in senders?
+  list element: 
+  address match test: subject= pattern=
+   in senders? yes (matched "")
+ calling r0 router
 rda_interpret (string): ':blackhole:'
 expanded: ':blackhole:'
 file is not a filter file

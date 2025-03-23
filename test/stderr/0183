@@ -15,44 +15,44 @@ Considering userx@test.again.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.again.dns
 --------> srv router <--------
-local_part=userx domain=test.again.dns
-checking local_parts
-userx in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' not found in local cache
- compiled RE '^srv' saved in local cache
-userx in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=userx domain=test.again.dns
+ checking local_parts
+ userx in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' not found in local cache
+  compiled RE '^srv' saved in local cache
+ userx in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=userx domain=test.again.dns
-checking local_parts
-userx in local_parts?
- list element: usery
- list element: userz
-userx in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=userx domain=test.again.dns
+ checking local_parts
+ userx in local_parts?
+  list element: usery
+  list element: userz
+ userx in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=userx domain=test.again.dns
-checking local_parts
-userx in local_parts?
- list element: !userd
-userx in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for userx@test.again.dns
-  domain = test.again.dns
-main lookup for domain
- check dnssec require list
-  test.again.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.again.dns in dnssec_request_domains?
-   list element: *
-   test.again.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.again.dns (MX) using fakens
- DNS lookup of test.again.dns (MX) gave TRY_AGAIN
- test.again.dns in dns_again_means_nonexist? no (option unset)
- returning DNS_AGAIN
-  writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
- test.again.dns not in empty list (option unset? cannot trace name)
+ local_part=userx domain=test.again.dns
+ checking local_parts
+ userx in local_parts?
+  list element: !userd
+ userx in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for userx@test.again.dns
+   domain = test.again.dns
+ main lookup for domain
+  check dnssec require list
+   test.again.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.again.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.again.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.again.dns (MX) using fakens
+  DNS lookup of test.again.dns (MX) gave TRY_AGAIN
+  test.again.dns in dns_again_means_nonexist? no (option unset)
+  returning DNS_AGAIN
+   writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
+  test.again.dns not in empty list (option unset? cannot trace name)
 lookuphost router: defer for userx@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -62,39 +62,39 @@ Considering abcd@test.again.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing abcd@test.again.dns
 --------> srv router <--------
-local_part=abcd domain=test.again.dns
-checking local_parts
-abcd in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-abcd in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=abcd domain=test.again.dns
+ checking local_parts
+ abcd in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ abcd in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=abcd domain=test.again.dns
-checking local_parts
-abcd in local_parts?
- list element: usery
- list element: userz
-abcd in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=abcd domain=test.again.dns
+ checking local_parts
+ abcd in local_parts?
+  list element: usery
+  list element: userz
+ abcd in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=abcd domain=test.again.dns
-checking local_parts
-abcd in local_parts?
- list element: !userd
-abcd in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for abcd@test.again.dns
-  domain = test.again.dns
-main lookup for domain
- check dnssec require list
-  test.again.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.again.dns in dnssec_request_domains?
-   list element: *
-   test.again.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.again.dns (MX): using cached value DNS_AGAIN
- test.again.dns not in empty list (option unset? cannot trace name)
+ local_part=abcd domain=test.again.dns
+ checking local_parts
+ abcd in local_parts?
+  list element: !userd
+ abcd in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for abcd@test.again.dns
+   domain = test.again.dns
+ main lookup for domain
+  check dnssec require list
+   test.again.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.again.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.again.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.again.dns (MX): using cached value DNS_AGAIN
+  test.again.dns not in empty list (option unset? cannot trace name)
 lookuphost router: defer for abcd@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -104,52 +104,52 @@ Considering abcd@ten-1.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing abcd@ten-1.test.ex
 --------> srv router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-abcd in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ abcd in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: usery
- list element: userz
-abcd in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: usery
+  list element: userz
+ abcd in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: !userd
-abcd in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for abcd@ten-1.test.ex
-  domain = ten-1.test.ex
-main lookup for domain
- check dnssec require list
-  ten-1.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  ten-1.test.ex in dnssec_request_domains?
-   list element: *
-   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of ten-1.test.ex (MX) using fakens
- DNS lookup of ten-1.test.ex (MX) gave NO_DATA
- returning DNS_NODATA
- faking res_search(MX) response length as 65535
-  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
- ten-1.test.ex (MX resp) DNSSEC
- DNS lookup of ten-1.test.ex (A) using fakens
- DNS lookup of ten-1.test.ex (A) succeeded
- fully qualified name = ten-1.test.ex
- ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
-set transport smtp
-queued for smtp transport: local_part = abcd
-domain = ten-1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: !userd
+ abcd in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for abcd@ten-1.test.ex
+   domain = ten-1.test.ex
+ main lookup for domain
+  check dnssec require list
+   ten-1.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   ten-1.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of ten-1.test.ex (MX) using fakens
+  DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+  returning DNS_NODATA
+  faking res_search(MX) response length as 65535
+   writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+  ten-1.test.ex (MX resp) DNSSEC
+  DNS lookup of ten-1.test.ex (A) using fakens
+  DNS lookup of ten-1.test.ex (A) succeeded
+  fully qualified name = ten-1.test.ex
+  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+ set transport smtp
+ queued for smtp transport: local_part = abcd
+ domain = ten-1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	abcd@ten-1.test.ex
   transport:	smtp
@@ -161,42 +161,42 @@ Considering usery@test.again.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing usery@test.again.dns
 --------> srv router <--------
-local_part=usery domain=test.again.dns
-checking local_parts
-usery in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-usery in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=usery domain=test.again.dns
+ checking local_parts
+ usery in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ usery in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=usery domain=test.again.dns
-checking local_parts
-usery in local_parts?
- list element: usery
- usery in local_parts? yes (matched "usery")
-calling useryz router
-useryz router called for usery@test.again.dns
-  domain = test.again.dns
+ local_part=usery domain=test.again.dns
+ checking local_parts
+ usery in local_parts?
+  list element: usery
+  usery in local_parts? yes (matched "usery")
+ calling useryz router
+ useryz router called for usery@test.again.dns
+   domain = test.again.dns
 route_item = * $domain bydns
-test.again.dns in "*"?
- list element: *
- test.again.dns in "*"? yes (matched "*")
-original list of hosts = '$domain' options = 'bydns'
-expanded list of hosts = 'test.again.dns' options = 'bydns'
-set transport smtp
-finding IP address for test.again.dns
-doing DNS lookup
-check dnssec require list
- test.again.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.again.dns in dnssec_request_domains?
+ test.again.dns in "*"?
   list element: *
-  test.again.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of test.again.dns (A) using fakens
-DNS lookup of test.again.dns (A) gave TRY_AGAIN
-test.again.dns in dns_again_means_nonexist? no (option unset)
-returning DNS_AGAIN
- writing neg-cache entry for test.again.dns-A-xxxx, ttl -1
+  test.again.dns in "*"? yes (matched "*")
+ original list of hosts = '$domain' options = 'bydns'
+ expanded list of hosts = 'test.again.dns' options = 'bydns'
+ set transport smtp
+ finding IP address for test.again.dns
+doing DNS lookup
+ check dnssec require list
+  test.again.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.again.dns in dnssec_request_domains?
+   list element: *
+   test.again.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of test.again.dns (A) using fakens
+ DNS lookup of test.again.dns (A) gave TRY_AGAIN
+ test.again.dns in dns_again_means_nonexist? no (option unset)
+ returning DNS_AGAIN
+  writing neg-cache entry for test.again.dns-A-xxxx, ttl -1
 useryz router: defer for usery@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -206,38 +206,38 @@ Considering userz@test.again.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userz@test.again.dns
 --------> srv router <--------
-local_part=userz domain=test.again.dns
-checking local_parts
-userz in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-userz in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=userz domain=test.again.dns
+ checking local_parts
+ userz in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ userz in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=userz domain=test.again.dns
-checking local_parts
-userz in local_parts?
- list element: usery
- list element: userz
- userz in local_parts? yes (matched "userz")
-calling useryz router
-useryz router called for userz@test.again.dns
-  domain = test.again.dns
+ local_part=userz domain=test.again.dns
+ checking local_parts
+ userz in local_parts?
+  list element: usery
+  list element: userz
+  userz in local_parts? yes (matched "userz")
+ calling useryz router
+ useryz router called for userz@test.again.dns
+   domain = test.again.dns
 route_item = * $domain bydns
-test.again.dns in "*"?
- list element: *
- test.again.dns in "*"? yes (matched "*")
-original list of hosts = '$domain' options = 'bydns'
-expanded list of hosts = 'test.again.dns' options = 'bydns'
-finding IP address for test.again.dns
-doing DNS lookup
-check dnssec require list
- test.again.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.again.dns in dnssec_request_domains?
+ test.again.dns in "*"?
   list element: *
-  test.again.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of test.again.dns (A): using cached value DNS_AGAIN
+  test.again.dns in "*"? yes (matched "*")
+ original list of hosts = '$domain' options = 'bydns'
+ expanded list of hosts = 'test.again.dns' options = 'bydns'
+ finding IP address for test.again.dns
+doing DNS lookup
+ check dnssec require list
+  test.again.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.again.dns in dnssec_request_domains?
+   list element: *
+   test.again.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of test.again.dns (A): using cached value DNS_AGAIN
 useryz router: defer for userz@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -247,46 +247,46 @@ Considering xyz@ten-1.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xyz@ten-1.test.ex
 --------> srv router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-xyz in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ xyz in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: usery
- list element: userz
-xyz in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: usery
+  list element: userz
+ xyz in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: !userd
-xyz in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for xyz@ten-1.test.ex
-  domain = ten-1.test.ex
-main lookup for domain
- check dnssec require list
-  ten-1.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  ten-1.test.ex in dnssec_request_domains?
-   list element: *
-   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
- DNS lookup of ten-1.test.ex (A) using fakens
- DNS lookup of ten-1.test.ex (A) succeeded
- fully qualified name = ten-1.test.ex
- ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
-queued for smtp transport: local_part = xyz
-domain = ten-1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: !userd
+ xyz in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for xyz@ten-1.test.ex
+   domain = ten-1.test.ex
+ main lookup for domain
+  check dnssec require list
+   ten-1.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   ten-1.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
+  DNS lookup of ten-1.test.ex (A) using fakens
+  DNS lookup of ten-1.test.ex (A) succeeded
+  fully qualified name = ten-1.test.ex
+  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+ queued for smtp transport: local_part = xyz
+ domain = ten-1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	xyz@ten-1.test.ex
   transport:	smtp
@@ -310,43 +310,43 @@ Considering userx@test.fail.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.fail.dns
 --------> srv router <--------
-local_part=userx domain=test.fail.dns
-checking local_parts
-userx in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' not found in local cache
- compiled RE '^srv' saved in local cache
-userx in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=userx domain=test.fail.dns
+ checking local_parts
+ userx in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' not found in local cache
+  compiled RE '^srv' saved in local cache
+ userx in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=userx domain=test.fail.dns
-checking local_parts
-userx in local_parts?
- list element: usery
- list element: userz
-userx in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=userx domain=test.fail.dns
+ checking local_parts
+ userx in local_parts?
+  list element: usery
+  list element: userz
+ userx in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=userx domain=test.fail.dns
-checking local_parts
-userx in local_parts?
- list element: !userd
-userx in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for userx@test.fail.dns
-  domain = test.fail.dns
-main lookup for domain
- check dnssec require list
-  test.fail.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.fail.dns in dnssec_request_domains?
-   list element: *
-   test.fail.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.fail.dns (MX) using fakens
- DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
- returning DNS_FAIL
-  writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
- test.fail.dns not in empty list (option unset? cannot trace name)
+ local_part=userx domain=test.fail.dns
+ checking local_parts
+ userx in local_parts?
+  list element: !userd
+ userx in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for userx@test.fail.dns
+   domain = test.fail.dns
+ main lookup for domain
+  check dnssec require list
+   test.fail.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.fail.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.fail.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.fail.dns (MX) using fakens
+  DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
+  returning DNS_FAIL
+   writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
+  test.fail.dns not in empty list (option unset? cannot trace name)
 lookuphost router: defer for userx@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -356,39 +356,39 @@ Considering abcd@test.fail.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing abcd@test.fail.dns
 --------> srv router <--------
-local_part=abcd domain=test.fail.dns
-checking local_parts
-abcd in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-abcd in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=abcd domain=test.fail.dns
+ checking local_parts
+ abcd in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ abcd in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=abcd domain=test.fail.dns
-checking local_parts
-abcd in local_parts?
- list element: usery
- list element: userz
-abcd in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=abcd domain=test.fail.dns
+ checking local_parts
+ abcd in local_parts?
+  list element: usery
+  list element: userz
+ abcd in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=abcd domain=test.fail.dns
-checking local_parts
-abcd in local_parts?
- list element: !userd
-abcd in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for abcd@test.fail.dns
-  domain = test.fail.dns
-main lookup for domain
- check dnssec require list
-  test.fail.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.fail.dns in dnssec_request_domains?
-   list element: *
-   test.fail.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.fail.dns (MX): using cached value DNS_FAIL
- test.fail.dns not in empty list (option unset? cannot trace name)
+ local_part=abcd domain=test.fail.dns
+ checking local_parts
+ abcd in local_parts?
+  list element: !userd
+ abcd in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for abcd@test.fail.dns
+   domain = test.fail.dns
+ main lookup for domain
+  check dnssec require list
+   test.fail.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.fail.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.fail.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.fail.dns (MX): using cached value DNS_FAIL
+  test.fail.dns not in empty list (option unset? cannot trace name)
 lookuphost router: defer for abcd@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -398,52 +398,52 @@ Considering abcd@ten-1.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing abcd@ten-1.test.ex
 --------> srv router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-abcd in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ abcd in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: usery
- list element: userz
-abcd in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: usery
+  list element: userz
+ abcd in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: !userd
-abcd in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for abcd@ten-1.test.ex
-  domain = ten-1.test.ex
-main lookup for domain
- check dnssec require list
-  ten-1.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  ten-1.test.ex in dnssec_request_domains?
-   list element: *
-   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of ten-1.test.ex (MX) using fakens
- DNS lookup of ten-1.test.ex (MX) gave NO_DATA
- returning DNS_NODATA
- faking res_search(MX) response length as 65535
-  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
- ten-1.test.ex (MX resp) DNSSEC
- DNS lookup of ten-1.test.ex (A) using fakens
- DNS lookup of ten-1.test.ex (A) succeeded
- fully qualified name = ten-1.test.ex
- ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
-set transport smtp
-queued for smtp transport: local_part = abcd
-domain = ten-1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: !userd
+ abcd in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for abcd@ten-1.test.ex
+   domain = ten-1.test.ex
+ main lookup for domain
+  check dnssec require list
+   ten-1.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   ten-1.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of ten-1.test.ex (MX) using fakens
+  DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+  returning DNS_NODATA
+  faking res_search(MX) response length as 65535
+   writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+  ten-1.test.ex (MX resp) DNSSEC
+  DNS lookup of ten-1.test.ex (A) using fakens
+  DNS lookup of ten-1.test.ex (A) succeeded
+  fully qualified name = ten-1.test.ex
+  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+ set transport smtp
+ queued for smtp transport: local_part = abcd
+ domain = ten-1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	abcd@ten-1.test.ex
   transport:	smtp
@@ -455,41 +455,41 @@ Considering usery@test.fail.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing usery@test.fail.dns
 --------> srv router <--------
-local_part=usery domain=test.fail.dns
-checking local_parts
-usery in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-usery in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=usery domain=test.fail.dns
+ checking local_parts
+ usery in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ usery in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=usery domain=test.fail.dns
-checking local_parts
-usery in local_parts?
- list element: usery
- usery in local_parts? yes (matched "usery")
-calling useryz router
-useryz router called for usery@test.fail.dns
-  domain = test.fail.dns
+ local_part=usery domain=test.fail.dns
+ checking local_parts
+ usery in local_parts?
+  list element: usery
+  usery in local_parts? yes (matched "usery")
+ calling useryz router
+ useryz router called for usery@test.fail.dns
+   domain = test.fail.dns
 route_item = * $domain bydns
-test.fail.dns in "*"?
- list element: *
- test.fail.dns in "*"? yes (matched "*")
-original list of hosts = '$domain' options = 'bydns'
-expanded list of hosts = 'test.fail.dns' options = 'bydns'
-set transport smtp
-finding IP address for test.fail.dns
-doing DNS lookup
-check dnssec require list
- test.fail.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.fail.dns in dnssec_request_domains?
+ test.fail.dns in "*"?
   list element: *
-  test.fail.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of test.fail.dns (A) using fakens
-DNS lookup of test.fail.dns (A) gave NO_RECOVERY
-returning DNS_FAIL
- writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
+  test.fail.dns in "*"? yes (matched "*")
+ original list of hosts = '$domain' options = 'bydns'
+ expanded list of hosts = 'test.fail.dns' options = 'bydns'
+ set transport smtp
+ finding IP address for test.fail.dns
+doing DNS lookup
+ check dnssec require list
+  test.fail.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.fail.dns in dnssec_request_domains?
+   list element: *
+   test.fail.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of test.fail.dns (A) using fakens
+ DNS lookup of test.fail.dns (A) gave NO_RECOVERY
+ returning DNS_FAIL
+  writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
 useryz router: defer for usery@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -499,38 +499,38 @@ Considering userz@test.fail.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userz@test.fail.dns
 --------> srv router <--------
-local_part=userz domain=test.fail.dns
-checking local_parts
-userz in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-userz in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=userz domain=test.fail.dns
+ checking local_parts
+ userz in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ userz in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=userz domain=test.fail.dns
-checking local_parts
-userz in local_parts?
- list element: usery
- list element: userz
- userz in local_parts? yes (matched "userz")
-calling useryz router
-useryz router called for userz@test.fail.dns
-  domain = test.fail.dns
+ local_part=userz domain=test.fail.dns
+ checking local_parts
+ userz in local_parts?
+  list element: usery
+  list element: userz
+  userz in local_parts? yes (matched "userz")
+ calling useryz router
+ useryz router called for userz@test.fail.dns
+   domain = test.fail.dns
 route_item = * $domain bydns
-test.fail.dns in "*"?
- list element: *
- test.fail.dns in "*"? yes (matched "*")
-original list of hosts = '$domain' options = 'bydns'
-expanded list of hosts = 'test.fail.dns' options = 'bydns'
-finding IP address for test.fail.dns
-doing DNS lookup
-check dnssec require list
- test.fail.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.fail.dns in dnssec_request_domains?
+ test.fail.dns in "*"?
   list element: *
-  test.fail.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of test.fail.dns (A): using cached value DNS_FAIL
+  test.fail.dns in "*"? yes (matched "*")
+ original list of hosts = '$domain' options = 'bydns'
+ expanded list of hosts = 'test.fail.dns' options = 'bydns'
+ finding IP address for test.fail.dns
+doing DNS lookup
+ check dnssec require list
+  test.fail.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.fail.dns in dnssec_request_domains?
+   list element: *
+   test.fail.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of test.fail.dns (A): using cached value DNS_FAIL
 useryz router: defer for userz@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -540,46 +540,46 @@ Considering xyz@ten-1.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xyz@ten-1.test.ex
 --------> srv router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-xyz in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ xyz in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: usery
- list element: userz
-xyz in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: usery
+  list element: userz
+ xyz in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: !userd
-xyz in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for xyz@ten-1.test.ex
-  domain = ten-1.test.ex
-main lookup for domain
- check dnssec require list
-  ten-1.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  ten-1.test.ex in dnssec_request_domains?
-   list element: *
-   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
- DNS lookup of ten-1.test.ex (A) using fakens
- DNS lookup of ten-1.test.ex (A) succeeded
- fully qualified name = ten-1.test.ex
- ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
-queued for smtp transport: local_part = xyz
-domain = ten-1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: !userd
+ xyz in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for xyz@ten-1.test.ex
+   domain = ten-1.test.ex
+ main lookup for domain
+  check dnssec require list
+   ten-1.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   ten-1.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
+  DNS lookup of ten-1.test.ex (A) using fakens
+  DNS lookup of ten-1.test.ex (A) succeeded
+  fully qualified name = ten-1.test.ex
+  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+ queued for smtp transport: local_part = xyz
+ domain = ten-1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	xyz@ten-1.test.ex
   transport:	smtp
@@ -603,45 +603,45 @@ Considering userx@nonexist.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@nonexist.test.ex
 --------> srv router <--------
-local_part=userx domain=nonexist.test.ex
-checking local_parts
-userx in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' not found in local cache
- compiled RE '^srv' saved in local cache
-userx in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=userx domain=nonexist.test.ex
+ checking local_parts
+ userx in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' not found in local cache
+  compiled RE '^srv' saved in local cache
+ userx in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=userx domain=nonexist.test.ex
-checking local_parts
-userx in local_parts?
- list element: usery
- list element: userz
-userx in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=userx domain=nonexist.test.ex
+ checking local_parts
+ userx in local_parts?
+  list element: usery
+  list element: userz
+ userx in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=userx domain=nonexist.test.ex
-checking local_parts
-userx in local_parts?
- list element: !userd
-userx in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for userx@nonexist.test.ex
-  domain = nonexist.test.ex
-main lookup for domain
- check dnssec require list
-  nonexist.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  nonexist.test.ex in dnssec_request_domains?
-   list element: *
-   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of nonexist.test.ex (MX) using fakens
- DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
- returning DNS_NOMATCH
- faking res_search(MX) response length as 65535
-  writing neg-cache entry for nonexist.test.ex-MX-xxxx, ttl 3000
-lookuphost router declined for userx@nonexist.test.ex
-"more" is false: skipping remaining routers
+ local_part=userx domain=nonexist.test.ex
+ checking local_parts
+ userx in local_parts?
+  list element: !userd
+ userx in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for userx@nonexist.test.ex
+   domain = nonexist.test.ex
+ main lookup for domain
+  check dnssec require list
+   nonexist.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   nonexist.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎nonexist.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of nonexist.test.ex (MX) using fakens
+  DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
+  returning DNS_NOMATCH
+  faking res_search(MX) response length as 65535
+   writing neg-cache entry for nonexist.test.ex-MX-xxxx, ttl 3000
+ lookuphost router declined for userx@nonexist.test.ex
+ "more" is false: skipping remaining routers
 no more routers
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Testing abcd@nonexist.test.ex
@@ -650,40 +650,40 @@ Considering abcd@nonexist.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing abcd@nonexist.test.ex
 --------> srv router <--------
-local_part=abcd domain=nonexist.test.ex
-checking local_parts
-abcd in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-abcd in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=abcd domain=nonexist.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ abcd in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=abcd domain=nonexist.test.ex
-checking local_parts
-abcd in local_parts?
- list element: usery
- list element: userz
-abcd in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=abcd domain=nonexist.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: usery
+  list element: userz
+ abcd in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=abcd domain=nonexist.test.ex
-checking local_parts
-abcd in local_parts?
- list element: !userd
-abcd in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for abcd@nonexist.test.ex
-  domain = nonexist.test.ex
-main lookup for domain
- check dnssec require list
-  nonexist.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  nonexist.test.ex in dnssec_request_domains?
-   list element: *
-   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of nonexist.test.ex (MX): using cached value DNS_NOMATCH
-lookuphost router declined for abcd@nonexist.test.ex
-"more" is false: skipping remaining routers
+ local_part=abcd domain=nonexist.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: !userd
+ abcd in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for abcd@nonexist.test.ex
+   domain = nonexist.test.ex
+ main lookup for domain
+  check dnssec require list
+   nonexist.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   nonexist.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎nonexist.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of nonexist.test.ex (MX): using cached value DNS_NOMATCH
+ lookuphost router declined for abcd@nonexist.test.ex
+ "more" is false: skipping remaining routers
 no more routers
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Testing abcd@ten-1.test.ex
@@ -692,52 +692,52 @@ Considering abcd@ten-1.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing abcd@ten-1.test.ex
 --------> srv router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-abcd in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ abcd in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: usery
- list element: userz
-abcd in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: usery
+  list element: userz
+ abcd in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=abcd domain=ten-1.test.ex
-checking local_parts
-abcd in local_parts?
- list element: !userd
-abcd in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for abcd@ten-1.test.ex
-  domain = ten-1.test.ex
-main lookup for domain
- check dnssec require list
-  ten-1.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  ten-1.test.ex in dnssec_request_domains?
-   list element: *
-   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of ten-1.test.ex (MX) using fakens
- DNS lookup of ten-1.test.ex (MX) gave NO_DATA
- returning DNS_NODATA
- faking res_search(MX) response length as 65535
-  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
- ten-1.test.ex (MX resp) DNSSEC
- DNS lookup of ten-1.test.ex (A) using fakens
- DNS lookup of ten-1.test.ex (A) succeeded
- fully qualified name = ten-1.test.ex
- ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
-set transport smtp
-queued for smtp transport: local_part = abcd
-domain = ten-1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=abcd domain=ten-1.test.ex
+ checking local_parts
+ abcd in local_parts?
+  list element: !userd
+ abcd in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for abcd@ten-1.test.ex
+   domain = ten-1.test.ex
+ main lookup for domain
+  check dnssec require list
+   ten-1.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   ten-1.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of ten-1.test.ex (MX) using fakens
+  DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+  returning DNS_NODATA
+  faking res_search(MX) response length as 65535
+   writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+  ten-1.test.ex (MX resp) DNSSEC
+  DNS lookup of ten-1.test.ex (A) using fakens
+  DNS lookup of ten-1.test.ex (A) succeeded
+  fully qualified name = ten-1.test.ex
+  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+ set transport smtp
+ queued for smtp transport: local_part = abcd
+ domain = ten-1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	abcd@ten-1.test.ex
   transport:	smtp
@@ -749,42 +749,42 @@ Considering usery@nonexist.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing usery@nonexist.test.ex
 --------> srv router <--------
-local_part=usery domain=nonexist.test.ex
-checking local_parts
-usery in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-usery in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=usery domain=nonexist.test.ex
+ checking local_parts
+ usery in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ usery in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=usery domain=nonexist.test.ex
-checking local_parts
-usery in local_parts?
- list element: usery
- usery in local_parts? yes (matched "usery")
-calling useryz router
-useryz router called for usery@nonexist.test.ex
-  domain = nonexist.test.ex
+ local_part=usery domain=nonexist.test.ex
+ checking local_parts
+ usery in local_parts?
+  list element: usery
+  usery in local_parts? yes (matched "usery")
+ calling useryz router
+ useryz router called for usery@nonexist.test.ex
+   domain = nonexist.test.ex
 route_item = * $domain bydns
-nonexist.test.ex in "*"?
- list element: *
- nonexist.test.ex in "*"? yes (matched "*")
-original list of hosts = '$domain' options = 'bydns'
-expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
-set transport smtp
-finding IP address for nonexist.test.ex
-doing DNS lookup
-check dnssec require list
- nonexist.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- nonexist.test.ex in dnssec_request_domains?
+ nonexist.test.ex in "*"?
   list element: *
-  nonexist.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of nonexist.test.ex (A) using fakens
-DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
-returning DNS_NOMATCH
-faking res_search(A) response length as 65535
- writing neg-cache entry for nonexist.test.ex-A-xxxx, ttl 3000
+  nonexist.test.ex in "*"? yes (matched "*")
+ original list of hosts = '$domain' options = 'bydns'
+ expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
+ set transport smtp
+ finding IP address for nonexist.test.ex
+doing DNS lookup
+ check dnssec require list
+  nonexist.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  nonexist.test.ex in dnssec_request_domains?
+   list element: *
+   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of nonexist.test.ex (A) using fakens
+ DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
+ returning DNS_NOMATCH
+ faking res_search(A) response length as 65535
+  writing neg-cache entry for nonexist.test.ex-A-xxxx, ttl 3000
 useryz router: defer for usery@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -794,38 +794,38 @@ Considering userz@nonexist.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userz@nonexist.test.ex
 --------> srv router <--------
-local_part=userz domain=nonexist.test.ex
-checking local_parts
-userz in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-userz in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=userz domain=nonexist.test.ex
+ checking local_parts
+ userz in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ userz in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=userz domain=nonexist.test.ex
-checking local_parts
-userz in local_parts?
- list element: usery
- list element: userz
- userz in local_parts? yes (matched "userz")
-calling useryz router
-useryz router called for userz@nonexist.test.ex
-  domain = nonexist.test.ex
+ local_part=userz domain=nonexist.test.ex
+ checking local_parts
+ userz in local_parts?
+  list element: usery
+  list element: userz
+  userz in local_parts? yes (matched "userz")
+ calling useryz router
+ useryz router called for userz@nonexist.test.ex
+   domain = nonexist.test.ex
 route_item = * $domain bydns
-nonexist.test.ex in "*"?
- list element: *
- nonexist.test.ex in "*"? yes (matched "*")
-original list of hosts = '$domain' options = 'bydns'
-expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
-finding IP address for nonexist.test.ex
-doing DNS lookup
-check dnssec require list
- nonexist.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- nonexist.test.ex in dnssec_request_domains?
+ nonexist.test.ex in "*"?
   list element: *
-  nonexist.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of nonexist.test.ex (A): using cached value DNS_NOMATCH
+  nonexist.test.ex in "*"? yes (matched "*")
+ original list of hosts = '$domain' options = 'bydns'
+ expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
+ finding IP address for nonexist.test.ex
+doing DNS lookup
+ check dnssec require list
+  nonexist.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  nonexist.test.ex in dnssec_request_domains?
+   list element: *
+   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of nonexist.test.ex (A): using cached value DNS_NOMATCH
 useryz router: defer for userz@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -835,46 +835,46 @@ Considering xyz@ten-1.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xyz@ten-1.test.ex
 --------> srv router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-xyz in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ xyz in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: usery
- list element: userz
-xyz in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: usery
+  list element: userz
+ xyz in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=xyz domain=ten-1.test.ex
-checking local_parts
-xyz in local_parts?
- list element: !userd
-xyz in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for xyz@ten-1.test.ex
-  domain = ten-1.test.ex
-main lookup for domain
- check dnssec require list
-  ten-1.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  ten-1.test.ex in dnssec_request_domains?
-   list element: *
-   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
- DNS lookup of ten-1.test.ex (A) using fakens
- DNS lookup of ten-1.test.ex (A) succeeded
- fully qualified name = ten-1.test.ex
- ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
-queued for smtp transport: local_part = xyz
-domain = ten-1.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
+ local_part=xyz domain=ten-1.test.ex
+ checking local_parts
+ xyz in local_parts?
+  list element: !userd
+ xyz in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for xyz@ten-1.test.ex
+   domain = ten-1.test.ex
+ main lookup for domain
+  check dnssec require list
+   ten-1.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   ten-1.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
+  DNS lookup of ten-1.test.ex (A) using fakens
+  DNS lookup of ten-1.test.ex (A) succeeded
+  fully qualified name = ten-1.test.ex
+  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+ queued for smtp transport: local_part = xyz
+ domain = ten-1.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to:	xyz@ten-1.test.ex
   transport:	smtp
@@ -898,31 +898,31 @@ Considering srv@test.again.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing srv@test.again.dns
 --------> srv router <--------
-local_part=srv domain=test.again.dns
-checking local_parts
-srv in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' not found in local cache
- compiled RE '^srv' saved in local cache
- srv in local_parts? yes (matched "^srv")
-calling srv router
-srv router called for srv@test.again.dns
-  domain = test.again.dns
-main lookup for domain
- check dnssec require list
-  test.again.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.again.dns in dnssec_request_domains?
-   list element: *
-   test.again.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
- DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
- _smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
- returning DNS_AGAIN
-  writing neg-cache entry for _smtp._tcp.test.again.dns-SRV-xxxx, ttl -1
- test.again.dns in srv_fail_domains?
-  list element: test.fail.dns
- test.again.dns in srv_fail_domains? no (end of list)
+ local_part=srv domain=test.again.dns
+ checking local_parts
+ srv in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' not found in local cache
+  compiled RE '^srv' saved in local cache
+  srv in local_parts? yes (matched "^srv")
+ calling srv router
+ srv router called for srv@test.again.dns
+   domain = test.again.dns
+ main lookup for domain
+  check dnssec require list
+   test.again.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.again.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.again.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
+  DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
+  _smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
+  returning DNS_AGAIN
+   writing neg-cache entry for _smtp._tcp.test.again.dns-SRV-xxxx, ttl -1
+  test.again.dns in srv_fail_domains?
+   list element: test.fail.dns
+  test.again.dns in srv_fail_domains? no (end of list)
 srv router: defer for srv@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -932,42 +932,42 @@ Considering srv@test.fail.dns
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing srv@test.fail.dns
 --------> srv router <--------
-local_part=srv domain=test.fail.dns
-checking local_parts
-srv in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
- srv in local_parts? yes (matched "^srv")
-calling srv router
-srv router called for srv@test.fail.dns
-  domain = test.fail.dns
-main lookup for domain
- check dnssec require list
-  test.fail.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.fail.dns in dnssec_request_domains?
-   list element: *
-   test.fail.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
- DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
- returning DNS_FAIL
-  writing neg-cache entry for _smtp._tcp.test.fail.dns-SRV-xxxx, ttl -1
- test.fail.dns in srv_fail_domains?
-  list element: test.fail.dns
-  test.fail.dns in srv_fail_domains? yes (matched "test.fail.dns")
- DNS_FAIL treated as DNS_NODATA (domain in srv_fail_domains)
- DNS lookup of test.fail.dns (MX) using fakens
- DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
- returning DNS_FAIL
-  writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
- test.fail.dns in mx_fail_domains?
-  list element: test.fail.dns
-  test.fail.dns in mx_fail_domains? yes (matched "test.fail.dns")
- DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
- DNS lookup of test.fail.dns (A) using fakens
- DNS lookup of test.fail.dns (A) gave NO_RECOVERY
- returning DNS_FAIL
-  writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
+ local_part=srv domain=test.fail.dns
+ checking local_parts
+ srv in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+  srv in local_parts? yes (matched "^srv")
+ calling srv router
+ srv router called for srv@test.fail.dns
+   domain = test.fail.dns
+ main lookup for domain
+  check dnssec require list
+   test.fail.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.fail.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.fail.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
+  DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
+  returning DNS_FAIL
+   writing neg-cache entry for _smtp._tcp.test.fail.dns-SRV-xxxx, ttl -1
+  test.fail.dns in srv_fail_domains?
+   list element: test.fail.dns
+   test.fail.dns in srv_fail_domains? yes (matched "test.fail.dns")
+  DNS_FAIL treated as DNS_NODATA (domain in srv_fail_domains)
+  DNS lookup of test.fail.dns (MX) using fakens
+  DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
+  returning DNS_FAIL
+   writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
+  test.fail.dns in mx_fail_domains?
+   list element: test.fail.dns
+   test.fail.dns in mx_fail_domains? yes (matched "test.fail.dns")
+  DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
+  DNS lookup of test.fail.dns (A) using fakens
+  DNS lookup of test.fail.dns (A) gave NO_RECOVERY
+  returning DNS_FAIL
+   writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
 srv router: defer for srv@test.fail.dns
   message: host lookup did not complete
 search_tidyup called
@@ -989,45 +989,45 @@ Considering userx@nonexist.example.com
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@nonexist.example.com
 --------> srv router <--------
-local_part=userx domain=nonexist.example.com
-checking local_parts
-userx in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' not found in local cache
- compiled RE '^srv' saved in local cache
-userx in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=userx domain=nonexist.example.com
+ checking local_parts
+ userx in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' not found in local cache
+  compiled RE '^srv' saved in local cache
+ userx in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=userx domain=nonexist.example.com
-checking local_parts
-userx in local_parts?
- list element: usery
- list element: userz
-userx in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=userx domain=nonexist.example.com
+ checking local_parts
+ userx in local_parts?
+  list element: usery
+  list element: userz
+ userx in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=userx domain=nonexist.example.com
-checking local_parts
-userx in local_parts?
- list element: !userd
-userx in local_parts? yes (end of list)
-calling lookuphost router
-lookuphost router called for userx@nonexist.example.com
-  domain = nonexist.example.com
-main lookup for domain
- check dnssec require list
-  nonexist.example.com in dnssec_require_domains? no (option unset)
- check dnssec request list
-  nonexist.example.com in dnssec_request_domains?
-   list element: *
-   nonexist.example.com in dnssec_request_domains? yes (matched "*")
- DNS lookup of nonexist.example.com (MX) using fakens
- DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
- returning DNS_NOMATCH
- faking res_search(MX) response length as 65535
-  writing neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
-lookuphost router declined for userx@nonexist.example.com
-"more" is false: skipping remaining routers
+ local_part=userx domain=nonexist.example.com
+ checking local_parts
+ userx in local_parts?
+  list element: !userd
+ userx in local_parts? yes (end of list)
+ calling lookuphost router
+ lookuphost router called for userx@nonexist.example.com
+   domain = nonexist.example.com
+ main lookup for domain
+  check dnssec require list
+   nonexist.example.com in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   nonexist.example.com in dnssec_request_domains?
+   ╎list element: *
+   ╎nonexist.example.com in dnssec_request_domains? yes (matched "*")
+  DNS lookup of nonexist.example.com (MX) using fakens
+  DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
+  returning DNS_NOMATCH
+  faking res_search(MX) response length as 65535
+   writing neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
+ lookuphost router declined for userx@nonexist.example.com
+ "more" is false: skipping remaining routers
 no more routers
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Testing userd@nonexist.example.com
@@ -1036,56 +1036,56 @@ Considering userd@nonexist.example.com
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userd@nonexist.example.com
 --------> srv router <--------
-local_part=userd domain=nonexist.example.com
-checking local_parts
-userd in local_parts?
- list element: ^srv
- compiled caseless RE '^srv' found in local cache
-userd in local_parts? no (end of list)
-srv router skipped: local_parts mismatch
+ local_part=userd domain=nonexist.example.com
+ checking local_parts
+ userd in local_parts?
+  list element: ^srv
+  compiled caseless RE '^srv' found in local cache
+ userd in local_parts? no (end of list)
+ srv router skipped: local_parts mismatch
 --------> useryz router <--------
-local_part=userd domain=nonexist.example.com
-checking local_parts
-userd in local_parts?
- list element: usery
- list element: userz
-userd in local_parts? no (end of list)
-useryz router skipped: local_parts mismatch
+ local_part=userd domain=nonexist.example.com
+ checking local_parts
+ userd in local_parts?
+  list element: usery
+  list element: userz
+ userd in local_parts? no (end of list)
+ useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
-local_part=userd domain=nonexist.example.com
-checking local_parts
-userd in local_parts?
- list element: !userd
- userd in local_parts? no (matched "!userd")
-lookuphost router skipped: local_parts mismatch
+ local_part=userd domain=nonexist.example.com
+ checking local_parts
+ userd in local_parts?
+  list element: !userd
+  userd in local_parts? no (matched "!userd")
+ lookuphost router skipped: local_parts mismatch
 --------> delay router <--------
-local_part=userd domain=nonexist.example.com
-checking "condition" "${acl {delay}}"...
-  using ACL "delay"
-  processing ACL delay "accept" (TESTSUITE/test-config 18)
-  check delay = 3s
-  delay modifier requests 3-second delay
-    message: y
-  accept: condition test succeeded in ACL delay
-  end of ACL delay: ACCEPT
-calling delay router
-delay router called for userd@nonexist.example.com
-  domain = nonexist.example.com
-main lookup for domain
- check dnssec require list
-  nonexist.example.com in dnssec_require_domains? no (option unset)
- check dnssec request list
-  nonexist.example.com in dnssec_request_domains?
-   list element: *
-   nonexist.example.com in dnssec_request_domains? yes (matched "*")
- DNS lookup of nonexist.example.com (MX): cached value DNS_NOMATCH past valid time
- DNS lookup of nonexist.example.com (MX) using fakens
- DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
- returning DNS_NOMATCH
- faking res_search(MX) response length as 65535
-  update neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
-delay router declined for userd@nonexist.example.com
-"more" is false: skipping remaining routers
+ local_part=userd domain=nonexist.example.com
+ checking "condition" "${acl {delay}}"...
+   using ACL "delay"
+   processing ACL delay "accept" (TESTSUITE/test-config 18)
+   check delay = 3s
+   delay modifier requests 3-second delay
+     message: y
+   accept: condition test succeeded in ACL delay
+   end of ACL delay: ACCEPT
+ calling delay router
+ delay router called for userd@nonexist.example.com
+   domain = nonexist.example.com
+ main lookup for domain
+  check dnssec require list
+   nonexist.example.com in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   nonexist.example.com in dnssec_request_domains?
+   ╎list element: *
+   ╎nonexist.example.com in dnssec_request_domains? yes (matched "*")
+  DNS lookup of nonexist.example.com (MX): cached value DNS_NOMATCH past valid time
+  DNS lookup of nonexist.example.com (MX) using fakens
+  DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
+  returning DNS_NOMATCH
+  faking res_search(MX) response length as 65535
+   update neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
+ delay router declined for userd@nonexist.example.com
+ "more" is false: skipping remaining routers
 no more routers
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

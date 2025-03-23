@@ -38,50 +38,50 @@ check !verify = sender
 Verifying qq@remote
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering qq@remote
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing qq@remote
---------> r1 router <--------
-local_part=qq domain=remote
-checking domains
-remote in domains?
- list element: local
-remote in domains? no (end of list)
-r1 router skipped: domains mismatch
---------> r2 router <--------
-local_part=qq domain=remote
-checking domains
-remote in domains?
- list element: remote
- remote in domains? yes (matched "remote")
-calling r2 router
-r2 router called for qq@remote
-  domain = remote
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing qq@remote
+ --------> r1 router <--------
+  local_part=qq domain=remote
+  checking domains
+  remote in domains?
+   list element: local
+  remote in domains? no (end of list)
+  r1 router skipped: domains mismatch
+ --------> r2 router <--------
+  local_part=qq domain=remote
+  checking domains
+  remote in domains?
+   list element: remote
+   remote in domains? yes (matched "remote")
+  calling r2 router
+  r2 router called for qq@remote
+    domain = remote
 route_item = * 127.0.0.1
-remote in "*"?
- list element: *
- remote in "*"? yes (matched "*")
-original list of hosts = '127.0.0.1' options = ''
-expanded list of hosts = '127.0.0.1' options = ''
-set transport t2
-finding IP address for 127.0.0.1
-calling host_find_byname
-using host_fake_gethostbyname for 127.0.0.1 (IPv4)
-local host found for non-MX address
+  remote in "*"?
+   list element: *
+   remote in "*"? yes (matched "*")
+  original list of hosts = '127.0.0.1' options = ''
+  expanded list of hosts = '127.0.0.1' options = ''
+  set transport t2
+  finding IP address for 127.0.0.1
+  calling host_find_byname
+  using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+  local host found for non-MX address
 fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 remote host address is the local host: remote: configured to try delivery anyway
-queued for t2 transport: local_part = qq
-domain = remote
-  errors_to=NULL
-  domain_data=remote local_part_data=NULL
-routed by r2 router
-  envelope to:	qq@remote
-  transport:	t2
+  queued for t2 transport: local_part = qq
+  domain = remote
+    errors_to=NULL
+    domain_data=remote local_part_data=NULL
+ routed by r2 router
+   envelope to:	qq@remote
+   transport:	t2
   host 127.0.0.1 [127.0.0.1]
------------ end verify ------------
-sender qq@remote verified ok
+ ----------- end verify ------------
+ sender qq@remote verified ok
 deny: condition test failed in ACL rcpt
 processing ACL rcpt "warn" (TESTSUITE/test-config 21)
 check senders = qq@remote
@@ -97,87 +97,87 @@ check !verify = sender/callout
 Verifying qq@remote
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering qq@remote
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing qq@remote
---------> r1 router <--------
-local_part=qq domain=remote
-checking domains
-remote in domains?
- list element: local
-remote in domains? no (end of list)
-r1 router skipped: domains mismatch
---------> r2 router <--------
-local_part=qq domain=remote
-checking domains
-remote in domains?
- list element: remote
- remote in domains? yes (matched "remote")
-calling r2 router
-r2 router called for qq@remote
-  domain = remote
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing qq@remote
+ --------> r1 router <--------
+  local_part=qq domain=remote
+  checking domains
+  remote in domains?
+   list element: local
+  remote in domains? no (end of list)
+  r1 router skipped: domains mismatch
+ --------> r2 router <--------
+  local_part=qq domain=remote
+  checking domains
+  remote in domains?
+   list element: remote
+   remote in domains? yes (matched "remote")
+  calling r2 router
+  r2 router called for qq@remote
+    domain = remote
 route_item = * 127.0.0.1
-remote in "*"?
- list element: *
- remote in "*"? yes (matched "*")
-original list of hosts = '127.0.0.1' options = ''
-expanded list of hosts = '127.0.0.1' options = ''
-finding IP address for 127.0.0.1
-calling host_find_byname
-using host_fake_gethostbyname for 127.0.0.1 (IPv4)
-local host found for non-MX address
+  remote in "*"?
+   list element: *
+   remote in "*"? yes (matched "*")
+  original list of hosts = '127.0.0.1' options = ''
+  expanded list of hosts = '127.0.0.1' options = ''
+  finding IP address for 127.0.0.1
+  calling host_find_byname
+  using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+  local host found for non-MX address
 fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 remote host address is the local host: remote: configured to try delivery anyway
-queued for t2 transport: local_part = qq
-domain = remote
-  errors_to=NULL
-  domain_data=remote local_part_data=NULL
-routed by r2 router
-  envelope to:	qq@remote
-  transport:	t2
+  queued for t2 transport: local_part = qq
+  domain = remote
+    errors_to=NULL
+    domain_data=remote local_part_data=NULL
+ routed by r2 router
+   envelope to:	qq@remote
+   transport:	t2
   host 127.0.0.1 [127.0.0.1]
 Attempting full verification using callout
- EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
- returned from EXIM_DBOPEN: 0xAAAAAAAA
-dbfn_read: key=remote
-dbfn_read: size nnn return
-callout cache: found domain record for remote
-dbfn_read: key=qq@remote
-dbfn_read: null return
-callout cache: no address record found for qq@remote
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+ dbfn_read: key=remote
+ dbfn_read: size nnn return
+ callout cache: found domain record for remote
+ dbfn_read: key=qq@remote
+ dbfn_read: null return
+ callout cache: no address record found for qq@remote
 interface=NULL port=PORT_S
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 Server ready
-127.0.0.1 in hosts_avoid_esmtp? no (option unset)
-  SMTP>> EHLO mail.test.ex
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 Server ready
+ 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
+   SMTP>> EHLO mail.test.ex
 cmd buf flush ddd bytes
-  SMTP<< 250 OK
+   SMTP<< 250 OK
 not using PIPELINING
 not using DSN
-127.0.0.1 in hosts_require_auth? no (option unset)
-  SMTP>> MAIL FROM:<>
+ 127.0.0.1 in hosts_require_auth? no (option unset)
+   SMTP>> MAIL FROM:<>
 cmd buf flush ddd bytes
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<qq@remote>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<qq@remote>
 cmd buf flush ddd bytes
 sync_responses expect rcpt for qq@remote
-  SMTP<< 550 Unknown
-  SMTP>> QUIT
+   SMTP<< 550 Unknown
+   SMTP>> QUIT
 cmd buf flush ddd bytes
-  SMTP<< 250 OK
-  SMTP(close)>>
+   SMTP<< 250 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
- EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
- returned from EXIM_DBOPEN: 0xAAAAAAAA
-dbfn_write: key=remote datalen nn
-wrote callout cache domain record for remote:
-  result=1 postmaster=0 random=0
-dbfn_write: key=qq@remote datalen nn
-wrote negative callout cache address record for qq@remote
------------ end verify ------------
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+ dbfn_write: key=remote datalen nn
+ wrote callout cache domain record for remote:
+   result=1 postmaster=0 random=0
+ dbfn_write: key=qq@remote datalen nn
+ wrote negative callout cache address record for qq@remote
+ ----------- end verify ------------
 l_message: $acl_verify_message
 warn: condition test succeeded in ACL rcpt
 LOG: MAIN
@@ -206,7 +206,7 @@ qq@remote in "qq@remote"?
   remote in "remote"? yes (matched "remote")
  qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender
-using cached sender verify result
+ using cached sender verify result
 deny: condition test failed in ACL rcpt
 processing ACL rcpt "warn" (TESTSUITE/test-config 21)
 check senders = qq@remote
@@ -222,58 +222,58 @@ check !verify = sender/callout
 Verifying qq@remote
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering qq@remote
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing qq@remote
---------> r1 router <--------
-local_part=qq domain=remote
-checking domains
-remote in domains?
- list element: local
-remote in domains? no (end of list)
-r1 router skipped: domains mismatch
---------> r2 router <--------
-local_part=qq domain=remote
-checking domains
-remote in domains?
- list element: remote
- remote in domains? yes (matched "remote")
-calling r2 router
-r2 router called for qq@remote
-  domain = remote
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing qq@remote
+ --------> r1 router <--------
+  local_part=qq domain=remote
+  checking domains
+  remote in domains?
+   list element: local
+  remote in domains? no (end of list)
+  r1 router skipped: domains mismatch
+ --------> r2 router <--------
+  local_part=qq domain=remote
+  checking domains
+  remote in domains?
+   list element: remote
+   remote in domains? yes (matched "remote")
+  calling r2 router
+  r2 router called for qq@remote
+    domain = remote
 route_item = * 127.0.0.1
-remote in "*"?
- list element: *
- remote in "*"? yes (matched "*")
-original list of hosts = '127.0.0.1' options = ''
-expanded list of hosts = '127.0.0.1' options = ''
-finding IP address for 127.0.0.1
-calling host_find_byname
-using host_fake_gethostbyname for 127.0.0.1 (IPv4)
-local host found for non-MX address
+  remote in "*"?
+   list element: *
+   remote in "*"? yes (matched "*")
+  original list of hosts = '127.0.0.1' options = ''
+  expanded list of hosts = '127.0.0.1' options = ''
+  finding IP address for 127.0.0.1
+  calling host_find_byname
+  using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+  local host found for non-MX address
 fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 remote host address is the local host: remote: configured to try delivery anyway
-queued for t2 transport: local_part = qq
-domain = remote
-  errors_to=NULL
-  domain_data=remote local_part_data=NULL
-routed by r2 router
-  envelope to:	qq@remote
-  transport:	t2
+  queued for t2 transport: local_part = qq
+  domain = remote
+    errors_to=NULL
+    domain_data=remote local_part_data=NULL
+ routed by r2 router
+   envelope to:	qq@remote
+   transport:	t2
   host 127.0.0.1 [127.0.0.1]
 Attempting full verification using callout
- EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
- returned from EXIM_DBOPEN: 0xAAAAAAAA
-dbfn_read: key=remote
-dbfn_read: size nnn return
-callout cache: found domain record for remote
-dbfn_read: key=qq@remote
-dbfn_read: size nnn return
-callout cache: found address record for qq@remote
-callout cache: address record is negative
------------ end verify ------------
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+ dbfn_read: key=remote
+ dbfn_read: size nnn return
+ callout cache: found domain record for remote
+ dbfn_read: key=qq@remote
+ dbfn_read: size nnn return
+ callout cache: found address record for qq@remote
+ callout cache: address record is negative
+ ----------- end verify ------------
 l_message: $acl_verify_message
 warn: condition test succeeded in ACL rcpt
 LOG: MAIN

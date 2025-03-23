@@ -23,14 +23,14 @@ aaaa@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing aaaa@myhost.test.ex
 --------> defer router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-aaaa in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ aaaa in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> aaaa_redirect router <--------
-local_part=aaaa domain=myhost.test.ex
-checking local_parts
-calling aaaa_redirect router
+ local_part=aaaa domain=myhost.test.ex
+ checking local_parts
+ calling aaaa_redirect router
 rda_interpret (string): 'bbbb@$domain, cccc@$domain'
 expanded: 'bbbb@myhost.test.ex, cccc@myhost.test.ex' (tainted)
 file is not a filter file
@@ -49,9 +49,9 @@ routed by aaaa_redirect router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer@myhost.test.ex
 --------> defer router <--------
-local_part=defer domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file
@@ -73,51 +73,51 @@ cccc@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing cccc@myhost.test.ex
 --------> defer router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> aaaa_redirect router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-cccc in local_parts? no (end of list)
-aaaa_redirect router skipped: local_parts mismatch
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ cccc in local_parts? no (end of list)
+ aaaa_redirect router skipped: local_parts mismatch
 --------> bc router <--------
-local_part=cccc domain=myhost.test.ex
-checking local_parts
-calling bc router
-bc router called for cccc@myhost.test.ex
-  domain = myhost.test.ex
-set transport t1
-queued for t1 transport: local_part = cccc
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=cccc
+ local_part=cccc domain=myhost.test.ex
+ checking local_parts
+ calling bc router
+ bc router called for cccc@myhost.test.ex
+   domain = myhost.test.ex
+ set transport t1
+ queued for t1 transport: local_part = cccc
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=cccc
 routed by bc router
   envelope to:	cccc@myhost.test.ex
   transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing bbbb@myhost.test.ex
 --------> defer router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-defer router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ defer router skipped: local_parts mismatch
 --------> aaaa_redirect router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-bbbb in local_parts? no (end of list)
-aaaa_redirect router skipped: local_parts mismatch
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ bbbb in local_parts? no (end of list)
+ aaaa_redirect router skipped: local_parts mismatch
 --------> bc router <--------
-local_part=bbbb domain=myhost.test.ex
-checking local_parts
-calling bc router
-bc router called for bbbb@myhost.test.ex
-  domain = myhost.test.ex
-queued for t1 transport: local_part = bbbb
-domain = myhost.test.ex
-  errors_to=NULL
-  domain_data=NULL local_part_data=bbbb
+ local_part=bbbb domain=myhost.test.ex
+ checking local_parts
+ calling bc router
+ bc router called for bbbb@myhost.test.ex
+   domain = myhost.test.ex
+ queued for t1 transport: local_part = bbbb
+ domain = myhost.test.ex
+   errors_to=NULL
+   domain_data=NULL local_part_data=bbbb
 routed by bc router
   envelope to:	bbbb@myhost.test.ex
   transport:	t1
@@ -152,9 +152,9 @@ defer@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer@myhost.test.ex
 --------> defer router <--------
-local_part=defer domain=myhost.test.ex
-checking local_parts
-calling defer router
+ local_part=defer domain=myhost.test.ex
+ checking local_parts
+ calling defer router
 rda_interpret (string): ':defer: forced defer'
 expanded: ':defer: forced defer'
 file is not a filter file

@@ -13,18 +13,18 @@
 >>> using ACL "mail"
 >>> processing ACL mail "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@y
->>> calling r1 router
->>> routed by r1 router
->>> local host found for non-MX address
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@y
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
 >>> ... callout omitted by default when host testing
 >>> (Use -bhc if you want the callouts to happen.)
->>> ----------- end verify ------------
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in ACL mail
 >>> end of ACL mail: ACCEPT
 Exim version x.yz ....
@@ -71,71 +71,71 @@ check verify = sender/callout=1s,maxwait=1s
 Verifying x@y
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering x@y
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing x@y
---------> r1 router <--------
-local_part=x domain=y
-calling r1 router
-r1 router called for x@y
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing x@y
+ --------> r1 router <--------
+  local_part=x domain=y
+  calling r1 router
+  r1 router called for x@y
+    domain = y
+  set transport t1
+  queued for t1 transport: local_part = x
   domain = y
-set transport t1
-queued for t1 transport: local_part = x
-domain = y
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
-routed by r1 router
-  envelope to:	x@y
-  transport:	t1
-using host_fake_gethostbyname for 127.0.0.1 (IPv4)
-local host found for non-MX address
+    errors_to=NULL
+    domain_data=NULL local_part_data=NULL
+ routed by r1 router
+   envelope to:	x@y
+   transport:	t1
+ using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+ local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
- EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
- hintsdb_open(flags 0x2 mode 0640) No such file or directory
- returned from EXIM_DBOPEN: (nil)
- TESTSUITE/spool/db/callout appears not to exist: trying to create
- EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
- returned from EXIM_DBOPEN: 0xAAAAAAAA
-dbfn_read: key=y
-dbfn_read: null return
-callout cache: no domain record found for y
-dbfn_read: key=x@y
-dbfn_read: null return
-callout cache: no address record found for x@y
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+  hintsdb_open(flags 0x2 mode 0640) No such file or directory
+  returned from EXIM_DBOPEN: (nil)
+  TESTSUITE/spool/db/callout appears not to exist: trying to create
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+ dbfn_read: key=y
+ dbfn_read: null return
+ callout cache: no domain record found for y
+ dbfn_read: key=x@y
+ dbfn_read: null return
+ callout cache: no address record found for x@y
 interface=NULL port=PORT_S
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-connected
-  SMTP<< 220 server ready
-127.0.0.1 in hosts_avoid_esmtp? no (option unset)
-  SMTP>> EHLO myhost.test.ex
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
+   SMTP<< 220 server ready
+ 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
+   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
-  SMTP<< 250 OK
+   SMTP<< 250 OK
 not using PIPELINING
 not using DSN
-127.0.0.1 in hosts_require_auth? no (option unset)
-  SMTP>> MAIL FROM:<>
+ 127.0.0.1 in hosts_require_auth? no (option unset)
+   SMTP>> MAIL FROM:<>
 cmd buf flush ddd bytes
-  SMTP<< 250 OK
-  SMTP>> RCPT TO:<x@y>
+   SMTP<< 250 OK
+   SMTP>> RCPT TO:<x@y>
 cmd buf flush ddd bytes
 sync_responses expect rcpt for x@y
-  SMTP<< 250 OK
-  SMTP>> QUIT
+   SMTP<< 250 OK
+   SMTP>> QUIT
 cmd buf flush ddd bytes
-  SMTP<< 220 OK
-  SMTP(close)>>
+   SMTP<< 220 OK
+   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:220'
- EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
- returned from EXIM_DBOPEN: 0xAAAAAAAA
-dbfn_write: key=y datalen nn
-wrote callout cache domain record for y:
-  result=1 postmaster=0 random=0
-dbfn_write: key=x@y datalen nn
-wrote positive callout cache address record for x@y
------------ end verify ------------
-sender x@y verified ok
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+ dbfn_write: key=y datalen nn
+ wrote callout cache domain record for y:
+   result=1 postmaster=0 random=0
+ dbfn_write: key=x@y datalen nn
+ wrote positive callout cache address record for x@y
+ ----------- end verify ------------
+ sender x@y verified ok
 accept: condition test succeeded in ACL mail
 end of ACL mail: ACCEPT
 SMTP>> 250 OK
@@ -189,38 +189,38 @@ check verify = sender/callout=1s,maxwait=1s
 Verifying x@y
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering x@y
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing x@y
---------> r1 router <--------
-local_part=x domain=y
-calling r1 router
-r1 router called for x@y
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ routing x@y
+ --------> r1 router <--------
+  local_part=x domain=y
+  calling r1 router
+  r1 router called for x@y
+    domain = y
+  set transport t1
+  queued for t1 transport: local_part = x
   domain = y
-set transport t1
-queued for t1 transport: local_part = x
-domain = y
-  errors_to=NULL
-  domain_data=NULL local_part_data=NULL
-routed by r1 router
-  envelope to:	x@y
-  transport:	t1
-using host_fake_gethostbyname for 127.0.0.1 (IPv4)
-local host found for non-MX address
+    errors_to=NULL
+    domain_data=NULL local_part_data=NULL
+ routed by r1 router
+   envelope to:	x@y
+   transport:	t1
+ using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+ local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
- EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
- returned from EXIM_DBOPEN: 0xAAAAAAAA
-dbfn_read: key=y
-dbfn_read: size nnn return
-callout cache: found domain record for y
-dbfn_read: key=x@y
-dbfn_read: size nnn return
-callout cache: found address record for x@y
-callout cache: address record is positive
------------ end verify ------------
-sender x@y verified ok
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+ dbfn_read: key=y
+ dbfn_read: size nnn return
+ callout cache: found domain record for y
+ dbfn_read: key=x@y
+ dbfn_read: size nnn return
+ callout cache: found address record for x@y
+ callout cache: address record is positive
+ ----------- end verify ------------
+ sender x@y verified ok
 accept: condition test succeeded in ACL mail
 end of ACL mail: ACCEPT
 SMTP>> 250 OK
@@ -245,19 +245,19 @@ search_tidyup called
 >>> using ACL "mail"
 >>> processing ACL mail "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing x@y
->>> calling r1 router
->>> routed by r1 router
->>> local host found for non-MX address
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing x@y
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
->>> callout cache: found domain record for y
->>> callout cache: found address record for x@y
->>> callout cache: address record is positive
->>> ----------- end verify ------------
+>>>  callout cache: found domain record for y
+>>>  callout cache: found address record for x@y
+>>>  callout cache: address record is positive
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in ACL mail
 >>> end of ACL mail: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -275,41 +275,41 @@ MUNGED: ::1 will be omitted in what follows
 >>> using ACL "mail"
 >>> processing ACL mail "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing a@b
->>> calling r1 router
->>> routed by r1 router
->>> local host found for non-MX address
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing a@b
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
->>> callout cache: no domain record found for b
->>> callout cache: no address record found for a@b
+>>>  callout cache: no domain record found for b
+>>>  callout cache: no address record found for a@b
 >>> interface=NULL port=PORT_S
->>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
->>> connected
->>>   SMTP<< 220 server ready
->>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
->>>   SMTP>> EHLO myhost.test.ex
->>> cmd buf flush 21 bytes
->>>   SMTP<< 250 OK
->>> 127.0.0.1 in hosts_require_auth? no (option unset)
->>>   SMTP>> MAIL FROM:<>
->>> cmd buf flush 14 bytes
->>>   SMTP<< 250 OK
->>>   SMTP>> RCPT TO:<a@b>
->>> cmd buf flush 15 bytes
->>>   SMTP<< 250 OK
->>>   SMTP>> QUIT
->>> cmd buf flush 6 bytes
->>>   SMTP<< 220 OK
->>>   SMTP(close)>>
+>>>  Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+>>>  connected
+>>>    SMTP<< 220 server ready
+>>>  127.0.0.1 in hosts_avoid_esmtp? no (option unset)
+>>>    SMTP>> EHLO myhost.test.ex
+>>>  cmd buf flush 21 bytes
+>>>    SMTP<< 250 OK
+>>>  127.0.0.1 in hosts_require_auth? no (option unset)
+>>>    SMTP>> MAIL FROM:<>
+>>>  cmd buf flush 14 bytes
+>>>    SMTP<< 250 OK
+>>>    SMTP>> RCPT TO:<a@b>
+>>>  cmd buf flush 15 bytes
+>>>    SMTP<< 250 OK
+>>>    SMTP>> QUIT
+>>>  cmd buf flush 6 bytes
+>>>    SMTP<< 220 OK
+>>>    SMTP(close)>>
 >>> cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:220'
->>> wrote callout cache domain record for b:
->>>   result=1 postmaster=0 random=0
->>> wrote positive callout cache address record for a@b
->>> ----------- end verify ------------
+>>>  wrote callout cache domain record for b:
+>>>    result=1 postmaster=0 random=0
+>>>  wrote positive callout cache address record for a@b
+>>>  ----------- end verify ------------
 >>> accept: condition test succeeded in ACL mail
 >>> end of ACL mail: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -327,28 +327,28 @@ MUNGED: ::1 will be omitted in what follows
 >>> using ACL "mail"
 >>> processing ACL mail "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
->>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> routing p1@q
->>> calling r1 router
->>> routed by r1 router
->>> local host found for non-MX address
+>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>  routing p1@q
+>>>   calling r1 router
+>>>  routed by r1 router
+>>>  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
->>> callout cache: no domain record found for q
->>> callout cache: no address record found for p1@q
+>>>  callout cache: no domain record found for q
+>>>  callout cache: no address record found for p1@q
 >>> interface=NULL port=PORT_S
->>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
->>> connected
->>>   SMTP<< 220 server ready
->>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
->>>   SMTP>> EHLO myhost.test.ex
->>> cmd buf flush 21 bytes
->>>   SMTP(close)>>
+>>>  Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+>>>  connected
+>>>    SMTP<< 220 server ready
+>>>  127.0.0.1 in hosts_avoid_esmtp? no (option unset)
+>>>    SMTP>> EHLO myhost.test.ex
+>>>  cmd buf flush 21 bytes
+>>>    SMTP(close)>>
 >>> cmdlog: '220:EHLO'
 >>> SMTP timeout
->>> ----------- end verify ------------
+>>>  ----------- end verify ------------
 >>> accept: condition test deferred in ACL mail
 LOG: H=(test) [1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP timeout after EHLO myhost.test.ex
 LOG: H=(test) [1.2.3.4] temporarily rejected MAIL <p1@q>: Could not complete sender verify callout

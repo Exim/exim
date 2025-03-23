@@ -153,7 +153,7 @@ const uschar * fully_qualified_name, * listptr;
 uschar widen_buffer[256];
 
 DEBUG(D_route)
-  debug_printf("%s router called for %s\n  domain = %s\n",
+  debug_printf_indent("%s router called for %s\n  domain = %s\n",
     rblock->drinst.name, addr->address, addr->domain);
 
 /* If an SRV check is required, expand the service name */
