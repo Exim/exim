@@ -149,7 +149,7 @@ delivering 10HmbA-000000005vi-0000 (queue run pid p1235)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused

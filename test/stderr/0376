@@ -85,7 +85,7 @@ Attempting full verification using callout
  callout cache: address record expired for ok@localhost
 interface=NULL port=PORT_S
  Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-  failed: Connection refused
+  sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify defer for <ok@localhost>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : Connection refused

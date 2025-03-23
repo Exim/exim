@@ -764,6 +764,7 @@ tls_retry_connection:
 	case EADDRNOTAVAIL:
 	case ENETDOWN:
 	case ENETUNREACH:
+	case EINVAL:			/* OpenBSD gives this for netunreach */
 	  log_write(0, LOG_MAIN|LOG_PANIC,
 	    "%s verify %s (making callout connection): T=%s %s",
 	    options & vopt_is_recipient ? "sender" : "recipient",

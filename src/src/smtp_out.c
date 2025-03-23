@@ -446,7 +446,7 @@ if (!save_errno)
 
 HDEBUG(D_transport|D_acl|D_v)
   {
-  debug_printf_indent(" failed: %s", CUstrerror(save_errno));
+  debug_printf_indent(" sock_connect failed: %s", CUstrerror(save_errno));
   if (save_errno == ETIMEDOUT)
     debug_printf(" (timeout=%s)", readconf_printtime(timeout));
   debug_printf("\n");

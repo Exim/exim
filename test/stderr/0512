@@ -19,7 +19,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.ex)
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
@@ -33,7 +33,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.ex)
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
@@ -47,7 +47,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.ex)
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
@@ -61,7 +61,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.ex)
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
@@ -124,7 +124,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.ex)
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
@@ -138,7 +138,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.ex)
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused

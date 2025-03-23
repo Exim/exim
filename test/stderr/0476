@@ -91,7 +91,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1]:PORT_S (CALLER@the.local.host.name)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- failed: Connection refused
+ sock_connect failed: Connection refused
 cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused

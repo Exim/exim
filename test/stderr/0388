@@ -115,7 +115,7 @@ checking retry status of V4NET.0.0.0
 V4NET.0.0.0 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S (x@y)
 Connecting to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S ...
- failed: Network Error
+ sock_connect failed: Network Error
 cmdlog: (unset)
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
