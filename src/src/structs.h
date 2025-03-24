@@ -97,7 +97,7 @@ typedef struct host_item {
   int		mx;		/* MX value if found via MX records */
   uschar	status;		/* Usable, unusable, or unknown */
   uschar	why;		/* Why host is unusable */
-  dnssec_status_t dnssec:2;
+  dnssec_status_t dnssec_used:2;
 #ifdef EXPERIMENTAL_SRV_SMTPS
   srv_tls_t	  tls_needs:2;
 #endif

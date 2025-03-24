@@ -2086,9 +2086,11 @@ DEBUG(D_route)
     debug_printf_indent("  host %s", h->name);
     if (h->address) debug_printf_indent(" [%s]", h->address);
     if (h->mx >= 0) debug_printf_indent(" MX=%d", h->mx);
-      else if (h->mx != MX_NONE) debug_printf_indent(" rgroup=%d", h->mx);
+    else if (h->mx != MX_NONE) debug_printf_indent(" rgroup=%d", h->mx);
+
     if (h->port != PORT_NONE) debug_printf_indent(" port=%d", h->port);
-    if (h->dnssec != DS_UNK) debug_printf_indent(" dnssec=%s", h->dnssec==DS_YES ? "yes" : "no");
+    if (h->dnssec_used != DS_UNK)
+      debug_printf_indent(" dnssec=%s", h->dnssec_used==DS_YES ? "yes" : "no");
     debug_printf_indent("\n");
     }
   }

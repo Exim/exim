@@ -517,7 +517,7 @@ while (one && two)
 
 #ifdef SUPPORT_DANE
   /* DNSSEC equality */
-  if (one->dnssec != two->dnssec) return FALSE;
+  if (one->dnssec_used != two->dnssec_used) return FALSE;
 #endif
 
   /* Hosts matched */
@@ -782,7 +782,7 @@ host_item * h = addr->host_used;
 
 g = string_append(g, 2, US" H=", h->name);
 
-if (LOGGING(dnssec) && h->dnssec == DS_YES)
+if (LOGGING(dnssec) && h->dnssec_used == DS_YES)
   g = string_catn(g, US" DS", 3);
 
 g = string_append(g, 3, US" [", h->address, US"]");
@@ -1210,8 +1210,8 @@ else
     deliver_host =         addr->host_used->name;
 
     /* DNS lookup status */
-    lookup_dnssec_authenticated = addr->host_used->dnssec==DS_YES ? US"yes"
-			      : addr->host_used->dnssec==DS_NO ? US"no"
+    lookup_dnssec_authenticated = addr->host_used->dnssec_used==DS_YES ? US"yes"
+			      : addr->host_used->dnssec_used==DS_NO ? US"no"
 			      : NULL;
 #endif
     }
@@ -3683,9 +3683,9 @@ while (!done)
 	    while(*ptr++);
 	    memcpy(&h->port, ptr, sizeof(h->port));
 	    ptr += sizeof(h->port);
-	    h->dnssec = *ptr == '2' ? DS_YES
-		      : *ptr == '1' ? DS_NO
-		      : DS_UNK;
+	    h->dnssec_used = *ptr == '2' ? DS_YES
+			   : *ptr == '1' ? DS_NO
+			   : DS_UNK;
 	    addr->host_used = h;
 
 	    continue_host_port = h->port;
@@ -5179,8 +5179,8 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
         ptr += sizeof(addr->host_used->port);
 
         /* DNS lookup status */
-	*ptr++ = addr->host_used->dnssec==DS_YES ? '2'
-	       : addr->host_used->dnssec==DS_NO ? '1' : '0';
+	*ptr++ = addr->host_used->dnssec_used==DS_YES ? '2'
+	       : addr->host_used->dnssec_used==DS_NO ? '1' : '0';
 
         }
       rmt_dlv_checked_write(fd, 'A', '0', big_buffer, ptr - big_buffer);

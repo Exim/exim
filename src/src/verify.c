@@ -2300,7 +2300,7 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 	  dprintf(fd, " MX=%d", h->mx);
         if (h->port != PORT_NONE)
 	  dprintf(fd, " port=%d", h->port);
-        if (f.running_in_test_harness  &&  h->dnssec == DS_YES)
+        if (f.running_in_test_harness  &&  h->dnssec_used == DS_YES)
 	  write(fd, " AD", 3);
         if (h->status == hstatus_unusable)
 	  dprintf(fd, " ** unusable **");

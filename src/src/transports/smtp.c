@@ -2330,7 +2330,7 @@ if (continue_hostname && continue_proxy_cipher)
 
   tls_out.dane_verified = FALSE;
   smtp_port_for_connect(sx->conn_args.host, sx->port);
-  if (  sx->conn_args.host->dnssec == DS_YES
+  if (  sx->conn_args.host->dnssec_used == DS_YES
      && (rc = check_force_dane_conn(sx, ob)) != OK
      )
     return rc;
@@ -2350,7 +2350,7 @@ if (continue_hostname && continue_proxy_cipher)
     {
     tls_out.sni = US sni;
     if ((tls_out.dane_verified = continue_proxy_dane))
-      sx->conn_args.host->dnssec = DS_YES;
+      sx->conn_args.host->dnssec_used = DS_YES;
     }
 # else
   if ((continue_proxy_sni ? (Ustrcmp(continue_proxy_sni, sni) == 0) : !*sni))
@@ -2399,7 +2399,7 @@ if (!continue_hostname || atrn_domains)
     tls_out.dane_verified = FALSE;
     tls_out.tlsa_usage = 0;
 
-    if (sx->conn_args.host->dnssec == DS_YES)
+    if (sx->conn_args.host->dnssec_used == DS_YES)
       {
       int rc;
       if ((rc = check_force_dane_conn(sx, ob)) != OK)
@@ -2581,9 +2581,11 @@ if (!continue_hostname || atrn_domains)
 #ifndef DISABLE_EVENT
       {
       uschar * s;
-      lookup_dnssec_authenticated = sx->conn_args.host->dnssec==DS_YES ? US"yes"
-	: sx->conn_args.host->dnssec==DS_NO ? US"no" : NULL;
-      s = event_raise(sx->conn_args.tblock->event_action, US"smtp:connect", sx->buffer, NULL);
+      lookup_dnssec_authenticated =
+	sx->conn_args.host->dnssec_used==DS_YES ? US"yes"
+	: sx->conn_args.host->dnssec_used==DS_NO ? US"no" : NULL;
+      s = event_raise(sx->conn_args.tblock->event_action, US"smtp:connect",
+		      sx->buffer, NULL);
       if (s)
 	{
 	set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL,
@@ -5866,8 +5868,8 @@ retry_non_continued:
 
     deliver_host = host->name;
     deliver_host_address = host->address;
-    lookup_dnssec_authenticated = host->dnssec == DS_YES ? US"yes"
-				: host->dnssec == DS_NO ? US"no"
+    lookup_dnssec_authenticated = host->dnssec_used == DS_YES ? US"yes"
+				: host->dnssec_used == DS_NO ? US"no"
 				: US"";
 
     /* Set up a string for adding to the retry key if the port number is not

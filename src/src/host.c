@@ -1777,8 +1777,8 @@ for (uschar * hname = sender_host_name; hname; hname = *aliases++)
     /* If the forward lookup was not secure we cancel the is-secure variable */
 
     DEBUG(D_dns) debug_printf_indent("Forward DNS security status: %s\n",
-	  h.dnssec == DS_YES ? "DNSSEC verified (AD)" : "unverified");
-    if (h.dnssec != DS_YES) sender_host_dnssec = FALSE;
+	  h.dnssec_used == DS_YES ? "DNSSEC verified (AD)" : "unverified");
+    if (h.dnssec_used != DS_YES) sender_host_dnssec = FALSE;
 
     for (host_item * hh = &h; hh; hh = hh->next)
       if (host_is_in_net(hh->address, sender_host_address, 0))
@@ -2062,7 +2062,7 @@ for (int i = 1; i <= times;
       host->port = PORT_NONE;
       host->status = hstatus_unknown;
       host->why = hwhy_unknown;
-      host->dnssec = DS_UNK;
+      host->dnssec_used = DS_UNK;
 #ifdef EXPERIMENTAL_SRV_SMTPS
       host->tls_needs = SRV_TLS_UNK;
 #endif
@@ -2084,7 +2084,7 @@ for (int i = 1; i <= times;
       next->port = PORT_NONE;
       next->status = hstatus_unknown;
       next->why = hwhy_unknown;
-      next->dnssec = DS_UNK;
+      next->dnssec_used = DS_UNK;
 #ifdef EXPERIMENTAL_SRV_SMTPS
       next->tls_needs = SRV_TLS_UNK;
 #endif
@@ -2326,8 +2326,8 @@ for (; i >= 0; i--)
     if (dns_is_secure(dnsa))
       {
       DEBUG(D_host_lookup) debug_printf("%s A DNSSEC\n", host->name);
-      if (host->dnssec == DS_UNK) /* set in host_find_bydns() */
-	host->dnssec = DS_YES;
+      if (host->dnssec_used == DS_UNK) /* set in host_find_bydns() */
+	host->dnssec_used = DS_YES;
       }
     else
       {
@@ -2338,10 +2338,10 @@ for (; i >= 0; i--)
 		i>0 ? "AAAA" : "A", host->name);
 	continue;
 	}
-      if (host->dnssec == DS_YES) /* set in host_find_bydns() */
+      if (host->dnssec_used == DS_YES) /* set in host_find_bydns() */
 	{
 	DEBUG(D_host_lookup) debug_printf("%s A cancel DNSSEC\n", host->name);
-	host->dnssec = DS_NO;
+	host->dnssec_used = DS_NO;
 	lookup_dnssec_authenticated = US"no";
 	}
       }
@@ -2717,7 +2717,7 @@ if (rc != DNS_SUCCEED)
   last = host;        /* End of local chainlet */
   host->mx = MX_NONE;
   host->port = PORT_NONE;
-  host->dnssec = DS_UNK;
+  host->dnssec_used = DS_UNK;
 #ifdef EXPERIMENTAL_SRV_SMTPS
   host->tls_needs = SRV_TLS_UNK;
 #endif
@@ -2854,7 +2854,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   next->mx = precedence;
   next->status = hstatus_unknown;
   next->why = hwhy_unknown;
-  next->dnssec = dnssec;
+  next->dnssec_used = dnssec;
 #ifdef EXPERIMENTAL_SRV_SMTPS
   next->tls_needs = srv_smtps
     ? port == PORT_NONE ? SRV_STARTTLS_MUST : SRV_TLS_ON_CONNECT
@@ -3156,7 +3156,7 @@ DEBUG(D_host_lookup)
     {
     debug_printf_indent("  %s %s MX=%d %s", h->name,
       !h->address ? US"<null>" : h->address, h->mx,
-      h->dnssec == DS_YES ? US"DNSSEC " : US"");
+      h->dnssec_used == DS_YES ? US"DNSSEC " : US"");
     if (h->port != PORT_NONE) debug_printf("port=%d ", h->port);
     if (h->status >= hstatus_unusable) debug_printf("*");
     debug_printf("\n");

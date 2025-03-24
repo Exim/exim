@@ -3454,7 +3454,7 @@ else
         if (Ustrcmp(hh->address, sender_host_address) == 0)
           {
           f.helo_verified = TRUE;
-	  if (h.dnssec == DS_YES) sender_helo_dnssec = TRUE;
+	  if (h.dnssec_used == DS_YES) sender_helo_dnssec = TRUE;
           HDEBUG(D_receive)
             debug_printf("IP address for %s matches calling address\n"
 	      "Forward DNS security status: %sverified\n",
