@@ -337,6 +337,7 @@ while ((name = string_nextinlist(&list, &sep, NULL, 0)))
   h->sort_key = randomize ? (-fake_mx)*1000 + random_number(1000) : 0;
   h->status = hstatus_unknown;
   h->why = hwhy_unknown;
+  h->dnssec_used = DS_UNK;
   h->last_try = 0;
 
   if (!*anchor)

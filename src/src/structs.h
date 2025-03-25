@@ -79,7 +79,7 @@ typedef enum {	TFO_NOT_USED = 0,
 but also used when checking lists of hosts and when transporting. Looking up
 host addresses is done using this structure. */
 
-typedef enum {DS_UNK=-1, DS_NO, DS_YES} dnssec_status_t;
+typedef enum {DS_UNK, DS_NO, DS_YES} dnssec_status_t;
 
 #ifdef EXPERIMENTAL_SRV_SMTPS
 typedef enum {SRV_TLS_UNK, SRV_STARTTLS_CAN, SRV_STARTTLS_MUST,

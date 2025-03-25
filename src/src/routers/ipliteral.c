@@ -158,6 +158,7 @@ h->name = domain;
 h->mx = MX_NONE;
 h->status = hstatus_unknown;
 h->why = hwhy_unknown;
+h->dnssec_used = DS_UNK;
 h->last_try = 0;
 
 /* Determine whether the host is the local host, and if so, take action

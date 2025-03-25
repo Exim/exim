@@ -265,6 +265,7 @@ for (;;)
   h.mx = MX_NONE;
   h.status = hstatus_unknown;
   h.why = hwhy_unknown;
+  h.dnssec_used = DS_UNK;
   h.last_try = 0;
 
   /* Unfortunately, we cannot set the mx_only option in advance, because the
