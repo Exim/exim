@@ -680,7 +680,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 dbfn_read: key=T:userx@test.ex
-dbfn_read: size nnn return
+dbfn_read: size nn return
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
 search_tidyup called
@@ -736,7 +736,7 @@ Processing retry items
    ╎ userx@test.ex in "*"? yes (matched "*")
    retry for T:userx@test.ex = * 0 0
    dbfn_read: key=T:userx@test.ex
-   dbfn_read: size nnn return
+   dbfn_read: size nn return
    failing_interval=ttt message_age=ttt
    Writing retry data for T:userx@test.ex
      first failed=dddd last try=dddd next try=+86400 expired=0

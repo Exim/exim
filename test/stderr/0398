@@ -142,7 +142,7 @@ Attempting full verification using callout
   EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
   returned from EXIM_DBOPEN: 0xAAAAAAAA
  dbfn_read: key=remote
- dbfn_read: size nnn return
+ dbfn_read: size nn return
  callout cache: found domain record for remote
  dbfn_read: key=qq@remote
  dbfn_read: null return
@@ -267,10 +267,10 @@ Attempting full verification using callout
   EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
   returned from EXIM_DBOPEN: 0xAAAAAAAA
  dbfn_read: key=remote
- dbfn_read: size nnn return
+ dbfn_read: size nn return
  callout cache: found domain record for remote
  dbfn_read: key=qq@remote
- dbfn_read: size nnn return
+ dbfn_read: size nn return
  callout cache: found address record for qq@remote
  callout cache: address record is negative
  ----------- end verify ------------

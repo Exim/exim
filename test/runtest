@@ -1593,8 +1593,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^\s*cmd buf flush \d+ bytes/cmd buf flush ddd bytes/;
 
     # Different platforms put different error messages into retry records
-    s/dbfn_write: key=.* datalen \K\d{2,3}$/nn/;
-    s/dbfn_read: size \K\d{2,3}(?= return$)/nnn/;
+    s/dbfn_write: key=.* datalen \K\d{1,3}$/nn/;
+    s/dbfn_read: size \K\d{1,3}(?= return$)/nn/;
 
     # Spool filesystem free space changes on different systems.
     s/((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
