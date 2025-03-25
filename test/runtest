@@ -1603,7 +1603,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /try option acl_(?:not_)?smtp_mime$/;
 
     # DISABLE_OCSP
-    next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
+    next if /in hosts_requ(?:est|ire)_ocsp\?/;
 
     # WELLKNOWN
     next if / in wellknown_advertise_hosts\?/;
