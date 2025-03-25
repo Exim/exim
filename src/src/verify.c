@@ -2276,8 +2276,8 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     if (addr->host_list && tp && !tp->overrides_hosts)
       {
       const transport_info * ti = tp->drinst.info;
-      int maxlen = 0;
-      int maxaddlen = 0;
+      int maxlen = 0, maxaddlen = 0;
+
       for (host_item * h = addr->host_list; h; h = h->next)
         {				/* get max lengths of host names, addrs */
         int len = Ustrlen(h->name);

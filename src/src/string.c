@@ -1384,12 +1384,13 @@ If the "extend" flag is false, the string passed in may not be NULL,
 will not be grown, and is usable in the original place after return.
 The return value can be NULL to signify overflow.
 
+Alternate-form:		#: s/Y/b are silent about a null string
+			   H uppercase result
+Left-alignment:		-: only for s D H M S T Y V W Z b
 Field width:		decimal digits, or *
 Precision:		dot, followed by decimal digits or *
 Length modifiers:	h  L  l  ll  z
 Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M H Z b
-Alternate-form:		#: s/Y/b are silent about a null string
-			   H uppercase result
 
 Returns the possibly-new (if copy for growth or taint-handling was needed)
 string, not nul-terminated.
@@ -1434,11 +1435,10 @@ initial_off = g->ptr;	/* remember initial offset in gstring */
 
 while (*fp)
   {
-  int length = L_NORMAL;
-  int * nptr;
-  int slen;
-  const char *null = "NULL";		/* ) These variables */
-  const char *item_start, *s;		/* ) are deliberately */
+  int length = L_NORMAL, slen, * nptr;
+  BOOL l_align = FALSE;
+  const char * null = "NULL";		/* ) These variables */
+  const char * item_start, * s;		/* ) are deliberately */
   char newformat[16];			/* ) not unsigned */
   char * gp = CS g->s + g->ptr;		/* ) */
 
@@ -1463,10 +1463,10 @@ while (*fp)
   item_start = fp;
   width = precision = -1;
 
-  if (strchr("-+ #0", *(++fp)) != NULL)
+  while (strchr("-+ #0", *++fp) != NULL)
     {
     if (*fp == '#') null = "";
-    fp++;
+    else if (*fp == '-') l_align = TRUE;
     }
 
   if (isdigit((uschar)*fp))
@@ -1844,7 +1844,8 @@ while (*fp)
 	gp = CS g->s + g->ptr;
 	}
 
-      g->ptr += sprintf(gp, "%*.*s", width, precision, s);
+      g->ptr += sprintf(gp, l_align ? "%-*.*s" : "%*.*s",
+	width, precision, s);
       if (fp[-1] == 'S')
 	while (*gp) { *gp = tolower(*gp); gp++; }
       else if (fp[-1] == 'T')
