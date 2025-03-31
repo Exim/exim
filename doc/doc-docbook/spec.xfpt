@@ -31128,7 +31128,7 @@ temporary error for these kinds of message.
 .oindex &%smtp_banner%&
 The ACL test specified by &%acl_smtp_connect%& happens at the start of an SMTP
 session, after the test specified by &%host_reject_connection%& (which is now
-an anomaly) and any TCP Wrappers testing (if configured). If the connection is
+an anomaly). If the connection is
 accepted by an &%accept%& verb that has a &%message%& modifier, the contents of
 the message override the banner message that is otherwise specified by the
 &%smtp_banner%& option.
