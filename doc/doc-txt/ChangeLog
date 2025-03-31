@@ -4,18 +4,6 @@ options, and new features, see the NewStuff file next to this ChangeLog.
 
 Exim version 4.99
 -----------------
-Exim version 4.98.2
--------------------
-
-This is a security release, addressing CVE-2025-30232
-
-JH/01 Fix use-after-free notified by Trend Micro (ref: ZDI-CAN-26250).
-      Null out debug_pretrigger_buf pointer before freeing the buffer;
-      the use of this buffer by the storage management checks the pointer
-      for non-null before using it.
-
-Exim version 4.98.1
--------------------
 
 JH/01 Use fewer forks & execs for sending many messages to a single host.
       By passing back more info from the transport to the delivery process,
@@ -169,8 +157,12 @@ JH/34 Bug 3142: Ensure ack-of-QUIT is pushed. Previously, on a non-TLS
       connection, this would be delayed by the pause needed to try to get
       the TCP TIMEWAIT state held by the client rather than the server.
 
+JH/35 Fix use-after-free notified by Trend Micro (refs: ZDI-CAN-26250,
+      CVE-2025-30232).  Null out debug_pretrigger_buf pointer before freeing
+      the buffer; the use of this buffer by the storage management checks the
+      pointer for non-null before using it.
 
-HS/01 Prevent SQL injection for the hints database.
+
 Exim version 4.98
 -----------------
 
