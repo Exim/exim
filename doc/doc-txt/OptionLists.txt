@@ -621,6 +621,7 @@ tls_certificate                      string*         unset         main         
 tls_dh_max_bits                      integer         2236          main              4.80
 tls_dh_min_bits                      integer         1024          smtp              4.82
 tls_dhparam                          string*         unset         main              3.20
+tls_ignore_missing_close_notify      boolean         true          main              (todo git master)
 tls_ocsp_file                        string*         unset         main              4.80 if experimental_ocsp
 tls_on_connect_ports                 string          unset         main              4.43
 tls_privatekey                       string*         unset         main              3.20
