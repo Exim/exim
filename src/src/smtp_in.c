@@ -2102,13 +2102,14 @@ if (getsockopt(smtp_out_fd, IPPROTO_TCP, TCP_FASTOPEN, &is_fastopen, &len) == 0)
     }
   }
 else DEBUG(D_receive)
-  debug_printf("TCP_INFO getsockopt: %s\n", strerror(errno));
+  debug_printf("TCP_FASTOPEN getsockopt: %s\n", strerror(errno));
 
 # elif defined(TCP_INFO)
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
 if (getsockopt(smtp_out_fd, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
+  {
 #  ifdef TCPI_OPT_SYN_DATA	/* FreeBSD 11,12 do not seem to have this yet */
   if (tinfo.tcpi_options & TCPI_OPT_SYN_DATA)
     {
@@ -2116,19 +2117,35 @@ if (getsockopt(smtp_out_fd, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
       debug_printf("TFO mode connection (ACKd data-on-SYN)\n");
     f.tcp_in_fastopen_data = f.tcp_in_fastopen = TRUE;
     }
+#   ifdef TCPI_OPT_TFO_CHILD
+  else if (tinfo.tcpi_options & TCPI_OPT_TFO_CHILD)
+    {
+    DEBUG(D_receive)
+      debug_printf("TFO mode connection (SYN with TFO option)\n");
+    f.tcp_in_fastopen = TRUE;
+    }
+#   endif
   else
 #  endif
+
+    /* Lacking any specific info (especially for a dataless-TFO) there is
+    a faint hope of not having reached ESTABLISHED state (gotten the ACK of
+    our SYN,ACK). This works for a link with roundtrip delay, but pretty much
+    never for a loopback. We are called after being able to send our banner,
+    and before ESTABLISHED that should only be possible on a TFO. */
+
     if (tinfo.tcpi_state == TCP_SYN_RECV)	/* Not seen on FreeBSD 12.1 */
     {
     DEBUG(D_receive)
       debug_printf("TFO mode connection (state TCP_SYN_RECV)\n");
     f.tcp_in_fastopen = TRUE;
     }
+  }
 else DEBUG(D_receive)
   debug_printf("TCP_INFO getsockopt: %s\n", strerror(errno));
-# endif
+# endif	/* TCP_INFO */
 }
-#endif
+#endif	/* TCP_FASTOPEN */
 
 
 static void
