@@ -2100,7 +2100,7 @@ switch (vp->type)
     if (s) Uskip_whitespace(&s);
     if (!s || !*s)
       {
-      *newsize = 0;                            /* For the *s==0 case */
+      if (newsize) *newsize = 0;		/* For the *s==0 case */
       s = find_header(US"from:", newsize,
 	    flags & ESI_EXISTS_ONLY ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
 	    headers_charset);
@@ -2679,7 +2679,7 @@ switch(cond_type = identify_operator(&s, &opname))
       }
 
     /* Test for a variable's having a non-empty value. A non-existent variable
-    causes an expansion failure. */
+    under strict_acl_vars causes an expansion failure. */
 
     else
       {

@@ -162,6 +162,9 @@ JH/35 Fix use-after-free notified by Trend Micro (refs: ZDI-CAN-26250,
       the buffer; the use of this buffer by the storage management checks the
       pointer for non-null before using it.
 
+JH/36 Fix expansion test.  Previously, the test "def:reply_address" would
+      deref a null pointer and trap with SIGSEGV.
+
 
 Exim version 4.98
 -----------------
