@@ -9,8 +9,9 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
-SMTP>> 250 myhost.test.ex Hello CALLER at test
+SMTP>| 250 myhost.test.ex Hello CALLER at test
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -103,6 +104,7 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
+SMTP>- ◀flush▶
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -123,12 +125,13 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 test in helo_lookup_domains?
  list element: @
  list element: @[]
 test in helo_lookup_domains? no (end of list)
-SMTP>> 250 myhost.test.ex Hello test [1.2.3.4]
+SMTP>| 250 myhost.test.ex Hello test [1.2.3.4]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -163,6 +166,7 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [1.2.3.4] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -183,12 +187,13 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 test in helo_lookup_domains?
  list element: @
  list element: @[]
 test in helo_lookup_domains? no (end of list)
-SMTP>> 250 myhost.test.ex Hello test [V4NET.9.8.7]
+SMTP>| 250 myhost.test.ex Hello test [V4NET.9.8.7]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -224,6 +229,7 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -236,34 +242,40 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
-SMTP>> 250 myhost.test.ex Hello CALLER at test
+SMTP>| 250 myhost.test.ex Hello CALLER at test
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<reject@z>
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   U=CALLER F=<x@y> rejected RCPT <reject@z>
 SMTP<< rcpt to:<reject@z>
 rate limit RCPT: delay 0.25 sec
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   U=CALLER F=<x@y> rejected RCPT <reject@z>
 SMTP<< rcpt to:<reject@z>
 rate limit RCPT: delay 0.263 sec
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   U=CALLER F=<x@y> rejected RCPT <reject@z>
 SMTP<< rcpt to:<reject@z>
 rate limit RCPT: delay 0.276 sec
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   U=CALLER F=<x@y> rejected RCPT <reject@z>
 SMTP<< rcpt to:<reject@z>
 rate limit RCPT: delay 0.289 sec
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   U=CALLER F=<x@y> rejected RCPT <reject@z>
 SMTP<< rset
@@ -275,6 +287,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<reject@z>
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   U=CALLER F=<x@y> rejected RCPT <reject@z>
 SMTP<< rset
@@ -288,4 +301,5 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
+SMTP>- ◀flush▶
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

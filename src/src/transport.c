@@ -1069,7 +1069,7 @@ flush that buffer with non-last BDAT prependix) plus the amount of body data
 (as expanded for CRLF lines).  Then create and write BDAT(s), and ensure
 that further use of write_chunk() will not prepend BDATs.
 The first BDAT written will also first flush any outstanding MAIL and RCPT
-commands which were buffered thans to PIPELINING.
+commands which were buffered thanks to PIPELINING.
 Commands go out (using a send()) from a different buffer to data (using a
 write()).  They might not end up in the same TCP segment, which is
 suboptimal. */

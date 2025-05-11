@@ -14,8 +14,9 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
-SMTP>> 250 the.local.host.name Hello CALLER at test
+SMTP>| 250 the.local.host.name Hello CALLER at test
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -32,6 +33,7 @@ y in "+fail"? no (end of list)
 accept: condition test failed in inline ACL
 end of inline ACL: implicit DENY
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   U=CALLER F=<x@y> rejected RCPT <x@y>
 created log directory TESTSUITE/spool/log
@@ -39,5 +41,6 @@ SMTP<< quit
 SMTP>| 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -28,6 +28,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 test in helo_lookup_domains?
  list element: @
@@ -36,7 +37,7 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.99.99.97]
 sender_rcvhost = [V4NET.99.99.97] (helo=test ident=CALLER)
 set_process_info: pppp handling incoming connection from (test) [V4NET.99.99.97] U=CALLER
-SMTP>> 250 myhost.test.ex Hello CALLER at test [V4NET.99.99.97]
+SMTP>| 250 myhost.test.ex Hello CALLER at test [V4NET.99.99.97]
 SMTP<< mail from:<notgov@test.ex>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -105,5 +106,6 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

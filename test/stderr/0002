@@ -629,8 +629,10 @@ host in " partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
 deny: condition test succeeded in ACL connect1
 end of ACL connect1: DENY
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: connection_reject MAIN REJECT
   H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -677,8 +679,10 @@ host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? no (end of list)
 deny: condition test failed in ACL connect2
 end of ACL connect2: implicit DENY
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: connection_reject MAIN REJECT
   H=[V4NET.0.0.2] rejected connection in "connect" ACL
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)

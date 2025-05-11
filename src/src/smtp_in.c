@@ -32,7 +32,7 @@ we need room to handle large base64-encoded AUTHs for GSSAPI.
 
 /* Buffer for SMTP responses */
 
-#define SMTP_RESP_BUFFER_SIZE	256
+#define SMTP_RESP_BUFFER_SIZE	2048
 
 /* Structure for SMTP command list */
 
@@ -1125,6 +1125,8 @@ int
 smtp_fflush(BOOL uncork)
 {
 if (smtp_out_fd <= 0) return 0;
+
+DEBUG(D_receive) debug_printf("SMTP>- %Vflush%V\n", "<", ">");
 
 #ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
@@ -4480,11 +4482,14 @@ while (done <= 0)
 	f.smtp_in_early_pipe_used = TRUE;
 #endif
       /* Terminate the string (for debug), write it, and note that HELO/EHLO
-      has been seen. */
+      has been seen. If further command input is waiting, just buffer the
+      write. */
 
       if (smtp_out_fd >= 0)
         {
-	smtp_printf("%Y", SP_NO_MORE, g);
+	smtp_printf("%Y",
+		  wouldblock_reading(WBR_DATA_OR_EOF) ? SP_NO_MORE : SP_MORE,
+		  g);
 	fl.helo_seen = TRUE;
         }
 

@@ -533,6 +533,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< HELO test
 test in helo_lookup_domains?
  list element: @
@@ -541,7 +542,7 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [127.0.0.1]
 sender_rcvhost = [127.0.0.1] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [127.0.0.1]
-SMTP>> 250 myhost.test.ex Hello test [127.0.0.1]
+SMTP>| 250 myhost.test.ex Hello test [127.0.0.1]
 SMTP<< MAIL FROM:<test@test.ex>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -590,11 +591,13 @@ LOG: MAIN PANIC
    ----------- end verify ------------
   accept: condition test deferred in inline ACL
 SMTP>> 451 Temporary local problem - please try later
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   H=(test) [127.0.0.1] F=<test@test.ex> temporarily rejected RCPT <error@test.ex>: domains check lookup or other defer
 SMTP<< QUIT
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [127.0.0.1] D=qqs closed by QUIT
+SMTP>- ◀flush▶
   search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

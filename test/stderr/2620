@@ -297,6 +297,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 test in helo_lookup_domains?
  list element: @
@@ -305,7 +306,7 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [10.0.0.0]
 sender_rcvhost = [10.0.0.0] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [10.0.0.0]
-SMTP>> 250 myhost.test.ex Hello test [10.0.0.0]
+SMTP>| 250 myhost.test.ex Hello test [10.0.0.0]
 SMTP<< mail from:<a@b>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -505,6 +506,7 @@ processing ACL check_recipient "deny" (TESTSUITE/test-config 54)
 deny: condition test succeeded in ACL check_recipient
 end of ACL check_recipient: DENY
 SMTP>> 550 relay not permitted
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 SMTP<< rcpt to:<c@d>
@@ -694,12 +696,14 @@ processing ACL check_recipient "deny" (TESTSUITE/test-config 54)
 deny: condition test succeeded in ACL check_recipient
 end of ACL check_recipient: DENY
 SMTP>> 550 relay not permitted
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 close PGSQL connection: localhost:PORT_N/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -124,6 +124,7 @@ try option smtp_banner
  ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 test in helo_lookup_domains?
  list element: @
@@ -133,7 +134,7 @@ sender_fullhost = (test) [V4NET.0.0.1]
 sender_rcvhost = [V4NET.0.0.1] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [V4NET.0.0.1]
 try option acl_smtp_helo
-SMTP>> 250 myhost.test.ex Hello test [V4NET.0.0.1]
+SMTP>| 250 myhost.test.ex Hello test [V4NET.0.0.1]
 SMTP<< mail from:userx@test.ex
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -174,10 +175,13 @@ SMTP<< data
 try option acl_smtp_predata
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
+SMTP>- ◀flush▶
 LOG: lost_incoming_connection MAIN
   SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex> D=qqs
 try option acl_smtp_notquit
 SMTP>> 421 myhost.test.ex SMTP incoming data timeout - closing connection.
+SMTP>- ◀flush▶
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
 exim: timed out while reading - message abandoned

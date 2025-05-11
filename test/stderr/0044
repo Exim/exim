@@ -25,6 +25,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< ehlo exim.test.ex
 exim.test.ex in helo_lookup_domains?
  list element: @
@@ -41,7 +42,7 @@ host in pipelining_advertise_hosts?
   host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
-SMTP>> 250-the.local.host.name Hello exim.test.ex [V4NET.11.12.13]
+SMTP>| 250-the.local.host.name Hello exim.test.ex [V4NET.11.12.13]
        250-SIZE 52428800
        250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
@@ -108,6 +109,7 @@ DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
 deny: condition test succeeded in ACL check_recipient
 end of ACL check_recipient: DENY
 SMTP>> 550 host is listed in rbl.test.ex
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   H=(exim.test.ex) [V4NET.11.12.13] F=<postmaster@exim.test.ex> rejected RCPT list@exim.test.ex: host is listed in rbl.test.ex
 SMTP<< rcpt to:list2@exim.test.ex
@@ -142,6 +144,7 @@ DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 deny: condition test succeeded in ACL check_recipient
 end of ACL check_recipient: DENY
 SMTP>> 550 host is listed in rbl.test.ex
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   H=(exim.test.ex) [V4NET.11.12.13] F=<postmaster@exim.test.ex> rejected RCPT list2@exim.test.ex: host is listed in rbl.test.ex
 SMTP<< data
@@ -175,6 +178,7 @@ SMTP<< quit
 SMTP>| 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (exim.test.ex) [V4NET.11.12.13] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)
@@ -249,6 +253,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< ehlo exim.test.ex
 exim.test.ex in helo_lookup_domains?
  list element: @
@@ -265,7 +270,7 @@ host in pipelining_advertise_hosts?
   host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
-SMTP>> 250-the.local.host.name Hello exim.test.ex [V4NET.99.99.99]
+SMTP>| 250-the.local.host.name Hello exim.test.ex [V4NET.99.99.99]
        250-SIZE 52428800
        250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
@@ -336,11 +341,17 @@ LOG: MAIN REJECT
 SMTP>| 550-Verification failed for <postmaster@exim.test.ex>
 SMTP>| 550-Unrouteable address
 SMTP>> 550 Sender verify failed
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   H=(exim.test.ex) [V4NET.99.99.99] F=<postmaster@exim.test.ex> rejected RCPT list@exim.test.ex: Sender verify failed
+SMTP>- ◀flush▶
 SMTP(closed)<<
 SMTP>> 421 the.local.host.name lost input connection
+SMTP>- ◀flush▶
 LOG: lost_incoming_connection MAIN
   unexpected disconnection while reading SMTP command from (exim.test.ex) [V4NET.99.99.99] D=qqs
+SMTP>- ◀flush▶
+SMTP>- ◀flush▶
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -20,11 +20,14 @@
 01:01:01 p1237  forked delivery processp1238 
 01:01:01 p1237  Process p1237 is ready for new message
 01:01:01 p1237  smtp_setup_msg entered
+01:01:01 p1237  SMTP>- ◀flush▶
 01:01:01 p1237  SMTP<< QUIT
 01:01:01 p1237  try option acl_smtp_quit
 01:01:01 p1237  SMTP>| 221 myhost.test.ex closing connection
 01:01:01 p1237  LOG: smtp_connection MAIN
 01:01:01 p1237    SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
+01:01:01 p1237  SMTP>- ◀flush▶
+01:01:01 p1237  SMTP>- ◀flush▶
 01:01:01 p1237  search_tidyup called
 01:01:01 p1237  SMTP>>(close on process exit)
 01:01:01 p1237  >>>>>>>>>>>>>>>> Exim pid=p1237 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -136,11 +139,14 @@
 01:01:01 p1240    dest2@test.ex
 01:01:01 p1240  Process p1240 is ready for new message
 01:01:01 p1240  smtp_setup_msg entered
+01:01:01 p1240  SMTP>- ◀flush▶
 01:01:01 p1240  SMTP<< QUIT
 01:01:01 p1240  try option acl_smtp_quit
 01:01:01 p1240  SMTP>| 221 myhost.test.ex closing connection
 01:01:01 p1240  LOG: smtp_connection MAIN
 01:01:01 p1240    SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
+01:01:01 p1240  SMTP>- ◀flush▶
+01:01:01 p1240  SMTP>- ◀flush▶
 01:01:01 p1240  search_tidyup called
 01:01:01 p1240  SMTP>>(close on process exit)
 01:01:01 p1240  >>>>>>>>>>>>>>>> Exim pid=p1240 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>

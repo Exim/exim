@@ -14,6 +14,7 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< HELO    ?
 LOG: smtp_syntax_error MAIN
   SMTP syntax error in "HELO    ?" U=CALLER NUL character(s) present (shown as '?')
@@ -22,5 +23,6 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

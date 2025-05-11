@@ -16,8 +16,9 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
-SMTP>> 250 mail.test.ex Hello CALLER at test
+SMTP>| 250 mail.test.ex Hello CALLER at test
 SMTP<< mail from:<qq@remote>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -147,6 +148,7 @@ Attempting full verification using callout
  dbfn_read: key=qq@remote
  dbfn_read: null return
  callout cache: no address record found for qq@remote
+SMTP>- ◀flush▶
 interface=NULL port=PORT_S
  Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  connected
@@ -294,5 +296,6 @@ SMTP<< quit
 SMTP>| 221 mail.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

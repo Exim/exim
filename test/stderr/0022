@@ -28,6 +28,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 test in helo_lookup_domains?
  list element: @
@@ -36,7 +37,7 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [V4NET.9.8.7]
-SMTP>> 250 myhost.test.ex Hello test [V4NET.9.8.7]
+SMTP>| 250 myhost.test.ex Hello test [V4NET.9.8.7]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -78,6 +79,7 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -110,6 +112,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 test in helo_lookup_domains?
  list element: @
@@ -118,7 +121,7 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [V4NET.9.8.7]
-SMTP>> 250 myhost.test.ex Hello test [V4NET.9.8.7]
+SMTP>| 250 myhost.test.ex Hello test [V4NET.9.8.7]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -163,6 +166,7 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -195,6 +199,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 test in helo_lookup_domains?
  list element: @
@@ -203,7 +208,7 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [V4NET.9.8.7]
-SMTP>> 250 myhost.test.ex Hello test [V4NET.9.8.7]
+SMTP>| 250 myhost.test.ex Hello test [V4NET.9.8.7]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -249,6 +254,7 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog?

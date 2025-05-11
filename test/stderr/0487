@@ -19,6 +19,7 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< ehlo x.y
  list element: *
   in limits_advertise_hosts? yes (matched "*")
@@ -28,7 +29,7 @@ SMTP<< ehlo x.y
   in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
-SMTP>> 250-myhost.test.ex Hello CALLER at x.y
+SMTP>| 250-myhost.test.ex Hello CALLER at x.y
        250-SIZE 52428800
        250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
@@ -203,5 +204,6 @@ SMTP<< quit
 SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

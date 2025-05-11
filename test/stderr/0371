@@ -31,6 +31,7 @@ accept: condition test succeeded in ACL connect
 end of ACL connect: ACCEPT
 SMTP>> 220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< ehlo something
 something in helo_lookup_domains?
  list element: @
@@ -47,7 +48,7 @@ host in pipelining_advertise_hosts?
   host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
-SMTP>> 250-mail.test.ex Hello something [V4NET.0.0.0]
+SMTP>| 250-mail.test.ex Hello something [V4NET.0.0.0]
        250-SIZE 52428800
        250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
@@ -155,5 +156,6 @@ SMTP<< quit
 SMTP>| 221 mail.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (something) [V4NET.0.0.0] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

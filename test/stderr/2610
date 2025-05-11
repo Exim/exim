@@ -322,8 +322,11 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 01:01:01 p1235  host in pipelining_connect_advertise_hosts?
 01:01:01 p1235   list element: 
+01:01:01 p1235  host in pipelining_connect_advertise_hosts?
+01:01:01 p1235   list element: 
 01:01:01 p1235  SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 01:01:01 p1235  smtp_setup_msg entered
+01:01:01 p1235  SMTP>- ◀flush▶
 01:01:01 p1235  SMTP<< helo test
 01:01:01 p1235  test in helo_lookup_domains?
 01:01:01 p1235   list element: @
@@ -333,7 +336,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  sender_rcvhost = [10.0.0.0] (helo=test)
 01:01:01 p1235  set_process_info: pppp handling incoming connection from (test) [10.0.0.0]
 01:01:01 p1235  try option acl_smtp_helo
-01:01:01 p1235  SMTP>> 250 myhost.test.ex Hello test [10.0.0.0]
+01:01:01 p1235  SMTP>| 250 myhost.test.ex Hello test [10.0.0.0]
 01:01:01 p1235  SMTP<< mail from:<a@b>
 01:01:01 p1235  spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 01:01:01 p1235  log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -748,6 +751,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  deny: condition test succeeded in ACL check_recipient
 01:01:01 p1235  end of ACL check_recipient: DENY
 01:01:01 p1235  SMTP>> 550 relay not permitted
+01:01:01 p1235  SMTP>- ◀flush▶
 01:01:01 p1235  LOG: MAIN REJECT
 01:01:01 p1235    H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 01:01:01 p1235  SMTP<< quit
@@ -755,6 +759,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  SMTP>| 221 myhost.test.ex closing connection
 01:01:01 p1235  LOG: smtp_connection MAIN
 01:01:01 p1235    SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
+01:01:01 p1235  SMTP>- ◀flush▶
 01:01:01 p1235  search_tidyup called
 01:01:01 p1235  close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

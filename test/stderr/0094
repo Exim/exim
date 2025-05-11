@@ -159,11 +159,12 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP>- ◀flush▶
 SMTP<< helo test
 sender_fullhost = oneback.test.ex (test) [V4NET.99.99.90]
 sender_rcvhost = oneback.test.ex ([V4NET.99.99.90] helo=test)
 set_process_info: pppp handling incoming connection from oneback.test.ex (test) [V4NET.99.99.90]
-SMTP>> 250 the.local.host.name Hello oneback.test.ex [V4NET.99.99.90]
+SMTP>| 250 the.local.host.name Hello oneback.test.ex [V4NET.99.99.90]
 SMTP<< mail from:<userx@test.ex>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -225,11 +226,13 @@ processing ACL check_recipient "deny" (TESTSUITE/test-config 26)
 deny: condition test succeeded in ACL check_recipient
 end of ACL check_recipient: DENY
 SMTP>> 550 relay not permitted
+SMTP>- ◀flush▶
 LOG: MAIN REJECT
   H=oneback.test.ex (test) [V4NET.99.99.90] F=<userx@test.ex> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 SMTP<< quit
 SMTP>| 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
   SMTP connection from oneback.test.ex (test) [V4NET.99.99.90] D=qqs closed by QUIT
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

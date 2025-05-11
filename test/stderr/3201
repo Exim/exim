@@ -40,8 +40,10 @@ host in "testdb;fail"? no (end of list)
 deny: condition test failed in ACL connect1
 end of ACL connect1: implicit DENY
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: connection_reject MAIN REJECT
   H=[10.0.0.1] rejected connection in "connect" ACL
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -86,7 +88,9 @@ host in "net-testdb;fail"? no (end of list)
 deny: condition test failed in ACL connect2
 end of ACL connect2: implicit DENY
 SMTP>> 550 Administrative prohibition
+SMTP>- ◀flush▶
 LOG: connection_reject MAIN REJECT
   H=[10.0.0.2] rejected connection in "connect" ACL
+SMTP>- ◀flush▶
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
