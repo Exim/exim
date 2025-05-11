@@ -58,7 +58,7 @@ LOG: MAIN
   <= x@y U=CALLER P=local-smtp S=sss
 created log directory TESTSUITE/spool/log
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaX-000000005vi-0000
+SMTP>| 250 OK id=10HmaX-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
 rate limit MAIL: delay 1 sec
@@ -92,7 +92,7 @@ Size of headers = sss
 LOG: MAIN
   <= x@y U=CALLER P=local-smtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaY-000000005vi-0000
+SMTP>| 250 OK id=10HmaY-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
 rate limit MAIL: delay 2 sec
@@ -100,7 +100,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -160,7 +160,7 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [1.2.3.4] D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -221,7 +221,7 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -285,7 +285,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

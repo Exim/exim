@@ -4595,7 +4595,6 @@ when they shouldn't. */
 
 header_list = header_last = NULL;
 
-smtp_fflush();
 return yield;  /* TRUE if more messages (SMTP only) */
 }
 

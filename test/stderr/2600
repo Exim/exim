@@ -260,7 +260,7 @@ SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
 search_tidyup called
@@ -389,7 +389,7 @@ SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
 search_tidyup called
@@ -507,7 +507,7 @@ accept: condition test succeeded in ACL check_recipient
 end of ACL check_recipient: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [10.10.10.10] D=qqs closed by QUIT
 search_tidyup called

@@ -162,7 +162,7 @@ SMTP>> 550 No such user here
 LOG: MAIN REJECT
   H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 search_tidyup called
@@ -281,7 +281,7 @@ Size of headers = sss
 LOG: MAIN
   <= x@y H=(test) [V4NET.11.12.13] U=CALLER P=smtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaX-000000005vi-0000
+SMTP>| 250 OK id=10HmaX-000000005vi-0000
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-000000005vi-0000
 Exim version x.yz ....
@@ -472,7 +472,7 @@ Size of headers = sss
 LOG: MAIN
   <= x@y H=(test) [V4NET.11.12.13] U=CALLER P=smtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaY-000000005vi-0000
+SMTP>| 250 OK id=10HmaY-000000005vi-0000
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-000000005vi-0000
 Exim version x.yz ....
@@ -595,7 +595,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 search_tidyup called

@@ -109,7 +109,7 @@ SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
   H=the.local.host.name (test) [ip4.ip4.ip4.ip4] F=<xx@cioce.test.again.dns> rejected RCPT <a@b>
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4] D=qqs closed by QUIT
  search_tidyup called

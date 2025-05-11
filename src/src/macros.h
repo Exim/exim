@@ -1219,6 +1219,14 @@ When doing en extended loop of matching, release store periodically. */
 # define SRV_SMTPS_SERVICE_NAME	"smtp-tls"	/* Per version 5 draft */
 #endif
 
+/* Arg for smtp_fflush */
+#define SFF_UNCORK	TRUE
+#define SFF_NO_UNCORK	FALSE
+
+/* Arg for wouldblock_reading */
+#define WBR_DATA_OR_EOF	TRUE
+#define WBR_DATA_ONLY	FALSE
+
 #endif	/* whole file */
 /* End of macros.h */
 /* vi: aw ai sw=2

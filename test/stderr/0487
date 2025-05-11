@@ -77,7 +77,7 @@ LOG: MAIN
   <= x@y U=CALLER P=local-esmtp S=sss
 created log directory TESTSUITE/spool/log
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaX-000000005vi-0000
+SMTP>| 250 OK id=10HmaX-000000005vi-0000
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-000000005vi-0000
 Exim version x.yz ....
@@ -200,7 +200,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 search_tidyup called

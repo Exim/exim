@@ -804,7 +804,7 @@ mylogin authenticator server_condition:
 expanded string: yes
 SMTP>> 235 Authentication succeeded
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 search_tidyup called

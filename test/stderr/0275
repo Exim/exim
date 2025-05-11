@@ -593,7 +593,7 @@ SMTP>> 451 Temporary local problem - please try later
 LOG: MAIN REJECT
   H=(test) [127.0.0.1] F=<test@test.ex> temporarily rejected RCPT <error@test.ex>: domains check lookup or other defer
 SMTP<< QUIT
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [127.0.0.1] D=qqs closed by QUIT
   search_tidyup called

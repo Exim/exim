@@ -72,10 +72,10 @@ P Received: from [V4NET.9.8.7] (helo=test)
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmbF-000000005vi-0000
+SMTP>| 250 OK id=10HmbF-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 search_tidyup called
@@ -157,10 +157,10 @@ P Received: from [V4NET.9.8.7] (helo=test)
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmbG-000000005vi-0000
+SMTP>| 250 OK id=10HmbG-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 search_tidyup called
@@ -243,10 +243,10 @@ P Received: from [V4NET.9.8.7] (helo=test)
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmbH-000000005vi-0000
+SMTP>| 250 OK id=10HmbH-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 search_tidyup called

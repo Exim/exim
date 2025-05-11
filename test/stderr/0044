@@ -169,10 +169,10 @@ P Received: from [V4NET.11.12.13] (helo=exim.test.ex)
 LOG: MAIN
   <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.13] P=esmtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaX-000000005vi-0000
+SMTP>| 250 OK id=10HmaX-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 the.local.host.name closing connection
+SMTP>| 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (exim.test.ex) [V4NET.11.12.13] D=qqs closed by QUIT
 search_tidyup called
@@ -333,8 +333,8 @@ require: condition test failed in ACL check_recipient
 end of ACL check_recipient: not OK
 LOG: MAIN REJECT
   H=(exim.test.ex) [V4NET.99.99.99] sender verify fail for <postmaster@exim.test.ex>: Unrouteable address
-SMTP>> 550-Verification failed for <postmaster@exim.test.ex>
-SMTP>> 550-Unrouteable address
+SMTP>| 550-Verification failed for <postmaster@exim.test.ex>
+SMTP>| 550-Unrouteable address
 SMTP>> 550 Sender verify failed
 LOG: MAIN REJECT
   H=(exim.test.ex) [V4NET.99.99.99] F=<postmaster@exim.test.ex> rejected RCPT list@exim.test.ex: Sender verify failed

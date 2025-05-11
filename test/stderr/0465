@@ -28,7 +28,7 @@ LOG: smtp_syntax_error MAIN
   SMTP syntax error in "rcpt to:<abc@domain.>" U=CALLER domain missing or malformed
 SMTP>> 501 <abc@domain.>: domain missing or malformed
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 search_tidyup called
@@ -102,10 +102,10 @@ LOG: MAIN
   <= <> U=CALLER P=local-smtp S=sss
 created log directory TESTSUITE/spool/log
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaY-000000005vi-0000
+SMTP>| 250 OK id=10HmaY-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 search_tidyup called
@@ -178,7 +178,7 @@ LOG: MAIN REJECT
 receive_msg: tidyup
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 search_tidyup called

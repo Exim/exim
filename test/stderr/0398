@@ -291,7 +291,7 @@ accept: condition test succeeded in ACL rcpt
 end of ACL rcpt: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
-SMTP>> 221 mail.test.ex closing connection
+SMTP>| 221 mail.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 search_tidyup called

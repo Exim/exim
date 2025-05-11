@@ -11,7 +11,7 @@ SMTP>> 550 Administrative prohibition
 LOG: PANIC
   H=(test.ex) [127.0.0.1] F=<test_2@paniclogrcpt> rejected RCPT <dest2@test.ex>
 SMTP<< QUIT
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
 search_tidyup called

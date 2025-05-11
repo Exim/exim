@@ -752,7 +752,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 01:01:01 p1235  SMTP<< quit
 01:01:01 p1235  try option acl_smtp_quit
-01:01:01 p1235  SMTP>> 221 myhost.test.ex closing connection
+01:01:01 p1235  SMTP>| 221 myhost.test.ex closing connection
 01:01:01 p1235  LOG: smtp_connection MAIN
 01:01:01 p1235    SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
 01:01:01 p1235  search_tidyup called

@@ -58,7 +58,7 @@ if (smtp_out_fd < 0) return FAIL;
 if (tls_in.active.sock >= 0)
   tls_state_in_to_out(0, sender_host_address, sender_host_port);
 #endif
-smtp_fflush();
+smtp_fflush(SFF_UNCORK);
 force_fd(smtp_in_fd, 0);
 smtp_in_fd = smtp_out_fd = -1;
 

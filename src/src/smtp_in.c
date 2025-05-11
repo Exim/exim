@@ -494,7 +494,7 @@ int rc, save_errno;
 
 if (smtp_out_fd < 0 || smtp_in_fd < 0) return FALSE;
 
-smtp_fflush();
+smtp_fflush(SFF_UNCORK);
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 
 /* Limit amount read, so non-message data is not fed to DKIM.
@@ -557,7 +557,7 @@ if (!smtp_hasc() && !smtp_refill(lim)) return EOF;
 return *smtp_inptr++;
 }
 
-/* Get many bytes, refilling buffer if needed */
+/* Get many bytes, refilling buffer if needed. Can return NULL. */
 
 uschar *
 smtp_getbuf(unsigned * len)
@@ -642,22 +642,26 @@ return smtp_had_error;
 
 
 /* Check if a getc will block or not */
+/*XXX should convert from select() to poll() */
 
 static BOOL
-smtp_could_getc(void)
+smtp_could_getc(BOOL eof_ok)
 {
 int rc;
 fd_set fds;
 struct timeval tzero = {.tv_sec = 0, .tv_usec = 0};
 
 if (smtp_inptr < smtp_inend)
-  return TRUE;
+  return TRUE;		/* Previously buffered data available */
 
 FD_ZERO(&fds);
 FD_SET(smtp_in_fd, &fds);
 rc = select(smtp_in_fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
 
-if (rc <= 0) return FALSE;     /* Not ready to read */
+if (rc <= 0) return FALSE;	/* Not ready to read */
+if (eof_ok) return TRUE;	/* A read will not block */
+
+/* Check for actual data */
 rc = smtp_getc(GETC_BUFFER_UNLIMITED);
 if (rc < 0) return FALSE;      /* End of file or error */
 
@@ -686,28 +690,30 @@ disabled or inappropriate. A failure of select() is ignored.
 When there is unwanted input, we read it so that it appears in the log of the
 error.
 
-Arguments: none
+Arguments: eof_ok	TRUE if EOF is enough to unblock; else need actual data
 Returns:   TRUE if all is well; FALSE if there is input pending
 */
 
-static BOOL
-wouldblock_reading(void)
+BOOL
+wouldblock_reading(BOOL eof_ok)
 {
+if (smtp_in_fd < 0) return FALSE;
+
 #ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
  return !tls_could_getc();
 #endif
 
-return !smtp_could_getc();
+return !smtp_could_getc(eof_ok);
 }
 
 static BOOL
-check_sync(void)
+check_sync(BOOL eof_ok)
 {
 if (!smtp_enforce_sync || !sender_host_address || f.sender_host_notsocket)
   return TRUE;
 
-return wouldblock_reading();
+return wouldblock_reading(eof_ok);
 }
 
 
@@ -764,18 +770,18 @@ for(;;)
   /* Unless PIPELINING was offered, there should be no next command
   until after we ack that chunk */
 
-  if (!f.smtp_in_pipelining_advertised && !check_sync())
+  if (!f.smtp_in_pipelining_advertised && !check_sync(WBR_DATA_ONLY))
     {
-    unsigned n = smtp_inend - smtp_inptr;
-    if (n > 32) n = 32;
+    unsigned nchars = 32;
+    uschar * buf = receive_getbuf(&nchars);		/* destructive read */
 
     incomplete_transaction_log(US"sync failure");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was not advertised): "
       "rejected \"%s\" %s next input=\"%s\"%s",
       smtp_cmd_buffer, host_and_ident(TRUE),
-      string_printing(string_copyn(smtp_inptr, n)),
-      smtp_inend - smtp_inptr > n ? "..." : "");
+      string_printing(string_copyn(buf, nchars)),
+      smtp_inend - smtp_inptr > 0 ? "..." : "");
     (void) synprot_error(L_smtp_protocol_error, 554, NULL,
       US"SMTP synchronization error");
     goto repeat_until_rset;
@@ -1019,7 +1025,7 @@ DEBUG(D_receive) for (const uschar * t, * s = gs.s;
 		      s && (t = Ustrchr(s, '\r'));
 		      s = t + 2)				/* \r\n */
     debug_printf("%s %.*s\n",
-		  s == gs.s ? "SMTP>>" : "      ",
+		  s == gs.s ? more ? "SMTP>|" : "SMTP>>" : "      ",
 		  (int)(t - s), s);
 
 if (!yield)
@@ -1111,13 +1117,15 @@ else
 /* This function sets a flag for errors checked on read of the next SMTP input.
 It flushes the output and checks for errors.
 
-Arguments:  none
+Arguments:  uncork	true to also uncork the socket layer
 Returns:    0 for no error; -1 after an error
 */
 
 int
-smtp_fflush(void)
+smtp_fflush(BOOL uncork)
 {
+if (smtp_out_fd <= 0) return 0;
+
 #ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
   { if (tls_write(NULL, NULL, 0, FALSE) < 0) smtp_write_error = -1; }
@@ -1132,7 +1140,8 @@ else
     smtp_resp_ptr = 0;
     }
 #ifdef EXIM_TCP_CORK
-  if (setsockopt(smtp_out_fd, IPPROTO_TCP, EXIM_TCP_CORK,
+  if (  uncork 
+     && setsockopt(smtp_out_fd, IPPROTO_TCP, EXIM_TCP_CORK,
 					  &off, sizeof(off)) != 0)
     smtp_write_error = -1;
 #endif
@@ -1154,7 +1163,7 @@ if (  !smtp_enforce_sync || !sender_host_address
    || f.sender_host_notsocket || !f.smtp_in_pipelining_advertised)
   return FALSE;
 
-if (wouldblock_reading()) return FALSE;
+if (wouldblock_reading(WBR_DATA_OR_EOF)) return FALSE;
 f.smtp_in_pipelining_used = TRUE;
 return TRUE;
 }
@@ -1167,7 +1176,7 @@ pipeline_connect_sends(void)
 if (!sender_host_address || f.sender_host_notsocket || !fl.pipe_connect_acceptable)
   return FALSE;
 
-if (wouldblock_reading()) return FALSE;
+if (wouldblock_reading(WBR_DATA_OR_EOF)) return FALSE;
 f.smtp_in_early_pipe_used = TRUE;
 return TRUE;
 }
@@ -2776,14 +2785,19 @@ if (tls_in.on_connect)
   }
 #endif
 
+#ifndef DISABLE_PIPE_CONNECT
+fl.pipe_connect_acceptable = sender_host_address
+		    && verify_check_host(&pipe_connect_advertise_hosts) == OK;
+#endif
+
 #ifdef EXPERIMENTAL_TLS_EARLY_BANNER
 if (gstring_length(ss) == 0)			/* banner already sent */
   {
   if (f.running_in_test_harness)		/* make visible to testsuite */
     {
-    for (int i = 20; i && check_sync(); i--) millisleep(5);
+    for (int i = 20; i && check_sync(WBR_DATA_OR_EOF); i--) millisleep(5);
     log_write(0, LOG_MAIN, "Ci=%s SMTP peer appears to have %s our banner",
-		connection_id, check_sync() ? "NOT SEEN" : "seen");
+		connection_id, check_sync(WBR_DATA_OR_EOF) ? "NOT SEEN" : "seen");
     }
   }
 else						/* not already sent */
@@ -2798,21 +2812,21 @@ else						/* not already sent */
        sender_host_address
     && verify_check_host(&pipe_connect_advertise_hosts) == OK;
 
-  if (!check_sync())
+  if (!check_sync(WBR_DATA_ONLY))
     if (fl.pipe_connect_acceptable)
       f.smtp_in_early_pipe_used = TRUE;
     else
 #else
-  if (!check_sync())
+  if (!check_sync(WBR_DATA_ONLY))
 #endif
       {
-      unsigned n = smtp_inend - smtp_inptr;
-      if (n > 128) n = 128;
+      unsigned nchars = 128;
+      uschar * buf = receive_getbuf(&nchars);		/* destructive read */
 
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
 	"synchronization error (input sent without waiting for greeting): "
 	"rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
-	string_printing(string_copyn(smtp_inptr, n)));
+	string_printing(string_copyn(buf, nchars)));
       smtp_printf("554 SMTP synchronization error\r\n", SP_NO_MORE);
       return FALSE;
       }
@@ -3227,7 +3241,7 @@ else
     smtp_respond(smtp_code, codelen, SR_FINAL,
       US"Temporary local problem - please try later");
 
-smtp_fflush();
+smtp_fflush(SFF_UNCORK);
 
 /* Log the incident to the logs that are specified by log_reject_target
 (default main, reject). This can be empty to suppress logging of rejections. If
@@ -3354,7 +3368,7 @@ if (code && defaultrespond)
     va_end(ap);
     smtp_printf("%s %Y\r\n", SP_NO_MORE, code, g);
     }
-  smtp_fflush();
+  smtp_fflush(SFF_UNCORK);
   }
 }
 
@@ -3699,17 +3713,25 @@ tls_close(NULL, TLS_SHUTDOWN_WAIT);
 
 log_close_event(US"by QUIT");
 
-#ifdef EXIM_TCP_CORK
-/* If we corked, trigger transmit of the ack-of-QUIT since that could be the
-peer's wakeup to close the TCP connection. */
+# ifdef EXIM_TCP_CORK
+/* If we corked and there is no pending input, trigger transmit of the
+ack-of-QUIT since that could be the peer's wakeup to close the TCP connection.
+*/
 
-if (smtp_out_fd > 0 && tls_in.active.sock < 0) smtp_fflush();
-#endif
+if (  smtp_out_fd > 0 && tls_in.active.sock < 0
+   && wouldblock_reading(WBR_DATA_OR_EOF))
+  {
+  smtp_fflush(SFF_UNCORK);
+  (void) poll_one_fd(smtp_in_fd, POLLIN, 200);
+  }
+# else
 
 /* Pause, hoping client will FIN first so that they get the TIME_WAIT.
 The socket should become readble (though with no data) */
 
 (void) poll_one_fd(smtp_in_fd, POLLIN, 200);
+
+# endif	/*!EXIM_TCP_CORK*/
 #endif	/*!SERVERSIDE_CLOSE_NOWAIT*/
 }
 
@@ -4161,9 +4183,9 @@ while (done <= 0)
 	  break;
 	  }
 #ifndef DISABLE_PIPE_CONNECT
-	else if (!fl.pipe_connect_acceptable && !check_sync())
+	else if (!fl.pipe_connect_acceptable && !check_sync(WBR_DATA_OR_EOF))
 #else
-	else if (!check_sync())
+	else if (!check_sync(WBR_DATA_OR_EOF))
 #endif
 	  goto SYNC_FAILURE;
 
@@ -4448,6 +4470,15 @@ while (done <= 0)
 	g = string_catn(g, US" HELP\r\n", 7);
 	}
 
+#ifndef DISABLE_PIPE_CONNECT
+      /* Before sending the response, if not already determined and there
+      was an early-banner or TLS-on-connect, recheck for the client using
+      early-pipe by further input being available. */
+
+      if (  !f.smtp_in_early_pipe_used && !fl.helo_seen
+	 && fl.pipe_connect_acceptable && !wouldblock_reading(WBR_DATA_OR_EOF))
+	f.smtp_in_early_pipe_used = TRUE;
+#endif
       /* Terminate the string (for debug), write it, and note that HELO/EHLO
       has been seen. */
 
@@ -4906,7 +4937,7 @@ while (done <= 0)
       if (acl_smtp_mail)
 	{
 	rc = acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
-	if (rc == OK && !f.smtp_in_pipelining_advertised && !check_sync())
+	if (rc == OK && !f.smtp_in_pipelining_advertised && !check_sync(WBR_DATA_OR_EOF))
 	  goto SYNC_FAILURE;
 	}
       else
@@ -5162,7 +5193,7 @@ while (done <= 0)
 	GET_OPTION("acl_smtp_rcpt");
 	if (  (rc = acl_check(ACL_WHERE_RCPT, recipient, acl_smtp_rcpt, &user_msg,
 		      &log_msg)) == OK
-	   && !f.smtp_in_pipelining_advertised && !check_sync())
+	   && !f.smtp_in_pipelining_advertised && !check_sync(WBR_DATA_ONLY))
 	  goto SYNC_FAILURE;
 	}
 
@@ -5337,7 +5368,7 @@ while (done <= 0)
 	  rc = acl_check(ACL_WHERE_PREDATA, NULL, acl, &user_msg,
 	    &log_msg);
 	  f.enable_dollar_recipients = FALSE;
-	  if (rc == OK && !check_sync())
+	  if (rc == OK && !check_sync(WBR_DATA_OR_EOF))
 	    goto SYNC_FAILURE;
 
 	  if (rc != OK)
@@ -5575,20 +5606,7 @@ while (done <= 0)
 	some sense is perhaps "right". */
 
 	case QUIT_CMD:
-	  f.smtp_in_quit = TRUE;
-	  user_msg = NULL;
-	  GET_OPTION("acl_smtp_quit");
-	  if (  acl_smtp_quit
-	     && ((rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, &user_msg,
-				&log_msg)) == ERROR))
-	      log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
-		log_msg);
-	  if (user_msg)
-	    smtp_respond(US"221", 3, SR_FINAL, user_msg);
-	  else
-	    smtp_printf("221 %s closing connection\r\n", SP_NO_MORE,
-			smtp_active_hostname);
-	  log_close_event(US"by QUIT");
+	  smtp_quit_handler(&user_msg, &log_msg);
 	  done = 2;
 	  break;
 
@@ -5896,14 +5914,19 @@ while (done <= 0)
       {
 	unsigned nchars = 150;
 	uschar * buf = receive_getbuf(&nchars);		/* destructive read */
-	buf[nchars] = '\0';
+
 	incomplete_transaction_log(US"sync failure");
-	log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
-	  "(next input sent too soon: pipelining was%s advertised): "
-	  "rejected \"%s\" %s next input=\"%s\" (%u bytes)",
-	  f.smtp_in_pipelining_advertised ? "" : " not",
-	  smtp_cmd_buffer, host_and_ident(TRUE),
-	  string_printing(buf), nchars);
+	if (buf)
+	  {
+	  buf[nchars] = '\0';
+	  log_write(0, LOG_MAIN|LOG_REJECT,
+	    "SMTP protocol synchronization error "
+	    "(next input sent too soon: pipelining was%s advertised): "
+	    "rejected \"%s\" %s next input=\"%s\" (%u bytes)",
+	    f.smtp_in_pipelining_advertised ? "" : " not",
+	    smtp_cmd_buffer, host_and_ident(TRUE),
+	    string_printing(buf), nchars);
+	  }
 	smtp_notquit_exit(US"synchronization-error", US"554",
 	  US"SMTP synchronization error");
 	done = 1;   /* Pretend eof - drops connection */
@@ -5958,8 +5981,11 @@ while (done <= 0)
   last_was_rcpt = was_rcpt;             /* protocol error handling */
   }
 
-smtp_fflush();
-return done - 2;  /* Convert yield values */
+done -= 2;	/* Convert yield values */
+
+if (done != 0 && wouldblock_reading(WBR_DATA_ONLY))
+  smtp_fflush(SFF_UNCORK);
+return done;
 }
 
 

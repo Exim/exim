@@ -527,7 +527,7 @@ if (pid == 0)
 
   if (!smtp_start_session())
     {
-    smtp_fflush();
+    smtp_fflush(SFF_NO_UNCORK);
     search_tidyup();
     exim_underbar_exit(EXIT_SUCCESS);
     }
@@ -555,6 +555,8 @@ if (pid == 0)
 	{
 	uschar buf[128];
 
+	smtp_fflush(SFF_NO_UNCORK);
+
 	/* drain socket, for clean TCP FINs */
 	if (fcntl(smtp_in_fd, F_SETFL, O_NONBLOCK) == 0)
 	  for(int i = 16; read(smtp_in_fd, buf, sizeof(buf)) > 0 && i > 0; )
@@ -576,7 +578,7 @@ if (pid == 0)
       if (!ok)                            /* Connection was dropped */
         {
 	cancel_cutthrough_connection(TRUE, US"receive dropped");
-        smtp_fflush();
+        smtp_fflush(SFF_NO_UNCORK);
         smtp_log_no_mail();               /* Log no mail if configured */
         exim_underbar_exit(EXIT_SUCCESS);
         }

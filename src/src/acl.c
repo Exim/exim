@@ -3924,7 +3924,7 @@ for (; cb; cb = cb->next)
         else
           {
           if (smtp_out_fd >= 0 && !f.disable_delay_flush)
-	    smtp_fflush();
+	    smtp_fflush(SFF_UNCORK);
 
 #if !defined(NO_POLL_H) && defined (POLLRDHUP)
 	    {

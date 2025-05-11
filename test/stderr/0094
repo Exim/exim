@@ -228,7 +228,7 @@ SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=oneback.test.ex (test) [V4NET.99.99.90] F=<userx@test.ex> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 SMTP<< quit
-SMTP>> 221 the.local.host.name closing connection
+SMTP>| 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
   SMTP connection from oneback.test.ex (test) [V4NET.99.99.90] D=qqs closed by QUIT
 search_tidyup called

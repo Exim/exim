@@ -692,6 +692,7 @@ extern BOOL    verify_sender(int *, uschar **);
 extern BOOL    verify_sender_preliminary(int *, uschar **);
 extern void    version_init(void);
 
+extern BOOL    wouldblock_reading(BOOL);
 extern BOOL    write_chunk(transport_ctx *, const uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 extern uschar *wrap_header(const uschar *, unsigned, unsigned, const uschar *, unsigned);

@@ -138,10 +138,10 @@ P Received: from [V4NET.2.3.4]
 LOG: MAIN
   <= <> H=([V4NET.2.3.4]) [V4NET.2.3.4] P=esmtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaX-000000005vi-0000
+SMTP>| 250 OK id=10HmaX-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from ([V4NET.2.3.4]) [V4NET.2.3.4] D=qqs closed by QUIT
 search_tidyup called
@@ -223,10 +223,10 @@ P Received: from host.name.tld ([V4NET.2.3.4])
 LOG: MAIN
   <= <> H=host.name.tld [V4NET.2.3.4] P=esmtp S=sss
 receive_msg: tidyup
-SMTP>> 250 OK id=10HmaY-000000005vi-0000
+SMTP>| 250 OK id=10HmaY-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
+SMTP>| 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from host.name.tld [V4NET.2.3.4] D=qqs closed by QUIT
 search_tidyup called

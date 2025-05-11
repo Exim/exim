@@ -626,11 +626,11 @@ else
 
   /* Before doing a real callout, if this is an SMTP connection, flush the SMTP
   output because a callout might take some time. When PIPELINING is active and
-  there are many recipients, the total time for doing lots of callouts can add up
-  and cause the client to time out. So in this case we forgo the PIPELINING
+  there are many recipients, the total time for doing lots of callouts can add
+  up and cause the client to time out. So in this case we forgo the PIPELINING
   optimization. */
 
-  if (smtp_out_fd >= 0 && !f.disable_callout_flush) smtp_fflush();
+  if (smtp_out_fd >= 0 && !f.disable_callout_flush) smtp_fflush(SFF_UNCORK);
 
   clearflag(addr, af_verify_pmfail);  /* postmaster callout flag */
   clearflag(addr, af_verify_nsfail);  /* null sender callout flag */

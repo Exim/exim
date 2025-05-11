@@ -829,6 +829,7 @@ Returns:     does not return
 void
 exim_exit(int rc)
 {
+smtp_fflush(SFF_NO_UNCORK);
 search_tidyup();
 store_exit();
 DEBUG(D_any)
@@ -5724,7 +5725,6 @@ if (  recipients_arg >= argc && !extract_recipients
     exim_usage(called_as);
   }
 
-/*XXX somewhere around here.  Maybe earlier, but no later.  ATRN customer */
 if (atrn_mode)
   atrn_handle_customer();
 
@@ -5865,10 +5865,7 @@ if (smtp_input)
     }
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
   if (!smtp_start_session())
-    {
-    smtp_fflush();
     exim_exit(EXIT_SUCCESS);
-    }
   }
 
 /* Otherwise, set up the input size limit here and set no stdin stdio buffer
@@ -5954,9 +5951,11 @@ for (BOOL more = TRUE; more; )
 
   if (smtp_input)
     {
+/*XXX somewhere around here.  Maybe earlier, but no later.  ATRN customer */
     int rc;
     if ((rc = smtp_setup_msg()) > 0)
       {
+/*XXX somewhere around here.  Maybe earlier, but no later.  ATRN customer */
       if (   real_sender_address
 	  && !receive_check_set_sender(sender_address))
         {
@@ -5995,6 +5994,7 @@ for (BOOL more = TRUE; more; )
       }
     else
       {
+/*XXX somewhere around here.  Maybe earlier, but no later.  ATRN customer */
       cancel_cutthrough_connection(TRUE, US"message setup dropped");
       smtp_log_no_mail();               /* Log no mail if configured */
       exim_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);
@@ -6347,7 +6347,8 @@ for (BOOL more = TRUE; more; )
 	  log_write(0, LOG_MAIN|LOG_PANIC,
 	    "process %d crashed with signal %d while delivering %s",
 	    (int)pid, status & 0x00ff, message_id);
-	if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE);
+	if (mua_wrapper && (status & 0xffff) != 0)
+	  exim_exit(EXIT_FAILURE);
 	}
       }
     }
