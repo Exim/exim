@@ -4,39 +4,39 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
-connected
-  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-  SMTP>> EHLO myhost.test.ex
+ Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
+ connected
+   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
-  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
-         250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
-         250-8BITMIME
-         250-PIPELINING
-         250-STARTTLS
-         250 HELP
-  SMTP>> STARTTLS
+   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+          250-SIZE 52428800
+          250-LIMITS MAILMAX=1000 RCPTMAX=50000
+          250-8BITMIME
+          250-PIPELINING
+          250-STARTTLS
+          250 HELP
+   SMTP>> STARTTLS
 cmd buf flush ddd bytes
-  SMTP<< 220 TLS go ahead
-127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
-  SMTP>> EHLO myhost.test.ex
+   SMTP<< 220 TLS go ahead
+ 127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
+   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
-  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
-         250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
-         250-8BITMIME
-         250-PIPELINING
-         250 HELP
+   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+          250-SIZE 52428800
+          250-LIMITS MAILMAX=1000 RCPTMAX=50000
+          250-8BITMIME
+          250-PIPELINING
+          250 HELP
 using PIPELINING
 not using DSN
-  SMTP|> MAIL FROM:<usera@ok.example>
-  SMTP>> RCPT TO:<userb@test.ex>
+   SMTP|> MAIL FROM:<usera@ok.example>
+   SMTP>> RCPT TO:<userb@test.ex>
 cmd buf flush ddd bytes
 sync_responses expect mail
-  SMTP<< 250 OK
+   SMTP<< 250 OK
 sync_responses expect rcpt for userb@test.ex
-  SMTP<< 250 Accepted
+   SMTP<< 250 Accepted
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
 LOG: smtp_connection MAIN
