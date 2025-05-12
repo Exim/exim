@@ -1,35 +1,25 @@
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => x1@test.ex R=r1 T=t1 H=localhost.test.ex [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaY-000000005vi-0000"
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@test.ex
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@test.ex abcd@test.ex xyz@test.ex
+2017-07-30 18:51:05.712 Start queue run: pid=p1234 -qf
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaZ-000000005vi-0000"
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 H=thishost.test.ex [127.0.0.1]:PORT_N Connection refused
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 == x2@thishost.test.ex R=r1 T=t1 defer (dd): Connection refused
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 ** x2@thishost.test.ex: retry timeout exceeded
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 x2@thishost.test.ex: error ignored
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 H=thishost.test.ex [127.0.0.1]:10001: SMTP timeout after initial connection: Connection timed out
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 == x3@thishost.test.ex R=r1 T=t1 defer (dd): Connection timed out H=thishost.test.ex [127.0.0.1]:PORT_D: SMTP timeout after initial connection
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 ** x3@thishost.test.ex: retry timeout exceeded
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 x3@thishost.test.ex: error ignored
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 H=thishost.test.ex [127.0.0.1]:10001: SMTP timeout after initial connection: Connection timed out
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 == x4@thishost.test.ex R=r1 T=t1 defer (dd): Connection timed out H=thishost.test.ex [127.0.0.1]:PORT_D: SMTP timeout after initial connection
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 ** x4@thishost.test.ex: retry timeout exceeded
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 x4@thishost.test.ex: error ignored
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 => x5@test.ex R=r1 T=t1 H=localhost.test.ex [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbD-000000005vi-0000"
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 => x6@noport.test.ex R=r1 T=t1 H=localhost.test.ex [127.0.0.1]:PORT_D2 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbF-000000005vi-0000"
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 Completed
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] TFO X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 -> xyz@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] TFO X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbB-000000005vi-0000"
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 Completed
+2017-07-30 18:51:05.712 End queue run: pid=p1234 -qf
 
 ******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D2 and for SMTPS on port PORT_D
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex
-2017-07-30 18:51:05.712 TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer
-2017-07-30 18:51:05.712 TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer
-2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbE-000000005vi-0000@myhost.test.ex
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for CALLER@test.ex
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for CALLER@test.ex xyz@test.ex
+2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for abcd@test.ex
+2017-07-30 18:51:05.712 Start queue run: pid=p1236 -qf
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 => CALLER <CALLER@test.ex> R=server T=local_delivery
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 => CALLER <CALLER@test.ex> R=server T=local_delivery
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 => xyz <xyz@test.ex> R=server T=local_delivery
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed
+2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 => abcd <abcd@test.ex> R=server T=local_delivery
+2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 Completed
+2017-07-30 18:51:05.712 End queue run: pid=p1236 -qf

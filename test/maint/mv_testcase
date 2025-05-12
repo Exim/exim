@@ -3,6 +3,10 @@
 # mv_testcase <src_num> <dest_scripts_dir> <dest_num>
 # Run using the test/ dir as current-working-directory.
 # Include leading zeroes in the testcase numbers.
+#
+# Does not handle an emptied-out source scripts dir, or the REQUIRES file
+
+set -e
 
 srcnum="${1:?missing src testcase number}"
 dstdir="${2:?missing dest scripts dir}"
@@ -15,6 +19,7 @@ then
 fi
 
 set -x
+[ -d $dstdir ] || mkdir -p $dstdir
 git mv scripts/*/$srcnum $dstdir/$dstnum
 
 for d in confs log rejectlog paniclog stdout stderr

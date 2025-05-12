@@ -1,8 +1,6 @@
 # Exim test configuration 1188
 
-OPTION = smtp-tls
-PORT = PORT_N
-VALUE = lmtp
+SERVER =
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -10,39 +8,78 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-log_selector = +outgoing_port +millisec
-disable_ipv6
+domainlist local_domains = test.ex : *.test.ex
+
+smtp_banner = $smtp_active_hostname ESMTP Exim $version_number
+acl_smtp_rcpt = check_recipient
+queue_only
+queue_run_in_order
+remote_max_parallel = 1
 
 tls_advertise_hosts = *
-tls_on_connect_ports = PORT_D
-tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
-tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+tls_certificate = DIR/aux-fixed/cert1
 
-acl_smtp_rcpt = accept
-queue_only
+log_selector = +millisec +received_recipients
+
+# ------ ACL ------
+
+begin acl
+
+check_recipient:
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
 
 # ----- Routers -----
 
 begin routers
 
-r1:
-  driver =	dnslookup
-  check_srv =	OPTION
-  transport =	t1
-  self =	send
-  errors_to =
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  retry_use_local_part
+  transport = send_to_server${if eq{$local_part}{abcd}{2}{1}}
+
+server:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
 
 # ----- Transports -----
 
 begin transports
 
-t1:
-  # port & protocol should be overidden by the SRV record
-  driver =	smtp
-  port =	PORT
-  hosts_try_fastopen = :
-  protocol =	VALUE
-  command_timeout = 5s
-  tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
+  user = CALLER
+
+send_to_server1:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
+
+send_to_server2:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  port = PORT_D
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
 
 # End

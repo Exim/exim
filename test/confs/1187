@@ -1,0 +1,48 @@
+# Exim test configuration 1188
+
+OPTION = smtp-tls
+PORT = PORT_N
+VALUE = lmtp
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+log_selector = +outgoing_port +millisec
+disable_ipv6
+
+tls_advertise_hosts = *
+tls_on_connect_ports = PORT_D
+tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
+tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+
+acl_smtp_rcpt = accept
+queue_only
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver =	dnslookup
+  check_srv =	OPTION
+  transport =	t1
+  self =	send
+  errors_to =
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  # port & protocol should be overidden by the SRV record
+  driver =	smtp
+  port =	PORT
+  hosts_try_fastopen = :
+  protocol =	VALUE
+  command_timeout = 5s
+  tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem
+
+# End
