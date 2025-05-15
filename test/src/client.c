@@ -308,7 +308,7 @@ return 1;
 *************************************************/
 
 static void
-info_callback(SSL *s, int where, int ret)
+info_callback(const SSL *s, int where, int ret)
 {
 where = where;
 ret = ret;
@@ -1298,7 +1298,7 @@ if (keyfile)
 
 SSL_CTX_set_session_cache_mode(srv.ctx, SSL_SESS_CACHE_BOTH);
 SSL_CTX_set_timeout(srv.ctx, 200);
-SSL_CTX_set_info_callback(srv.ctx, (void (*)())info_callback);
+SSL_CTX_set_info_callback(srv.ctx, info_callback);
 #endif
 
 
