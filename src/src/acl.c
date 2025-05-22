@@ -306,6 +306,7 @@ static condition_def conditions[] = {
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
 				    ACL_BIT_PRDR |
 				    ACL_BIT_MIME | ACL_BIT_NOTSMTP |
+				    ACL_BIT_DKIM |
 				    ACL_BIT_NOTSMTP_START),
   },
   [ACLC_SEEN] =			{ US"seen",		ACD_EXP,
