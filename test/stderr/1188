@@ -3,9 +3,9 @@ LOG: queue_run MAIN
 delivering 10HmaX-000000005vi-0000 (queue run pid p1234)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
 connected
-  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-  SMTP>> EHLO helo.data.changed
-  SMTP<< 250-myhost.test.ex Hello helo.data.changed [127.0.0.1]
+  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
          250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
@@ -14,8 +14,8 @@ connected
          250 HELP
   SMTP>> STARTTLS
   SMTP<< 220 TLS go ahead
-  SMTP>> EHLO helo.data.changed
-  SMTP<< 250-myhost.test.ex Hello helo.data.changed [127.0.0.1]
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
          250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
@@ -42,9 +42,9 @@ delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
 connected
 TCP_FASTOPEN tcpi_unacked 2
-  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-  SMTP>> EHLO helo.data.changed
-  SMTP<< 250-myhost.test.ex Hello helo.data.changed [127.0.0.1]
+  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
          250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
@@ -53,8 +53,8 @@ TCP_FASTOPEN tcpi_unacked 2
          250 HELP
   SMTP>> STARTTLS
   SMTP<< 220 TLS go ahead
-  SMTP>> EHLO helo.data.changed
-  SMTP<< 250-myhost.test.ex Hello helo.data.changed [127.0.0.1]
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
          250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
@@ -81,7 +81,7 @@ LOG: MAIN
   -> xyz@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] TFO X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
 Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_D ...
 connected
-  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800

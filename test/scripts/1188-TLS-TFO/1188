@@ -35,7 +35,7 @@ system ("ip tcp_metrics delete HOSTIPV4");
 #
 #
 # sudo exim -DSERVER=server -d+tls -bd -oX PORT_D
-exim -d+all -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D
 ****
 # Queue an initial message.  This one will request a cookie for later TFOs.
 exim CALLER@test.ex

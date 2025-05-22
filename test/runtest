@@ -1758,10 +1758,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Time-only, in debug output
     # we have to handle double lines from the DBOPEN, hence placed down here and /mg
-    s/^\d\d:\d\d:\d\d\s+/01:01:01 /mg;
+    s/^\d\d:\d\d:\d\d(?:\.\d{3})?\s+/01:01:01 /mg;
 
     # pid in debug lines
-    s/^(\d\d:\d\d:\d\d\s+)(\d+)/$1 . new_value($2, "p%s", \$next_pid) . " "/mgxe;
+    s/^(\d\d:\d\d:\d\d(?:\.\d{3})?\s+)(\d+)/$1 . new_value($2, "p%s", \$next_pid) . " "/mgxe;
     s/(?<!post-)[Pp]rocess\K(\s\d+ )/new_value($1, "p%s", \$next_pid) . " "/gxe;
 
     # Path in environment varies
