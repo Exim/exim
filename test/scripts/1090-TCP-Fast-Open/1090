@@ -36,7 +36,7 @@
 # after a while - so not usable in production
 #
 sudo perl
-system ("tc qdisc add dev lo root netem delay 50ms");
+system("tc qdisc add dev lo root netem delay 50ms");
 ****
 #
 #
@@ -45,7 +45,8 @@ system ("tc qdisc add dev lo root netem delay 50ms");
 # option on the SYN.
 #
 sudo perl
-system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+system("sysctl net.ipv4.tcp_fastopen=3");
+system("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 ****
 #
 # First time runs will see a TFO request option only; subsequent
