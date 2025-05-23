@@ -22702,11 +22702,15 @@ gid associated with the user is used. If &%user%& is numeric, &%group%& must be
 set.
 
 .oindex "&%initgroups%&"
-When the uid is taken from the transport's configuration, the &[initgroups()]&
+When the uid is taken from the transport's configuration,
+(including the default use of the &"exim"& uid)
+the &[initgroups()]&
 function is called for the groups associated with that uid if the
 &%initgroups%& option is set for the transport. When the uid is not specified
 by the transport, but is associated with the address by a router, the option
 for calling &[initgroups()]& is taken from the router configuration.
+
+This matters if the transport depends on any membership of supplemental groups.
 
 .cindex "&(pipe)& transport" "uid for"
 The &(pipe)& transport contains the special option &%pipe_as_creator%&. If this
