@@ -31186,8 +31186,10 @@ the &%acl_smtp_predata%& ACL is not run.
 The &%acl_smtp_data%& is run after the last BDAT command and all of
 the data specified is received.
 
-For both of these ACLs, it is not possible to reject individual recipients. An
-error response rejects the entire message. Unfortunately, it is known that some
+For both of these ACLs, it is not possible to reject individual recipients.
+(but look into the PRDR extension, which supports doing so).
+An error response rejects the entire message. 
+Unfortunately, it is known that some
 MTAs do not treat hard (5&'xx'&) responses to the DATA command (either
 before or after the data) correctly &-- they keep the message on their queues
 and try again later, but that is their problem, though it does waste some of
