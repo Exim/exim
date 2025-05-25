@@ -14,7 +14,7 @@ TFO: had to retransmit
          250-PIPELINING
          250 HELP
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP|> RCPT TO:<CALLER@test.ex>
+  SMTP|> RCPT TO:<no_cookie@test.ex>
   SMTP>> DATA
   SMTP<< 250 OK
   SMTP<< 250 Accepted
@@ -27,7 +27,7 @@ TFO: had to retransmit
   SMTP(close)>>
 cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.+:QUIT:250:221'
 LOG: MAIN
-  => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaZ-000000005vi-0000"
+  => no_cookie@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaZ-000000005vi-0000"
 LOG: MAIN
   Completed
 delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
@@ -44,7 +44,7 @@ TFO: data was acked
          250-PIPELINING
          250 HELP
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP|> RCPT TO:<CALLER@test.ex>
+  SMTP|> RCPT TO:<with_cookie@test.ex>
   SMTP|> RCPT TO:<xyz@test.ex>
   SMTP>> DATA
   SMTP<< 250 OK
@@ -59,7 +59,7 @@ TFO: data was acked
   SMTP(close)>>
 cmdlog: '220:EHLO:250-:MAIL|:RCPT|:RCPT|:DATA:250:250:250:354:.+:QUIT:250:221'
 LOG: MAIN
-  => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] TFO* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
+  => with_cookie@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] TFO* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
 LOG: MAIN
   -> xyz@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] TFO* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
 Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_D ...
@@ -75,7 +75,7 @@ TFO: had to retransmit
          250-PIPELINING
          250 HELP
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP|> RCPT TO:<abcd@test.ex>
+  SMTP|> RCPT TO:<ipv4@test.ex>
   SMTP>> DATA
   SMTP<< 250 OK
   SMTP<< 250 Accepted
@@ -88,7 +88,7 @@ TFO: had to retransmit
   SMTP(close)>>
 cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.+:QUIT:250:221'
 LOG: MAIN
-  => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbB-000000005vi-0000"
+  => ipv4@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbB-000000005vi-0000"
 LOG: MAIN
   Completed
 LOG: queue_run MAIN

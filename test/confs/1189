@@ -39,7 +39,7 @@ client:
   driver = accept
   condition = ${if eq {SERVER}{server}{no}{yes}}
   retry_use_local_part
-  transport = send_to_server${if eq{$local_part}{abcd}{2}{1}}
+  transport = send_to_server${if eq{$local_part}{ipv4}{2}{1}}
 
 server:
   driver = accept

@@ -75,12 +75,12 @@ system ("ip tcp_metrics delete HOSTIPV4");
 exim -DSERVER=server -bd -oX PORT_D
 ****
 # Queue an initial message.  This one will request a cookie for later TFOs.
-exim CALLER@test.ex
+exim no_cookie@test.ex
 Test message. Contains FF: ÿ
 ****
 # Queue two more recipients, to be sent to different IPs. The first should
 # get TFO using the cookie just obtained, then second should not.
-exim CALLER@test.ex abcd@test.ex xyz@test.ex
+exim with_cookie@test.ex ipv4@test.ex xyz@test.ex
 Test message to two different hosts
 ****
 exim -v -qf
