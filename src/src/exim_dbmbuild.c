@@ -31,6 +31,7 @@ characters. */
 
 
 #include "exim.h"
+#include "hintsdb.h"
 
 uschar * spool_directory = NULL;	/* dummy for hintsdb.h */
 

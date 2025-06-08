@@ -99,11 +99,12 @@ int     sqlite_lock_timeout    = 5;
 BOOL    move_frozen_messages   = FALSE;
 #endif
 
-/* These variables are outside the #ifdef because it keeps the code less
+/* These variables are outside the TLS #ifdef because it keeps the code less
 cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible.  Note that these are
 only used for smtp connections, not for service-daemon access. */
 
+#ifndef MACRO_PREDEF
 tls_support tls_in = {
  .active =		{.sock = -1}
  /* all other elements zero */
@@ -112,6 +113,7 @@ tls_support tls_out = {
  .active =		{.sock = -1},
  /* all other elements zero */
 };
+#endif
 
 uschar *dsn_envid              = NULL;
 int     dsn_ret                = 0;

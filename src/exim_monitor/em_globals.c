@@ -223,10 +223,6 @@ int     string_datestamp_length= 0;
 int     string_datestamp_type  = -1;
 
 BOOL    timestamps_utc         = FALSE;
-tls_support tls_in = {
- .active = { .sock = -1 }
- /* remainder zero/null/false */
-};
 
 tree_node *tree_duplicates     = NULL;
 tree_node *tree_nonrecipients  = NULL;

@@ -81,10 +81,11 @@ extern int     sqlite_lock_timeout;    /* Internal lock waiting timeout */
 extern BOOL    move_frozen_messages;   /* Get them out of the normal directory */
 #endif
 
-/* These variables are outside the #ifdef because it keeps the code less
+/* These variables are outside the TLS #ifdef because it keeps the code less
 cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
+#if !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
 typedef struct {
   client_conn_ctx active;     /* fd/socket when in a TLS session, and ptr to TLS context */
   int     bits;               /* bits used in TLS session */
@@ -125,6 +126,7 @@ typedef struct {
 } tls_support;
 extern tls_support tls_in;
 extern tls_support tls_out;
+#endif	/*!MACRO_PREDEF*/
 
 #ifndef DISABLE_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */

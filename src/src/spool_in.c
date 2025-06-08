@@ -283,16 +283,14 @@ dkim_collect_input = 0;
 # endif
 #endif
 
-#ifndef DISABLE_TLS
+#if !defined(DISABLE_TLS) && !defined(COMPILE_UTILITY)
 tls_in.certificate_verified = FALSE;
 # ifdef SUPPORT_DANE
 tls_in.dane_verified = FALSE;
 # endif
 tls_in.ver = tls_in.cipher = NULL;
-# ifndef COMPILE_UTILITY	/* tls support fns not built in */
 tls_free_cert(&tls_in.ourcert);
 tls_free_cert(&tls_in.peercert);
-# endif
 tls_in.peerdn = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
@@ -754,7 +752,7 @@ for (;;)
 #endif
     break;
 
-#ifndef DISABLE_TLS
+#if !defined(DISABLE_TLS) && !defined(COMPILE_UTILITY)
     case 't':
     if (Ustrncmp(p, "ls_", 3) == 0)
       {
@@ -763,12 +761,10 @@ for (;;)
 	tls_in.certificate_verified = TRUE;
       else if (Ustrncmp(q, "cipher", 6) == 0)
 	tls_in.cipher = string_copy_taint(q+7, proto_mem);
-# ifndef COMPILE_UTILITY	/* tls support fns not built in */
       else if (Ustrncmp(q, "ourcert", 7) == 0)
 	(void) tls_import_cert(q+8, &tls_in.ourcert);
       else if (Ustrncmp(q, "peercert", 8) == 0)
 	(void) tls_import_cert(q+9, &tls_in.peercert);
-# endif
       else if (Ustrncmp(q, "peerdn", 6) == 0)
 	tls_in.peerdn = string_unprinting(string_copy_taint(q+7, proto_mem));
       else if (Ustrncmp(q, "sni", 3) == 0)

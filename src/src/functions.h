@@ -28,6 +28,7 @@ extern const char *	std_dh_prime_named(const uschar *);
 extern void	tfo_out_check(int);
 # endif
 
+# if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
 extern uschar * tls_cert_crl_uri(void *, const uschar *);
 extern uschar * tls_cert_ext_by_oid(void *, uschar *, int);
 extern uschar * tls_cert_issuer(void *, const uschar *);
@@ -71,21 +72,22 @@ extern BOOL    tls_import_cert(const uschar *, void **);
 extern void    tls_state_in_to_out(int, const uschar *, int);
 extern void    tls_state_out_to_in(int, const uschar *, int);
 extern BOOL    tls_is_name_for_cert(const uschar *, void *);
-# ifdef USE_OPENSSL
+#  ifdef USE_OPENSSL
 extern BOOL    tls_openssl_options_parse(const uschar *, long *);
-# endif
+#  endif
 extern int     tls_read(void *, uschar *, size_t);
 extern int     tls_server_start(uschar **, gstring *);
 extern void    tls_shutdown_wr(void *);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
-#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
+#  if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 extern void    tls_watch_discard_event(int);
 extern void    tls_watch_invalidate(void);
-#endif
+#  endif
 extern int     tls_write(void *, const uschar *, size_t, BOOL);
 extern uschar *tls_validate_require_cipher(void);
 extern gstring *tls_version_report(gstring *);
+# endif	/* !COMPILE_UTILITY && !MACRO_PREDEF */
 
 # ifdef SUPPORT_DANE
 extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);
@@ -499,10 +501,12 @@ extern void   *search_open(const uschar *, const lookup_info *, int,
 extern void    search_tidyup(void);
 extern BOOL    send_fd_over_socket(int, int);
 extern uschar *sender_helo_verified_boolstr(void);
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
 extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
 extern void    sha1_mid(hctx *, const uschar *);
 extern void    sha1_start(hctx *);
+#endif
 extern void    sigalrm_handler(int);
 extern void    single_queue_run(qrunner *, const uschar *, const uschar *);
 extern int     smtp_boundsock(smtp_connect_args *);
@@ -632,7 +636,9 @@ extern void    tcp_init(void);
 #ifdef EXIM_TFO_PROBE
 extern void    tfo_probe(void);
 #endif
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
 extern void    tls_modify_variables(tls_support *);
+#endif
 extern uschar *tod_stamp(int);
 
 extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, uschar *,

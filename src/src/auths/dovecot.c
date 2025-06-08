@@ -252,11 +252,11 @@ dc_write(client_conn_ctx * cctx, const uschar * s)
 int len = Ustrlen(s), res;
 
 HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", s);
+res =
 #ifndef DISABLE_TLS
-res = cctx->tls_ctx
-  ? tls_write(cctx->tls_ctx, s, len, FALSE)
+  cctx->tls_ctx ? tls_write(cctx->tls_ctx, s, len, FALSE) :
 #endif
-  : write(cctx->sock, s, len);
+  write(cctx->sock, s, len);
 
 return res;
 }

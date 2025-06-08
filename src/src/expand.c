@@ -432,9 +432,14 @@ typedef struct {
 */
 
 typedef uschar * stringptr_fn_t(void);
+static uschar * fn_queue_size(void);
 static uschar * fn_recipients(void);
 static uschar * fn_recipients_list(void);
-static uschar * fn_queue_size(void);
+#ifdef MACRO_PREDEF
+# define NOT_MPDF(str) NULL
+#else
+# define NOT_MPDF(str) str
+#endif
 
 /* This table must be kept in alphabetical order. */
 
@@ -543,7 +548,7 @@ static var_entry var_table[] = {
   { "exim_path",           vtype_stringptr,   &exim_path },
   { "exim_uid",            vtype_uid,         &exim_uid },
   { "exim_version",        vtype_stringptr,   &version_string },
-  { "headers_added",       vtype_string_func, (void *) &fn_hdrs_added },
+  { "headers_added",       vtype_string_func, NOT_MPDF((void *) &fn_hdrs_added) },
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
@@ -678,7 +683,7 @@ static var_entry var_table[] = {
   { "sender_fullhost",     vtype_stringptr,   &sender_fullhost },
   { "sender_helo_dnssec",  vtype_bool,        &sender_helo_dnssec },
   { "sender_helo_name",    vtype_stringptr,   &sender_helo_name },
-  { "sender_helo_verified",vtype_string_func, (void *) &sender_helo_verified_boolstr },
+  { "sender_helo_verified",vtype_string_func, NOT_MPDF((void *) &sender_helo_verified_boolstr) },
   { "sender_host_address", vtype_stringptr,   &sender_host_address },
   { "sender_host_authenticated",vtype_stringptr, &sender_host_authenticated },
   { "sender_host_dnssec",  vtype_bool,        &sender_host_dnssec },
@@ -695,7 +700,7 @@ static var_entry var_table[] = {
   { "smtp_active_hostname", vtype_stringptr,  &smtp_active_hostname },
   { "smtp_command",        vtype_stringptr,   &smtp_cmd_buffer },
   { "smtp_command_argument", vtype_stringptr, &smtp_cmd_argument },
-  { "smtp_command_history", vtype_string_func, (void *) &smtp_cmd_hist },
+  { "smtp_command_history", vtype_string_func, NOT_MPDF((void *) &smtp_cmd_hist) },
   { "smtp_count_at_connection_start", vtype_int, &smtp_accept_count },
   { "smtp_notquit_reason", vtype_stringptr,   &smtp_notquit_reason },
   { "sn0",                 vtype_filter_int,  &filter_sn[0] },
@@ -732,50 +737,50 @@ static var_entry var_table[] = {
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
 
   /* The non-(in,out) variables are now deprecated */
-  { "tls_bits",            vtype_int,         &tls_in.bits },
-  { "tls_certificate_verified", vtype_int,    &tls_in.certificate_verified },
-  { "tls_cipher",          vtype_stringptr,   &tls_in.cipher },
+  { "tls_bits",		   vtype_int,         NOT_MPDF(&tls_in.bits) },
+  { "tls_certificate_verified", vtype_int,    NOT_MPDF(&tls_in.certificate_verified) },
+  { "tls_cipher",          vtype_stringptr,   NOT_MPDF(&tls_in.cipher) },
 
-  { "tls_in_bits",         vtype_int,         &tls_in.bits },
-  { "tls_in_certificate_verified", vtype_int, &tls_in.certificate_verified },
-  { "tls_in_cipher",       vtype_stringptr,   &tls_in.cipher },
-  { "tls_in_cipher_std",   vtype_stringptr,   &tls_in.cipher_stdname },
-  { "tls_in_ocsp",         vtype_int,         &tls_in.ocsp },
-  { "tls_in_ourcert",      vtype_cert,        &tls_in.ourcert },
-  { "tls_in_peercert",     vtype_cert,        &tls_in.peercert },
-  { "tls_in_peerdn",       vtype_stringptr,   &tls_in.peerdn },
+  { "tls_in_bits",         vtype_int,         NOT_MPDF(&tls_in.bits) },
+  { "tls_in_certificate_verified", vtype_int, NOT_MPDF(&tls_in.certificate_verified) },
+  { "tls_in_cipher",       vtype_stringptr,   NOT_MPDF(&tls_in.cipher) },
+  { "tls_in_cipher_std",   vtype_stringptr,   NOT_MPDF(&tls_in.cipher_stdname) },
+  { "tls_in_ocsp",         vtype_int,         NOT_MPDF(&tls_in.ocsp) },
+  { "tls_in_ourcert",      vtype_cert,        NOT_MPDF(&tls_in.ourcert) },
+  { "tls_in_peercert",     vtype_cert,        NOT_MPDF(&tls_in.peercert) },
+  { "tls_in_peerdn",       vtype_stringptr,   NOT_MPDF(&tls_in.peerdn) },
 #ifndef DISABLE_TLS_RESUME
-  { "tls_in_resumption",   vtype_int,         &tls_in.resumption },
+  { "tls_in_resumption",   vtype_int,         NOT_MPDF(&tls_in.resumption) },
 #endif
 #ifndef DISABLE_TLS
-  { "tls_in_sni",          vtype_stringptr,   &tls_in.sni },
+  { "tls_in_sni",          vtype_stringptr,   NOT_MPDF(&tls_in.sni) },
 #endif
-  { "tls_in_ver",          vtype_stringptr,   &tls_in.ver },
-  { "tls_out_bits",        vtype_int,         &tls_out.bits },
-  { "tls_out_certificate_verified", vtype_int,&tls_out.certificate_verified },
-  { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
-  { "tls_out_cipher_std",  vtype_stringptr,   &tls_out.cipher_stdname },
+  { "tls_in_ver",          vtype_stringptr,   NOT_MPDF(&tls_in.ver) },
+  { "tls_out_bits",        vtype_int,         NOT_MPDF(&tls_out.bits) },
+  { "tls_out_certificate_verified", vtype_int,NOT_MPDF(&tls_out.certificate_verified) },
+  { "tls_out_cipher",      vtype_stringptr,   NOT_MPDF(&tls_out.cipher) },
+  { "tls_out_cipher_std",  vtype_stringptr,   NOT_MPDF(&tls_out.cipher_stdname) },
 #ifdef SUPPORT_DANE
-  { "tls_out_dane",        vtype_bool,        &tls_out.dane_verified },
+  { "tls_out_dane",        vtype_bool,        NOT_MPDF(&tls_out.dane_verified) },
 #endif
-  { "tls_out_ocsp",        vtype_int,         &tls_out.ocsp },
-  { "tls_out_ourcert",     vtype_cert,        &tls_out.ourcert },
-  { "tls_out_peercert",    vtype_cert,        &tls_out.peercert },
-  { "tls_out_peerdn",      vtype_stringptr,   &tls_out.peerdn },
+  { "tls_out_ocsp",        vtype_int,         NOT_MPDF(&tls_out.ocsp) },
+  { "tls_out_ourcert",     vtype_cert,        NOT_MPDF(&tls_out.ourcert) },
+  { "tls_out_peercert",    vtype_cert,        NOT_MPDF(&tls_out.peercert) },
+  { "tls_out_peerdn",      vtype_stringptr,   NOT_MPDF(&tls_out.peerdn) },
 #ifndef DISABLE_TLS_RESUME
-  { "tls_out_resumption",  vtype_int,         &tls_out.resumption },
+  { "tls_out_resumption",  vtype_int,         NOT_MPDF(&tls_out.resumption) },
 #endif
 #ifndef DISABLE_TLS
-  { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
+  { "tls_out_sni",         vtype_stringptr,   NOT_MPDF(&tls_out.sni) },
 #endif
 #ifdef SUPPORT_DANE
-  { "tls_out_tlsa_usage",  vtype_int,         &tls_out.tlsa_usage },
+  { "tls_out_tlsa_usage",  vtype_int,         NOT_MPDF(&tls_out.tlsa_usage) },
 #endif
-  { "tls_out_ver",         vtype_stringptr,   &tls_out.ver },
+  { "tls_out_ver",         vtype_stringptr,   NOT_MPDF(&tls_out.ver) },
 
-  { "tls_peerdn",          vtype_stringptr,   &tls_in.peerdn },	/* mind the alphabetical order! */
+  { "tls_peerdn",          vtype_stringptr,   NOT_MPDF(&tls_in.peerdn) },	/* mind the alphabetical order! */
 #ifndef DISABLE_TLS
-  { "tls_sni",             vtype_stringptr,   &tls_in.sni },	/* mind the alphabetical order! */
+  { "tls_sni",             vtype_stringptr,   NOT_MPDF(&tls_in.sni) },	/* mind the alphabetical order! */
 #endif
 
   { "tod_bsdinbox",        vtype_todbsdin,    NULL },
@@ -806,8 +811,6 @@ uschar * fn_hdrs_added(void) {return NULL;}
 uschar * fn_queue_size(void) {return NULL;}
 uschar * fn_recipients(void) {return NULL;}
 uschar * fn_recipients_list(void) {return NULL;}
-uschar * sender_helo_verified_boolstr(void) {return NULL;}
-uschar * smtp_cmd_hist(void) {return NULL;}
 
 
 

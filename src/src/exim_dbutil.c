@@ -31,6 +31,7 @@ whose inclusion is controlled by -D on the compilation command. */
 
 
 #include "exim.h"
+#include "hintsdb.h"
 
 
 /* Identifiers for the different database types. */

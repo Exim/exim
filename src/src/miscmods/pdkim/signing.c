@@ -8,8 +8,6 @@
 
 #include "../exim.h"
 #include "crypt_ver.h"
-#include "signing.h"
-
 
 #ifdef MACRO_PREDEF
 # include "../macro_predef.h"
@@ -24,7 +22,10 @@ features_crypto(void)
   builtin_macro_create(US"_CRYPTO_HASH_SHA3");
 # endif
 }
-#else
+
+#else	/*!MACRO_PREDEF*/
+
+# include "signing.h"
 
 #ifndef DISABLE_DKIM	/* rest of file */
 

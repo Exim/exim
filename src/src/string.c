@@ -26,7 +26,7 @@ address (assuming HAVE_IPV6 is set). If a mask is permitted and one is present,
 and maskptr is not NULL, its offset is placed there.
 
 Arguments:
-  s         a string
+  ip_addr   a string
   maskptr   NULL if no mask is permitted to follow
             otherwise, points to an int where the offset of '/' is placed
             if there is no / followed by trailing digits, *maskptr is set 0
@@ -111,7 +111,7 @@ if (endp)
   ptrdiff_t l = endp - ip_addr;
   if (l > 255)
     {
-    if (errp) *errp = US"rudiculous long ip address string";
+    if (errp) *errp = US"rediculous long ip address string";
     return 0;
     }
   addr = string_copyn(ip_addr, l);
