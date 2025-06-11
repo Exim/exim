@@ -15185,6 +15185,7 @@ See also the &'Policy controls'& section above.
 .row &%smtp_etrn_command%&           "what to run for ETRN"
 .row &%smtp_etrn_serialize%&         "only one at once"
 .row &%smtp_load_reserve%&           "only reserve hosts if this load"
+.row &%smtp_max_synprot_errors%&     "before dropping connection"
 .row &%smtp_max_unknown_commands%&   "before dropping connection"
 .row &%smtp_ratelimit_hosts%&        "apply ratelimiting to these hosts"
 .row &%smtp_ratelimit_mail%&         "ratelimit for MAIL commands"
