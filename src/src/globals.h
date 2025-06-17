@@ -143,6 +143,7 @@ extern uschar *tls_dhparam;            /* DH param file */
 extern uschar *tls_early_banner_hosts; /* use Early Data for SMTP banner */
 #endif
 extern uschar *tls_eccurve;            /* EC curve */
+extern BOOL    tls_ignore_missing_close_notify; /* For semi-broken TLS servers like Gmail and Yandex */
 # ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 # endif
