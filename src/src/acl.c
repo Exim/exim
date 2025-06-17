@@ -3733,7 +3733,7 @@ for (; cb; cb = cb->next)
 	      stop = TRUE;
 	      }
 	    else if (Ustrncmp(pp, "pretrigger=", 11) == 0)
-		debug_pretrigger_setup(pp+11);
+		debug_pretrigger_setup(pp += 11);
 	    else if (Ustrncmp(pp, "trigger=", 8) == 0)
 	      {
 	      if (Ustrncmp(pp += 8, "now", 3) == 0)

@@ -1670,7 +1670,8 @@ smtp_auth(smtp_context * sx)
 {
 const host_item * host = sx->conn_args.host;		/* host to deliver to */
 smtp_transport_options_block * ob = sx->conn_args.ob;	/* transport options */
-int require_auth = verify_check_given_host(CUSS &ob->hosts_require_auth, host);
+BOOL require_auth =
+      verify_check_given_host(CUSS &ob->hosts_require_auth, host) == OK;
 #ifndef DISABLE_PIPE_CONNECT
 unsigned short authbits = tls_out.active.sock >= 0
       ? sx->ehlo_resp.crypted_auths : sx->ehlo_resp.cleartext_auths;
@@ -1705,7 +1706,7 @@ if (  sx->esmtp
   /* Must not do this check until after we have saved the result of the
   regex match above as the check could be another RE. */
 
-  if (  require_auth == OK
+  if (  require_auth
      || verify_check_given_host(CUSS &ob->hosts_try_auth, host) == OK)
     {
     DEBUG(D_transport) debug_printf("scanning authentication mechanisms\n");
@@ -1806,7 +1807,7 @@ if (  sx->esmtp
 
 /* If we haven't authenticated, but are required to, give up. */
 
-if (require_auth == OK && !f.smtp_authenticated)
+if (require_auth && !f.smtp_authenticated)
   {
 #ifndef DISABLE_PIPE_CONNECT
   invalidate_ehlo_cache_entry(sx);
@@ -2521,10 +2522,27 @@ if (!continue_hostname || atrn_domains)
 	sx->send_quit = FALSE;
 	return DEFER;
 	}
-#ifdef TCP_QUICKACK
-      (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off,
-			  sizeof(off));
+
+#ifdef TCP_DEFER_ACCEPT
+/* Unfortunately the Linux kernel is U/S un this respect: data on the synack
+or, any subsequent segment from the serve (both of which are preferred cases
+for TFO) because its state has already gone to ESTABLISHED and there are no
+checks in the ACK-generating paths,  The apparent gatekeeper for TCP in the
+Linux kernel is not interested in this being fixed.  The best we can hope for
+is the non-TFO-C case for smtps, where the Client Hello will go on the 3rd-ack.
+*/
+      if (1)	/* Try to get the Client Finished onto the 3rd-ack. */
+	{		/* Doing it here is ok because we do lazy-connect, */
+	int one = 2;	/* One second, max deferral of 3rd-ack */
+	(void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_DEFER_ACCEPT,
+						      US &one, sizeof(one));
+	}
+      else
+#elif defined(TCP_QUICKACK)
+	(void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off,
+			  sizeof(off))
 #endif
+	;
       }
     }
   /* Expand the greeting message while waiting for the initial response. (Makes
