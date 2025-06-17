@@ -27934,6 +27934,10 @@ is receiving SMTP mail, it is acting as a server; when it is sending out
 messages over SMTP, it is acting as a client. Authenticator configuration
 options are provided for use in both these circumstances.
 
+.cindex authentication priority
+As a client, authenticators configured earlier will be preferred over
+later ones.
+
 To make it clear which options apply to which situation, the prefixes
 &%server_%& and &%client_%& are used on option names that are specific to
 either the server or the client function, respectively. Server and client
@@ -28515,8 +28519,11 @@ writing the test makes the logic clearer.
 .cindex authentication LOGIN
 The LOGIN authentication mechanism is not documented in any RFC, but is in use
 in a number of programs. No data is sent with the AUTH command. Instead, a
-user name and password are supplied separately, in response to prompts. The
-plaintext authenticator can be configured to support this as in this example:
+user name and password are supplied separately, in response to prompts.
+&*Note*&: The extra roundtrips make this mechanism less efficient
+than PLAIN.
+The plaintext authenticator can be configured to support this
+as in this example:
 .code
 fixed_login:
   driver = plaintext
