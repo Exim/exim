@@ -168,6 +168,9 @@ JH/36 Fix expansion test.  Previously, the test "def:reply_address" would
 JH/37 Fix use of remove_headers in DKIM ACL. Previously this was rejected,
       contrary to the documentation.
 
+JH/38 Fix DKIM for unavailable private key file. Previously, a null pointer was
+      followed, causing a SIGSEGV and frozen message.
+
 
 Exim version 4.98
 -----------------

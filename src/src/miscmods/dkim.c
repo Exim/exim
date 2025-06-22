@@ -1060,12 +1060,14 @@ if (dkim_domain)
     continue;				/* next selector */
 
     clear_key_bad:
-      if (dkim_private_key_expanded != dkim->dkim_private_key)
+      if (  dkim_private_key_expanded
+	 && dkim_private_key_expanded != dkim->dkim_private_key)
 	dkim_private_key_expanded[0] = '\0';
       goto bad;
 
     clear_key_expand_bad:
-      if (dkim_private_key_expanded != dkim->dkim_private_key)
+      if (  dkim_private_key_expanded
+	 && dkim_private_key_expanded != dkim->dkim_private_key)
 	dkim_private_key_expanded[0] = '\0';
       goto expand_bad;
     }
