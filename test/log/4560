@@ -8,7 +8,7 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 lh_A-R:         < test.ex; arc=none>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 lh-AAR:         < i=1; test.ex; arc=none>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; arc=none>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss ARC id=qwerty1234@disco-zombie.net for a@test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a1@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss ARC id=qwerty1234@disco-zombie.net for a@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 => a <a@test.ex> R=d1 T=tfile
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
@@ -20,7 +20,7 @@
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 lh_A-R:         <>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 lh-AAR:         <>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for za@test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= a2@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for za@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1236
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 arc_state:      <pass>
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 domains:        <test.ex>
@@ -29,7 +29,7 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 lh_A-R:         < test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 lh-AAR:         < i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= a2@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-000000005vi-0000"
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1236
@@ -44,7 +44,7 @@
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 lh_A-R:         <>
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 lh-AAR:         <>
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zza@test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= a3@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zza@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1238
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 arc_state:      <pass>
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 domains:        <test.ex>
@@ -53,7 +53,7 @@
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 lh_A-R:         < test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 lh-AAR:         < i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= a3@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => za@test.ex <zza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbB-000000005vi-0000"
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1238
@@ -65,7 +65,7 @@
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 lh-AAR:         < i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= a3@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-000000005vi-0000"
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1239
@@ -80,7 +80,7 @@
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 lh_A-R:         <>
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 lh-AAR:         <>
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zmza@test.ex
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= a4@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zmza@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1241
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 arc_state:      <pass>
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 domains:        <test.ex>
@@ -89,7 +89,7 @@
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 lh_A-R:         < test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 lh-AAR:         < i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for mza@test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= a4@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for mza@test.ex
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => mza@test.ex <zmza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbE-000000005vi-0000"
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1241
@@ -101,7 +101,7 @@
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 lh-AAR:         < i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 oldest-p-AAR:   <i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1>
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= a4@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => za@test.ex <mza@test.ex> R=mlist T=tmlist H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbF-000000005vi-0000"
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1242
@@ -113,7 +113,7 @@
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.remote-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 lh-AAR:         < i=3; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.remote-ip=127.0.0.1: i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 oldest-p-AAR:   <i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1>
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= a4@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbG-000000005vi-0000"
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1243
@@ -128,7 +128,7 @@
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 lh_A-R:         <>
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 lh-AAR:         <>
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zzmza@test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= a5@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zzmza@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1245
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 arc_state:      <pass>
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 domains:        <test.ex>
@@ -137,7 +137,7 @@
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 lh_A-R:         < test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 lh-AAR:         < i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
-1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for zmza@test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= a5@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for zmza@test.ex
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 => zmza@test.ex <zzmza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbI-000000005vi-0000"
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1245
@@ -149,7 +149,7 @@
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 lh-AAR:         < i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
-1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for mza@test.ex
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= a5@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for mza@test.ex
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 => mza@test.ex <zmza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbJ-000000005vi-0000"
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1246
@@ -161,7 +161,7 @@
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 lh-AAR:         < i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbK-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for za@test.ex
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 <= a5@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for za@test.ex
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 => za@test.ex <mza@test.ex> R=mlist T=tmlist H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbK-000000005vi-0000"
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1247
@@ -173,7 +173,7 @@
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.remote-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 lh-AAR:         < i=3; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.remote-ip=127.0.0.1: i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for a@test.ex
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= a5@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for a@test.ex
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbL-000000005vi-0000"
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1248
@@ -188,7 +188,7 @@
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 lh_A-R:         <>
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 lh-AAR:         <>
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zza@test.ex
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= a6@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zza@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1250
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 arc_state:      <pass>
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 domains:        <test.ex>
@@ -197,7 +197,7 @@
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 lh_A-R:         < test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 lh-AAR:         < i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
-1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= a6@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 => za@test.ex <zza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbN-000000005vi-0000"
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1250
@@ -209,7 +209,7 @@
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 lh-AAR:         < i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 oldest-p-AAR:   <i=1; test.ex; smtp.remote-ip=127.0.0.1;\n	arc=none>
-1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= a6@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbO-000000005vi-0000"
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1251
@@ -226,7 +226,7 @@
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 lh_A-R:         < dragon.trusteddomain.org; sender-id=fail (NotPermitted) header.sender=arc-discuss-bounces@dmarc.org; spf=fail (NotPermitted) smtp.mfrom=arc-discuss-bounces@dmarc.org: dragon.trusteddomain.org; dkim=pass\n reason="1024-bit key"\n header.d=convivian.com header.i=@convivian.com header.b=LHXEAl5e;\n dkim-adsp=pass: dragon.trusteddomain.org;\n sender-id=pass header.from=jered@convivian.com;\n spf=pass smtp.mfrom=jered@convivian.com>
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 lh-AAR:         < i=1; mailhub.convivian.com; none>
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=dmarc.org id=1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com for za@test.ex
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= a7@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=dmarc.org id=1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com for za@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1253
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 DKIM: d=dmarc.org s=clochette c=simple/simple a=rsa-sha256 b=1024 t=T [verification succeeded]
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 DKIM: d=convivian.com s=default c=simple/simple a=rsa-sha256 b=1024 t=T [verification failed - body hash mismatch (body probably modified in transit)]
@@ -237,7 +237,7 @@
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 lh_A-R:         < test.ex;\n	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;\n	dkim=fail (body hash mismatch; body probably modified in transit)\n		 header.d=convivian.com header.s=default header.a=rsa-sha256;\n	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.remote-ip=127.0.0.1: dragon.trusteddomain.org; sender-id=fail (NotPermitted) header.sender=arc-discuss-bounces@dmarc.org; spf=fail (NotPermitted) smtp.mfrom=arc-discuss-bounces@dmarc.org: dragon.trusteddomain.org; dkim=pass\n reason="1024-bit key"\n header.d=convivian.com header.i=@convivian.com header.b=LHXEAl5e;\n dkim-adsp=pass: dragon.trusteddomain.org;\n sender-id=pass header.from=jered@convivian.com;\n spf=pass smtp.mfrom=jered@convivian.com>
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 lh-AAR:         < i=2; test.ex; smtp.remote-ip=127.0.0.1;\n	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;\n	dkim=fail (body hash mismatch; body probably modified in transit)\n		 header.d=convivian.com header.s=default header.a=rsa-sha256;\n	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.remote-ip=127.0.0.1: i=1; mailhub.convivian.com; none>
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss DKIM=dmarc.org id=1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com for a@test.ex
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= a7@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss DKIM=dmarc.org id=1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com for a@test.ex
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbQ-000000005vi-0000"
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1253
@@ -252,10 +252,11 @@
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 lh_A-R:         <>
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 lh-AAR:         <>
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for za@test.ex
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= a8@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for za@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1255
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 ARC: AMS signing: privkey PEM-block import: error:1E08010C:DECODER routines::unsupported
 
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 ARC: bad message body-hash
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 arc_state:      <none>
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 domains:        <>
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 arc_oldest_pass <0>
@@ -263,7 +264,7 @@
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 lh_A-R:         < test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 lh-AAR:         <>
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbS-000000005vi-0000 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for a@test.ex
+1999-03-02 09:44:33 10HmbS-000000005vi-0000 <= a8@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for a@test.ex
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbS-000000005vi-0000"
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1255
@@ -280,4 +281,4 @@
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 lh_A-R:         <>
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 lh-AAR:         <>
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 oldest-p-AAR:   <>
-1999-03-02 09:44:33 10HmbT-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for a@test.ex
+1999-03-02 09:44:33 10HmbT-000000005vi-0000 <= a9@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for a@test.ex

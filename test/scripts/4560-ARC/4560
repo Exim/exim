@@ -10,7 +10,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a1@bloggs.com>
 ??? 250
 RCPT TO:<a@test.ex>
 ??? 250
@@ -53,7 +53,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a2@bloggs.com>
 ??? 250
 RCPT TO:<za@test.ex>
 ??? 250
@@ -90,7 +90,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a3@bloggs.com>
 ??? 250
 RCPT TO:<zza@test.ex>
 ??? 250
@@ -126,7 +126,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a4@bloggs.com>
 ??? 250
 RCPT TO:<zmza@test.ex>
 ??? 250
@@ -165,7 +165,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a5@bloggs.com>
 ??? 250
 RCPT TO:<zzmza@test.ex>
 ??? 250
@@ -205,7 +205,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a6@bloggs.com>
 ??? 250
 RCPT TO:<zza@test.ex>
 ??? 250
@@ -246,7 +246,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a7@bloggs.com>
 ??? 250
 RCPT TO:<za@test.ex>
 ??? 250
@@ -388,7 +388,7 @@ exim -DSERVER=server -DNOTDAEMON -q
 ****
 #
 #
-# Check attemtping to sign, with a missing keyfile
+# Check attempting to sign, with a missing keyfile
 # It starts off bare, so the forwarder reception gets an ARC status of "none".
 # The outbound tries to sign it with that.
 #
@@ -396,7 +396,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a8@bloggs.com>
 ??? 250
 RCPT TO:<za@test.ex>
 ??? 250
@@ -434,7 +434,7 @@ client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<a9@bloggs.com>
 ??? 250
 RCPT TO:<a@test.ex>
 ??? 250

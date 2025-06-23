@@ -1489,6 +1489,9 @@ header_line * h = (header_line *)(al+1);
 
 /* debug_printf("%s\n", __FUNCTION__); */
 
+if (!bodyhash->data)
+  return NULL;
+
 /* Construct the to-be-signed AMS pseudo-header: everything but the sig. */
 
 ams_off = gstring_length(g);
@@ -1894,8 +1897,9 @@ g = arc_sign_append_aar(g, &arc_sign_ctx, identity, instance, &ar);
 */
 
 b = arc_ams_setup_sign_bodyhash();
-g = arc_sign_append_ams(g, &arc_sign_ctx, instance, identity, selector,
-      &b->bh, headers_rlist, privkey, options);
+if (!(g = arc_sign_append_ams(g, &arc_sign_ctx, instance, identity, selector,
+      &b->bh, headers_rlist, privkey, options)))
+  goto bad_bodyhash_ret;
 
 /*
 - Generate AS
@@ -1924,6 +1928,10 @@ out:
   gstring_release_unused(g);
   return g;
 
+
+bad_bodyhash_ret:
+  log_write(0, LOG_MAIN, "ARC: bad message body-hash");
+  goto ret_sigheaders;
 
 bad_arg_ret:
   log_write(0, LOG_MAIN,

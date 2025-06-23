@@ -1,9 +1,9 @@
-From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+From a1@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a1@bloggs.com>)
 	id 10HmaX-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -27,13 +27,13 @@ Subject: simple test
 
 This is a simple test.
 
-From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+From a2@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a2@bloggs.com>)
 	id 10HmaZ-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -53,7 +53,7 @@ Authentication-Results: test.ex;
 	arc=none
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a2@bloggs.com>)
 	id 10HmaY-000000005vi-0000
 	for za@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -61,13 +61,13 @@ Subject: Test
 
 This is a test body.
 
-From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+From a3@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a3@bloggs.com>)
 	id 10HmbC-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -89,7 +89,7 @@ Authentication-Results: test.ex;
 	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a3@bloggs.com>)
 	id 10HmbB-000000005vi-0000
 	for za@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -109,7 +109,7 @@ Authentication-Results: test.ex;
 	arc=none
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a3@bloggs.com>)
 	id 10HmbA-000000005vi-0000
 	for zza@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -117,13 +117,13 @@ Subject: Test
 
 This is a test body.
 
-From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+From a4@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	arc=pass (i=3) header.s=sel arc.oldest-pass=2 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a4@bloggs.com>)
 	id 10HmbG-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -145,7 +145,7 @@ Authentication-Results: test.ex;
 	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a4@bloggs.com>)
 	id 10HmbF-000000005vi-0000
 	for za@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -167,7 +167,7 @@ Authentication-Results: test.ex;
 	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a4@bloggs.com>)
 	id 10HmbE-000000005vi-0000
 	for mza@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -187,7 +187,7 @@ Authentication-Results: test.ex;
 	arc=none
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a4@bloggs.com>)
 	id 10HmbD-000000005vi-0000
 	for zmza@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -199,13 +199,13 @@ This is a test body.
 This is a generic mailinglist footer
 ----
 
-From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+From a5@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	arc=fail (i=3 (cv))
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a5@bloggs.com>)
 	id 10HmbL-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -227,7 +227,7 @@ Authentication-Results: test.ex;
 	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a5@bloggs.com>)
 	id 10HmbK-000000005vi-0000
 	for za@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -236,7 +236,7 @@ Authentication-Results: test.ex;
 	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a5@bloggs.com>)
 	id 10HmbJ-000000005vi-0000
 	for mza@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -258,7 +258,7 @@ Authentication-Results: test.ex;
 	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a5@bloggs.com>)
 	id 10HmbI-000000005vi-0000
 	for zmza@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -278,7 +278,7 @@ Authentication-Results: test.ex;
 	arc=none
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a5@bloggs.com>)
 	id 10HmbH-000000005vi-0000
 	for zzmza@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -290,13 +290,13 @@ This is a test body.
 This is a generic mailinglist footer
 ----
 
-From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+From a6@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a6@bloggs.com>)
 	id 10HmbO-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -305,7 +305,7 @@ Authentication-Results: test.ex;
 	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a6@bloggs.com>)
 	id 10HmbN-000000005vi-0000
 	for za@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -325,7 +325,7 @@ Authentication-Results: test.ex;
 	arc=none
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a6@bloggs.com>)
 	id 10HmbM-000000005vi-0000
 	for zza@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -333,7 +333,7 @@ Subject: Test
 
 This is a test body.
 
-From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+From a7@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;
@@ -342,7 +342,7 @@ Authentication-Results: test.ex;
 	arc=fail (i=2 (cv))
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a7@bloggs.com>)
 	id 10HmbQ-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -370,7 +370,7 @@ Authentication-Results: test.ex;
 	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.remote-ip=127.0.0.1
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a7@bloggs.com>)
 	id 10HmbP-000000005vi-0000
 	for za@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -499,13 +499,13 @@ http://lists.dmarc.org/mailman/listinfo/arc-discuss
 
 --===============2728806607597782871==--
 
-From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+From a8@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	arc=none
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a8@bloggs.com>)
 	id 10HmbS-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -513,7 +513,7 @@ Authentication-Results: test.ex;
 	arc=none
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
-	(envelope-from <CALLER@bloggs.com>)
+	(envelope-from <a8@bloggs.com>)
 	id 10HmbR-000000005vi-0000
 	for za@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000

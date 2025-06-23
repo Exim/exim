@@ -2055,6 +2055,8 @@ if (!exim_sha_init(&b->body_hash_ctx,		/*XXX hash method: extend for sha512 */
   }
 b->signed_body_bytes = 0;
 b->num_buffered_blanklines = 0;
+b->bh.data = NULL;
+b->bh.len = 0;
 ctx->bodyhash = b;
 return b;
 }
