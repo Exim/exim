@@ -54,6 +54,7 @@ Local/Makefile:
 
 # This is separated off so that "make build-directory" can be obeyed on
 # its own if necessary.
+# XXX would be nice to get this rebuilt if scripts/MakeLinks changes
 
 build-directory:
 	@builddir=build-$(buildname); \
@@ -69,7 +70,8 @@ checks:
 # Configure-Makefile script. This does its own dependency checking because of
 # the optional files.
 
-configure: checks build-directory
+configure: checks build-directory \
+		scripts/lookups-Makefile scripts/drivers-Makefile
 	@cd build-$(buildname); \
 	  build=$(build) $(SHELL) ../scripts/Configure-Makefile
 

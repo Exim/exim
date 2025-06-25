@@ -43,6 +43,8 @@ if [ -f Makefile ] ; then
      ../scripts/newer $editme-$archtype Makefile || \
      ../scripts/newer $editme-$ostype-$archtype Makefile || \
      ../scripts/newer ../scripts/Configure-Makefile Makefile || \
+     ../scripts/newer ../scripts/lookups-Makefile Makefile || \
+     ../scripts/newer ../scripts/drivers-Makefile Makefile || \
      ../scripts/newer ../OS/Makefile-Base Makefile || \
      ../scripts/newer ../OS/Makefile-Default Makefile
   then
