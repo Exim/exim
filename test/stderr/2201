@@ -50,7 +50,6 @@ routing test.ex@test.ex
  test.ex in local_parts?
   list element: dnsdb;test.ex
   search_open: dnsdb "NULL"
-    cached open
   search_find: file="NULL"
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
@@ -90,7 +89,6 @@ routing unknown@test.ex
  test.ex in domains?
   list element: dnsdb;test.ex
   search_open: dnsdb "NULL"
-    cached open
   search_find: file="NULL"
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
@@ -103,7 +101,6 @@ routing unknown@test.ex
  unknown in local_parts?
   list element: dnsdb;unknown
   search_open: dnsdb "NULL"
-    cached open
   search_find: file="NULL"
     key="unknown" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
@@ -127,7 +124,6 @@ routing unknown@test.ex
  test.ex in domains?
   list element: dnsdb;test.ex
   search_open: dnsdb "NULL"
-    cached open
   search_find: file="NULL"
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
@@ -141,7 +137,6 @@ routing unknown@test.ex
   list element: dnsdb;A=myhost.test.ex
   address match test: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
   search_open: dnsdb "NULL"
-    cached open
   search_find: file="NULL"
     key="A=myhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
@@ -186,7 +181,6 @@ dnsdb key: shorthost.test.ex
 creating new cache entry
 lookup yielded: 127.0.0.1
 search_open: dnsdb "NULL"
-  cached open
 search_find: file="NULL"
   key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
@@ -195,7 +189,6 @@ internal_search_find: file="NULL"
 cached data used for lookup of a=shorthost.test.ex
 lookup yielded: 127.0.0.1
 search_open: dnsdb "NULL"
-  cached open
 search_find: file="NULL"
   key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:

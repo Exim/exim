@@ -18,7 +18,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -27,7 +26,6 @@ dropping to exim gid; retaining priv uid
  cached data used for lookup of select name from them where id='ph10';
  lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -40,7 +38,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup failed
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -52,7 +49,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: 
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -64,7 +60,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: id=nothing░name=""░
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="delete from them where id='nonexist';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -77,7 +72,6 @@ dropping to exim gid; retaining priv uid
  lookup forced cache cleanup
  lookup yielded: 0
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='quote';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -90,7 +84,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup failed
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='filter';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -103,7 +96,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup failed
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -115,7 +107,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: name="\"stquot"░id=quote2░
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='nlonly';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -128,7 +119,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup failed
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -141,7 +131,6 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  lookup deferred: MySQL server "x" not found in mysql_servers
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -156,7 +145,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -171,7 +159,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=<!::1.PORT_N/test/root/pass!x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -186,7 +173,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts="servers=<!::1.PORT_N/test/root/pass!x"
  LRU list:
@@ -198,7 +184,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=ip4.ip4.ip4.ip4::PORT_N/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -213,7 +198,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -228,7 +212,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -241,7 +224,6 @@ LOG: MAIN
  lookup yielded: Philip░Hazel↩
  Aristotle
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -254,7 +236,6 @@ LOG: MAIN
  lookup yielded: name="Philip░Hazel"░id=ph10░↩
  name=Aristotle░id=aaaa░
  search_open: mysql "NULL"
-   cached open
  search_find: file="NULL"
    key="delete from them where id='aaaa'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -400,7 +381,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ╰─────result: select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235   search_open: mysql "NULL"
-01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
 01:01:01 p1235     key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="no_rd"
 01:01:01 p1235   LRU list:
@@ -446,7 +426,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ╰─────result: select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted, quoted:mysql)
 01:01:01 p1235   search_open: mysql "NULL"
-01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
 01:01:01 p1235     key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::PORT_N/test/root/pass"
 01:01:01 p1235   LRU list:
@@ -486,7 +465,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ╰─────result: select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted, quoted:mysql)
 01:01:01 p1235   search_open: mysql "NULL"
-01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
 01:01:01 p1235     key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::PORT_N"
 01:01:01 p1235   LRU list:
@@ -526,7 +504,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ╰─────result: servers=127.0.0.1::PORT_N/test/root/pass;░select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted, quoted:mysql)
 01:01:01 p1235   search_open: mysql "NULL"
-01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
 01:01:01 p1235     key="servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
 01:01:01 p1235   LRU list:
@@ -560,7 +537,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ╰─────result: servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235   search_open: mysql "NULL"
-01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
 01:01:01 p1235     key="servers=127.0.0.1::PORT_N; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
 01:01:01 p1235   LRU list:
@@ -609,7 +585,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  host in "net-mysql;select * from them where id='c'"?
 01:01:01 p1235   list element: net-mysql;select░*░from░them░where░id='c'
 01:01:01 p1235   search_open: mysql "NULL"
-01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
 01:01:01 p1235     key="select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
 01:01:01 p1235   LRU list:
@@ -648,7 +623,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  host in " net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
 01:01:01 p1235   list element: net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235   search_open: mysql "NULL"
-01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
 01:01:01 p1235     key="servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
 01:01:01 p1235   LRU list:
@@ -689,7 +663,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  host in " net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
 01:01:01 p1235   list element: net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235   search_open: mysql "NULL"
-01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
 01:01:01 p1235     key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::PORT_N/test/root/pass"
 01:01:01 p1235   LRU list:
@@ -730,7 +703,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235     host in "net-mysql;select * from them where id='10.0.0.0'"?
 01:01:01 p1235     ╎list element: net-mysql;select░*░from░them░where░id='10.0.0.0'
 01:01:01 p1235     ╎search_open: mysql "NULL"
-01:01:01 p1235     ╎  cached open
 01:01:01 p1235     ╎search_find: file="NULL"
 01:01:01 p1235     ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
 01:01:01 p1235     ╎LRU list:
@@ -873,7 +845,6 @@ routing ph10@myhost.test.ex
 acl_m_qtest: <ph10@myhost.test.ex> lkup: <>
  processing address_data
   search_open: mysql "NULL"
-    cached open
   search_find: file="NULL"
     key="select name from them where id='ph10' limit 1" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:

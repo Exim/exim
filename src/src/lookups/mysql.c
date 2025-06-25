@@ -100,7 +100,7 @@ static void
 mysql_tidy(void)
 {
 mysql_connection *cn;
-while ((cn = mysql_connections) != NULL)
+while ((cn = mysql_connections))
   {
   mysql_connections = cn->next;
   DEBUG(D_lookup) debug_printf_indent("close MYSQL connection: %s\n", cn->server);
@@ -264,11 +264,8 @@ if (!cn)
 
 /* Else use a previously cached connection */
 
-else
-  {
-  DEBUG(D_lookup)
-    debug_printf_indent("MYSQL using cached connection for %s\n", server_copy);
-  }
+else DEBUG(D_lookup)
+  debug_printf_indent("MYSQL using cached connection for %s\n", server_copy);
 
 /* Run the query */
 

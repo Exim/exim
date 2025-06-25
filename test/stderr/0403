@@ -91,7 +91,7 @@ routing userx@test.ex
      key="userx@test.ex" partial=-1 affix=NULL starflags=0 opts="ret=key"
    LRU list:
      0TESTSUITE/aux-fixed/0403.accountfile
-     End
+    End
    internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
      type=lsearch key="userx@test.ex" opts=NULL
    file lookup required for userx@test.ex
@@ -112,7 +112,7 @@ routing userx@test.ex
   LRU list:
     0TESTSUITE/aux-fixed/0403.data
     0TESTSUITE/aux-fixed/0403.accountfile
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
     type=lsearch key="test.ex" opts=NULL
   file lookup required for test.ex
@@ -130,7 +130,7 @@ routing userx@test.ex
   LRU list:
     0TESTSUITE/aux-fixed/0403.data
     0TESTSUITE/aux-fixed/0403.accountfile
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
     type=lsearch key="userx" opts=NULL
   file lookup required for userx
@@ -322,7 +322,7 @@ routing charlie@dom1.ain
      key="charlie@dom1.ain" partial=-1 affix=NULL starflags=0 opts="ret=key"
    LRU list:
      0TESTSUITE/aux-fixed/0403.accountfile
-     End
+    End
    internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
      type=lsearch key="charlie@dom1.ain" opts=NULL
    file lookup required for charlie@dom1.ain
@@ -340,7 +340,7 @@ routing charlie@dom1.ain
      key="charlie@dom1.ain" partial=-1 affix=NULL starflags=0 opts="ret=key"
    LRU list:
      0TESTSUITE/aux-fixed/0403.accountfile
-     End
+    End
    internal_search_find: file="TESTSUITE/aux-fixed/0403.accountfile"
      type=lsearch key="charlie@dom1.ain" opts=NULL
    cached data used for lookup of charlie@dom1.ain

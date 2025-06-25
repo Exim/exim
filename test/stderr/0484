@@ -13,7 +13,7 @@ set_process_info: pppp expansion-test
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
    type=lsearch key="list" opts=NULL
  file lookup required for list
@@ -26,7 +26,7 @@ set_process_info: pppp expansion-test
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
@@ -38,7 +38,7 @@ set_process_info: pppp expansion-test
    key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
    type=lsearch key="root" opts=NULL
  file lookup required for root
@@ -51,7 +51,7 @@ set_process_info: pppp expansion-test
    key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
    type=lsearch key="root" opts=NULL
  cached data used for lookup of root
@@ -63,7 +63,7 @@ set_process_info: pppp expansion-test
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
@@ -75,7 +75,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases2
    0TESTSUITE/aux-fixed/0484.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
    type=lsearch key="list" opts=NULL
  file lookup required for list
@@ -89,7 +89,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases2
    0TESTSUITE/aux-fixed/0484.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
    type=lsearch key="root" opts=NULL
  file lookup required for root
@@ -103,7 +103,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases2
    0TESTSUITE/aux-fixed/0484.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
@@ -116,7 +116,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    0TESTSUITE/aux-fixed/0484.aliases2
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
@@ -129,7 +129,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    0TESTSUITE/aux-fixed/0484.aliases2
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
    type=lsearch key="root" opts=NULL
  cached data used for lookup of root

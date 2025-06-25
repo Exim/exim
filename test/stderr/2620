@@ -18,7 +18,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -27,7 +26,6 @@ dropping to exim gid; retaining priv uid
  cached data used for lookup of select name from them where id='ph10';
  lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -40,7 +38,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup failed
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -52,7 +49,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: 
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -64,7 +60,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: id=nothing░name=""░
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="delete from them where id='nonexist';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -77,7 +72,6 @@ dropping to exim gid; retaining priv uid
  lookup forced cache cleanup
  lookup yielded: 0
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -89,7 +83,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: name="\"stquot"░id=quote2░
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='newline';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -102,7 +95,6 @@ dropping to exim gid; retaining priv uid
  lookup yielded: name="before␍↩
  after"░id=newline░
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='tab';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -114,7 +106,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: name="x␉x"░id=tab░
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where name='''stquot';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -126,7 +117,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: name='stquot░id=quote1░
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=x:localhost; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -139,7 +129,6 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "x" not found in pgsql_servers
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=localhost::PORT_N:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -154,7 +143,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -169,7 +157,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -184,7 +171,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=<!::1.PORT_N/test/CALLER/!x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -199,7 +185,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts="servers=<!::1.PORT_N/test/CALLER/!x"
  LRU list:
@@ -211,7 +196,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -226,7 +210,6 @@ LOG: MAIN
  creating new cache entry
  lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -239,7 +222,6 @@ LOG: MAIN
  lookup yielded: Philip░Hazel↩
  Aristotle
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -252,7 +234,6 @@ LOG: MAIN
  lookup yielded: name="Philip░Hazel"░id=ph10░↩
  name=Aristotle░id=aaaa░
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="delete from them where id='aaaa'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -330,7 +311,6 @@ processing ACL check_recipient "warn" (TESTSUITE/test-config 27)
 check set acl_m0 = ok:   ${lookup pgsql                    {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="cache=no_rd"
  LRU list:
@@ -352,7 +332,6 @@ check set acl_m0 = FAIL: ${lookup pgsql,cache=no_rd        {select name from the
 warn: condition test succeeded in ACL check_recipient
 processing ACL check_recipient "warn" (TESTSUITE/test-config 32)
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N/test/CALLER/"
  LRU list:
@@ -368,7 +347,6 @@ processing ACL check_recipient "warn" (TESTSUITE/test-config 32)
 check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N/test/CALLER/      {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N"
  LRU list:
@@ -384,7 +362,6 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N/test/CALLER/  
 check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N    {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -406,7 +383,6 @@ check hosts = net-pgsql;select * from them where id='${quote_pgsql:$local_part}'
 host in "net-pgsql;select * from them where id='c'"?
  list element: net-pgsql;select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -428,7 +404,6 @@ list separator: '&'
 host in " net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
  list element: net-pgsql;servers=localhost::PORT_N/test/CALLER/;░select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -452,7 +427,6 @@ list separator: '&'
 host in " net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
  list element: net-pgsql,servers=localhost::PORT_N/test/CALLER/;░select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N/test/CALLER/"
  LRU list:
@@ -485,7 +459,6 @@ host in "+relay_hosts"?
   host in "net-pgsql;select * from them where id='10.0.0.0'"?
    ╎list element: net-pgsql;select░*░from░them░where░id='10.0.0.0'
    ╎search_open: pgsql "NULL"
-   ╎  cached open
    ╎search_find: file="NULL"
    ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
@@ -513,7 +486,6 @@ SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
 processing ACL check_recipient "warn" (TESTSUITE/test-config 27)
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -529,7 +501,6 @@ processing ACL check_recipient "warn" (TESTSUITE/test-config 27)
 check set acl_m0 = ok:   ${lookup pgsql                    {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="cache=no_rd"
  LRU list:
@@ -551,7 +522,6 @@ check set acl_m0 = FAIL: ${lookup pgsql,cache=no_rd        {select name from the
 warn: condition test succeeded in ACL check_recipient
 processing ACL check_recipient "warn" (TESTSUITE/test-config 32)
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N/test/CALLER/"
  LRU list:
@@ -567,7 +537,6 @@ processing ACL check_recipient "warn" (TESTSUITE/test-config 32)
 check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N/test/CALLER/      {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N"
  LRU list:
@@ -583,7 +552,6 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N/test/CALLER/  
 check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N    {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -605,7 +573,6 @@ check hosts = net-pgsql;select * from them where id='${quote_pgsql:$local_part}'
 host in "net-pgsql;select * from them where id='c'"?
  list element: net-pgsql;select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -622,7 +589,6 @@ list separator: '&'
 host in " net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
  list element: net-pgsql;servers=localhost::PORT_N/test/CALLER/;░select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -646,7 +612,6 @@ list separator: '&'
 host in " net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
  list element: net-pgsql,servers=localhost::PORT_N/test/CALLER/;░select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
-   cached open
  search_find: file="NULL"
    key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N/test/CALLER/"
  LRU list:
@@ -679,7 +644,6 @@ host in "+relay_hosts"?
   host in "net-pgsql;select * from them where id='10.0.0.0'"?
    ╎list element: net-pgsql;select░*░from░them░where░id='10.0.0.0'
    ╎search_open: pgsql "NULL"
-   ╎  cached open
    ╎search_find: file="NULL"
    ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:

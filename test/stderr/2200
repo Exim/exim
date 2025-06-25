@@ -14,7 +14,6 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: 127.0.0.1
  search_open: dnsdb "NULL"
-   cached open
  search_find: file="NULL"
    key="a=localhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -42,7 +41,6 @@ search_tidyup called
   creating new cache entry
   lookup yielded: 127.0.0.1
   search_open: dnsdb "NULL"
-    cached open
   search_find: file="NULL"
     key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:

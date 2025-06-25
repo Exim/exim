@@ -617,7 +617,7 @@ host in " partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
    key="ten-1.test.ex" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0002.lsearch
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
    type=lsearch key="ten-1.test.ex" opts=NULL
  file lookup required for ten-1.test.ex
@@ -668,7 +668,7 @@ host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"?
    key="V4NET.0.0.2" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0002.lsearch
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
    type=lsearch key="V4NET.0.0.2" opts=NULL
  file lookup required for V4NET.0.0.2

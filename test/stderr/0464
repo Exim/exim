@@ -35,7 +35,7 @@ domain1 in "+special_domains"?
    ╎  key="domain1" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
    ╎  0TESTSUITE/aux-fixed/0464.domains
-   ╎  End
+   ╎ End
    ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎  type=lsearch key="domain1" opts=NULL
    ╎file lookup required for domain1
@@ -92,7 +92,7 @@ Considering abc@xxx.domain1
    ╎    key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎  LRU list:
    ╎    0TESTSUITE/aux-fixed/0464.domains
-   ╎    End
+   ╎   End
    ╎  internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎    type=lsearch key="xxx.domain1" opts=NULL
    ╎  file lookup required for xxx.domain1
@@ -172,7 +172,7 @@ Considering abc@xxx.domain1
    ╎    key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎  LRU list:
    ╎    0TESTSUITE/aux-fixed/0464.domains
-   ╎    End
+   ╎   End
    ╎  internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎    type=lsearch key="xxx.domain1" opts=NULL
    ╎  cached data used for lookup of xxx.domain1

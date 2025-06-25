@@ -81,7 +81,7 @@ static int type_values[] = {
 static void *
 dnsdb_open(const uschar * filename, uschar **errmsg)
 {
-return (void *)(-1);   /* Any non-0 value */
+return (void *)(1);   /* Any non-0 value */
 }
 
 

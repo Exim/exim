@@ -32,7 +32,7 @@ routing x@b.domain
    ╎   ╎  key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎   ╎LRU list:
    ╎   ╎  0TESTSUITE/aux-fixed/0414.list1
-   ╎   ╎  End
+   ╎   ╎ End
    ╎   ╎internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
    ╎   ╎  type=lsearch key="b.domain" opts=NULL
    ╎   ╎file lookup required for b.domain
@@ -51,7 +51,7 @@ routing x@b.domain
    ╎   ╎LRU list:
    ╎   ╎  0TESTSUITE/aux-fixed/0414.list2
    ╎   ╎  0TESTSUITE/aux-fixed/0414.list1
-   ╎   ╎  End
+   ╎   ╎ End
    ╎   ╎internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
    ╎   ╎  type=lsearch key="b.domain" opts=NULL
    ╎   ╎file lookup required for b.domain
@@ -111,7 +111,7 @@ routing x@a.domain
    ╎   ╎LRU list:
    ╎   ╎  0TESTSUITE/aux-fixed/0414.list1
    ╎   ╎  0TESTSUITE/aux-fixed/0414.list2
-   ╎   ╎  End
+   ╎   ╎ End
    ╎   ╎internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
    ╎   ╎  type=lsearch key="a.domain" opts=NULL
    ╎   ╎file lookup required for a.domain
@@ -141,7 +141,7 @@ routing x@a.domain
    ╎ LRU list:
    ╎   0TESTSUITE/aux-fixed/0414.list2
    ╎   0TESTSUITE/aux-fixed/0414.list1
-   ╎   End
+   ╎  End
    ╎ internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
    ╎   type=lsearch key="a.domain" opts=NULL
    ╎ file lookup required for a.domain

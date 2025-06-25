@@ -36,7 +36,7 @@ if (is_tainted(dirname))
   errno = EACCES;
   }
 else if (Ustat(dirname, &statbuf) >= 0)
-  return (void *)(-1);
+  return (void *)(1);
 *errmsg = string_open_failed("%s for directory search", dirname);
 return NULL;
 }
@@ -45,9 +45,6 @@ return NULL;
 /*************************************************
 *             Check entry point                  *
 *************************************************/
-
-/* The handle will always be (void *)(-1), but don't try casting it to an
-integer as this gives warnings on 64-bit systems. */
 
 static BOOL
 dsearch_check(void * handle, const uschar * filename, int modemask,

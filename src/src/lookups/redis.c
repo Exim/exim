@@ -177,11 +177,8 @@ if (!cn)
   cn->next = redis_connections;
   redis_connections = cn;
   }
-else
-  {
-  DEBUG(D_lookup)
-    debug_printf_indent("REDIS using cached connection for %s\n", server_copy);
-}
+else DEBUG(D_lookup)
+  debug_printf_indent("REDIS using cached connection for %s\n", server_copy);
 
 /* Authenticate if there is a password */
 if(sdata[2])

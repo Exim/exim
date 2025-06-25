@@ -52,7 +52,7 @@ static void
 pgsql_tidy(void)
 {
 pgsql_connection *cn;
-while ((cn = pgsql_connections) != NULL)
+while ((cn = pgsql_connections))
   {
   pgsql_connections = cn->next;
   DEBUG(D_lookup) debug_printf_indent("close PGSQL connection: %s\n", cn->server);
@@ -281,11 +281,8 @@ if (!cn)
 
 /* Else use a previously cached connection */
 
-else
-  {
-  DEBUG(D_lookup) debug_printf_indent("PGSQL using cached connection for %s\n",
-    server_copy);
-  }
+else DEBUG(D_lookup)
+  debug_printf_indent("PGSQL using cached connection for %s\n", server_copy);
 
 /* Run the query */
 

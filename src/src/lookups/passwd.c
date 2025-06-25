@@ -20,7 +20,7 @@
 static void *
 passwd_open(const uschar * filename, uschar ** errmsg)
 {
-return (void *)(-1);     /* Just return something non-null */
+return (void *)(1);     /* Just return something non-null */
 }
 
 

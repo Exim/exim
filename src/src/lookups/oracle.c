@@ -215,7 +215,7 @@ static void
 oracle_tidy(void)
 {
 oracle_connection *cn;
-while ((cn = oracle_connections) != NULL)
+while ((cn = oracle_connections))
   {
   oracle_connections = cn->next;
   DEBUG(D_lookup) debug_printf_indent("close ORACLE connection: %s\n", cn->server);
@@ -342,11 +342,8 @@ if (!cn)
 /* Else use a previously cached connection - we can write to the server string
 to obliterate the password because it is in a nextinlist temporary buffer. */
 
-else
-  {
-  DEBUG(D_lookup)
-    debug_printf_indent("ORACLE using cached connection for %s\n", server_copy);
-  }
+else DEBUG(D_lookup)
+  debug_printf_indent("ORACLE using cached connection for %s\n", server_copy);
 
 /* We have a connection. Open a cursor and run the query */
 

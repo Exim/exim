@@ -61,7 +61,7 @@ routing x@smart.domain
     key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="smart.domain" opts=NULL
   file lookup required for smart.domain
@@ -78,7 +78,7 @@ routing x@smart.domain
     key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="smart.domain" opts=NULL
   cached data used for lookup of smart.domain
@@ -156,7 +156,7 @@ routing x@test.ex
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="test.ex" opts=NULL
   file lookup required for test.ex
@@ -173,7 +173,7 @@ routing x@test.ex
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="test.ex" opts=NULL
   cached data used for lookup of test.ex
@@ -203,7 +203,7 @@ routing x@test.ex
     key="test.ex.files" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="test.ex.files" opts=NULL
   file lookup required for test.ex.files
@@ -324,7 +324,7 @@ routing x@smart.domain
     key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="smart.domain" opts=NULL
   file lookup required for smart.domain
@@ -341,7 +341,7 @@ routing x@smart.domain
     key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="smart.domain" opts=NULL
   cached data used for lookup of smart.domain
@@ -420,7 +420,7 @@ routing x@test.ex
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="test.ex" opts=NULL
   file lookup required for test.ex
@@ -437,7 +437,7 @@ routing x@test.ex
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0085.data
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
     type=lsearch key="test.ex" opts=NULL
   cached data used for lookup of test.ex

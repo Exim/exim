@@ -426,7 +426,8 @@ if ((t = tree_search(search_tree, keybuffer)))
   {
   if ((c = (search_cache *)t->data.ptr)->handle)
     {
-    DEBUG(D_lookup) debug_printf_indent("  cached open\n");
+    DEBUG(D_lookup)
+      if (c->handle != (void *)1) debug_printf_indent("  cached open\n");
     store_pool = old_pool;
     return t;
     }
@@ -585,7 +586,8 @@ else
     debug_printf_indent("%s lookup required for %s%s%s\n",
       filename ? US"file" : US"database",
       keystring,
-      filename ? US"\n  in " : US"", filename ? filename : US"");
+      filename ? US"\n  in " : US"",
+      filename ? filename : US"");
     if (!filename && is_tainted(keystring))
       {
       debug_printf_indent("                             ");
@@ -816,7 +818,7 @@ DEBUG(D_lookup)
     {
     search_cache *c = (search_cache *)(t->data.ptr);
     debug_printf_indent("  %s\n", t->name);
-    if (t == open_bot) debug_printf_indent("  End\n");
+    if (t == open_bot) debug_printf_indent(" End\n");
     t = c->down;
     }
   }

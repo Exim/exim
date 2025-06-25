@@ -23,7 +23,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
     key="x" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases1
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
     type=lsearch key="x" opts=NULL
   file lookup required for x
@@ -44,7 +44,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases2
     0TESTSUITE/aux-fixed/0123.aliases1
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
     type=lsearch key="x" opts=NULL
   file lookup required for x
@@ -67,7 +67,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases3
     0TESTSUITE/aux-fixed/0123.aliases2
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
     type=lsearch key="x" opts=NULL
   file lookup required for x
@@ -90,7 +90,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases4
     0TESTSUITE/aux-fixed/0123.aliases3
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
     type=lsearch key="x" opts=NULL
   file lookup required for x
@@ -113,7 +113,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases5
     0TESTSUITE/aux-fixed/0123.aliases4
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
     type=lsearch key="x" opts=NULL
   file lookup required for x
@@ -136,7 +136,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases6
     0TESTSUITE/aux-fixed/0123.aliases5
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
     type=lsearch key="x" opts=NULL
   file lookup required for x
@@ -167,7 +167,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases1
     0TESTSUITE/aux-fixed/0123.aliases6
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
     type=lsearch key="y" opts=NULL
   file lookup required for y
@@ -191,7 +191,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases2
     0TESTSUITE/aux-fixed/0123.aliases1
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
     type=lsearch key="y" opts=NULL
   file lookup required for y
@@ -215,7 +215,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases3
     0TESTSUITE/aux-fixed/0123.aliases2
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
     type=lsearch key="y" opts=NULL
   file lookup required for y
@@ -239,7 +239,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases4
     0TESTSUITE/aux-fixed/0123.aliases3
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
     type=lsearch key="y" opts=NULL
   file lookup required for y
@@ -263,7 +263,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases5
     0TESTSUITE/aux-fixed/0123.aliases4
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
     type=lsearch key="y" opts=NULL
   file lookup required for y
@@ -287,7 +287,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases6
     0TESTSUITE/aux-fixed/0123.aliases5
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
     type=lsearch key="y" opts=NULL
   file lookup required for y
@@ -318,7 +318,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases1
     0TESTSUITE/aux-fixed/0123.aliases6
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
     type=lsearch key="z" opts=NULL
   file lookup required for z
@@ -342,7 +342,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases2
     0TESTSUITE/aux-fixed/0123.aliases1
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
     type=lsearch key="z" opts=NULL
   file lookup required for z
@@ -366,7 +366,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases3
     0TESTSUITE/aux-fixed/0123.aliases2
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
     type=lsearch key="z" opts=NULL
   file lookup required for z
@@ -390,7 +390,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases4
     0TESTSUITE/aux-fixed/0123.aliases3
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
     type=lsearch key="z" opts=NULL
   file lookup required for z
@@ -414,7 +414,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases5
     0TESTSUITE/aux-fixed/0123.aliases4
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
     type=lsearch key="z" opts=NULL
   file lookup required for z
@@ -438,7 +438,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
   LRU list:
     0TESTSUITE/aux-fixed/0123.aliases6
     0TESTSUITE/aux-fixed/0123.aliases5
-    End
+   End
   internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
     type=lsearch key="z" opts=NULL
   file lookup required for z

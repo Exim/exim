@@ -13,7 +13,7 @@ set_process_info: pppp expansion-test
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
    type=lsearch key="list" opts=NULL
  file lookup required for list
@@ -26,7 +26,7 @@ set_process_info: pppp expansion-test
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
@@ -38,7 +38,7 @@ set_process_info: pppp expansion-test
    key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
    type=lsearch key="root" opts=NULL
  file lookup required for root
@@ -51,7 +51,7 @@ set_process_info: pppp expansion-test
    key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
    type=lsearch key="root" opts=NULL
  cached data used for lookup of root
@@ -63,7 +63,7 @@ set_process_info: pppp expansion-test
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
@@ -74,42 +74,39 @@ set_process_info: pppp expansion-test
    key="something" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="NULL"
    type=testdb key="something" opts=NULL
  database lookup required for something
  creating new cache entry
  lookup yielded: something
  search_open: testdb "NULL"
-   cached open
  search_find: file="NULL"
    key="something" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="NULL"
    type=testdb key="something" opts=NULL
  cached data used for lookup of something
  lookup yielded: something
  search_open: testdb "NULL"
-   cached open
  search_find: file="NULL"
    key="nocache" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="NULL"
    type=testdb key="nocache" opts=NULL
  database lookup required for nocache
  lookup forced cache cleanup
  lookup yielded: nocache
  search_open: testdb "NULL"
-   cached open
  search_find: file="NULL"
    key="something" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="NULL"
    type=testdb key="something" opts=NULL
  database lookup required for something
@@ -121,7 +118,7 @@ set_process_info: pppp expansion-test
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
@@ -133,7 +130,7 @@ set_process_info: pppp expansion-test
    key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
-   End
+  End
  internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
    type=lsearch key="root" opts=NULL
  cached data used for lookup of root
