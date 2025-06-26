@@ -1,0 +1,47 @@
+# ARC signing, overlength line
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# A file with an excessive length line
+write long_line_file 1x16385=long_line
+begin line 1
+begin line 2
+++++
+finish line 1
+finish line last
+****
+#
+# We send this one through one forwarding hop.
+# It starts off bare, so the forwarder reception gets an ARC status of "none".
+# The outbound signs it with that, and the final receiver is happy to pass it.
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<a2@bloggs.com>
+??? 250
+RCPT TO:<za@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+<<< long_line_file
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+killdaemon
+sudo rm long_line_file
+no_stdout_check
+no_msglog_check

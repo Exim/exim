@@ -87,6 +87,7 @@ tsmtp:
   hosts =	127.0.0.1
   port =	PORT_D
   allow_localhost
+  message_linelength_limit = 32768
   hosts_try_fastopen =
 .ifndef OPTION
 .ifdef BAD

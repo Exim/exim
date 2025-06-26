@@ -1,0 +1,33 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 DKIM: validation error: LONG_LINE
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 DKIM: Error during validation, disabling signature verification: LONG_LINE
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 arc_state:      <none>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 domains:        <>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 arc_oldest_pass <0>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 reason:         <>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 lh_A-R:         <>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 lh-AAR:         <>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 oldest-p-AAR:   <>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a2@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for za@test.ex
+1999-03-02 09:44:33 Start queue run: pid=p1235
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 DKIM: signing failed: LONG_LINE
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ARC: bad message body-hash
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 DKIM: validation error: LONG_LINE
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 DKIM: Error during validation, disabling signature verification: LONG_LINE
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 arc_state:      <none>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 domains:        <>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 arc_oldest_pass <0>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 reason:         <>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 lh_A-R:         < test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 lh-AAR:         <>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 oldest-p-AAR:   <>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= a2@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for a@test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 End queue run: pid=p1235
+1999-03-02 09:44:33 Start queue run: pid=p1236
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => a <a@test.ex> R=d1 T=tfile
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 End queue run: pid=p1236
