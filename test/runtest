@@ -3044,35 +3044,41 @@ if (/^(cat)?write\s+(\S+)(?:\s+(.*))?\s*$/)
     while (<SCRIPT>)
       {
       $lineno++;
-      last if /^\+{4}\s*$/;
+      last if (/^\+{4}\s*$/ || /^\*{4}\s*$/);
       print FILE;
       print CAT if $cat;
       }
 
     # Sized data
 
-    while (scalar @sizes > 0)
+    if (! /^\*{4}\s*$/)
       {
-      ($count,$len,$leadin) = (shift @sizes) =~ /(\d+)x(\d+)(?:=(.*))?/;
-      $leadin = '' if !defined $leadin;
-      $leadin =~ s/_/ /g;
-      $len -= length($leadin) + 1;
-      while ($count-- > 0)
-        {
-        print FILE $leadin, "a" x $len, "\n";
-        print CAT $leadin, "a" x $len, "\n" if $cat;
-        }
+      while (scalar @sizes > 0)
+	{
+	($count,$len,$leadin) = (shift @sizes) =~ /(\d+)x(\d+)(?:=(.*))?/;
+	$leadin = '' if !defined $leadin;
+	$leadin =~ s/_/ /g;
+	$len -= length($leadin) + 1;
+	while ($count-- > 0)
+	  {
+	  print FILE $leadin, "a" x $len, "\n";
+	  print CAT $leadin, "a" x $len, "\n" if $cat;
+	  }
+	}
       }
     }
 
   # Post data, or only data if no sized data
 
-  while (<SCRIPT>)
+  if (! /^\*{4}\s*$/)
     {
-    $lineno++;
-    last if /^\*{4}\s*$/;
-    print FILE;
-    print CAT if $cat;
+    while (<SCRIPT>)
+      {
+      $lineno++;
+      last if /^\*{4}\s*$/;
+      print FILE;
+      print CAT if $cat;
+      }
     }
   close FILE;
 
@@ -3361,6 +3367,14 @@ LINE: while (<SCRIPT>)
       };
       $cmd eq ':sleep:' and do {
         sleep $_;
+        next LINE;
+      };
+      $cmd eq ':file:' and do {
+	open FILE, "<$line" || tests_exit(-1, "Failed to open \"$line\": $!");
+	while (<FILE>) {
+	  print CMD;
+	}
+	close FILE;
         next LINE;
       };
     }

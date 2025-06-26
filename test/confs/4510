@@ -55,6 +55,7 @@ send_to_server:
   hosts = HOSTIPV4
   port = PORT_D
   hosts_try_fastopen =	:
+  message_linelength_limit = 32768
 
   dkim_domain =		test.ex
 .ifdef SELECTOR

@@ -924,6 +924,8 @@ commands are recognised:
   that number of seconds before proceeding. No data will be output to
   the application.
 
+- "file": interpolate the content of the file name by the rest of the line
+
 
   background
 

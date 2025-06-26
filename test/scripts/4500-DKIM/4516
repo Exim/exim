@@ -1,0 +1,26 @@
+# DKIM signing, overlength line
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# A file with an excessive length line
+write long_line_file 1x16385=long_line
+begin line 1
+begin line 2
+++++
+finish line 1
+finish line last
+****
+#
+# single header signed
+exim -DOPT=From -odf a@test.ex
+From: nobody@example.com
+
+:file: long_line_file
+****
+sudo rm long_line_file
+#
+#
+millisleep 500
+killdaemon
+no_msglog_check
