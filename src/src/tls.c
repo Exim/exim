@@ -838,7 +838,6 @@ tls_client_resmption_key(tls_support * tlsp,
 #ifndef DISABLE_TLS_RESUME
 hctx * h = &tlsp->resume_hctx;
 blob b;
-gstring * g;
 
 DEBUG(D_tls) if (conn_args->host_lbserver)
   debug_printf("TLS: lbserver '%s'\n", conn_args->host_lbserver);

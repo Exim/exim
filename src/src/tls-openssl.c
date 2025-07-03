@@ -3651,7 +3651,6 @@ if (  tls_in.on_connect			/* Not usable for STARTTLS */
 
       gstring_reset(banner);
       }
-  skip_early_data: ;
   }
 # endif /*EXPERIMENTAL_TLS_EARLY_BANNER*/
 
