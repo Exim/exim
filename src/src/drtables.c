@@ -308,6 +308,9 @@ extern lookup_module_info nis_lookup_module_info;
 #if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
 extern lookup_module_info nisplus_lookup_module_info;
 #endif
+#if defined(EXPERIMENTAL_NMH) && EXPERIMENTAL_NMH!=2
+extern lookup_module_info nmh_lookup_module_info;
+#endif
 #if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
 extern lookup_module_info oracle_lookup_module_info;
 #endif
@@ -651,6 +654,10 @@ addlookupmodule(&nis_lookup_module_info);
 
 #if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
 addlookupmodule(&nisplus_lookup_module_info);
+#endif
+
+#if defined(EXPERIMENTAL_NMH) && EXPERIMENTAL_NMH!=2
+addlookupmodule(&nmh_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2

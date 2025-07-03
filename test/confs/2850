@@ -1,0 +1,21 @@
+# Exim test configuration 2850
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+hostlist   relay_hosts = net-nmh,table=relay_hosts;@nmhd
+
+acl_smtp_rcpt = check_recipient
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  accept  hosts = +relay_hosts
+  deny    message = relay not permitted
+
+# End

@@ -3124,7 +3124,12 @@ if (iplookup)
   else   /* Single-key style */
     {
     int incoming[4], insize;
-    int sep = Ustrcmp(li->name, "iplsearch") == 0 ? ':' : '.';
+    int sep =
+      Ustrcmp(li->name, "iplsearch") == 0
+#ifdef EXPERIMENTAL_NMH
+      || Ustrcmp(li->name, "nmh") == 0
+#endif
+      ? ':' : '.';
     insize = host_aton(cb->host_address, incoming);
     host_mask(insize, incoming, mlen);
     (void) host_nmtoa(insize, incoming, mlen, buffer, sep);

@@ -1,0 +1,85 @@
+### start a db server
+127.0.0.2	Not Present
+::3	Not Present
+192.168.0.0/24	Not Present
+10.0.0.0/8	Not Present
+2001:0db8::/32	Not Present
+### Populated DB
+### Read back DB default table
+127.0.0.2
+192.168.0.0/24
+::3
+### Read back DB relay_hosts table
+10.0.0.0/8
+2001:db8::/32
+> 127.0.0.2	<yes>
+> 127.0.0.2	<yes>	framework cache
+> 127.0.0.1	<>
+> ::3		<yes>
+> ::3		<yes>
+> ::1		<>
+> 192.168.0.1	<yes>
+> insert,remove
+> 127.0.0.1 +	<>
+> 127.0.0.1 ?	<yes>
+> 127.0.0.1 +	<yes>
+> 127.0.0.1 -	<yes>
+> 127.0.0.1 ?	<>
+> 127.0.0.2 +	<yes>
+> 127.0.0.2 ?	<yes>
+> named table
+> 127.0.0.2	<nope>
+> 10.0.0.1	<>
+> 
+
+**** SMTP testing session as if from host 10.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [10.0.0.1]
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 11.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [11.0.0.1]
+250 OK
+550 relay not permitted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 2001:db8::1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [2001:db8::1]
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 2002:db8::1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [2002:db8::1]
+250 OK
+550 relay not permitted
+221 myhost.test.ex closing connection
+> Failed: lookup of "127.0.0.2" gave DEFER: "connect '@nmhd': Connection refused"
+> 
+### start a db server, UDP mode
+> 127.0.0.2	<>
+> 
+
+******** SERVER ********
+### start a db server
+### Populated DB
+### Read back DB default table
+### Read back DB relay_hosts table
+### start a db server, UDP mode

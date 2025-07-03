@@ -1158,6 +1158,13 @@ gstring * b = NULL, * d = NULL;
   d = string_cat(d, US" nisplus");
 # endif
 #endif
+#ifdef EXPERIMENTAL_NMH
+# if EXPERIMENTAL_NMH!=2
+  b = string_cat(b, US" nmh");
+# else
+  d = string_cat(d, US" nmh");
+# endif
+#endif
 #ifdef LOOKUP_ORACLE
 # if LOOKUP_ORACLE!=2
   b = string_cat(b, US" oracle");

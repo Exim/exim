@@ -736,6 +736,45 @@ perl_at_startup option should be considered (but is not required).
 
 
 
+NMH Lookup
+---------------------------------------------------------------
+
+If compiled with EXPERIMENTAL_NMH=yes (or =2)  :-
+
+Ref: https://code.quatermass.co.uk/jgh/ipset_jgh.git
+
+A single-key lookup against an NMH daemon is included. The key
+is an IP address, with optional mask. A query returns whether
+the key is covered by data in the DB or not.  The "file" for the
+lookup is the name of the unix-domain socket, or the hostname (or IP)
+if UDP is used, for the daemon.
+
+The DB maintained by NMH holds CIDRs, combining or splitting
+as required when additions and subtractions are done.
+
+
+Example:  ${lookup {$sender_host_address} nmh {@nmhd}}
+	  (returns either "yes" or an empty string)
+
+List-syntax lookups:
+	  hosts = net-nmh;@nmhd
+	  (note the net- prefix, required to access the IP address
+	  rather than the name for the host)
+
+Custom options, specified in the usual way:
+- port=N	UDP port number. Required when UDP rather than Unix-domain
+		communication is wanted
+- tmo=N		timeout in seconds
+- table=TABLE	non-default table within database
+- add		add entry to database
+- sub		subtract entry from database
+- partial	return true if there is any entry within the query CIDR
+
+Example:  ${lookup {192.168.0.0/24} nmh,add,table=mylocal,tmo=10 {@nmhd}}
+	  host = net-nmh,port=1026,table=known_spammers;dbserver.local.net
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

@@ -1,0 +1,104 @@
+# nmh lookups
+# The nmh (or equivalent) package will be needed for this test to run.
+#
+# first, populate a DB to test against
+### start a db server
+echo Starting DB server
+background
+DIR/bin.sys/nmhd
+****
+#
+echo Insert some data
+perl
+system 'DIR/bin.sys/nmhctl -a 127.0.0.2 ::3 192.168.0.0/24';
+system 'DIR/bin.sys/nmhctl -l relay_hosts -a 10.0.0.0/8 2001:0db8::/32';
+****
+### Populated DB
+#
+### Read back DB default table
+perl
+system 'DIR/bin.sys/nmhctl -D';
+****
+### Read back DB relay_hosts table
+perl
+system 'DIR/bin.sys/nmhctl -l relay_hosts -D';
+****
+#
+#
+#exim -d-all+lookup+expand -be
+exim -be
+127.0.0.2	<${lookup {127.0.0.2}	nmh {@nmhd}}>
+127.0.0.2	<${lookup {127.0.0.2}	nmh {@nmhd}}>	framework cache
+127.0.0.1	<${lookup {127.0.0.1}	nmh {@nmhd}}>
+::3		<${lookup {::3}		nmh {@nmhd}}>
+::3		<${lookup {::3}		nmh,tmo=10 {@nmhd}}>
+::1		<${lookup {::1}		nmh {@nmhd}}>
+192.168.0.1	<${lookup {192.168.0.1}	nmh {@nmhd}}>
+insert,remove
+127.0.0.1 +	<${lookup {127.0.0.1}	nmh,add {@nmhd}}>
+127.0.0.1 ?	<${lookup {127.0.0.1}	nmh     {@nmhd}}>
+127.0.0.1 +	<${lookup {127.0.0.1}	nmh,add {@nmhd}}>
+127.0.0.1 -	<${lookup {127.0.0.1}	nmh,sub {@nmhd}}>
+127.0.0.1 ?	<${lookup {127.0.0.1}	nmh     {@nmhd}}>
+127.0.0.2 +	<${lookup {127.0.0.2}	nmh,add {@nmhd}}>
+127.0.0.2 ?	<${lookup {127.0.0.2}	nmh     {@nmhd}}>
+named table
+127.0.0.2	<${lookup {127.0.0.2}	nmh,table=B {@nmhd} {$value}{nope}}>
+10.0.0.1	<${lookup {10.0.0.1}	nmh	{@nmhd}}>
+****
+#
+#
+#
+# should accept
+exim -bh 10.0.0.1
+helo test
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+# should reject
+exim -bh 11.0.0.1
+helo test
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+# should accept
+exim -bh 2001:0db8::1
+helo test
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+# should reject
+exim -bh 2002:0db8::1
+helo test
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+#
+killdaemon
+#
+# Daemon not present; expect DEFER
+#exim -d-all+lookup+expand -be
+exim -be
+no-daemon	<${lookup {127.0.0.2}	nmh {@nmhd}}>
+****
+#
+#
+#
+#
+### start a db server, UDP mode
+echo Starting DB server
+background
+DIR/bin.sys/nmhd -p PORT_D
+****
+#
+# No data in DB so expect empty expansion result
+#exim -d-all+lookup+expand -be
+exim -be
+127.0.0.2	<${lookup {127.0.0.2}	nmh,port=PORT_D {127.0.0.1}}>
+****
+#
+killdaemon

@@ -1,0 +1,122 @@
+### start a db server
+### Populated DB
+### Read back DB default table
+### Read back DB relay_hosts table
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
+>>> test in helo_lookup_domains? no (end of list)
+>>> using ACL "check_recipient"
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 18)
+>>> check hosts = +relay_hosts
+>>> host in "+relay_hosts"?
+>>>  list element: +relay_hosts
+>>>   start sublist relay_hosts
+>>>    host in "net-nmh,table=relay_hosts;@nmhd"?
+>>>    ╎list element: net-nmh,table=relay_hosts;@nmhd
+>>>    ╎host in "net-nmh,table=relay_hosts;@nmhd"? yes (matched "net-nmh,table=relay_hosts;@nmhd")
+>>>   end sublist relay_hosts
+>>>  data from lookup saved for cache for +relay_hosts: key '10.0.0.1' value 'yes'
+>>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
+>>> test in helo_lookup_domains? no (end of list)
+>>> using ACL "check_recipient"
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 18)
+>>> check hosts = +relay_hosts
+>>> host in "+relay_hosts"?
+>>>  list element: +relay_hosts
+>>>   start sublist relay_hosts
+>>>    host in "net-nmh,table=relay_hosts;@nmhd"?
+>>>    ╎list element: net-nmh,table=relay_hosts;@nmhd
+>>>    host in "net-nmh,table=relay_hosts;@nmhd"? no (end of list)
+>>>   end sublist relay_hosts
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 19)
+>>>   message: relay not permitted
+>>> deny: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: DENY
+LOG: H=(test) [11.0.0.1] F=<a@b> rejected RCPT <c@d>: relay not permitted
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
+>>> test in helo_lookup_domains? no (end of list)
+>>> using ACL "check_recipient"
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 18)
+>>> check hosts = +relay_hosts
+>>> host in "+relay_hosts"?
+>>>  list element: +relay_hosts
+>>>   start sublist relay_hosts
+>>>    host in "net-nmh,table=relay_hosts;@nmhd"?
+>>>    ╎list element: net-nmh,table=relay_hosts;@nmhd
+>>>    ╎host in "net-nmh,table=relay_hosts;@nmhd"? yes (matched "net-nmh,table=relay_hosts;@nmhd")
+>>>   end sublist relay_hosts
+>>>  data from lookup saved for cache for +relay_hosts: key '2001:db8::1' value 'yes'
+>>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
+>>> test in helo_lookup_domains? no (end of list)
+>>> using ACL "check_recipient"
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 18)
+>>> check hosts = +relay_hosts
+>>> host in "+relay_hosts"?
+>>>  list element: +relay_hosts
+>>>   start sublist relay_hosts
+>>>    host in "net-nmh,table=relay_hosts;@nmhd"?
+>>>    ╎list element: net-nmh,table=relay_hosts;@nmhd
+>>>    host in "net-nmh,table=relay_hosts;@nmhd"? no (end of list)
+>>>   end sublist relay_hosts
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 19)
+>>>   message: relay not permitted
+>>> deny: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: DENY
+LOG: H=(test) [2002:db8::1] F=<a@b> rejected RCPT <c@d>: relay not permitted
+### start a db server, UDP mode
+
+******** SERVER ********
+### start a db server
+### Populated DB
+### Read back DB default table
+### Read back DB relay_hosts table
+### start a db server, UDP mode

@@ -29,7 +29,7 @@ binaries:	$(BINARIES)
 
 sysbinaries:	FORCE binaries
 		rm -f bin.sys/*
-		bin/locate initdb postgres pg_ctl psql mysqld mysql
+		bin/locate initdb postgres pg_ctl psql mysqld mysql nmhd nmhctl
 		ls -la bin.sys
 
 # Compile and link the programs:
