@@ -626,9 +626,9 @@ sel2._domainkey TXT "v=spf1 mx a include:spf.nl2go.com -all"
 sel2._domainkey TXT "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB"
 
 ; EC signing, using Ed25519
-; - needs GnuTLS 3.6.0 (fedora rawhide has that)
-;           certtool --generate-privkey --key-type=ed25519 --outfile=dkim_ed25519.private
-;	    certtool --load_privkey=dkim_ed25519.private --pubkey_info --outder | tail -c +13 | base64
+;         openssl genpkey -algorithm ED25519 >dkim_ed25519.private
+;         openssl ec -in dkim_ed25519.private -pubout
+;	 (and grab the b64 content from between the pem headers)
 
 sed._domainkey TXT "v=DKIM1; k=ed25519; p=sPs07Vu29FpHT/80UXUcYHFOHifD4o2ZlP2+XUh9g6E="
 
