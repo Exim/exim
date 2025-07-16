@@ -626,14 +626,14 @@ sel2._domainkey TXT "v=spf1 mx a include:spf.nl2go.com -all"
 sel2._domainkey TXT "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB"
 
 ; EC signing, using Ed25519
-;         openssl genpkey -algorithm ED25519 >dkim_ed25519.private
+;         openssl genpkey -algorithm ED25519 >dkim_ed25519.private	#gitleaks:allow
 ;         openssl ec -in dkim_ed25519.private -pubout
 ;	 (and grab the b64 content from between the pem headers)
 
 sed._domainkey TXT "v=DKIM1; k=ed25519; p=sPs07Vu29FpHT/80UXUcYHFOHifD4o2ZlP2+XUh9g6E="
 
 ; version of the above wrapped in SubjectPublicKeyInfo, in case the WG plumps in that direction
-;	certtool --load_privkey=aux-fixed/dkim/dkim_ed25519.private --pubkey_info
+;	certtool --load_privkey=aux-fixed/dkim/dkim_ed25519.private --pubkey_info #gitleaks:allow
 ;	 (and grab the b64 content from between the pem headers)
 
 sedw._domainkey TXT "v=DKIM1; k=ed25519; p=MCowBQYDK2VwAyEAsPs07Vu29FpHT/80UXUcYHFOHifD4o2ZlP2+XUh9g6E="
