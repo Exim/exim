@@ -857,6 +857,18 @@ _exit(rc);
 static void
 exim_fail(const char * fmt, ...)
 {
+gstring * g;
+va_list ap;
+va_start(ap, fmt);
+g = string_vformat(NULL, SVFMT_EXTEND|SVFMT_REBUFFER, fmt, ap);
+va_end(ap);
+fprintf(stderr, "exim: %.*s\n", (int)gstring_length(g), string_from_gstring(g));
+exit(EXIT_FAILURE);
+}
+
+static void
+exim_fail_0(const char * fmt, ...)
+{
 va_list ap;
 va_start(ap, fmt);
 vfprintf(stderr, fmt, ap);
@@ -880,7 +892,7 @@ static inline const uschar *
 exim_str_fail_toolong(const uschar * item, int maxlen, const char * description)
 {
 if (!item)
-  exim_fail("exim: bad item for: %s\n", description);
+  exim_fail("bad item for: %s", description);
 exim_len_fail_toolong(Ustrlen(item), maxlen, description);
 return item;
 }
@@ -932,7 +944,7 @@ static const uschar *
 next_argv(const uschar ** argv, int * pi, int argc, const uschar * where)
 {
 int i = *pi;
-if (++i >= argc) exim_fail("exim: bad item for: %s\n", where);
+if (++i >= argc) exim_fail("bad item for: %s", where);
 return argv[*pi = i];
 }
 
@@ -957,7 +969,7 @@ check_port(uschar *address)
 {
 int port = host_address_extract_port(address);
 if (string_is_ip_address(address, NULL) == 0)
-  exim_fail("exim abandoned: \"%s\" is not an IP address\n", address);
+  exim_fail("%q is not an IP address", address);
 return port;
 }
 
@@ -1712,12 +1724,12 @@ exim_usage(const uschar * progname)
 
 /* Handle specific program invocation variants */
 if (Ustrcmp(progname, US"-mailq") == 0)
-  exim_fail(
+  exim_fail_0(
     "mailq - list the contents of the mail queue\n\n"
     "For a list of options, see the Exim documentation.\n");
 
 /* Generic usage - we output this whatever happens */
-exim_fail(
+exim_fail_0(
   "Exim is a Mail Transfer Agent. It is normally called by Mail User Agents,\n"
   "not directly from a shell command line. Options and/or arguments control\n"
   "what it does when called. For a list of options, see the Exim documentation.\n");
@@ -2023,7 +2035,7 @@ This is a feature to make the lives of binary distributors easier. */
 if (route_finduser(US EXIM_USERNAME, &pw, &exim_uid))
   {
   if (exim_uid == 0)
-    exim_fail("exim: refusing to run with uid 0 for \"%s\"\n", EXIM_USERNAME);
+    exim_fail("refusing to run with uid 0 for %q", EXIM_USERNAME);
 
   /* If ref:name uses a number as the name, route_finduser() returns
   TRUE with exim_uid set and pw coerced to NULL. */
@@ -2031,24 +2043,23 @@ if (route_finduser(US EXIM_USERNAME, &pw, &exim_uid))
     exim_gid = pw->pw_gid;
 #ifndef EXIM_GROUPNAME
   else
-    exim_fail(
+    exim_fail_0(
         "exim: ref:name should specify a usercode, not a group.\n"
         "exim: can't let you get away with it unless you also specify a group.\n");
 #endif
   }
 else
-  exim_fail("exim: failed to find uid for user name \"%s\"\n", EXIM_USERNAME);
+  exim_fail("failed to find uid for user name %q", EXIM_USERNAME);
 #endif
 
 #ifdef EXIM_GROUPNAME
 if (!route_findgroup(US EXIM_GROUPNAME, &exim_gid))
-  exim_fail("exim: failed to find gid for group name \"%s\"\n", EXIM_GROUPNAME);
+  exim_fail("failed to find gid for group name %q", EXIM_GROUPNAME);
 #endif
 
 #ifdef CONFIGURE_OWNERNAME
 if (!route_finduser(US CONFIGURE_OWNERNAME, NULL, &config_uid))
-  exim_fail("exim: failed to find uid for user name \"%s\"\n",
-    CONFIGURE_OWNERNAME);
+  exim_fail("failed to find uid for user name %q", CONFIGURE_OWNERNAME);
 #endif
 
 /* We default the system_filter_user to be the Exim run-time user, as a
@@ -2057,8 +2068,7 @@ system_filter_uid = exim_uid;
 
 #ifdef CONFIGURE_GROUPNAME
 if (!route_findgroup(US CONFIGURE_GROUPNAME, &config_gid))
-  exim_fail("exim: failed to find gid for group name \"%s\"\n",
-    CONFIGURE_GROUPNAME);
+  exim_fail("failed to find gid for group name %q", CONFIGURE_GROUPNAME);
 #endif
 
 /* In the Cygwin environment, some initialization used to need doing.
@@ -2078,7 +2088,7 @@ if (f.running_in_test_harness)
   debug_store = TRUE;
 
 /* Protect against abusive argv[0] */
-if (!argv[0] || !argc) exim_fail("exim: executable name required\n");
+if (!argv[0] || !argc) exim_fail("executable name required");
 exim_str_fail_toolong(argv[0], PATH_MAX, "argv[0]");
 
 /* The C standard says that the equivalent of setlocale(LC_ALL, "C") is obeyed
@@ -2102,7 +2112,7 @@ os_non_restarting_signal(SIGALRM, sigalrm_handler);
 because store_malloc writes a log entry on failure. */
 
 if (!(log_buffer = US malloc(LOG_BUFFER_SIZE)))
-  exim_fail("exim: failed to get store for log buffer\n");
+  exim_fail("failed to get store for log buffer");
 
 /* Initialize the default log options. */
 
@@ -2305,11 +2315,9 @@ real_gid = getgid();
 if (real_uid == root_uid)
   {
   if ((rv = setgid(real_gid)))
-    exim_fail("exim: setgid(%ld) failed: %s\n",
-        (long int)real_gid, strerror(errno));
+    exim_fail("setgid(%ld) failed: %s", (long int)real_gid, strerror(errno));
   if ((rv = setuid(real_uid)))
-    exim_fail("exim: setuid(%ld) failed: %s\n",
-        (long int)real_uid, strerror(errno));
+    exim_fail("setuid(%ld) failed: %s", (long int)real_uid, strerror(errno));
   }
 
 /* If neither the original real uid nor the original euid was root, Exim is
@@ -2439,7 +2447,7 @@ on the second character (the one after '-'), to save some effort. */
 	  i++;
 	  }
 	else
-	  exim_fail("exim: host and domainlist expected after %s\n", argv[i]);
+	  exim_fail("host and domainlist expected after %s", argv[i]);
       else badarg = TRUE;
       break;
 
@@ -2485,7 +2493,7 @@ on the second character (the one after '-'), to save some effort. */
 	  filter_test |= checking = FTEST_SYSTEM;
 	  if (*argrest) badarg = TRUE;
 	  else if (++i < argc) filter_test_sfile = argv[i];
-	  else exim_fail("exim: file name expected after %s\n", argv[i-1]);
+	  else exim_fail("file name expected after %s", argv[i-1]);
 	  break;
 
 	/* -bf:  Run user filter test
@@ -2499,12 +2507,12 @@ on the second character (the one after '-'), to save some effort. */
 	    {
 	    filter_test |= checking = FTEST_USER;
 	    if (++i < argc) filter_test_ufile = argv[i];
-	    else exim_fail("exim: file name expected after %s\n", argv[i-1]);
+	    else exim_fail("file name expected after %s", argv[i-1]);
 	    }
 	  else
 	    {
 	    if (++i >= argc)
-	      exim_fail("exim: string expected after %s\n", arg);
+	      exim_fail("string expected after %s", arg);
 	    if (Ustrcmp(argrest, "d") == 0) ftest_domain = exim_str_fail_toolong(argv[i], EXIM_DOMAINNAME_MAX, "-bfd");
 	    else if (Ustrcmp(argrest, "l") == 0) ftest_localpart = exim_str_fail_toolong(argv[i], EXIM_LOCALPART_MAX, "-bfl");
 	    else if (Ustrcmp(argrest, "p") == 0) ftest_prefix = exim_str_fail_toolong(argv[i], EXIM_LOCALPART_MAX, "-bfp");
@@ -2726,7 +2734,7 @@ on the second character (the one after '-'), to save some effort. */
 	  f.background_daemon = FALSE;
 	  if (*argrest)
 	    if ((inetd_wait_timeout = readconf_readtime(argrest, 0, FALSE)) <= 0)
-	      exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
+	      exim_fail("bad time value %s: abandoned", argv[i]);
 	  break;
 
 	default:
@@ -2858,7 +2866,7 @@ on the second character (the one after '-'), to save some effort. */
 
     case 'D':
 #ifdef DISABLE_D_OPTION
-      exim_fail("exim: -D is not available in this Exim binary\n");
+      exim_fail("-D is not available in this Exim binary");
 #else
       {
       int ptr = 0;
@@ -2870,8 +2878,7 @@ on the second character (the one after '-'), to save some effort. */
       Uskip_whitespace(&s);
 
       if (*s < 'A' || *s > 'Z')
-        exim_fail("exim: macro name set by -D must start with "
-          "an upper case letter\n");
+        exim_fail("macro name set by -D must start with an upper case letter");
 
       while (isalnum(*s) || *s == '_')
         {
@@ -2888,12 +2895,12 @@ on the second character (the one after '-'), to save some effort. */
 
       for (m = macros_user; m; m = m->next)
         if (Ustrcmp(m->name, name) == 0)
-          exim_fail("exim: duplicated -D in command line\n");
+          exim_fail("duplicated -D in command line");
 
       m = macro_create(name, s, TRUE);
 
       if (clmacro_count >= MAX_CLMACROS)
-        exim_fail("exim: too many -D options on command line\n");
+        exim_fail("too many -D options on command line");
       clmacros[clmacro_count++] =
 	string_sprintf("-D%s=%s", m->name, m->replacement);
       }
@@ -3034,7 +3041,7 @@ on the second character (the one after '-'), to save some effort. */
 #endif
         if (!(sender_address = parse_extract_address(argrest, &errmess,
 		  &dummy_start, &dummy_end, &sender_address_domain, TRUE)))
-          exim_fail("exim: bad -f address \"%s\": %s\n", argrest, errmess);
+          exim_fail("bad -f address %q: %s", argrest, errmess);
 
 	sender_address = string_copy_taint(sender_address, GET_TAINTED);
 #ifdef SUPPORT_I18N
@@ -3083,9 +3090,9 @@ on the second character (the one after '-'), to save some effort. */
     if (!*argrest)
       if (++i < argc) argrest = argv[i]; else { badarg = TRUE; break; }
     if ((sz = Ustrlen(argrest)) > 32)
-      exim_fail("exim: the -L syslog name is too long: \"%s\"\n", argrest);
+      exim_fail("the -L syslog name is too long: %q", argrest);
     if (sz < 1)
-      exim_fail("exim: the -L syslog name is too short\n");
+      exim_fail("the -L syslog name is too short");
     cmdline_syslog_name = string_copy_taint(argrest, GET_TAINTED);
     break;
 
@@ -3111,10 +3118,10 @@ on the second character (the one after '-'), to save some effort. */
       EXIM_SOCKLEN_T size = sizeof(tmp_sock);
 
       if (argc != i + 7)
-        exim_fail("exim: too many or too few arguments after -MC\n");
+        exim_fail("too many or too few arguments after -MC");
 
       if (msg_action_arg >= 0)
-        exim_fail("exim: incompatible arguments\n");
+        exim_fail("incompatible arguments");
 
       continue_transport = string_copy_taint(
 	exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-C internal transport"),
@@ -3134,8 +3141,7 @@ on the second character (the one after '-'), to save some effort. */
       queue_run_pipe = passed_qr_pipe;
 
       if (!mac_ismsgid(argv[i]))
-        exim_fail("exim: malformed message id %s after -MC option\n",
-          argv[i]);
+        exim_fail("malformed message id %s after -MC option", argv[i]);
 
       /* Set $sending_ip_address, $sending_port unless proxied */
 /*XXX how does it work when proxied? */
@@ -3144,7 +3150,7 @@ on the second character (the one after '-'), to save some effort. */
 	if (getsockname(0, (struct sockaddr *)(&tmp_sock), &size) == 0)
 	  sending_ip_address = host_ntoa(-1, &tmp_sock, NULL, &sending_port);
 	else
-	  exim_fail("exim: getsockname() failed after -MC option: %s\n",
+	  exim_fail("getsockname() failed after -MC option: %s",
 	    strerror(errno));
 
       testharness_pause_ms(500);
@@ -3385,15 +3391,14 @@ on the second character (the one after '-'), to save some effort. */
 
     msg_action_arg = i + 1;
     if (msg_action_arg >= argc)
-      exim_fail("exim: no message ids given after %s option\n", arg);
+      exim_fail("no message ids given after %s option", arg);
 
     /* Some require only message ids to follow */
 
     if (!one_msg_action)
       {
       for (int j = msg_action_arg; j < argc; j++) if (!mac_ismsgid(argv[j]))
-        exim_fail("exim: malformed message id %s after %s option\n",
-          argv[j], arg);
+        exim_fail("malformed message id %s after %s option", argv[j], arg);
       goto END_ARG;   /* Remaining args are ids */
       }
 
@@ -3403,7 +3408,7 @@ on the second character (the one after '-'), to save some effort. */
     else
       {
       if (!mac_ismsgid(argv[msg_action_arg]))
-        exim_fail("exim: malformed message id %s after %s option\n",
+        exim_fail("malformed message id %s after %s option",
           argv[msg_action_arg], arg);
       i++;
       }
@@ -3447,7 +3452,7 @@ on the second character (the one after '-'), to save some effort. */
     case 'O':
     if (!*argrest)
       if (++i >= argc)
-        exim_fail("exim: string expected after -O\n");
+        exim_fail("string expected after -O");
     break;
 
     case 'o':
@@ -3458,7 +3463,7 @@ on the second character (the one after '-'), to save some effort. */
       case 'A':
 	if (!*(alias_arg = argrest))
 	  if (i+1 < argc) alias_arg = argv[++i];
-	  else exim_fail("exim: string expected after -oA\n");
+	  else exim_fail("string expected after -oA");
 	break;
 
       /* -oB: Set a connection message max value for remote deliveries */
@@ -3477,7 +3482,7 @@ on the second character (the one after '-'), to save some effort. */
 	if (p)
 	  {
 	  if (!isdigit(*p))
-	    exim_fail("exim: number expected after -oB\n");
+	    exim_fail("number expected after -oB");
 	  connection_max_messages = Uatoi(p);
 	  }
 	}
@@ -3549,7 +3554,7 @@ on the second character (the one after '-'), to save some effort. */
       case 'M':
 	{
 	if (i+1 >= argc)
-	  exim_fail("exim: data expected after -oM%s\n", argrest);
+	  exim_fail("data expected after -oM%s", argrest);
 
 	/* -oMa: Set sender host address */
 
@@ -3591,9 +3596,9 @@ on the second character (the one after '-'), to save some effort. */
 	else if (Ustrcmp(argrest, "m") == 0)
 	  {
 	  if (!mac_ismsgid(argv[i+1]))
-	      exim_fail("-oMm must be a valid message ID\n");
+	      exim_fail("-oMm must be a valid message ID");
 	  if (!f.trusted_config)
-	      exim_fail("-oMm must be called by a trusted user/config\n");
+	      exim_fail("-oMm must be called by a trusted user/config");
 	    message_reference = next_argv(argv, &i, argc, arg);
 	  }
 
@@ -3602,7 +3607,7 @@ on the second character (the one after '-'), to save some effort. */
 	else if (Ustrcmp(argrest, "r") == 0)
 
 	  if (received_protocol)
-	    exim_fail("received_protocol is set already\n");
+	    exim_fail("received_protocol is set already");
 	  else
 	    if (++i >= argc) badarg = TRUE;
 	    else
@@ -3654,8 +3659,8 @@ on the second character (the one after '-'), to save some effort. */
 
       case 'P':
 	if (!f.running_in_test_harness && real_uid != root_uid && real_uid != exim_uid)
-	  exim_fail("exim: only uid=%d or uid=%d can use -oP and -oPX "
-                    "(uid=%d euid=%d | %d)\n",
+	  exim_fail("only uid=%d or uid=%d can use -oP and -oPX "
+                    "(uid=%d euid=%d | %d)",
                     root_uid, exim_uid, getuid(), geteuid(), real_uid);
 	if (!*argrest)
 	  if (++i < argc) override_pid_file_path = argv[i];
@@ -3679,7 +3684,7 @@ on the second character (the one after '-'), to save some effort. */
 	  *tp = readconf_readtime(argv[++i], 0, FALSE);
 
 	if (*tp < 0)
-	  exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
+	  exim_fail("bad time value %s: abandoned", argv[i]);
 	}
 	break;
 
@@ -3734,7 +3739,7 @@ on the second character (the one after '-'), to save some effort. */
       const uschar * hn = Ustrchr(argrest, ':');
 
       if (received_protocol)
-        exim_fail("received_protocol is set already\n");
+        exim_fail("received_protocol is set already");
 
       if (!hn)
         received_protocol = string_copy_taint(
@@ -3821,12 +3826,12 @@ on the second character (the one after '-'), to save some effort. */
 	  else s = argv[i];
 
 	  if ((intvl = readconf_readtime(s, 0, FALSE)) <= 0)
-	    exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
+	    exim_fail("bad time value %s: abandoned", argv[i]);
 
 	  for (qrunner * qq = qrunners; qq; qq = qq->next)
 	    if (  queue_name && qq->name && Ustrcmp(queue_name, qq->name) == 0
 	       || !queue_name && !qq->name)
-	      exim_fail("exim: queue-runner specified more than once\n");
+	      exim_fail("queue-runner specified more than once");
 
 	  q = alloc_qrunner();
 	  q->interval = intvl;
@@ -3889,7 +3894,7 @@ on the second character (the one after '-'), to save some effort. */
       else if (i+1 < argc)
 	tainted_selectstr = argv[++i];
       else
-	exim_fail("exim: string expected after %s\n", switchchar == 'R' ? "-R" : "-S");
+	exim_fail("string expected after %s", switchchar == 'R' ? "-R" : "-S");
 
       s = string_copy_taint(
 	exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-R"),
@@ -3981,7 +3986,7 @@ on the second character (the one after '-'), to save some effort. */
     case 'X':
     if (!*argrest)
       if (++i >= argc)
-        exim_fail("exim: string expected after -X\n");
+        exim_fail("string expected after -X");
     break;
 
     /* -z: a line of text to log */
@@ -3993,7 +3998,7 @@ on the second character (the one after '-'), to save some effort. */
 	  exim_str_fail_toolong(argv[i], 2048, "-z logtext"),
 	  GET_TAINTED);
       else
-        exim_fail("exim: file name expected after %s\n", argv[i-1]);
+        exim_fail("file name expected after %s", argv[i-1]);
     break;
 
     /* All other initial characters are errors */
@@ -4006,8 +4011,7 @@ on the second character (the one after '-'), to save some effort. */
   /* Failed to recognize the option, or syntax error */
 
   if (badarg)
-    exim_fail("exim abandoned: unknown, malformed, or incomplete "
-      "option %s\n", arg);
+    exim_fail("unknown, malformed, or incomplete option %s\n", arg);
   }
 
 
@@ -4066,7 +4070,7 @@ if (	 (smtp_input || extract_recipients || recipients_arg < argc)
 	 */
 	 )
    )
-  exim_fail("exim: incompatible command-line options or arguments\n");
+  exim_fail("incompatible command-line options or arguments");
 
 /* If debugging is set up, set the file and the file descriptor to pass on to
 child processes. It should, of course, be 2 for stderr. Also, force the daemon
@@ -4164,7 +4168,7 @@ till after reading the config, which might specify the exim gid. Therefore,
 save the group list here first. */
 
 if ((group_count = getgroups(nelem(group_list), group_list)) < 0)
-  exim_fail("exim: getgroups() failed: %s\n", strerror(errno));
+  exim_fail("getgroups() failed: %s", strerror(errno));
 
 /* There is a fundamental difference in some BSD systems in the matter of
 groups. FreeBSD and BSDI are known to be different; NetBSD and OpenBSD are
@@ -4192,7 +4196,7 @@ if (  !unprivileged
    && setgroups(0, NULL) != 0
 #endif
    && setgroups(1, group_list) != 0)
-  exim_fail("exim: setgroups() failed: %s\n", strerror(errno));
+  exim_fail("setgroups() failed: %s", strerror(errno));
 
 /* If the configuration file name has been altered by an argument on the
 command line (either a new file name or a macro definition) and the caller is
@@ -4252,13 +4256,11 @@ setups and reading the message. */
 
 if (filter_test & FTEST_SYSTEM)
   if ((filter_sfd = Uopen(filter_test_sfile, O_RDONLY, 0)) < 0)
-    exim_fail("exim: failed to open %s: %s\n", filter_test_sfile,
-      strerror(errno));
+    exim_fail("failed to open %s: %s", filter_test_sfile, strerror(errno));
 
 if (filter_test & FTEST_USER)
   if ((filter_ufd = Uopen(filter_test_ufile, O_RDONLY, 0)) < 0)
-    exim_fail("exim: failed to open %s: %s\n", filter_test_ufile,
-      strerror(errno));
+    exim_fail("failed to open %s: %s", filter_test_ufile, strerror(errno));
 
 /* Initialise lookup_list
 If debugging, already called above via version reporting.
@@ -4289,10 +4291,10 @@ during readconf_main() some expansion takes place already. */
 dir has already been unlinked. */
 initial_cwd = os_getcwd(NULL, 0);
 if (!initial_cwd && errno)
-  exim_fail("exim: getting initial cwd failed: %s\n", strerror(errno));
+  exim_fail("getting initial cwd failed: %s", strerror(errno));
 
 if (initial_cwd && (strlen(CCS initial_cwd) >= BIG_BUFFER_SIZE))
-  exim_fail("exim: initial cwd is far too long (%d)\n", Ustrlen(CCS initial_cwd));
+  exim_fail("initial cwd is far too long (%d)", Ustrlen(CCS initial_cwd));
 
 /* checking:
     -be[m] expansion test        -
@@ -4378,7 +4380,7 @@ else
 options become possibly impermissible, depending upon the configuration file. */
 
 if (checking && commandline_checks_require_admin && !f.admin_user)
-  exim_fail("exim: those command-line flags are set to require admin\n");
+  exim_fail("those command-line flags are set to require admin");
 
 /* Handle the decoding of logging options. */
 
@@ -4400,11 +4402,11 @@ supplied with -f. Ditto for a stripped trailing dot. */
 if (sender_address)
   {
   if (sender_address[sender_address_domain] == '[' && !allow_domain_literals)
-    exim_fail("exim: bad -f address \"%s\": domain literals not "
-      "allowed\n", sender_address);
+    exim_fail("bad -f address \"%s\": domain literals not allowed",
+      sender_address);
   if (f_end_dot && !strip_trailing_dot)
-    exim_fail("exim: bad -f address \"%s.\": domain is malformed "
-      "(trailing dot not allowed)\n", sender_address);
+    exim_fail("bad -f address \"%s.\": domain is malformed "
+      "(trailing dot not allowed)", sender_address);
   }
 
 /* See if an admin user overrode our logging. */
@@ -4417,8 +4419,7 @@ if (cmdline_syslog_name)
     }
   else
     /* not a panic, non-privileged users should not be able to spam paniclog */
-    exim_fail(
-        "exim: you lack sufficient privilege to specify syslog process name\n");
+    exim_fail("you lack sufficient privilege to specify syslog process name");
 
 /* Paranoia check of maximum lengths of certain strings. There is a check
 on the length of the log file path in log.c, which will come into effect
@@ -4564,12 +4565,12 @@ if (opt_perl_at_start && opt_perl_startup != NULL)
   typedef uschar * (*fn_t)(uschar *);
 
   if (!mi)
-    exim_fail("exim: error finding perl module: %s\n", errstr);
+    exim_fail("error finding perl module: %s", errstr);
 
   DEBUG(D_any) debug_printf("Starting Perl interpreter\n");
 
   if ((errstr = (((fn_t *) mi->functions)[PERL_STARTUP]) (opt_perl_startup)))
-    exim_fail("exim: error in perl_startup code: %s\n", errstr);
+    exim_fail("error in perl_startup code: %s", errstr);
   opt_perl_started = TRUE;
   }
 #endif /* EXIM_PERL */
@@ -4665,7 +4666,7 @@ if (bi_option)
       bi_argv[1] ? "'" : "");
 
     execv(CS bi_argv[0], (char *const *)bi_argv);
-    exim_fail("exim: exec '%s' failed: %s\n", bi_argv[0], strerror(errno));
+    exim_fail("exec '%s' failed: %s", bi_argv[0], strerror(errno));
     }
   else
     {
@@ -4699,8 +4700,7 @@ if (!f.admin_user)
      || queue_name_dest && prod_requires_admin
      || debugset && !f.running_in_test_harness
      )
-    exim_fail("exim:%s permission denied; not admin\n",
-	      debugset ? " debugging" : "");
+    exim_fail("%s permission denied; not admin", debugset ? "debugging" : "");
   }
 
 /* If the real user is not root or the exim uid, the argument for passing
@@ -4716,7 +4716,7 @@ if (  real_uid != root_uid && real_uid != exim_uid
       )  )
    && !f.running_in_test_harness
    )
-  exim_fail("exim: Permission denied; not exim user or root\n");
+  exim_fail("Permission denied; not exim user or root");
 
 /* If the caller is not trusted, certain arguments are ignored when running for
 real, but are permitted when checking things (-be, -bv, -bt, -bh, -bf, -bF).
@@ -4752,7 +4752,7 @@ if (flag_G)
     DEBUG(D_acl) debug_printf("suppress_local_fixups forced on by -G\n");
     }
   else
-    exim_fail("exim: permission denied (-G requires a trusted user)\n");
+    exim_fail("permission denied (-G requires a trusted user)");
   }
 
 /* If an SMTP message is being received check to see if the standard input is a
@@ -4787,8 +4787,7 @@ if (smtp_input)
           NULL, &sender_host_port);
         }
       else
-        exim_fail(
-          "exim: Permission denied (unprivileged user, unprivileged port)\n");
+        exim_fail("Permission denied (unprivileged user, unprivileged port)");
       }
     }
   }
@@ -4856,7 +4855,7 @@ else
   no need to complain then. */
   if (rv == -1)
     if (!(unprivileged || removed_privilege))
-      exim_fail("exim: changing group failed: %s\n", strerror(errno));
+      exim_fail("changing group failed: %s", strerror(errno));
     else
       DEBUG(D_any) debug_printf("changing group to %ld failed: %s\n",
           (long int)exim_gid, strerror(errno));
@@ -4975,9 +4974,9 @@ needed in transports so we lost the optimisation. */
 /* Handle a request to check quota */
 if (rcpt_verify_quota)
   if (real_uid != root_uid && real_uid != exim_uid)
-    exim_fail("exim: Permission denied\n");
+    exim_fail("Permission denied");
   else if (recipients_arg >= argc)
-    exim_fail("exim: missing recipient for quota check\n");
+    exim_fail("missing recipient for quota check");
   else
     {
     verify_quota(US argv[recipients_arg]);	/*XXX we lose track of const here */
@@ -5510,7 +5509,7 @@ if (expansion_test)
     {
     uschar * spoolname;
     if (!f.admin_user)
-      exim_fail("exim: permission denied\n");
+      exim_fail("permission denied");
     message_id = US exim_str_fail_toolong(argv[msg_action_arg], MESSAGE_ID_LENGTH, "message-id");
     /* Checking the length of the ID is sufficient to validate it.
     Get an untainted version so file opens can be done. */
@@ -5532,7 +5531,7 @@ if (expansion_test)
     int save_stdin = dup(0);
     int fd = Uopen(expansion_test_message, O_RDONLY, 0);
     if (fd < 0)
-      exim_fail("exim: failed to open %s: %s\n", expansion_test_message,
+      exim_fail("failed to open %q: %s", expansion_test_message,
         strerror(errno));
     (void) dup2(fd, 0);
     filter_test = FTEST_USER;      /* Fudge to make it look like filter test */
@@ -5841,7 +5840,7 @@ message! (For interactive SMTP, the check happens at MAIL FROM and an SMTP
 error code is given.) */
 
 if ((!smtp_input || smtp_batched_input) && !receive_check_fs(0))
-  exim_fail("exim: insufficient disk space\n");
+  exim_fail("insufficient disk space");
 
 /* If this is smtp input of any kind, real or batched, handle the start of the
 SMTP session.
