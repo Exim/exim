@@ -298,7 +298,7 @@ uschar * domain = NULL, * username, * password;
 if (!(username = expand_string(ob->spa_username)))
   {
   if (f.expand_string_forcedfail) return CANCELLED;
-  string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
+  string_format(buffer, buffsize, "expansion of %q failed in %s "
    "authenticator: %s", ob->spa_username, auname,
    expand_string_message);
   return ERROR;
@@ -307,7 +307,7 @@ if (!(username = expand_string(ob->spa_username)))
 if (!(password = expand_string(ob->spa_password)))
   {
   if (f.expand_string_forcedfail) return CANCELLED;
-  string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
+  string_format(buffer, buffsize, "expansion of %q failed in %s "
    "authenticator: %s", ob->spa_password, auname,
    expand_string_message);
   return ERROR;
@@ -317,7 +317,7 @@ if (ob->spa_domain)
   if (!(domain = expand_string(ob->spa_domain)))
     {
     if (f.expand_string_forcedfail) return CANCELLED;
-    string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
+    string_format(buffer, buffsize, "expansion of %q failed in %s "
 		  "authenticator: %s", ob->spa_domain, auname,
 		  expand_string_message);
     return ERROR;

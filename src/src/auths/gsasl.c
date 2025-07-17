@@ -214,7 +214,7 @@ HDEBUG(D_auth) if (!once)
 
 if (!gsasl_client_support_p(gsasl_ctx, CCS ob->server_mech))
   log_write_die(0, LOG_CONFIG_FOR, "%s authenticator:  "
-	    "GNU SASL does not support mechanism \"%s\"",
+	    "GNU SASL does not support mechanism %q",
 	    a->name, ob->server_mech);
 
 if (ablock->server_condition)

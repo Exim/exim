@@ -31,7 +31,7 @@ routing userx@test.ex
    ╎   ╎search_find: file="NULL"
    ╎   ╎  key="defer" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎   ╎LRU list:
-   ╎   ╎internal_search_find: file="NULL"
+   ╎   ╎internal_search_find: file=<NULL>
    ╎   ╎  type=testdb key="defer" opts=NULL
    ╎   ╎database lookup required for defer
    ╎   ╎testdb lookup forced DEFER

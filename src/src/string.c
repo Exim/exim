@@ -322,7 +322,9 @@ macro string_printing(), which sets flags to 0.
 
 Arguments:
   s             the input string
-  flags		Bit 0: convert tabs.  Bit 1: convert spaces.
+  flags		Bit 0: convert tabs.
+		Bit 1: convert spaces.
+		Bit 2: convert doublequotes.
 
 Returns:        string with non-printers encoded as printing sequences
 */
@@ -341,6 +343,7 @@ while (*t)
   if (  !mac_isprint(c)
      || flags & SP_TAB && c == '\t'
      || flags & SP_SPACE && c == ' '
+     || flags & SP_DQUOTES && c == '"'
      ) nonprintcount++;
   length++;
   }
@@ -360,6 +363,7 @@ for (t = s; *t; )
   if (  mac_isprint(c)
      && (!(flags & SP_TAB) || c != '\t')
      && (!(flags & SP_SPACE) || c != ' ')
+     && (!(flags & SP_DQUOTES) || c != '"')
      )
     *tt++ = *t++;
   else
@@ -373,6 +377,7 @@ for (t = s; *t; )
       case '\v': *tt++ = 'v'; break;
       case '\f': *tt++ = 'f'; break;
       case '\t': *tt++ = 't'; break;
+      case '"':  *tt++ = '"'; break;
       default: sprintf(CS tt, "%03o", *t); tt += 3; break;
       }
     t++;
@@ -1390,7 +1395,7 @@ Left-alignment:		-: only for s D H M S T Y V W Z b
 Field width:		decimal digits, or *
 Precision:		dot, followed by decimal digits or *
 Length modifiers:	h  L  l  ll  z
-Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M H Z b
+Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M H Z b q
 
 Returns the possibly-new (if copy for growth or taint-handling was needed)
 string, not nul-terminated.
@@ -1599,7 +1604,7 @@ while (*fp)
 
     /* String types */
 
-    case '%':
+    case '%':			/* a literal '%' */
       if ((need = g->ptr + 1) > lim)
 	{
 	if (!(flags & SVFMT_EXTEND || need >= size_limit)) return NULL;
@@ -1609,7 +1614,7 @@ while (*fp)
       g->s[g->ptr++] = (uschar) '%';
       break;
 
-    case 'c':
+    case 'c':			/* a char */
       if ((need = g->ptr + 1) > lim)
 	{
 	if (!(flags & SVFMT_EXTEND || need >= size_limit)) return NULL;
@@ -1725,36 +1730,36 @@ while (*fp)
       goto INSERT_GSTRING;
 
     case 'Z':			/* pdkim-style "quoteprint" */
-	{
-	gstring * zg = NULL;
-	int p = precision;	/* If given, we can handle embedded NULs */
+      {
+      gstring * zg = NULL;
+      int p = precision;	/* If given, we can handle embedded NULs */
 
-	s = va_arg(ap, char *);
-	for ( ; precision >= 0 || *s; s++)
-	  if (p >= 0 && --p < 0)
-	    break;
-	  else switch (*s)
+      s = va_arg(ap, char *);
+      for ( ; precision >= 0 || *s; s++)
+	if (p >= 0 && --p < 0)
+	  break;
+	else switch (*s)
+	  {
+	  case ' ' : zg = string_catn(zg, US"{SP}", 4); break;
+	  case '\t': zg = string_catn(zg, US"{TB}", 4); break;
+	  case '\r': zg = string_catn(zg, US"{CR}", 4); break;
+	  case '\n': zg = string_catn(zg, US"{LF}", 4); break;
+	  case '{' : zg = string_catn(zg, US"{BO}", 4); break;
+	  case '}' : zg = string_catn(zg, US"{BC}", 4); break;
+	  default:
 	    {
-	    case ' ' : zg = string_catn(zg, US"{SP}", 4); break;
-	    case '\t': zg = string_catn(zg, US"{TB}", 4); break;
-	    case '\r': zg = string_catn(zg, US"{CR}", 4); break;
-	    case '\n': zg = string_catn(zg, US"{LF}", 4); break;
-	    case '{' : zg = string_catn(zg, US"{BO}", 4); break;
-	    case '}' : zg = string_catn(zg, US"{BC}", 4); break;
-	    default:
-	      {
-	      uschar u = *s;
-	      if ( (u < 32) || (u > 127) )
-		zg = string_fmt_append(zg, "{%02x}", u);
-	      else
-		zg = string_catn(zg, US s, 1);
-	      break;
-	      }
+	    uschar u = *s;
+	    if ( (u < 32) || (u > 127) )
+	      zg = string_fmt_append(zg, "{%02x}", u);
+	    else
+	      zg = string_catn(zg, US s, 1);
+	    break;
 	    }
-	if (zg) { s = CS zg->s; precision = slen = gstring_length(zg); }
-	else    { s = "";	slen = 0; }
-	}
+	  }
+      if (zg) { s = CS zg->s; precision = slen = gstring_length(zg); }
+      else    { s = "";	slen = 0; }
       goto INSERT_GSTRING;
+      }
 
     case 'H':			/* pdkim-style "hexprint" */
       {
@@ -1776,6 +1781,18 @@ while (*fp)
       else
 	{ s = "<NULL>"; precision = slen = 6; }
       }
+      goto INSERT_GSTRING;
+
+    case 'q':			/* string, to be wrapped in "" and with tab & " escaped */
+      if ((s = va_arg(ap, char *)))
+	{
+	gstring * zg = string_catn(NULL, US"\"", 1);
+	zg = string_cat(zg, string_printing2(US s, SP_TAB | SP_DQUOTES));
+	zg = string_catn(zg, US"\"", 1);
+	s = CS zg->s; precision = slen = gstring_length(zg);
+	}
+      else
+	{ s = "<NULL>"; precision = slen = 6; }
       goto INSERT_GSTRING;
 
 #endif
@@ -1861,7 +1878,7 @@ while (*fp)
       strncpy(newformat, item_start, fp - item_start);
       newformat[fp-item_start] = 0;
       log_write_die(0, LOG_MAIN, "string_format: unsupported type "
-	"in \"%s\" in \"%s\"", newformat, format);
+	"in %q in %q", newformat, format);
       break;
     }
   }

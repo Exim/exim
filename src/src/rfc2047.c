@@ -234,7 +234,7 @@ while (mimeword)
   *q1 = 0;
   if (target && strcmpic(target, mimeword+2) != 0)
     if ((icd = iconv_open(CS target, CS(mimeword+2))) == (iconv_t)-1)
-      *error = string_sprintf("iconv_open(\"%s\", \"%s\") failed: %s%s",
+      *error = string_sprintf("iconv_open(%q, %q) failed: %s%s",
         target, mimeword+2, strerror(errno),
         (errno == EINVAL)? " (maybe unsupported conversion)" : "");
   *q1 = '?';

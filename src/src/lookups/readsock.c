@@ -59,7 +59,7 @@ if (Ustrncmp(sspec, "inet:", 5) == 0)
     struct servent *service_info = getservbyname(CS port_name, "tcp");
     if (!service_info)
       {
-      expand_string_message = string_sprintf("unknown port \"%s\"",
+      expand_string_message = string_sprintf("unknown port %q",
 	port_name);
       return FAIL;
       }
@@ -177,7 +177,7 @@ gstring * yield;
 int ret = DEFER;
 
 DEBUG(D_lookup)
-  debug_printf_indent("readsock: file=\"%s\" key=\"%s\" len=%d opts=\"%s\"\n",
+  debug_printf_indent("readsock: file=%q key=%q len=%d opts=%q\n",
     filename, keystring, length, opts);
 
 /* Parse options */

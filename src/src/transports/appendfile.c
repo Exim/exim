@@ -210,8 +210,8 @@ for (int i = 0; i < 5; i++)
 
     if (!(s =  expand_string(q)))
       {
-      *errmsg = string_sprintf("Expansion of \"%s\" in %s transport failed: "
-        "%s", q, trname, expand_string_message);
+      *errmsg = string_sprintf("Expansion of %q in %s transport failed: %s",
+			      q, trname, expand_string_message);
       return f.search_find_defer ? DEFER : FAIL;
       }
 
@@ -251,7 +251,7 @@ for (int i = 0; i < 5; i++)
 
     if (*rest)
       {
-      *errmsg = string_sprintf("Malformed value \"%s\" (expansion of \"%s\") "
+      *errmsg = string_sprintf("Malformed value %q (expansion of %q) "
         "in %s transport", s, q, trname);
       return FAIL;
       }
@@ -987,7 +987,7 @@ if (deliver_dir  &&  create_file != create_anywhere)
       if (Ustrncmp(rph, big_buffer, rlen) != 0)
         {
         yield = FALSE;
-        DEBUG(D_transport) debug_printf("Real path \"%s\" does not match \"%s\"\n",
+        DEBUG(D_transport) debug_printf("Real path %q does not match %q\n",
           big_buffer, deliver_dir);
         }
       }
@@ -1248,7 +1248,7 @@ if ((ob->maildir_format || ob->mailstore_format) && !isdirectory)
 
 if (!(path = expand_string(fdname)))
   {
-  addr->message = string_sprintf("Expansion of \"%s\" (file or directory "
+  addr->message = string_sprintf("Expansion of %q (file or directory "
     "name for %s transport) failed: %s", fdname, trname,
     expand_string_message);
   goto ret_panic;
@@ -1257,7 +1257,7 @@ if (!(path = expand_string(fdname)))
 if (path[0] != '/')
   {
   addr->message = string_sprintf("appendfile: file or directory name "
-    "\"%s\" is not absolute", path);
+    "%q is not absolute", path);
   addr->basic_errno = ERRNO_NOTABSOLUTE;
   return FALSE;
   }
@@ -2065,7 +2065,7 @@ if (!isdirectory)
           {
           addr->basic_errno = ERRNO_LOCKFAILED;
           addr->message = string_sprintf("RACE CONDITION detected: "
-              "mismatch post-initial-checks between \"%s\" and opened "
+              "mismatch post-initial-checks between %q and opened "
               "fd lead us to abort!", mbx_lockname);
           goto RETURN;
           }
@@ -2244,7 +2244,7 @@ else
       {
       if (!(check_path = expand_string(ob->quota_directory)))
         {
-        addr->message = string_sprintf("Expansion of \"%s\" (quota_directory "
+        addr->message = string_sprintf("Expansion of %q (quota_directory "
          "name for %s transport) failed: %s", ob->quota_directory,
           trname, expand_string_message);
         goto ret_panic;
@@ -2253,7 +2253,7 @@ else
       if (check_path[0] != '/')
         {
         addr->message = string_sprintf("appendfile: quota_directory name "
-          "\"%s\" is not absolute", check_path);
+          "%q is not absolute", check_path);
         addr->basic_errno = ERRNO_NOTABSOLUTE;
         return FALSE;
         }
@@ -2446,7 +2446,7 @@ else
 
     if (nametag && !expand_string(nametag) && !f.expand_string_forcedfail)
       {
-      addr->message = string_sprintf("Expansion of \"%s\" (maildir_tag "
+      addr->message = string_sprintf("Expansion of %q (maildir_tag "
         "for %s transport) failed: %s", nametag, trname,
         expand_string_message);
       goto ret_panic;
@@ -2582,7 +2582,7 @@ else
         {
         if (!f.expand_string_forcedfail)
           {
-          addr->message = string_sprintf("Expansion of \"%s\" (mailstore "
+          addr->message = string_sprintf("Expansion of %q (mailstore "
             "prefix for %s transport) failed: %s", ob->mailstore_prefix,
             trname, expand_string_message);
           (void)fclose(env_file);
@@ -2611,7 +2611,7 @@ else
         {
         if (!f.expand_string_forcedfail)
           {
-          addr->message = string_sprintf("Expansion of \"%s\" (mailstore "
+          addr->message = string_sprintf("Expansion of %q (mailstore "
             "suffix for %s transport) failed: %s", ob->mailstore_suffix,
             trname, expand_string_message);
           (void)fclose(env_file);
@@ -2775,7 +2775,7 @@ if (yield == OK)
       {
       errno = ERRNO_EXPANDFAIL;
       addr->transport_return = PANIC;
-      addr->message = string_sprintf("Expansion of \"%s\" (prefix for %s "
+      addr->message = string_sprintf("Expansion of %q (prefix for %s "
 	"transport) failed", ob->message_prefix, trname);
       yield = DEFER;
       }
@@ -2841,7 +2841,7 @@ if (yield == OK)
       {
       errno = ERRNO_EXPANDFAIL;
       addr->transport_return = PANIC;
-      addr->message = string_sprintf("Expansion of \"%s\" (suffix for %s "
+      addr->message = string_sprintf("Expansion of %q (suffix for %s "
 	"transport) failed", ob->message_suffix, trname);
       yield = DEFER;
       }
@@ -3148,7 +3148,7 @@ else
           if (!renameleaf)
             {
             addr->transport_return = PANIC;
-            addr->message = string_sprintf("Expansion of \"%s\" "
+            addr->message = string_sprintf("Expansion of %q "
               "(directory_file for %s transport) failed: %s",
               ob->dirfilename, trname, expand_string_message);
             goto RETURN;

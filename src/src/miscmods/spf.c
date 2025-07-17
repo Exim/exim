@@ -301,7 +301,7 @@ if (!spf_server && !spf_init(NULL))
 
 if (SPF_server_set_rec_dom(spf_server, CS primary_hostname))
   {
-  DEBUG(D_receive) debug_printf("spf: SPF_server_set_rec_dom(\"%s\") failed.\n",
+  DEBUG(D_receive) debug_printf("spf: SPF_server_set_rec_dom(%q) failed.\n",
     primary_hostname);
   spf_server = NULL;
   return FAIL;
@@ -323,7 +323,7 @@ if (  SPF_request_set_ipv4_str(spf_request, CCS spf_remote_addr)
 
 if (SPF_request_set_helo_dom(spf_request, CCS spf_helo_domain))
   {
-  DEBUG(D_receive) debug_printf("spf: SPF_set_helo_dom(\"%s\") failed.\n",
+  DEBUG(D_receive) debug_printf("spf: SPF_set_helo_dom(%q) failed.\n",
     spf_helo_domain);
   spf_server = NULL;
   spf_request = NULL;

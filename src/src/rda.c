@@ -573,7 +573,7 @@ DEBUG(D_route) debug_printf("rda_interpret (%s): '%s'\n",
 if (!(data = expand_string(rdata->string)))
   {
   if (f.expand_string_forcedfail) return FF_NOTDELIVERED;
-  *error = string_sprintf("failed to expand \"%s\": %s", rdata->string,
+  *error = string_sprintf("failed to expand %q: %s", rdata->string,
     expand_string_message);
   return FF_ERROR;
   }
@@ -584,7 +584,7 @@ DEBUG(D_route)
 
 if (rdata->isfile && data[0] != '/')
   {
-  *error = string_sprintf("\"%s\" is not an absolute path", data);
+  *error = string_sprintf("%q is not an absolute path", data);
   return FF_ERROR;
   }
 

@@ -55,7 +55,7 @@ int rc;
 uschar * server;
 BOOL defer_break = FALSE;
 
-DEBUG(D_lookup) debug_printf_indent("%s query: \"%s\" opts '%s'\n", name, query, opts);
+DEBUG(D_lookup) debug_printf_indent("%s query: %q opts '%s'\n", name, query, opts);
 
 /* Handle queries that do have server information at the start (old style). */
 
@@ -85,7 +85,7 @@ if (Ustrncmp(query, "servers", 7) == 0)
 
   if (ss == s)
     {
-    *errmsg = string_sprintf("\"servers=\" defines no servers in \"%s\"",
+    *errmsg = string_sprintf("\"servers=\" defines no servers in %q",
       query);
     return DEFER;
     }
@@ -164,7 +164,7 @@ else
 	    break;
 	if (!ele)
 	  {
-	  *errmsg = string_sprintf("%s server \"%s\" not found in %s", name,
+	  *errmsg = string_sprintf("%s server %q not found in %s", name,
 	    server, optionname);
 	  return DEFER;
 	  }

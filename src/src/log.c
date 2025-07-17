@@ -587,7 +587,7 @@ if (!panic_save_buffer)
   if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))
     memcpy(panic_save_buffer, log_buffer, LOG_BUFFER_SIZE);
 
-log_write_die(0, LOG_PANIC_DIE, "Cannot open %s log file \"%s\": %s: "
+log_write_die(0, LOG_PANIC_DIE, "Cannot open %s log file %q: %s: "
   "euid=%d egid=%d", log_names[type], buffer, strerror(errno), euid, getegid());
 /* Never returns */
 }
@@ -1453,7 +1453,7 @@ else for(;;)
   if (*string != '+' && *string != '-')
     {
     errmsg = string_sprintf("malformed %s_selector setting: "
-      "+ or - expected but found \"%s\"", which, string);
+      "+ or - expected but found %q", which, string);
     goto ERROR_RETURN;
     }
 
@@ -1546,7 +1546,7 @@ debug_logging_activate(const uschar * tag_name, const uschar * opts)
 if (debug_file)
   {
   debug_printf("DEBUGGING ACTIVATED FROM WITHIN CONFIG.\n"
-      "DEBUG: Tag=\"%s\" opts=\"%s\"\n", tag_name, opts ? opts : US"");
+      "DEBUG: Tag=%q opts=%q\n", tag_name, opts ? opts : US"");
   return;
   }
 

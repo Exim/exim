@@ -90,8 +90,8 @@ int sep = ':';
 
 if (!(user = string_nextinlist(&radius_args, &sep, NULL, 0))) user = US"";
 
-DEBUG(D_auth) debug_printf("Running RADIUS authentication for user \"%s\" "
-               "and \"%s\"\n", user, radius_args);
+DEBUG(D_auth) debug_printf("Running RADIUS authentication for user %q "
+               "and %q\n", user, radius_args);
 
 *errptr = NULL;
 

@@ -30,7 +30,7 @@ host in "testdb;fail"?
  search_find: file="NULL"
    key="fail" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=testdb key="fail" opts=NULL
  database lookup required for fail
  testdb lookup forced FAIL
@@ -78,7 +78,7 @@ host in "net-testdb;fail"?
  search_find: file="NULL"
    key="fail" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=testdb key="fail" opts=NULL
  database lookup required for fail
  testdb lookup forced FAIL

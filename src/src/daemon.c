@@ -435,7 +435,7 @@ if (pid == 0)
       {
       if (!f.expand_string_forcedfail)
         {
-        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand \"%s\" "
+        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand %q "
           "(smtp_active_hostname): %s", raw_active_hostname,
           expand_string_message);
         smtp_printf("421 Local configuration error; "
@@ -993,7 +993,7 @@ if (pid_len < 2 || pid_len >= (int)sizeof(pid_line)) goto cleanup;
 
 path = string_copy(pid_file_path);
 if ((base = Ustrrchr(path, '/')) == NULL)	/* should not happen, but who knows */
-  log_write_die(0, LOG_MAIN, "pid file path \"%s\" does not contain a '/'", pid_file_path);
+  log_write_die(0, LOG_MAIN, "pid file path %q does not contain a '/'", pid_file_path);
 
 dir = base != path ? path : US"/";
 *base++ = '\0';
@@ -1942,7 +1942,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       {
       struct servent * smtp_service = getservbyname(CS s, "tcp");
       if (!smtp_service)
-        log_write_die(0, LOG_CONFIG, "TCP port \"%s\" not found", s);
+        log_write_die(0, LOG_CONFIG, "TCP port %q not found", s);
       default_smtp_port[pct] = ntohs(smtp_service->s_port);
       }
   default_smtp_port[pct] = 0;
@@ -1968,7 +1968,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 	  {
 	  struct servent * smtp_service = getservbyname(CS s, "tcp");
 	  if (!smtp_service)
-	    log_write_die(0, LOG_CONFIG, "TCP port \"%s\" not found", s);
+	    log_write_die(0, LOG_CONFIG, "TCP port %q not found", s);
 	  g = string_append_listele_fmt(g, ':', FALSE, "%d",
 					      (int)ntohs(smtp_service->s_port));
 	  }

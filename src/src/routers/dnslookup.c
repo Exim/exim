@@ -163,7 +163,7 @@ if (ob->check_srv)
   if (  !(srv_service = expand_string(ob->check_srv))
      && !f.expand_string_forcedfail)
     {
-    addr->message = string_sprintf("%s router: failed to expand \"%s\": %s",
+    addr->message = string_sprintf("%s router: failed to expand %q: %s",
       rblock->drinst.name, ob->check_srv, expand_string_message);
     return DEFER;
     }
@@ -386,7 +386,7 @@ for (;;)
 
   if (f.host_find_failed_syntax)
     {
-    addr->message = string_sprintf("mail domain \"%s\" is syntactically "
+    addr->message = string_sprintf("mail domain %q is syntactically "
       "invalid", h.name);
     return DECLINE;
     }

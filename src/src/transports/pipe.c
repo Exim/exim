@@ -326,7 +326,7 @@ if (ob->allow_commands)
   if (!(s = expand_string(ob->allow_commands)))
     {
     addr->transport_return = DEFER;
-    addr->message = string_sprintf("failed to expand string \"%s\" "
+    addr->message = string_sprintf("failed to expand string %q "
       "for %s transport: %s", ob->allow_commands, tname, expand_string_message);
     return FALSE;
     }
@@ -349,7 +349,7 @@ if (!permitted)
     if (Ustrchr(argv[0], '/') != NULL)
       {
       addr->transport_return = FAIL;
-      addr->message = string_sprintf("\"/\" found in \"%s\" (command for %s "
+      addr->message = string_sprintf("\"/\" found in %q (command for %s "
         "transport) - failed for security reasons", cmd, tname);
       return FALSE;
       }
@@ -358,7 +358,7 @@ if (!permitted)
   else if (ob->allow_commands)
     {
     addr->transport_return = FAIL;
-    addr->message = string_sprintf("\"%s\" command not permitted by %s "
+    addr->message = string_sprintf("%q command not permitted by %s "
       "transport", argv[0], tname);
     return FALSE;
     }
@@ -387,7 +387,7 @@ if (argv[0][0] != '/')
   if (!p)
     {
     addr->transport_return = FAIL;
-    addr->message = string_sprintf("\"%s\" command not found for %s transport",
+    addr->message = string_sprintf("%q command not found for %s transport",
       argv[0], tname);
     return FALSE;
     }
@@ -476,7 +476,7 @@ if (expand_arguments)
   if (!argv[2])
     {
     addr->transport_return = f.search_find_defer ? DEFER : expand_fail;
-    addr->message = string_sprintf("Expansion of command \"%s\" "
+    addr->message = string_sprintf("Expansion of command %q "
       "in %s transport failed: %s",
       cmd, tname, expand_string_message);
     return FALSE;
@@ -655,7 +655,7 @@ if (envlist)
   if (!(envlist = expand_string(envlist)))
     {
     addr->transport_return = DEFER;
-    addr->message = string_sprintf("failed to expand string \"%s\" "
+    addr->message = string_sprintf("failed to expand string %q "
       "for %s transport: %s", ob->environment, trname,
       expand_string_message);
     return FALSE;
@@ -804,7 +804,7 @@ if (ob->message_prefix)
   if (!prefix)
     {
     addr->transport_return = f.search_find_defer? DEFER : PANIC;
-    addr->message = string_sprintf("Expansion of \"%s\" (prefix for %s "
+    addr->message = string_sprintf("Expansion of %q (prefix for %s "
       "transport) failed: %s", ob->message_prefix, trname,
       expand_string_message);
     return FALSE;
@@ -847,7 +847,7 @@ if (ob->message_suffix)
   if (!suffix)
     {
     addr->transport_return = f.search_find_defer? DEFER : PANIC;
-    addr->message = string_sprintf("Expansion of \"%s\" (suffix for %s "
+    addr->message = string_sprintf("Expansion of %q (suffix for %s "
       "transport) failed: %s", ob->message_suffix, trname,
       expand_string_message);
     return FALSE;
@@ -970,14 +970,14 @@ if ((rc = child_close(pid, timeout)) != 0)
       addr->transport_return = DEFER;
       addr->special_action = SPECIAL_FREEZE;
       addr->message = string_sprintf("Child process of %s transport (running "
-        "command \"%s\") was terminated by signal %d (%s)%s", trname, cmd,
+        "command %q) was terminated by signal %d (%s)%s", trname, cmd,
         -rc, os_strsignal(-rc), tmsg);
       }
     else if (!ob->ignore_status)
       {
       addr->transport_return = FAIL;
       addr->message = string_sprintf("Child process of %s transport (running "
-        "command \"%s\") was terminated by signal %d (%s)%s", trname, cmd,
+        "command %q) was terminated by signal %d (%s)%s", trname, cmd,
         -rc, os_strsignal(-rc), tmsg);
       }
     }
@@ -1030,7 +1030,7 @@ if ((rc = child_close(pid, timeout)) != 0)
       {
       addr->transport_return = DEFER;
       addr->special_action = SPECIAL_FREEZE;
-      addr->message = string_sprintf("pipe process failed to exec \"%s\"%s",
+      addr->message = string_sprintf("pipe process failed to exec %q%s",
         cmd, tmsg);
       }
 

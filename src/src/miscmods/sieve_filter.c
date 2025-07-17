@@ -293,7 +293,7 @@ if (address->ptr > 0)
 					    &start, &end, &domain, FALSE);
   if (!ss)
     {
-    filter->errmsg = string_sprintf("malformed address \"%s\" (%s)",
+    filter->errmsg = string_sprintf("malformed address %q (%s)",
       address->s, error);
     return -1;
     }
@@ -3543,7 +3543,7 @@ if (!sb || !sb->vacation_dir)
   sieve.vacation_directory = NULL;
 else if (!(sieve.vacation_directory = expand_string(sb->vacation_dir)))
   {
-  *error = string_sprintf("failed to expand \"%s\" "
+  *error = string_sprintf("failed to expand %q "
     "(sieve_vacation_directory): %s", sb->vacation_dir, expand_string_message);
   return FF_ERROR;
   }
@@ -3553,7 +3553,7 @@ if (!sb || !sb->inbox)
   sieve.inbox = US"inbox";
 else if (!(sieve.inbox = expand_string(sb->inbox)))
   {
-  *error = string_sprintf("failed to expand \"%s\" "
+  *error = string_sprintf("failed to expand %q "
     "(sieve_inbox): %s", sb->inbox, expand_string_message);
   return FF_ERROR;
   }
@@ -3563,7 +3563,7 @@ if (!sb || !sb->enotify_mailto_owner)
   sieve.enotify_mailto_owner = NULL;
 else if (!(sieve.enotify_mailto_owner = expand_string(sb->enotify_mailto_owner)))
   {
-  *error = string_sprintf("failed to expand \"%s\" "
+  *error = string_sprintf("failed to expand %q "
     "(sieve_enotify_mailto_owner): %s", sb->enotify_mailto_owner,
     expand_string_message);
   return FF_ERROR;

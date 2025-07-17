@@ -285,7 +285,7 @@ if (!secret || !name)
     *buffer = 0;           /* No message */
     return CANCELLED;
     }
-  string_format(buffer, buffsize, "expansion of \"%s\" failed in "
+  string_format(buffer, buffsize, "expansion of %q failed in "
     "%s authenticator: %s",
     !secret ? ob->client_secret : ob->client_name,
     ablock->drinst.name, expand_string_message);

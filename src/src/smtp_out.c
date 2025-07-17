@@ -75,7 +75,7 @@ while ((iface = string_nextinlist(&expint, &sep, NULL, 0)))
   if (if_af == 0)
     {
     addr->transport_return = PANIC;
-    addr->message = string_sprintf("\"%s\" is not a valid IP "
+    addr->message = string_sprintf("%q is not a valid IP "
       "address for the \"interface\" option for %s",
       iface, msg);
     return FALSE;
@@ -117,7 +117,7 @@ int port;
 if (!pstring)
   {
   addr->transport_return = PANIC;
-  addr->message = string_sprintf("failed to expand \"%s\" (\"port\" option) "
+  addr->message = string_sprintf("failed to expand %q (\"port\" option) "
     "for %s: %s", rstring, msg, expand_string_message);
   return FALSE;
   }
@@ -141,7 +141,7 @@ else
   if (!smtp_service)
     {
     addr->transport_return = PANIC;
-    addr->message = string_sprintf("TCP port \"%s\" is not defined for %s",
+    addr->message = string_sprintf("TCP port %q is not defined for %s",
       pstring, msg);
     return -1;
     }
@@ -297,7 +297,7 @@ GET_OPTION("dscp");
 if (dscp && dscp_lookup(dscp, sc->host_af, &dscp_level, &dscp_option, &dscp_value))
   {
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf_indent("DSCP \"%s\"=%x ", dscp, dscp_value);
+    debug_printf_indent("DSCP %q=%x ", dscp, dscp_value);
   if (setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value)) < 0)
     HDEBUG(D_transport|D_acl|D_v)
       debug_printf_indent("failed to set DSCP: %s ", strerror(errno));

@@ -485,7 +485,7 @@ sep = matchlist_parse_sep(&s);
 if (!(s = expand_string(s)))
   {
   if (f.expand_string_forcedfail) return OK;
-  *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+  *log_msgptr = string_sprintf("failed to expand ACL string %q: %s",
     list, expand_string_message);
   return f.search_find_defer ? DEFER : ERROR;
   }
@@ -573,7 +573,7 @@ while ((domain = string_nextinlist(&list, &sep, NULL, 0)))
   for (const uschar * t = domain; *t; t++)
     if (!isalnum(*t) && *t != '-' && *t != '.' && *t != '_')
       {
-      log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
+      log_write(0, LOG_MAIN, "dnslists domain %q contains "
         "strange characters - is this right?", domain);
       break;
       }
@@ -583,7 +583,7 @@ while ((domain = string_nextinlist(&list, &sep, NULL, 0)))
   if (domain_txt != domain) for (const uschar * t = domain_txt; *t; t++)
     if (!isalnum(*t) && *t != '-' && *t != '.' && *t != '_')
       {
-      log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
+      log_write(0, LOG_MAIN, "dnslists domain %q contains "
         "strange characters - is this right?", domain_txt);
       break;
       }

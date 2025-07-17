@@ -864,7 +864,7 @@ acl_data_to_cond(const uschar * s, acl_condition_block * cond,
 {
 if (*s++ != '=')
   {
-  *error = string_sprintf("\"=\" missing after ACL \"%s\" %s", name,
+  *error = string_sprintf("\"=\" missing after ACL %q %s", name,
     conditions[cond->type].flags & ACD_MOD ? US"modifier" : US"condition");
   return FALSE;
   }
@@ -933,8 +933,7 @@ while ((s = (*func)()))
     {
     if (!this)		/* not handling a verb right now */
       {
-      *error = string_sprintf("unknown ACL verb \"%s\" in \"%s\"", name,
-        saveline);
+      *error = string_sprintf("unknown ACL verb %q in %q", name, saveline);
       return NULL;
       }
     }
@@ -945,7 +944,7 @@ while ((s = (*func)()))
     {
     if (negated)
       {
-      *error = string_sprintf("malformed ACL line \"%s\"", saveline);
+      *error = string_sprintf("malformed ACL line %q", saveline);
       return NULL;
       }
     *lastp = this = store_get(sizeof(acl_block), GET_UNTAINTED);
@@ -969,8 +968,7 @@ while ((s = (*func)()))
 
   if ((c = acl_findcondition(name, conditions, nelem(conditions))) < 0)
     {
-    *error = string_sprintf("unknown ACL condition/modifier in \"%s\"",
-      saveline);
+    *error = string_sprintf("unknown ACL condition/modifier in %q", saveline);
     return NULL;
     }
 
@@ -978,8 +976,8 @@ while ((s = (*func)()))
 
   if (negated && conditions[c].flags & ACD_MOD)
     {
-    *error = string_sprintf("ACL error: negation is not allowed with "
-      "\"%s\"", conditions[c].name);
+    *error = string_sprintf("ACL error: negation is not allowed with %q",
+			    conditions[c].name);
     return NULL;
     }
 
@@ -989,7 +987,7 @@ while ((s = (*func)()))
       this->verb != ACL_ACCEPT &&
       this->verb != ACL_DISCARD)
     {
-    *error = string_sprintf("ACL error: \"%s\" is not allowed with \"%s\"",
+    *error = string_sprintf("ACL error: %q is not allowed with %q",
       conditions[c].name, verbs[this->verb]);
     return NULL;
     }
@@ -1839,7 +1837,7 @@ if (CS vp >= CS verify_type_list + sizeof(verify_type_list))
 
 if (vp->no_options && slash)
   {
-  *log_msgptr = string_sprintf("unexpected '/' found in \"%s\" "
+  *log_msgptr = string_sprintf("unexpected '/' found in %q "
     "(this verify item has no options)", arg);
   rc = ERROR; goto OUT;
   }
@@ -1931,7 +1929,7 @@ switch(vp->value)
         case_sensitive = FALSE;
       else
         {
-        *log_msgptr = string_sprintf("unknown option \"%s\" in ACL "
+        *log_msgptr = string_sprintf("unknown option %q in ACL "
            "condition \"verify %s\"", ss, arg);
         rc = ERROR; goto OUT;
         }
@@ -2031,7 +2029,7 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
             if (*opt++ != '=')
               {
               *log_msgptr = string_sprintf("'=' expected after "
-                "\"%s\" in ACL verify condition \"%s\"", op->name, arg);
+                "%q in ACL verify condition %q", op->name, arg);
               rc = ERROR; goto OUT;
               }
             Uskip_whitespace(&opt);
@@ -2049,7 +2047,7 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
                 {
                 *log_msgptr = string_sprintf("\"mailfrom\" is allowed as a "
                   "callout option only for verify=header_sender (detected in ACL "
-                  "condition \"%s\")", arg);
+                  "condition %q)", arg);
                 rc = ERROR; goto OUT;
                 }
               se_mailfrom = string_copy(opt);
@@ -2064,7 +2062,7 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
       else
         {
         *log_msgptr = string_sprintf("'=' expected after \"callout\" in "
-          "ACL condition \"%s\"", arg);
+          "ACL condition %q", arg);
         rc = ERROR; goto OUT;
         }
       }
@@ -2106,7 +2104,7 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
 
   else
     {
-    *log_msgptr = string_sprintf("unknown option \"%s\" in ACL "
+    *log_msgptr = string_sprintf("unknown option %q in ACL "
       "condition \"verify %s\"", ss, arg);
     rc = ERROR; goto OUT;
     }
@@ -2513,7 +2511,7 @@ else if (tolower(*ss) == 'g') { limit *= 1024.0*1024.0*1024.0; ss++; }
 
 if (limit < 0.0 || *ss != '\0')
   return ratelimit_error(log_msgptr,
-    "\"%s\" is not a positive number", sender_rate_limit);
+    "%q is not a positive number", sender_rate_limit);
 
 /* Second is the rate measurement period / exponential smoothing time
 constant. This must be strictly greater than zero, because zero leads to
@@ -2523,7 +2521,7 @@ period = !(sender_rate_period = string_nextinlist(&arg, &sep, NULL, 0))
   ? -1.0 : readconf_readtime(sender_rate_period, 0, FALSE);
 if (period <= 0.0)
   return ratelimit_error(log_msgptr,
-    "\"%s\" is not a time value", sender_rate_period);
+    "%q is not a time value", sender_rate_period);
 
 /* By default we are counting one of something, but the per_rcpt,
 per_byte, and count options can change this. */
@@ -2582,7 +2580,7 @@ while ((ss = string_nextinlist(&arg, &sep, NULL, 0)))
     uschar *e;
     count = Ustrtod(ss+6, &e);
     if (count < 0.0 || *e != '\0')
-      return ratelimit_error(log_msgptr, "\"%s\" is not a positive number", ss);
+      return ratelimit_error(log_msgptr, "%q is not a positive number", ss);
     }
   else if (strncmpic(ss, US"unique=", 7) == 0)
     unique = string_copy(ss + 7);
@@ -2602,7 +2600,7 @@ if (leaky + strict + readonly > 1)
   return ratelimit_error(log_msgptr, "conflicting update modes");
 if (badacl && (leaky || strict) && !noupdate)
   return ratelimit_error(log_msgptr,
-    "\"%s\" must not have /leaky or /strict option, or cannot be used in %s ACL",
+    "%q must not have /leaky or /strict option, or cannot be used in %s ACL",
     ratelimit_option_string[mode], acl_wherenames[where]);
 
 /* Set the default values of any unset options. In readonly mode we
@@ -3288,7 +3286,7 @@ wellknown_response = string_from_gstring(g);
 return OK;
 
 fail:
-  *log_msgptr = string_sprintf("wellknown: failed to %s file \"%s\": %s",
+  *log_msgptr = string_sprintf("wellknown: failed to %s file %q: %s",
 		  *log_msgptr, arg, strerror(errno));
   return FAIL;
 }
@@ -3368,7 +3366,7 @@ for (; cb; cb = cb->next)
   else if (!(arg = expand_string_2(cb->arg, &textonly)))
     {
     if (f.expand_string_forcedfail) continue;
-    *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+    *log_msgptr = string_sprintf("failed to expand ACL string %q: %s",
       cb->arg, expand_string_message);
     return f.search_find_defer ? DEFER : ERROR;
     }
@@ -3429,7 +3427,7 @@ for (; cb; cb = cb->next)
       if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
         {
         *log_msgptr = string_sprintf("nested ACL returned \"discard\" for "
-          "\"%s\" command (only allowed with \"accept\" or \"discard\")",
+          "%q command (only allowed with \"accept\" or \"discard\")",
           verbs[verb]);
         return ERROR;
         }
@@ -3487,7 +3485,7 @@ for (; cb; cb = cb->next)
 	     (strcmpic(arg, US"yes") == 0 ||
 	      strcmpic(arg, US"true") == 0)? OK : DEFER;
       if (rc == DEFER)
-	*log_msgptr = string_sprintf("invalid \"condition\" value \"%s\"", arg);
+	*log_msgptr = string_sprintf("invalid \"condition\" value %q", arg);
       break;
 
     case ACLC_CONTINUE:    /* Always succeeds */
@@ -3564,7 +3562,7 @@ for (; cb; cb = cb->next)
 		}
 	      else
 		{
-		HDEBUG(D_acl) debug_printf_indent("set input DSCP to \"%s\"\n", p+1);
+		HDEBUG(D_acl) debug_printf_indent("set input DSCP to %q\n", p+1);
 		}
 	    else
 	      {
@@ -3900,7 +3898,7 @@ for (; cb; cb = cb->next)
       if (delay < 0)
         {
         *log_msgptr = string_sprintf("syntax error in argument for \"delay\" "
-          "modifier: \"%s\" is not a time value", arg);
+          "modifier: %q is not a time value", arg);
         return ERROR;
         }
       else
@@ -4072,7 +4070,7 @@ for (; cb; cb = cb->next)
         else
           {
           logbits |= LOG_MAIN|LOG_REJECT;
-          log_write(0, LOG_MAIN|LOG_PANIC, "unknown log name \"%s\" in "
+          log_write(0, LOG_MAIN|LOG_PANIC, "unknown log name %q in "
             "\"log_reject_target\" in %s ACL", ss, acl_wherenames[where]);
           }
         }
@@ -4098,7 +4096,7 @@ for (; cb; cb = cb->next)
           else
             {
             logbits = LOG_MAIN|LOG_PANIC;
-            s = string_sprintf(":unknown log name in \"%s\" in "
+            s = string_sprintf(":unknown log name in %q in "
               "\"logwrite\" in %s ACL", arg, acl_wherenames[where]);
             }
           if (*s == ',') s++;
@@ -4345,7 +4343,7 @@ if ((BIT(rc) & msgcond[verb]) != 0)
     if (!expmessage)
       {
       if (!f.expand_string_forcedfail)
-        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand ACL message \"%s\": %s",
+        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand ACL message %q: %s",
           user_message, expand_string_message);
       }
     else if (expmessage[0] != 0) *user_msgptr = expmessage;
@@ -4358,7 +4356,7 @@ if ((BIT(rc) & msgcond[verb]) != 0)
     if (!expmessage)
       {
       if (!f.expand_string_forcedfail)
-        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand ACL message \"%s\": %s",
+        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand ACL message %q: %s",
           log_message, expand_string_message);
       }
     else if (expmessage[0] != 0)
@@ -4558,7 +4556,7 @@ if (acl_level != 0)
 else if (!(ss = expand_string(s)))
   {
   if (f.expand_string_forcedfail) return OK;
-  *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s", s,
+  *log_msgptr = string_sprintf("failed to expand ACL string %q: %s", s,
     expand_string_message);
   return ERROR;
   }
@@ -4573,7 +4571,7 @@ acl_text = ss;
 if (is_tainted(acl_text) && !f.running_in_test_harness)
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
-    "attempt to use tainted ACL text \"%s\"", acl_text);
+    "attempt to use tainted ACL text %q", acl_text);
   /* Avoid leaking info to an attacker */
   *log_msgptr = US"internal configuration error";
   return ERROR;
@@ -4592,11 +4590,11 @@ if (Ustrchr(ss, ' ') == NULL)
     {
     if (!(acl = (acl_block *)(t->data.ptr)))
       {
-      HDEBUG(D_acl) debug_printf_indent("ACL \"%s\" is empty: implicit DENY\n", ss);
+      HDEBUG(D_acl) debug_printf_indent("ACL %q is empty: implicit DENY\n", ss);
       return FAIL;
       }
     acl_name = string_sprintf("ACL %s", ss);
-    HDEBUG(D_acl) debug_printf_indent("using ACL \"%s\"\n", ss);
+    HDEBUG(D_acl) debug_printf_indent("using ACL %q\n", ss);
     }
 
   else if (*ss == '/')
@@ -4604,13 +4602,13 @@ if (Ustrchr(ss, ' ') == NULL)
     struct stat statbuf;
     if ((fd = Uopen(ss, O_RDONLY, 0)) < 0)
       {
-      *log_msgptr = string_sprintf("failed to open ACL file \"%s\": %s", ss,
+      *log_msgptr = string_sprintf("failed to open ACL file %q: %s", ss,
         strerror(errno));
       return ERROR;
       }
     if (fstat(fd, &statbuf) != 0)
       {
-      *log_msgptr = string_sprintf("failed to fstat ACL file \"%s\": %s", ss,
+      *log_msgptr = string_sprintf("failed to fstat ACL file %q: %s", ss,
         strerror(errno));
       return ERROR;
       }
@@ -4621,7 +4619,7 @@ if (Ustrchr(ss, ' ') == NULL)
 
     if (read(fd, acl_text, statbuf.st_size) != statbuf.st_size)
       {
-      *log_msgptr = string_sprintf("failed to read ACL file \"%s\": %s",
+      *log_msgptr = string_sprintf("failed to read ACL file %q: %s",
         ss, strerror(errno));
       return ERROR;
       }
@@ -4671,7 +4669,7 @@ while ((acl_current = acl))
 
   HDEBUG(D_acl)
     {
-    debug_printf_indent("processing %s \"%s\"", acl_name, verbs[acl->verb]);
+    debug_printf_indent("processing %s %q", acl_name, verbs[acl->verb]);
     if (config_lineno) debug_printf(" (%s %d)", config_filename, config_lineno);
     debug_printf("\n");
     }
@@ -4900,7 +4898,7 @@ return ret;
 
 bad:
 if (f.expand_string_forcedfail) return ERROR;
-*log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+*log_msgptr = string_sprintf("failed to expand ACL string %q: %s",
   tmp, expand_string_message);
 return f.search_find_defer ? DEFER : ERROR;
 }

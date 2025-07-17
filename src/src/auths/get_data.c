@@ -164,7 +164,7 @@ if (!ss)
     *buffer = 0;       /* No message */
     return CANCELLED;
     }
-  string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
+  string_format(buffer, buffsize, "expansion of %q failed in %s "
     "authenticator: %s", *inout, ablock->drinst.name, expand_string_message);
   return ERROR;
   }
@@ -246,7 +246,7 @@ if (clear_len < 0)
     if (smtp_write_command(sx, SCMD_FLUSH, "*\r\n") >= 0)
       (void)smtp_read_response(sx, US buffer, buffsize, '2', timeout);
     string_format(buffer, buffsize, "Invalid base64 string in server "
-      "response \"%s\"", save_bad);
+      "response %q", save_bad);
     return CANCELLED;
     }
   DEBUG(D_auth) debug_printf("bad b64 decode for '%s';"

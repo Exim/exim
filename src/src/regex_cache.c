@@ -216,7 +216,7 @@ if (!(yield = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED,
   pcre2_get_error_message(err, errbuf, sizeof(errbuf));
   store_pool = old_pool;
   *errstr = string_sprintf("regular expression error in "
-	    "\"%s\": %s at offset %ld", pattern, errbuf, (long)offset);
+	    "%q: %s at offset %ld", pattern, errbuf, (long)offset);
   }
 else if (flags & MCS_CACHEABLE)
   regex_to_cache(key, caseless, yield);

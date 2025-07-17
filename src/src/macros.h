@@ -49,6 +49,7 @@ allow tabs & spaces. A macro just makes life a bit easier. */
 #define string_printing(s) string_printing2((s), 0)
 #define SP_TAB		BIT(0)
 #define SP_SPACE	BIT(1)
+#define SP_DQUOTES	BIT(2)
 
 
 /* We need a special return code for "no recipients and failed to send an error

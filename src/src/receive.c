@@ -591,7 +591,7 @@ Returns:      TRUE if it did remove something; FALSE otherwise
 BOOL
 receive_remove_recipient(const uschar * recipient)
 {
-DEBUG(D_receive) debug_printf("receive_remove_recipient(\"%s\") called\n",
+DEBUG(D_receive) debug_printf("receive_remove_recipient(%q) called\n",
   recipient);
 for (int count = 0; count < recipients_count; count++)
   if (Ustrcmp(recipients_list[count].address, recipient) == 0)
@@ -1583,7 +1583,7 @@ if (!received)
   {
   if(spool_name[0] != 0)
     Uunlink(spool_name);           /* Lose the data file */
-  log_write_die(0, LOG_MAIN, "Expansion of \"%s\" "
+  log_write_die(0, LOG_MAIN, "Expansion of %q "
     "(received_header_text) failed: %s", string_printing(received_header_text),
       expand_string_message);
   }
@@ -2203,7 +2203,7 @@ OVERSIZE:
       GET_OPTION("uucp_from_sender");
       if (!(uucp_sender = expand_string(uucp_from_sender)))
         log_write(0, LOG_MAIN|LOG_PANIC,
-          "expansion of \"%s\" failed after matching "
+          "expansion of %q failed after matching "
           "\"From \" line: %s", uucp_from_sender, expand_string_message);
       else
         {
@@ -2844,7 +2844,7 @@ if (  !msgid_header
       {
       if (!f.expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC,
-          "expansion of \"%s\" (message_id_header_domain) "
+          "expansion of %q (message_id_header_domain) "
           "failed: %s", message_id_domain, expand_string_message);
       }
     else if (*new_id_domain)
@@ -2866,7 +2866,7 @@ if (  !msgid_header
       {
       if (!f.expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC,
-          "expansion of \"%s\" (message_id_header_text) "
+          "expansion of %q (message_id_header_text) "
           "failed: %s", message_id_text, expand_string_message);
       }
     else if (*new_id_text)
@@ -3079,7 +3079,7 @@ if (  from_header
     sender_address = generated_sender_address;
     if (Ustrcmp(sender_address_unrewritten, generated_sender_address) != 0)
       log_write(L_address_rewrite, LOG_MAIN,
-        "\"%s\" from env-from rewritten as \"%s\" by submission mode",
+        "%q from env-from rewritten as %q by submission mode",
         sender_address_unrewritten, generated_sender_address);
     }
   }	/* generate Sender: header */

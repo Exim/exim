@@ -885,7 +885,7 @@ if (action)
   if (s && *s)
     {
     DEBUG(D_deliver)
-      debug_printf("Event(%s): event_action returned \"%s\"\n", event, s);
+      debug_printf("Event(%s): event_action returned %q\n", event, s);
     if (errnop)
       *errnop = ERRNO_EVENT;
     return string_copy(s);
@@ -2169,7 +2169,7 @@ if (tp->return_path)
   else if (!f.expand_string_forcedfail)
     {
     common_error(TRUE, addr, ERRNO_EXPANDFAIL,
-      US"Failed to expand return path \"%s\" in %s transport: %s",
+      US"Failed to expand return path %q in %s transport: %s",
       tp->return_path, trname, expand_string_message);
     return;
     }
@@ -2200,14 +2200,14 @@ if (  (deliver_home = tp->home_dir)		/* Set in transport, or */
   deliver_home = NULL;                      /* in case it contains $home */
   if (!(deliver_home = expand_string(rawhome)))
     {
-    common_error(TRUE, addr, ERRNO_EXPANDFAIL, US"home directory \"%s\" failed "
+    common_error(TRUE, addr, ERRNO_EXPANDFAIL, US"home directory %q failed "
       "to expand for %s transport: %s", rawhome, trname,
       expand_string_message);
     return;
     }
   if (*deliver_home != '/')
     {
-    common_error(TRUE, addr, ERRNO_NOTABSOLUTE, US"home directory path \"%s\" "
+    common_error(TRUE, addr, ERRNO_NOTABSOLUTE, US"home directory path %q "
       "is not absolute for %s transport", deliver_home, trname);
     return;
     }
@@ -2227,7 +2227,7 @@ if (working_directory)
   uschar *raw = working_directory;
   if (!(working_directory = expand_string(raw)))
     {
-    common_error(TRUE, addr, ERRNO_EXPANDFAIL, US"current directory \"%s\" "
+    common_error(TRUE, addr, ERRNO_EXPANDFAIL, US"current directory %q "
       "failed to expand for %s transport: %s", raw, trname,
       expand_string_message);
     return;
@@ -2235,7 +2235,7 @@ if (working_directory)
   if (*working_directory != '/')
     {
     common_error(TRUE, addr, ERRNO_NOTABSOLUTE, US"current directory path "
-      "\"%s\" is not absolute for %s transport", working_directory, trname);
+      "%q is not absolute for %s transport", working_directory, trname);
     return;
     }
   }
@@ -2625,7 +2625,7 @@ if (addr->special_action == SPECIAL_WARN)
     DEBUG(D_deliver) debug_printf("Warning message requested by transport\n");
 
     if (!(warn_message = expand_string(warn_message)))
-      log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand \"%s\" (warning "
+      log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand %q (warning "
 	"message for %s transport): %s", addr->transport->warn_message,
 	addr->transport->drinst.name, expand_string_message);
 
@@ -3065,7 +3065,7 @@ while (addr_local)
       if (Ustrcmp(stp->drinst.name, tp->shadow) == 0) break;
 
     if (!stp)
-      log_write(0, LOG_MAIN|LOG_PANIC, "shadow transport \"%s\" not found ",
+      log_write(0, LOG_MAIN|LOG_PANIC, "shadow transport %q not found ",
         tp->shadow);
 
     /* Pick off the addresses that have succeeded, and make clones. Put into
@@ -4579,7 +4579,7 @@ Does that also apply to address_data?
       return_path = new_return_path;
     else if (!f.expand_string_forcedfail)
       {
-      panicmsg = string_sprintf("Failed to expand return path \"%s\": %s",
+      panicmsg = string_sprintf("Failed to expand return path %q: %s",
 	tp->return_path, expand_string_message);
       goto enq_continue;
       }
@@ -7250,7 +7250,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
           uschar *tmp = expand_string(tpname);
           address_file = address_pipe = NULL;
           if (!tmp)
-            p->message = string_sprintf("failed to expand \"%s\" as a "
+            p->message = string_sprintf("failed to expand %q as a "
               "system filter transport name", tpname);
 	  if (is_tainted(tmp))
             p->message = string_sprintf("attempt to used tainted value '%s' for"
@@ -7268,7 +7268,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
             if (Ustrcmp(tp->drinst.name, tpname) == 0)
               { p->transport = tp; break; }
           if (!tp)
-            p->message = string_sprintf("failed to find \"%s\" transport "
+            p->message = string_sprintf("failed to find %q transport "
               "for system filter delivery", tpname);
           }
 

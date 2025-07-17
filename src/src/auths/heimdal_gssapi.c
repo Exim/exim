@@ -271,9 +271,8 @@ if (ob->server_keytab)
   maj_stat = gsskrb5_register_acceptor_identity(CCS keytab);
   if (GSS_ERROR(maj_stat))
     return exim_gssapi_error_defer(store_reset_point, maj_stat, min_stat,
-	"registering keytab \"%s\"", keytab);
-  HDEBUG(D_auth)
-    debug_printf("heimdal: using keytab \"%s\"\n", keytab);
+	"registering keytab %q", keytab);
+  HDEBUG(D_auth) debug_printf("heimdal: using keytab %q\n", keytab);
   }
 
 /* Acquire our credentials */
@@ -503,8 +502,8 @@ while (step < 4)
 
       HDEBUG(D_auth)
 	debug_printf("heimdal SASL: happy with client request\n"
-	   "  auth1 (verified GSSAPI display-name): \"%s\"\n"
-	   "  auth2 (unverified SASL requested authzid): \"%s\"\n",
+	   "  auth1 (verified GSSAPI display-name): %q\n"
+	   "  auth2 (unverified SASL requested authzid): %q\n",
 	   auth_vars[0], auth_vars[1]);
 
       step += 1;

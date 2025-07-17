@@ -49,7 +49,7 @@ host in "+ignore_unknown : +goodhosts"?
    ╎search_find: file="NULL"
    ╎  key=">:defer_never,mxh=cioce.test.again.dns" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
-   ╎internal_search_find: file="NULL"
+   ╎internal_search_find: file=<NULL>
    ╎  type=dnsdb key=">:defer_never,mxh=cioce.test.again.dns" opts=NULL
    ╎database lookup required for >:defer_never,mxh=cioce.test.again.dns
    ╎                             (tainted)

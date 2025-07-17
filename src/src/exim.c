@@ -1469,12 +1469,12 @@ Currently they are output in misc_mod_add() */
   init_misc_mod_list();
 
 #ifdef WHITELIST_D_MACROS
-  g = string_fmt_append(g, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);
+  g = string_fmt_append(g, "WHITELIST_D_MACROS: %q\n", WHITELIST_D_MACROS);
 #else
   g = string_cat(g, US"WHITELIST_D_MACROS unset\n");
 #endif
 #ifdef TRUSTED_CONFIG_LIST
-  g = string_fmt_append(g, "TRUSTED_CONFIG_LIST: \"%s\"\n", TRUSTED_CONFIG_LIST);
+  g = string_fmt_append(g, "TRUSTED_CONFIG_LIST: %q\n", TRUSTED_CONFIG_LIST);
 #else
   g = string_cat(g, US"TRUSTED_CONFIG_LIST unset\n");
 #endif
@@ -5260,15 +5260,15 @@ for (i = 0;;)
             expand_nmax = -1;
             if (new_name)
               {
-              DEBUG(D_receive) debug_printf("user name \"%s\" extracted from "
-                "gecos field \"%s\"\n", new_name, name);
+              DEBUG(D_receive) debug_printf("user name %q extracted from "
+                "gecos field %q\n", new_name, name);
               name = new_name;
               }
             else DEBUG(D_receive) debug_printf("failed to expand gecos_name string "
-              "\"%s\": %s\n", gecos_name, expand_string_message);
+              "%q: %s\n", gecos_name, expand_string_message);
             }
-          else DEBUG(D_receive) debug_printf("gecos_pattern \"%s\" did not match "
-            "gecos field \"%s\"\n", gecos_pattern, name);
+          else DEBUG(D_receive) debug_printf("gecos_pattern %q did not match "
+            "gecos field %q\n", gecos_pattern, name);
           store_free((void *)re);
           }
         originator_name = string_copy(name);
@@ -5609,7 +5609,7 @@ if (raw_active_hostname)
   if (!nah)
     {
     if (!f.expand_string_forcedfail)
-      log_write_die(0, LOG_MAIN, "failed to expand \"%s\" "
+      log_write_die(0, LOG_MAIN, "failed to expand %q "
         "(smtp_active_hostname): %s", raw_active_hostname,
         expand_string_message);
     }
@@ -6089,7 +6089,7 @@ for (BOOL more = TRUE; more; )
 
         if (!recipient)
 	  {
-	  DEBUG(D_all) debug_printf("bad recipient address \"%s\": %s\n",
+	  DEBUG(D_all) debug_printf("bad recipient address %q: %s\n",
 	    string_printing(list[i]), errmess);
 
           if (error_handling == ERRORS_STDERR)

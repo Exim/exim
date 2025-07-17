@@ -36,7 +36,7 @@ routing test.ex@test.ex
   search_find: file="NULL"
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=dnsdb key="test.ex" opts=NULL
   database lookup required for test.ex
                                (tainted)
@@ -53,7 +53,7 @@ routing test.ex@test.ex
   search_find: file="NULL"
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=dnsdb key="test.ex" opts=NULL
   cached data used for lookup of test.ex
   lookup yielded: A░TXT░record░for░test.ex.
@@ -92,7 +92,7 @@ routing unknown@test.ex
   search_find: file="NULL"
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=dnsdb key="test.ex" opts=NULL
   cached data used for lookup of test.ex
   lookup yielded: A░TXT░record░for░test.ex.
@@ -104,7 +104,7 @@ routing unknown@test.ex
   search_find: file="NULL"
     key="unknown" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=dnsdb key="unknown" opts=NULL
   database lookup required for unknown
                                (tainted)
@@ -127,7 +127,7 @@ routing unknown@test.ex
   search_find: file="NULL"
     key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=dnsdb key="test.ex" opts=NULL
   cached data used for lookup of test.ex
   lookup yielded: A░TXT░record░for░test.ex.
@@ -140,7 +140,7 @@ routing unknown@test.ex
   search_find: file="NULL"
     key="A=myhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=dnsdb key="A=myhost.test.ex" opts=NULL
   database lookup required for A=myhost.test.ex
   dnsdb key: myhost.test.ex
@@ -173,7 +173,7 @@ search_open: dnsdb "NULL"
 search_find: file="NULL"
   key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
-internal_search_find: file="NULL"
+internal_search_find: file=<NULL>
   type=dnsdb key="a=shorthost.test.ex" opts=NULL
 database lookup required for a=shorthost.test.ex
                              (tainted)
@@ -184,7 +184,7 @@ search_open: dnsdb "NULL"
 search_find: file="NULL"
   key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
-internal_search_find: file="NULL"
+internal_search_find: file=<NULL>
   type=dnsdb key="a=shorthost.test.ex" opts=NULL
 cached data used for lookup of a=shorthost.test.ex
 lookup yielded: 127.0.0.1
@@ -192,7 +192,7 @@ search_open: dnsdb "NULL"
 search_find: file="NULL"
   key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
-internal_search_find: file="NULL"
+internal_search_find: file=<NULL>
   type=dnsdb key="a=shorthost.test.ex" opts=NULL
 cached data found but out-of-date; database lookup required for a=shorthost.test.ex
                              (tainted)

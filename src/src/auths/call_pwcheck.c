@@ -47,8 +47,7 @@ if (!pw)
 
 *pw++ = 0;   /* Separate user and password */
 
-DEBUG(D_auth)
-  debug_printf("Running pwcheck authentication for user \"%s\"\n", s);
+DEBUG(D_auth) debug_printf("Running pwcheck authentication for user %q\n", s);
 
 switch (pwcheck_verify_password(CS s, CS pw, CCSS &reply))
   {
@@ -98,7 +97,7 @@ if (service == NULL) service = US"";
 if (realm == NULL) realm = US"";
 
 DEBUG(D_auth)
-  debug_printf("Running saslauthd authentication for user \"%s\" \n", username);
+  debug_printf("Running saslauthd authentication for user %q \n", username);
 
 switch (saslauthd_verify_password(username, password, service,
         realm, (const uschar **)(&reply)))

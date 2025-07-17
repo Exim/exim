@@ -162,7 +162,7 @@ listptr = list;
 
 HDEBUG(D_auth)
   {
-  debug_printf("Initialised Cyrus SASL service=\"%s\" fqdn=\"%s\" realm=\"%s\"\n",
+  debug_printf("Initialised Cyrus SASL service=%q fqdn=%q realm=%q\n",
       ob->server_service, expanded_hostname, realm_expanded);
   debug_printf("Cyrus SASL knows mechanisms: %s\n", list);
   }
@@ -248,7 +248,7 @@ rc = sasl_server_new(CS ob->server_service, CS hname, realm_expanded, NULL,
   NULL, NULL, 0, &conn);
 
 HDEBUG(D_auth)
-  debug_printf("Initialised Cyrus SASL server connection; service=\"%s\" fqdn=\"%s\" realm=\"%s\"\n",
+  debug_printf("Initialised Cyrus SASL server connection; service=%q fqdn=%q realm=%q\n",
       ob->server_service, hname, realm_expanded);
 
 if (rc != SASL_OK )
@@ -325,7 +325,7 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
   if (firsttime)
     {
     firsttime = 0;
-    HDEBUG(D_auth) debug_printf("Calling sasl_server_start(%s,\"%s\")\n", ob->server_mech, debug);
+    HDEBUG(D_auth) debug_printf("Calling sasl_server_start(%s,%q)\n", ob->server_mech, debug);
     rc = sasl_server_start(conn, CS ob->server_mech, inlen ? CS input : NULL, inlen,
            CCSS &output, &outlen);
     }
@@ -357,7 +357,7 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
       inlen = clen;
       }
 
-    HDEBUG(D_auth) debug_printf("Calling sasl_server_step(\"%s\")\n", debug);
+    HDEBUG(D_auth) debug_printf("Calling sasl_server_step(%q)\n", debug);
     rc = sasl_server_step(conn, CS input, inlen, CCSS &output, &outlen);
     }
 

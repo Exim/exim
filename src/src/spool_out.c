@@ -466,7 +466,7 @@ uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suff
 uschar * tname = spool_q_fname(string_sprintf("%s%s", to,   dir), dq, subdir, id, suffix);
 if (Ulink(fname, tname) < 0 && (!noentok || errno != ENOENT))
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "link(\"%s\", \"%s\") failed while moving "
+  log_write(0, LOG_MAIN|LOG_PANIC, "link(%q, %q) failed while moving "
     "message: %s", fname, tname, strerror(errno));
   return FALSE;
   }
@@ -502,7 +502,7 @@ break_link(const uschar * dir, const uschar * subdir, const uschar * id,
 uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suffix);
 if (Uunlink(fname) < 0 && (!noentok || errno != ENOENT))
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "unlink(\"%s\") failed while moving "
+  log_write(0, LOG_MAIN|LOG_PANIC, "unlink(%q) failed while moving "
     "message: %s", fname, strerror(errno));
   return FALSE;
   }

@@ -7,7 +7,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="a=localhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=dnsdb key="a=localhost.test.ex" opts=NULL
  database lookup required for a=localhost.test.ex
  dnsdb key: localhost.test.ex
@@ -17,7 +17,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="a=localhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=dnsdb key="a=localhost.test.ex" opts=NULL
  cached data used for lookup of a=localhost.test.ex
  lookup yielded: 127.0.0.1
@@ -33,7 +33,7 @@ search_tidyup called
   search_find: file="NULL"
     key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=dnsdb key="a=shorthost.test.ex" opts=NULL
   database lookup required for a=shorthost.test.ex
                                (tainted)
@@ -44,7 +44,7 @@ search_tidyup called
   search_find: file="NULL"
     key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=dnsdb key="a=shorthost.test.ex" opts=NULL
   cached data found but out-of-date;   database lookup required for a=shorthost.test.ex
                                (tainted)

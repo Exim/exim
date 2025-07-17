@@ -44,7 +44,7 @@ INSERT 0 1
 after" id=newline 
 > name="x	x" id=tab 
 > name='stquot id=quote1 
-> Failed: lookup of "servers=x:localhost; select name from them where id='ph10';" gave DEFER: PostgreSQL server "x" not found in pgsql_servers
+> Failed: lookup of "servers=x:localhost; select name from them where id='ph10';" gave DEFER: "PostgreSQL server \"x\" not found in pgsql_servers"
 > Philip Hazel
 > name: Philip Hazel
 > ipv4: Philip Hazel

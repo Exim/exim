@@ -89,7 +89,7 @@ return TRUE;
 
 bad:
   if (panic) log_write_die(0, LOG_MAIN,
-    "Failed to %s directory \"%s\": %s\n", p, path, exim_errstr(errno));
+    "Failed to %s directory %q: %s\n", p, path, exim_errstr(errno));
   return FALSE;
 }
 

@@ -198,7 +198,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
 
     addr->basic_errno = ERRNO_UNKNOWNHOST;
     addr->message =
-      string_sprintf("lookup of host \"%s\" failed in %s router%s",
+      string_sprintf("lookup of host %q failed in %s router%s",
         h->name, rblock->drinst.name,
         f.host_find_failed_syntax? ": syntax error in name" : "");
 

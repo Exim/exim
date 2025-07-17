@@ -384,7 +384,7 @@ if ((length == 1 && keystring[0] == '*') ||
   return internal_lsearch_find(handle, filename, keystring, length, result,
     errmsg, LSEARCH_IP, opts);
 
-*errmsg = string_sprintf("\"%s\" is not a valid iplsearch key (an IP "
+*errmsg = string_sprintf("%q is not a valid iplsearch key (an IP "
 "address, with optional CIDR mask, is wanted): "
 "in a host list, use net-iplsearch as the search type", keystring);
 return DEFER;

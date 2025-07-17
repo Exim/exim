@@ -169,7 +169,7 @@ BOOL   attribute_found = FALSE;
 BOOL   ldapi = FALSE;
 
 DEBUG(D_lookup) debug_printf_indent("perform_ldap_search:"
-    " ldap%s URL = \"%s\" server=%s port=%d "
+    " ldap%s URL = %q server=%s port=%d "
     "sizelimit=%d timelimit=%d tcplimit=%d\n",
     search_type == SEARCH_LDAP_MULTIPLE ? "m" :
     search_type == SEARCH_LDAP_DN       ? "dn" :
@@ -181,7 +181,7 @@ library that is in use doesn't recognize, say, "ldapi", it will barf here. */
 
 if (!ldap_is_ldap_url(CS ldap_url))
   {
-  *errmsg = string_sprintf("ldap_is_ldap_url: not an LDAP url \"%s\"\n",
+  *errmsg = string_sprintf("ldap_is_ldap_url: not an LDAP url %q\n",
     ldap_url);
   goto RETURN_ERROR_BREAK;
   }
@@ -190,7 +190,7 @@ if (!ldap_is_ldap_url(CS ldap_url))
 
 if ((rc = ldap_url_parse(CS ldap_url, &ludp)) != 0)
   {
-  *errmsg = string_sprintf("ldap_url_parse: (error %d) parsing \"%s\"\n", rc,
+  *errmsg = string_sprintf("ldap_url_parse: (error %d) parsing %q\n", rc,
     ldap_url);
   goto RETURN_ERROR_BREAK;
   }
@@ -239,7 +239,7 @@ if (host)
 #if defined LDAP_LIB_OPENLDAP2
   else if (strncmp(ludp->lud_scheme, "ldapi", 5) == 0)
     {
-    *errmsg = string_sprintf("ldapi requires an absolute path (\"%s\" given)",
+    *errmsg = string_sprintf("ldapi requires an absolute path (%q given)",
       host);
     goto RETURN_ERROR;
     }
@@ -337,7 +337,7 @@ if (!lcp)
     DEBUG(D_lookup) debug_printf_indent("ldap_initialize with URL %s\n", s);
     if ((rc = ldap_initialize(&ld, CS s)) != LDAP_SUCCESS)
       {
-      *errmsg = string_sprintf("ldap_initialize: (error %d) URL \"%s\"\n",
+      *errmsg = string_sprintf("ldap_initialize: (error %d) URL %q\n",
 	rc, s);
       goto RETURN_ERROR;
       }

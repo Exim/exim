@@ -10,7 +10,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id='ph10';" opts=NULL
  database lookup required for select name from them where id='ph10';
  PostgreSQL query: "select name from them where id='ph10';" opts 'NULL'
@@ -21,7 +21,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id='ph10';" opts=NULL
  cached data used for lookup of select name from them where id='ph10';
  lookup yielded: Philip░Hazel
@@ -29,7 +29,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id='xxxx';" opts=NULL
  database lookup required for select name from them where id='xxxx';
  PostgreSQL query: "select name from them where id='xxxx';" opts 'NULL'
@@ -41,7 +41,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id='nothing';" opts=NULL
  database lookup required for select name from them where id='nothing';
  PostgreSQL query: "select name from them where id='nothing';" opts 'NULL'
@@ -52,7 +52,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select id,name from them where id='nothing';" opts=NULL
  database lookup required for select id,name from them where id='nothing';
  PostgreSQL query: "select id,name from them where id='nothing';" opts 'NULL'
@@ -63,7 +63,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="delete from them where id='nonexist';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="delete from them where id='nonexist';" opts=NULL
  database lookup required for delete from them where id='nonexist';
  PostgreSQL query: "delete from them where id='nonexist';" opts 'NULL'
@@ -75,7 +75,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select * from them where id='quote2';" opts=NULL
  database lookup required for select * from them where id='quote2';
  PostgreSQL query: "select * from them where id='quote2';" opts 'NULL'
@@ -86,7 +86,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select * from them where id='newline';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select * from them where id='newline';" opts=NULL
  database lookup required for select * from them where id='newline';
  PostgreSQL query: "select * from them where id='newline';" opts 'NULL'
@@ -98,7 +98,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select * from them where id='tab';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select * from them where id='tab';" opts=NULL
  database lookup required for select * from them where id='tab';
  PostgreSQL query: "select * from them where id='tab';" opts 'NULL'
@@ -109,7 +109,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select * from them where name='''stquot';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select * from them where name='''stquot';" opts=NULL
  database lookup required for select * from them where name='''stquot';
  PostgreSQL query: "select * from them where name='''stquot';" opts 'NULL'
@@ -120,7 +120,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="servers=x:localhost; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=x:localhost; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=x:localhost; select name from them where id='ph10';
  PostgreSQL query: "servers=x:localhost; select name from them where id='ph10';" opts 'NULL'
@@ -132,7 +132,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="servers=localhost::PORT_N:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=localhost::PORT_N:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=localhost::PORT_N:x; select name from them where id='ph10';
  PostgreSQL query: "servers=localhost::PORT_N:x; select name from them where id='ph10';" opts 'NULL'
@@ -146,7 +146,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
@@ -160,7 +160,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
@@ -174,7 +174,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="servers=<!::1.PORT_N/test/CALLER/!x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=<!::1.PORT_N/test/CALLER/!x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=<!::1.PORT_N/test/CALLER/!x; select name from them where id='ph10';
  PostgreSQL query: "servers=<!::1.PORT_N/test/CALLER/!x; select name from them where id='ph10';" opts 'NULL'
@@ -188,7 +188,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts="servers=<!::1.PORT_N/test/CALLER/!x"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id='ph10';" opts="servers=<!::1.PORT_N/test/CALLER/!x"
  database lookup required for select name from them where id='ph10';
  PostgreSQL query: "select name from them where id='ph10';" opts 'servers=<!::1.PORT_N/test/CALLER/!x'
@@ -199,7 +199,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="servers=(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
@@ -213,7 +213,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts=NULL
  database lookup required for SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
  PostgreSQL query: "SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
@@ -225,7 +225,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts=NULL
  database lookup required for SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
  PostgreSQL query: "SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
@@ -237,7 +237,7 @@ LOG: MAIN
  search_find: file="NULL"
    key="delete from them where id='aaaa'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="delete from them where id='aaaa'" opts=NULL
  database lookup required for delete from them where id='aaaa'
  PostgreSQL query: "delete from them where id='aaaa'" opts 'NULL'
@@ -299,7 +299,7 @@ processing ACL check_recipient "warn" (TESTSUITE/test-config 27)
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id = 'c'" opts=NULL
  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:pgsql)
@@ -314,7 +314,7 @@ check set acl_m0 = ok:   ${lookup pgsql                    {select name from the
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="cache=no_rd"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id = 'c'" opts=NULL
  cached data found but no_rd option set;  database lookup required for select name from them where id = 'c'
                               (tainted)
@@ -335,7 +335,7 @@ processing ACL check_recipient "warn" (TESTSUITE/test-config 32)
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N/test/CALLER/"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::PORT_N/test/CALLER/"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:pgsql)
@@ -350,7 +350,7 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N/test/CALLER/  
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::PORT_N"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:pgsql)
@@ -365,7 +365,7 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N    {select nam
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" opts=NULL
  database lookup required for servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'
                               (tainted, quoted:pgsql)
@@ -386,7 +386,7 @@ host in "net-pgsql;select * from them where id='c'"?
  search_find: file="NULL"
    key="select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select * from them where id='c'" opts=NULL
  database lookup required for select * from them where id='c'
                               (tainted, quoted:pgsql)
@@ -407,7 +407,7 @@ host in " net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them w
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" opts=NULL
  database lookup required for servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'
                               (tainted, quoted:pgsql)
@@ -430,7 +430,7 @@ host in " net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them w
  search_find: file="NULL"
    key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N/test/CALLER/"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key=" select * from them where id='c'" opts="servers=localhost::PORT_N/test/CALLER/"
  database lookup required for  select * from them where id='c'
                               (tainted, quoted:pgsql)
@@ -462,7 +462,7 @@ host in "+relay_hosts"?
    ╎search_find: file="NULL"
    ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
-   ╎internal_search_find: file="NULL"
+   ╎internal_search_find: file=<NULL>
    ╎  type=pgsql key="select * from them where id='10.0.0.0'" opts=NULL
    ╎database lookup required for select * from them where id='10.0.0.0'
    ╎PostgreSQL query: "select * from them where id='10.0.0.0'" opts 'NULL'
@@ -489,7 +489,7 @@ processing ACL check_recipient "warn" (TESTSUITE/test-config 27)
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id = 'c'" opts=NULL
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:pgsql)
@@ -504,7 +504,7 @@ check set acl_m0 = ok:   ${lookup pgsql                    {select name from the
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="cache=no_rd"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id = 'c'" opts=NULL
  cached data found but no_rd option set;  database lookup required for select name from them where id = 'c'
                               (tainted)
@@ -525,7 +525,7 @@ processing ACL check_recipient "warn" (TESTSUITE/test-config 32)
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N/test/CALLER/"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::PORT_N/test/CALLER/"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:pgsql)
@@ -540,7 +540,7 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N/test/CALLER/  
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::PORT_N"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:pgsql)
@@ -555,7 +555,7 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N    {select nam
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" opts=NULL
  database lookup required for servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'
                               (tainted, quoted:pgsql)
@@ -576,7 +576,7 @@ host in "net-pgsql;select * from them where id='c'"?
  search_find: file="NULL"
    key="select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select * from them where id='c'" opts=NULL
  cached data used for lookup of select * from them where id='c'
  lookup failed
@@ -592,7 +592,7 @@ host in " net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them w
  search_find: file="NULL"
    key="servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" opts=NULL
  database lookup required for servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'
                               (tainted, quoted:pgsql)
@@ -615,7 +615,7 @@ host in " net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them w
  search_find: file="NULL"
    key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::PORT_N/test/CALLER/"
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key=" select * from them where id='c'" opts="servers=localhost::PORT_N/test/CALLER/"
  database lookup required for  select * from them where id='c'
                               (tainted, quoted:pgsql)
@@ -647,7 +647,7 @@ host in "+relay_hosts"?
    ╎search_find: file="NULL"
    ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
-   ╎internal_search_find: file="NULL"
+   ╎internal_search_find: file=<NULL>
    ╎  type=pgsql key="select * from them where id='10.0.0.0'" opts=NULL
    ╎cached data used for lookup of select * from them where id='10.0.0.0'
    ╎lookup failed
@@ -764,7 +764,7 @@ routing CALLER@myhost.test.ex
   search_find: file="NULL"
     key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
-  internal_search_find: file="NULL"
+  internal_search_find: file=<NULL>
     type=pgsql key="select name from them where id='ph10'" opts=NULL
   database lookup required for select name from them where id='ph10'
   PostgreSQL query: "select name from them where id='ph10'" opts 'NULL'
@@ -804,7 +804,7 @@ appendfile transport entered
  search_find: file="NULL"
    key="select id from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select id from them where id='ph10'" opts=NULL
  database lookup required for select id from them where id='ph10'
  PostgreSQL query: "select id from them where id='ph10'" opts 'NULL'
@@ -871,7 +871,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=pgsql key="select name from them where id='ph10';" opts=NULL
  database lookup required for select name from them where id='ph10';
  PostgreSQL query: "select name from them where id='ph10';" opts 'NULL'

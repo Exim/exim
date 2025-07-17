@@ -52,7 +52,7 @@ if (!(s = expand_string(rblock->errors_to)))
       debug_printf("forced expansion failure - ignoring errors_to\n");
     return OK;
     }
-  addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
+  addr->message = string_sprintf("%s router failed to expand %q: %s",
     rblock->drinst.name, rblock->errors_to, expand_string_message);
   return DEFER;
   }

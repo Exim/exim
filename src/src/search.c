@@ -94,7 +94,7 @@ if ((li = internal_search_findtype(name)))
       debug_printf_indent("scan modules dir for %s failed\n", name);
 #endif
 
-search_error_message  = string_sprintf("unknown lookup type \"%s\"", name);
+search_error_message  = string_sprintf("unknown lookup type %q", name);
 return NULL;
 }
 
@@ -165,7 +165,7 @@ if (Ustrncmp(name, "partial", 7) == 0)
   else
     {
     BAD_TYPE:
-    search_error_message = string_sprintf("format error in lookup type \"%s\"",
+    search_error_message = string_sprintf("format error in lookup type %q",
       name);
     return NULL;
     }
@@ -202,13 +202,13 @@ if (li && mac_islookup(li, lookup_querystyle))
   if (pv >= 0)
     {
     search_error_message = string_sprintf("\"partial\" is not permitted "
-      "for lookup type \"%s\"", ss);
+      "for lookup type %q", ss);
     return NULL;
     }
   if ((*starflags & (SEARCH_STAR|SEARCH_STARAT)) != 0)
     {
     search_error_message = string_sprintf("defaults using \"*\" or \"*@\" are "
-      "not permitted for lookup type \"%s\"", ss);
+      "not permitted for lookup type %q", ss);
     return NULL;
     }
   }
@@ -411,7 +411,7 @@ if (filename && is_tainted(filename))
 store_pool = POOL_SEARCH;
 if (!search_reset_point) search_reset_point = store_mark();
 
-DEBUG(D_lookup) debug_printf_indent("search_open: %s \"%s\"\n", li->name,
+DEBUG(D_lookup) debug_printf_indent("search_open: %s %q\n", li->name,
   filename ? filename : US"NULL");
 
 /* See if we already have this open for this type of search, and if so,
@@ -545,13 +545,13 @@ the callers don't have to test for NULL, set an empty string. */
 search_error_message = US"";
 f.search_find_defer = FALSE;
 
-DEBUG(D_lookup) debug_printf_indent("internal_search_find: file=\"%s\"\n  "
-  "type=%s key=\"%s\" opts=%s%s%s\n", filename,
+DEBUG(D_lookup) debug_printf_indent("internal_search_find: file=%q\n  "
+  "type=%s key=%q opts=%s%s%s\n", filename,
   li->name, keystring, opts ? "\"" : "", opts, opts ? "\"" : "");
 
 /* Insurance. If the keystring is empty, just fail. */
 
-if (keystring[0] == 0) return NULL;
+if (!*keystring) return NULL;
 
 /* Use the special store pool for search data */
 
@@ -751,7 +751,7 @@ uschar * yield;
 DEBUG(D_lookup)
   {
   if (partial < 0) affixlen = 99;   /* So that "NULL" prints */
-  debug_printf_indent("search_find: file=\"%s\"\n  key=\"%s\" "
+  debug_printf_indent("search_find: file=%q\n  key=%q "
     "partial=%d affix=%.*s starflags=%x opts=%s%s%s\n",
     filename ? filename : US"NULL",
     keystring, partial, affixlen, affix, starflags,

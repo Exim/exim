@@ -426,7 +426,7 @@ if (addr->transport == cutthrough.addr.transport)
 	      Ustrcpy(resp, US"connection dropped");
 
 	    addr->message =
-	      string_sprintf("response to \"%s\" was: %s",
+	      string_sprintf("response to %q was: %s",
 		big_buffer, string_printing(resp));
 
 	    addr->user_message =
@@ -1069,7 +1069,7 @@ no_conn:
 	Not == 5xx resp to MAIL on main-verify
 	*/
 	if (!addr->message) addr->message =
-	  string_sprintf("response to \"%s\" was: %s",
+	  string_sprintf("response to %q was: %s",
 			  big_buffer, string_printing(sx->buffer));
 
 	/* RFC 5321 section 4.2: the text portion of the response may have only
@@ -1775,7 +1775,7 @@ if (parse_find_at(address) == NULL)
   if (!(options & vopt_qualify))
     {
     if (fd >= 0)
-      respond_printf(fd, "%sA domain is required for \"%s\"%s\n",
+      respond_printf(fd, "%sA domain is required for %q%s\n",
         ko_prefix, address, cr);
     *failure_ptr = US"qualify";
     return FAIL;
@@ -1976,7 +1976,7 @@ while (addr_new)
 
 	    if (!(s = expand_string(tf.hosts)))
 	      log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
-		"\"%s\" in %s transport for callout: %s", tf.hosts,
+		"%q in %s transport for callout: %s", tf.hosts,
 		tp->drinst.name, expand_string_message);
 	    else
 	      {
@@ -3219,7 +3219,7 @@ if ((semicolon = Ustrchr(ss, ';')))
 
   if (!li)				/* Unknown lookup type */
     {
-    log_write(0, LOG_MAIN|LOG_PANIC, "%s in host list item \"%s\"",
+    log_write(0, LOG_MAIN|LOG_PANIC, "%s in host list item %q",
       search_error_message, ss);
     return DEFER;
     }

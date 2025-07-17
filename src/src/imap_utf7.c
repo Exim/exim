@@ -56,7 +56,7 @@ slen = Ustrlen(string);
 if ((icd = iconv_open("UTF-16BE", CCS charset)) == (iconv_t)-1)
   {
   *error = string_sprintf(
-	"imapfolder: iconv_open(\"UTF-16BE\", \"%s\") failed: %s%s",
+	"imapfolder: iconv_open(\"UTF-16BE\", %q) failed: %s%s",
     charset, strerror(errno),
     errno == EINVAL ? " (maybe unsupported conversion)" : "");
   return NULL;

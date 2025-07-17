@@ -1,6 +1,6 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Tainted filename for search: 'TESTSUITE/tainted@test.ex'
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 F=<CALLER@myhost.test.ex> rejected by non-SMTP ACL: failed to expand ACL string "accept set acl_m0 =	${lookup {key} dsearch {TESTSUITE/$recipients}}": NULL
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 F=<CALLER@myhost.test.ex> rejected by non-SMTP ACL: failed to expand ACL string "accept set acl_m0 =\t${lookup {key} dsearch {TESTSUITE/$recipients}}": NULL
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Tainted filename for search: 'TESTSUITE/CALLER@myhost.test.ex'
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 F=<> rejected by non-SMTP ACL: failed to expand ACL string "accept set acl_m0 =	${lookup {key} dsearch {TESTSUITE/$recipients}}": NULL
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 F=<> rejected by non-SMTP ACL: failed to expand ACL string "accept set acl_m0 =\t${lookup {key} dsearch {TESTSUITE/$recipients}}": NULL
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Error while reading message with no usable sender address (R=10HmaX-000000005vi-0000): rejected by non-SMTP ACL: local configuration problem
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Child mail process returned status 1

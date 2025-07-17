@@ -77,7 +77,7 @@ ip_addrinfo(const uschar *address, struct sockaddr_in6 *saddr)
 #ifdef IPV6_USE_INET_PTON
 
   if (inet_pton(AF_INET6, CCS address, &saddr->sin6_addr) != 1)
-    log_write_die(0, LOG_MAIN, "unable to parse \"%s\" as an "
+    log_write_die(0, LOG_MAIN, "unable to parse %q as an "
       "IP address", address);
   saddr->sin6_family = AF_INET6;
 
@@ -90,7 +90,7 @@ ip_addrinfo(const uschar *address, struct sockaddr_in6 *saddr)
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_NUMERICHOST;
   if ((rc = getaddrinfo(CCS address, NULL, &hints, &res)) != 0 || res == NULL)
-    log_write_die(0, LOG_MAIN, "unable to parse \"%s\" as an "
+    log_write_die(0, LOG_MAIN, "unable to parse %q as an "
       "IP address: %s", address,
       rc == 0 ? "NULL result returned" : gai_strerror(rc));
   else
@@ -426,7 +426,7 @@ if (hostname[0] == '[' &&
   uschar * host = string_copyn(hostname+1, namelen-2);
   if (string_is_ip_address(host, NULL) == 0)
     {
-    *errstr = string_sprintf("malformed IP address \"%s\"", hostname);
+    *errstr = string_sprintf("malformed IP address %q", hostname);
     return -1;
     }
   shost.name = shost.address = host;

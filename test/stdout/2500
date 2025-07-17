@@ -16,7 +16,7 @@
 > fail,subdir(.) :FAIL
 > fail,subdir(f) :FAIL
 > ok,subdir(..d) :..subdir
-> Failed: lookup of "2500.dir/regfile" gave DEFER: key for dsearch lookup contains a slash: 2500.dir/regfile
+> Failed: lookup of "2500.dir/regfile" gave DEFER: "key for dsearch lookup contains a slash: 2500.dir/regfile"
 > ok.path:    2500.dir/regfile
 > 
 > cachelayer tests

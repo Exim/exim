@@ -396,7 +396,7 @@ for (;;)
 if (!found)
   {
   auth_defer_msg = string_sprintf(
-    "Dovecot did not advertise mechanism \"%s\" to us", ablock->public_name);
+    "Dovecot did not advertise mechanism %q to us", ablock->public_name);
   goto out;
   }
 

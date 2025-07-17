@@ -314,7 +314,7 @@ configuration problem. */
 if (!newhostlist)
   {
   if (f.expand_string_forcedfail) return DECLINE;
-  addr->message = string_sprintf("%s router: failed to expand \"%s\": %s",
+  addr->message = string_sprintf("%s router: failed to expand %q: %s",
     rblock->drinst.name, hostlist, expand_string_message);
   return DEFER;
   }
@@ -363,7 +363,7 @@ while (*options)
 
     if (!t)
       {
-      s = string_sprintf("unknown routing option or transport name \"%s\"", s);
+      s = string_sprintf("unknown routing option or transport name %q", s);
       log_write(0, LOG_MAIN, "Error in %s router: %s", rblock->drinst.name, s);
       addr->message = string_sprintf("error in router: %s", s);
       return DEFER;

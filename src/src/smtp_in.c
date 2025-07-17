@@ -778,7 +778,7 @@ for(;;)
     incomplete_transaction_log(US"sync failure");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was not advertised): "
-      "rejected \"%s\" %s next input=\"%s\"%s",
+      "rejected %q %s next input=%q%s",
       smtp_cmd_buffer, host_and_ident(TRUE),
       string_printing(string_copyn(buf, nchars)),
       smtp_inend - smtp_inptr > 0 ? "..." : "");
@@ -2719,7 +2719,7 @@ else
   if (!(s = expand_string(smtp_banner)))
     {
     log_write(0, f.expand_string_forcedfail ? LOG_MAIN : LOG_MAIN|LOG_PANIC_DIE,
-      "Expansion of \"%s\" (smtp_banner) failed: %s",
+      "Expansion of %q (smtp_banner) failed: %s",
       smtp_banner, expand_string_message);
     /* for force-fail */
   #ifndef DISABLE_TLS
@@ -2827,7 +2827,7 @@ else						/* not already sent */
 
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
 	"synchronization error (input sent without waiting for greeting): "
-	"rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
+	"rejected connection from %s input=%q", host_and_ident(TRUE),
 	string_printing(string_copyn(buf, nchars)));
       smtp_printf("554 SMTP synchronization error\r\n", SP_NO_MORE);
       return FALSE;
@@ -2890,7 +2890,7 @@ event_raise(event_action,
   errmess, NULL);
 #endif
 
-log_write(type, LOG_MAIN, "SMTP %s error in \"%s\" %s %s",
+log_write(type, LOG_MAIN, "SMTP %s error in %q %s %s",
   type == L_smtp_syntax_error ? "syntax" : "protocol",
   string_printing(smtp_cmd_buffer), host_and_ident(TRUE), errmess);
 
@@ -2899,7 +2899,7 @@ if (++synprot_error_count > smtp_max_synprot_errors)
   {
   yield = 1;
   log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
-    "syntax or protocol errors (last command was \"%s\", %Y)",
+    "syntax or protocol errors (last command was %q, %Y)",
     host_and_ident(FALSE), string_printing(smtp_cmd_buffer),
     s_connhad_log(NULL)
     );
@@ -3045,7 +3045,7 @@ len = Ustrlen(match);
 if (check_valid && (*msg)[0] != (*code)[0])
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "configured error code starts with "
-    "incorrect digit (expected %c) in \"%s\"", (*code)[0], *msg);
+    "incorrect digit (expected %c) in %q", (*code)[0], *msg);
   if (log_msg && *log_msg == *msg)
     *log_msg = string_sprintf("%s %s", *code, *log_msg + len);
   }
@@ -3401,7 +3401,7 @@ smtp_verify_helo(void)
 {
 BOOL yield = TRUE;
 
-HDEBUG(D_receive) debug_printf("verifying EHLO/HELO argument \"%s\"\n",
+HDEBUG(D_receive) debug_printf("verifying EHLO/HELO argument %q\n",
   sender_helo_name);
 
 if (sender_helo_name == NULL)
@@ -3773,7 +3773,7 @@ if (verify_check_host(&wellknown_advertise_hosts) != FAIL)
   }
 
 smtp_printf("554 not permitted\r\n", SP_NO_MORE);
-log_write(0, LOG_MAIN|LOG_REJECT, "rejected \"%s\" from %s",
+log_write(0, LOG_MAIN|LOG_REJECT, "rejected %q from %s",
 	      smtp_cmd_buffer, sender_helo_name, host_and_ident(FALSE));
 return 0;
 }
@@ -4093,7 +4093,7 @@ while (done <= 0)
 	if (++synprot_error_count > smtp_max_synprot_errors)
 	  {
 	  log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
-	    "syntax or protocol errors (last command was \"%s\", %Y)",
+	    "syntax or protocol errors (last command was %q, %Y)",
 	    host_and_ident(FALSE), string_printing(smtp_cmd_buffer),
 	    s_connhad_log(NULL)
 	    );
@@ -4765,7 +4765,7 @@ while (done <= 0)
 
 		  ignore_msg = US"server_mail_auth_condition failed";
 		  if (authenticated_id != NULL)
-		    ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
+		    ignore_msg = string_sprintf("%s: authenticated ID=%q",
 		      ignore_msg, authenticated_id);
 
 		/* Fall through */
@@ -5851,7 +5851,7 @@ while (done <= 0)
 	  exim_nullstd();                   /* Ensure std{in,out,err} exist */
 	  /* argv[0] should be untainted, from child_exec_exim() */
 	  execv(CS argv[0], (char *const *)argv);
-	  log_write_die(0, LOG_MAIN, "exec of \"%s\" (ETRN) failed: %s",
+	  log_write_die(0, LOG_MAIN, "exec of %q (ETRN) failed: %s",
 	    etrn_command, strerror(errno));
 	  _exit(EXIT_FAILURE);         /* paranoia */
 	  }
@@ -5927,7 +5927,7 @@ while (done <= 0)
 	  log_write(0, LOG_MAIN|LOG_REJECT,
 	    "SMTP protocol synchronization error "
 	    "(next input sent too soon: pipelining was%s advertised): "
-	    "rejected \"%s\" %s next input=\"%s\" (%u bytes)",
+	    "rejected %q %s next input=%q (%u bytes)",
 	    f.smtp_in_pipelining_advertised ? "" : " not",
 	    smtp_cmd_buffer, host_and_ident(TRUE),
 	    string_printing(buf), nchars);
@@ -5961,7 +5961,7 @@ while (done <= 0)
       if (unknown_command_count++ >= smtp_max_unknown_commands)
 	{
 	log_write(L_smtp_syntax_error, LOG_MAIN,
-	  "SMTP syntax error in \"%s\" %s %s",
+	  "SMTP syntax error in %q %s %s",
 	  string_printing(smtp_cmd_buffer), host_and_ident(TRUE),
 	  US"unrecognized command");
 	incomplete_transaction_log(US"unrecognized command");
@@ -5969,7 +5969,7 @@ while (done <= 0)
 	  US"Too many unrecognized commands");
 	done = 2;
 	log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
-	  "unrecognized commands (last was \"%s\")", host_and_ident(FALSE),
+	  "unrecognized commands (last was %q)", host_and_ident(FALSE),
 	  string_printing(smtp_cmd_buffer));
 	}
       else

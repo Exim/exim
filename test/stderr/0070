@@ -39,7 +39,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> processing ACL rcpt "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified
 >>> check verify = helo
->>> verifying EHLO/HELO argument "NULL"
+>>> verifying EHLO/HELO argument <NULL>
 >>> no EHLO/HELO command was issued
 >>> require: condition test failed in ACL rcpt
 >>> end of ACL rcpt: not OK

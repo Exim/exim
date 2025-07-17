@@ -35,12 +35,12 @@ uschar *yield = expand_string(s);
 if (yield) return yield;
 if (f.expand_string_forcedfail)
   {
-  DEBUG(D_route) debug_printf("forced failure for expansion of \"%s\"\n", s);
+  DEBUG(D_route) debug_printf("forced failure for expansion of %q\n", s);
   *prc = DECLINE;
   }
 else
   {
-  addr->message = string_sprintf("failed to expand \"%s\": %s", s,
+  addr->message = string_sprintf("failed to expand %q: %s", s,
     expand_string_message);
   *prc = DEFER;
   }

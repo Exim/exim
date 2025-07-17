@@ -50,7 +50,7 @@ if (rblock->extra_headers)
       if (!f.expand_string_forcedfail)
 	{
 	addr->message = string_sprintf(
-	  "%s router failed to expand add_headers item \"%s\": %s",
+	  "%s router failed to expand add_headers item %q: %s",
 	  rblock->drinst.name, t, expand_string_message);
 	return DEFER;
 	}
@@ -106,7 +106,7 @@ if (rblock->remove_headers)
       if (!f.expand_string_forcedfail)
 	{
 	addr->message = string_sprintf(
-	  "%s router failed to expand remove_headers item \"%s\": %s",
+	  "%s router failed to expand remove_headers item %q: %s",
 	  rblock->drinst.name, t, expand_string_message);
 	return DEFER;
 	}

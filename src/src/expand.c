@@ -1012,7 +1012,7 @@ const uschar * ss = expand_string(condition);
 if (!ss)
   {
   if (!f.expand_string_forcedfail && !f.search_find_defer)
-    log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand condition \"%s\" "
+    log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand condition %q "
       "for %s %s: %s", condition, m1, m2, expand_string_message);
   return FALSE;
   }
@@ -1389,7 +1389,7 @@ var_entry * vp;
 if (!(vp = find_var_ent(certvar, var_table, nelem(var_table))))
   {
   expand_string_message =
-    string_sprintf("no variable named \"%s\"", certvar);
+    string_sprintf("no variable named %q", certvar);
   return NULL;          /* Unknown variable name */
   }
 /* NB this stops us passing certs around in variable.  Might
@@ -1397,7 +1397,7 @@ want to do that in future */
 if (vp->type != vtype_cert)
   {
   expand_string_message =
-    string_sprintf("\"%s\" is not a certificate", certvar);
+    string_sprintf("%q is not a certificate", certvar);
   return NULL;          /* Unknown variable name */
   }
 if (!*(void **)vp->value)
@@ -1417,7 +1417,7 @@ for (certfield * cp = certfields;
     }
 
 expand_string_message =
-  string_sprintf("bad field selector \"%s\" for certextract", field);
+  string_sprintf("bad field selector %q for certextract", field);
 return NULL;
 }
 #endif	/*DISABLE_TLS*/
@@ -2690,7 +2690,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	yield ? ESI_EXISTS_ONLY : ESI_EXISTS_ONLY | ESI_SKIPPING, NULL)))
 	{
 	expand_string_message = name[0]
-	  ? string_sprintf("unknown variable \"%s\" after \"def:\"", name)
+	  ? string_sprintf("unknown variable %q after \"def:\"", name)
 	  : US"variable name omitted after \"def:\"";
 	check_variable_error_message(name);
 	goto failout;
@@ -2894,7 +2894,7 @@ switch(cond_type = identify_operator(&s, &opname))
           f.expand_string_forcedfail = TRUE;
 	  /*FALLTHROUGH*/
 	default:
-          expand_string_message = string_sprintf("%s from acl \"%s\"",
+          expand_string_message = string_sprintf("%s from acl %q",
 	    rc_names[rc], sub[0]);
 	  goto failout;
 	}
@@ -3000,7 +3000,7 @@ switch(cond_type = identify_operator(&s, &opname))
       {
       if (i == 0) goto COND_FAILED_CURLY_START;
       expand_string_message = string_sprintf("missing 2nd string in {} "
-        "after \"%s\"", opname);
+        "after %q", opname);
       goto failout;
       }
     if (!(sub[i] = expand_string_internal(s+1, flags, &s, resetok, &textonly)))
@@ -3119,7 +3119,7 @@ switch(cond_type = identify_operator(&s, &opname))
     case ECOND_MATCH_IP:       /* Match IP address in a host list */
       if (sub[0][0] != 0 && string_is_ip_address(sub[0], NULL) == 0)
 	{
-	expand_string_message = string_sprintf("\"%s\" is not an IP address",
+	expand_string_message = string_sprintf("%q is not an IP address",
 	  sub[0]);
 	goto failout;
 	}
@@ -3173,7 +3173,7 @@ switch(cond_type = identify_operator(&s, &opname))
 
 	case DEFER:
 	  expand_string_message = string_sprintf("unable to complete match "
-	    "against \"%s\": %s", sub[1], search_error_message);
+	    "against %q: %s", sub[1], search_error_message);
 	  goto failout;
 	}
 
@@ -3282,7 +3282,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	else if (sub[1][0] == '{')		/* }-for-text-editors */
 	  {
 	  expand_string_message = string_sprintf("unknown encryption mechanism "
-	    "in \"%s\"", sub[1]);
+	    "in %q", sub[1]);
 	  goto failout;
 	  }
 
@@ -3393,7 +3393,7 @@ switch(cond_type = identify_operator(&s, &opname))
       {
       /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
-        "inside \"%s\" group", opname);
+        "inside %q group", opname);
       goto failout;
       }
 
@@ -3457,7 +3457,7 @@ switch(cond_type = identify_operator(&s, &opname))
 
     if (!(s = eval_condition(sub[1], resetok, NULL)))
       {
-      expand_string_message = string_sprintf("%s inside \"%s\" condition",
+      expand_string_message = string_sprintf("%s inside %q condition",
         expand_string_message, opname);
       goto failout;
       }
@@ -3468,7 +3468,7 @@ switch(cond_type = identify_operator(&s, &opname))
       {
       /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
-        "inside \"%s\"", opname);
+        "inside %q", opname);
       goto failout;
       }
 
@@ -3490,10 +3490,10 @@ switch(cond_type = identify_operator(&s, &opname))
 	  goto failout;
 	  }
 
-      DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", opname, iterate_item);
+      DEBUG(D_expand) debug_printf_indent("%s: $item = %q\n", opname, iterate_item);
       if (!eval_condition(sub[1], resetok, &tempcond))
         {
-        expand_string_message = string_sprintf("%s inside \"%s\" condition",
+        expand_string_message = string_sprintf("%s inside %q condition",
           expand_string_message, opname);
         iterate_item = save_iterate_item;
         goto failout;
@@ -3579,7 +3579,7 @@ switch(cond_type = identify_operator(&s, &opname))
     else
       {
       expand_string_message = string_sprintf("unrecognised boolean "
-       "value \"%s\"", t);
+       "value %q", t);
       goto failout;
       }
     DEBUG(D_expand) debug_printf_indent("%s: condition evaluated to %s\n", ourname,
@@ -3699,18 +3699,18 @@ srs_result:
 
   default:
     if (!expand_string_message || !*expand_string_message)
-      expand_string_message = string_sprintf("unknown condition \"%s\"", opname);
+      expand_string_message = string_sprintf("unknown condition %q", opname);
     goto failout;
   }   /* End switch on condition type */
 
 /* Missing braces at start and end of data */
 
 COND_FAILED_CURLY_START:
-expand_string_message = string_sprintf("missing { after \"%s\"", opname);
+expand_string_message = string_sprintf("missing { after %q", opname);
 goto failout;
 
 COND_FAILED_CURLY_END:
-expand_string_message = string_sprintf("missing } at end of \"%s\" condition",
+expand_string_message = string_sprintf("missing } at end of %q condition",
   opname);
 goto failout;
 
@@ -3720,7 +3720,7 @@ goto failout;
     !defined(LOOKUP_LDAP) || !defined(CYRUS_PWCHECK_SOCKET) || \
     !defined(SUPPORT_CRYPTEQ) || !defined(CYRUS_SASLAUTHD_SOCKET)
 COND_FAILED_NOT_COMPILED:
-expand_string_message = string_sprintf("support for \"%s\" not compiled",
+expand_string_message = string_sprintf("support for %q not compiled",
   opname);
 goto failout;
 #endif
@@ -3933,7 +3933,7 @@ else if (*s != '}')
 	goto FAILED_CURLY;
 	}
       expand_string_message =
-        string_sprintf("\"%s\" failed and \"fail\" requested", type);
+        string_sprintf("%q failed and \"fail\" requested", type);
       f.expand_string_forcedfail = TRUE;
       goto FAILED;
       }
@@ -3941,7 +3941,7 @@ else if (*s != '}')
   else
     {
     expand_string_message =
-      string_sprintf("syntax error in \"%s\" item - \"fail\" expected", type);
+      string_sprintf("syntax error in %q item - \"fail\" expected", type);
     goto FAILED;
     }
   }
@@ -4569,7 +4569,7 @@ else switch(*listtype)	/* specific list-type version */
 
 if(!t)
   {
-  expand_string_message = string_sprintf("\"%s\" is not a %snamed list",
+  expand_string_message = string_sprintf("%q is not a %snamed list",
     name, !listtype?""
       : *listtype=='a'?"address "
       : *listtype=='d'?"domain "
@@ -4875,7 +4875,7 @@ while (*s)	/* known to be untainted */
     else if (!(value = find_variable(name, flags, &newsize)))
       {
       expand_string_message =
-	string_sprintf("unknown variable name \"%s\"", name);
+	string_sprintf("unknown variable name %q", name);
 	check_variable_error_message(name);
       goto EXPAND_FAILED;
       }
@@ -5012,7 +5012,7 @@ while (*s)	/* known to be untainted */
           f.expand_string_forcedfail = TRUE;
 	  /*FALLTHROUGH*/
 	default:
-          expand_string_message = string_sprintf("%s from acl \"%s\"",
+          expand_string_message = string_sprintf("%s from acl %q",
 	    rc_names[rc], sub[0]);
 	  goto EXPAND_FAILED;
 	}
@@ -5116,7 +5116,7 @@ while (*s)	/* known to be untainted */
 	{
 	expand_string_message =
 	  string_sprintf(
-		"IMAP folder separator must be one character, found \"%s\"",
+		"IMAP folder separator must be one character, found %q",
 		sub_arg[1]);
 	goto EXPAND_FAILED;
 	}
@@ -5209,14 +5209,14 @@ while (*s)	/* known to be untainted */
         if (!key)
           {
           expand_string_message = string_sprintf("missing {key} for single-"
-            "key \"%s\" lookup", name);
+            "key %q lookup", name);
           goto EXPAND_FAILED;
           }
         }
       else if (key)
 	{
 	expand_string_message = string_sprintf("a single key was given for "
-	  "lookup type \"%s\", which is not a single-key lookup type", name);
+	  "lookup type %q, which is not a single-key lookup type", name);
 	goto EXPAND_FAILED;
 	}
 
@@ -5276,9 +5276,8 @@ while (*s)	/* known to be untainted */
           affixlen, starflags, &expand_setup, opts);
         if (f.search_find_defer)
           {
-          expand_string_message =
-            string_sprintf("lookup of \"%s\" gave DEFER: %s",
-              string_printing2(key, SP_TAB), search_error_message);
+          expand_string_message = string_sprintf("lookup of %q gave DEFER: %q",
+						key, search_error_message);
           goto EXPAND_FAILED;
           }
         if (expand_setup > 0) expand_nmax = expand_setup;
@@ -5394,7 +5393,7 @@ while (*s)	/* known to be untainted */
         if (!expand_string_message)
           {
           expand_string_message =
-            string_sprintf("Perl subroutine \"%s\" returned undef to force "
+            string_sprintf("Perl subroutine %q returned undef to force "
               "failure", sub_arg[0]);
           f.expand_string_forcedfail = TRUE;
           }
@@ -6018,8 +6017,8 @@ while (*s)	/* known to be untainted */
         val[i] = (int)Ustrtol(sub[i], &ret, 10);
         if (*ret != 0  ||  i != 0 && val[i] < 0)
           {
-          expand_string_message = string_sprintf("\"%s\" is not a%s number "
-            "(in \"%s\" expansion)", sub[i], i != 0 ? " positive" : "", name);
+          expand_string_message = string_sprintf("%q is not a%s number "
+            "(in %q expansion)", sub[i], i != 0 ? " positive" : "", name);
           goto EXPAND_FAILED;
           }
         }
@@ -6090,7 +6089,7 @@ while (*s)	/* known to be untainted */
       else
 	{
 	expand_string_message =
-	  string_sprintf("hmac algorithm \"%s\" is not recognised", sub[0]);
+	  string_sprintf("hmac algorithm %q is not recognised", sub[0]);
 	goto EXPAND_FAILED;
 	}
 
@@ -6778,7 +6777,7 @@ while (*s)	/* known to be untainted */
 
       if (!temp)
         {
-        expand_string_message = string_sprintf("%s inside \"%s\" item",
+        expand_string_message = string_sprintf("%s inside %q item",
           expand_string_message, name);
         goto EXPAND_FAILED;
         }
@@ -6787,7 +6786,7 @@ while (*s)	/* known to be untainted */
       if (*s++ != '}')
         {
         expand_string_message = string_sprintf("missing } at end of condition "
-          "or expression inside \"%s\"; could be an unquoted } in the content",
+          "or expression inside %q; could be an unquoted } in the content",
 	  name);
         goto EXPAND_FAILED;
         }
@@ -6795,7 +6794,7 @@ while (*s)	/* known to be untainted */
       Uskip_whitespace(&s);						/*{{*/
       if (*s++ != '}')
         {
-        expand_string_message = string_sprintf("missing } at end of \"%s\"",
+        expand_string_message = string_sprintf("missing } at end of %q",
           name);
         goto EXPAND_FAILED;
         }
@@ -6821,8 +6820,8 @@ while (*s)	/* known to be untainted */
             {
             iterate_item = save_iterate_item;
             lookup_value = save_lookup_value;
-            expand_string_message = string_sprintf("%s inside \"%s\" condition",
-              expand_string_message, name);
+            expand_string_message = string_sprintf(
+	      "%q inside %q condition", expand_string_message, name);
             goto EXPAND_FAILED;
             }
 	  lookup_value = save_value;
@@ -6842,7 +6841,7 @@ while (*s)	/* known to be untainted */
           if (!(temp = t))
             {
             iterate_item = save_iterate_item;
-            expand_string_message = string_sprintf("%s inside \"%s\" item",
+            expand_string_message = string_sprintf("%q inside %q item",
               expand_string_message, name);
             goto EXPAND_FAILED;
             }
@@ -6956,7 +6955,7 @@ while (*s)	/* known to be untainted */
       if ((cond_type = identify_operator(&cmp, &opname)) == -1)
 	{
 	if (!expand_string_message)
-	  expand_string_message = string_sprintf("unknown condition \"%s\"", s);
+	  expand_string_message = string_sprintf("unknown condition %q", s);
 	goto EXPAND_FAILED;
 	}
       switch(cond_type)
@@ -7004,7 +7003,7 @@ while (*s)	/* known to be untainted */
 	const uschar * srcfield, * dstitem;
 	gstring * newlist = NULL, * newkeylist = NULL;
 
-        DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, srcitem);
+        DEBUG(D_expand) debug_printf_indent("%s: $item = %q\n", name, srcitem);
 
 	/* extract field for comparisons */
 	iterate_item = srcitem;
@@ -7012,8 +7011,8 @@ while (*s)	/* known to be untainted */
 				  ESI_HONOR_DOLLAR, NULL, &resetok, NULL))
 	   || !*srcfield)
 	  {
-	  expand_string_message = string_sprintf(
-	      "field-extract in sort: \"%s\"", xtract);
+	  expand_string_message = string_sprintf("field-extract in sort: %q",
+						  xtract);
 	  goto EXPAND_FAILED;
 	  }
 
@@ -7069,8 +7068,8 @@ while (*s)	/* known to be untainted */
 	dstlist = newlist->s;
 	dstkeylist = newkeylist->s;
 
-        DEBUG(D_expand) debug_printf_indent("%s: dstlist = \"%s\"\n", name, dstlist);
-        DEBUG(D_expand) debug_printf_indent("%s: dstkeylist = \"%s\"\n", name, dstkeylist);
+        DEBUG(D_expand) debug_printf_indent("%s: dstlist = %q\n", name, dstlist);
+        DEBUG(D_expand) debug_printf_indent("%s: dstkeylist = %q\n", name, dstkeylist);
 	}
 
       if (dstlist)
@@ -7131,7 +7130,7 @@ while (*s)	/* known to be untainted */
         void * handle = dlopen(CS argv[0], RTLD_LAZY);
         if (!handle)
           {
-          expand_string_message = string_sprintf("dlopen \"%s\" failed: %s",
+          expand_string_message = string_sprintf("dlopen %q failed: %s",
             argv[0], dlerror());
           log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
           goto EXPAND_FAILED;
@@ -7147,7 +7146,7 @@ while (*s)	/* known to be untainted */
 
       if (!(func = (exim_dlfunc_t *)dlsym(t->data.ptr, CS argv[1])))
         {
-        expand_string_message = string_sprintf("dlsym \"%s\" in \"%s\" failed: "
+        expand_string_message = string_sprintf("dlsym %q in %q failed: "
           "%s", argv[1], argv[0], dlerror());
         log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
         goto EXPAND_FAILED;
@@ -7409,7 +7408,7 @@ NOT_ITEM: ;
 	if (*t)
 	  {
 	  expand_string_message = string_sprintf("argument for base32 "
-	    "operator is \"%s\", which is not a decimal number", sub);
+	    "operator is %q, which is not a decimal number", sub);
 	  goto EXPAND_FAILED;
 	  }
 	for ( ; n; n >>= 5)
@@ -7429,7 +7428,7 @@ NOT_ITEM: ;
 	  if (!t)
 	    {
 	    expand_string_message = string_sprintf("argument for base32d "
-	      "operator is \"%s\", which is not a base 32 number", sub);
+	      "operator is %q, which is not a base 32 number", sub);
 	    goto EXPAND_FAILED;
 	    }
 	  n = n * 32 + (t - base32_chars);
@@ -7445,7 +7444,7 @@ NOT_ITEM: ;
 	if (*t)
 	  {
 	  expand_string_message = string_sprintf("argument for base62 "
-	    "operator is \"%s\", which is not a decimal number", sub);
+	    "operator is %q, which is not a decimal number", sub);
 	  goto EXPAND_FAILED;
 	  }
 	yield = string_cat(yield, string_base62_32(n));		/*XXX only handles 32b input range.  Need variants? */
@@ -7464,7 +7463,7 @@ NOT_ITEM: ;
 	  if (!t)
 	    {
 	    expand_string_message = string_sprintf("argument for base62d "
-	      "operator is \"%s\", which is not a base %d number", sub,
+	      "operator is %q, which is not a base %d number", sub,
 	      BASE_62);
 	    goto EXPAND_FAILED;
 	    }
@@ -7481,7 +7480,7 @@ NOT_ITEM: ;
 	if (!expanded)
 	  {
 	  expand_string_message =
-	    string_sprintf("internal expansion of \"%s\" failed: %s", sub,
+	    string_sprintf("internal expansion of %q failed: %s", sub,
 	      expand_string_message);
 	  goto EXPAND_FAILED;
 	  }
@@ -7639,7 +7638,7 @@ NOT_ITEM: ;
 	  {
 	  if (!isxdigit(*enc))
 	    {
-	    expand_string_message = string_sprintf("\"%s\" is not a hex "
+	    expand_string_message = string_sprintf("%q is not a hex "
 	      "string", sub);
 	    goto EXPAND_FAILED;
 	    }
@@ -7648,7 +7647,7 @@ NOT_ITEM: ;
 
 	if ((c & 1) != 0)
 	  {
-	  expand_string_message = string_sprintf("\"%s\" contains an odd "
+	  expand_string_message = string_sprintf("%q contains an odd "
 	    "number of characters", sub);
 	  goto EXPAND_FAILED;
 	  }
@@ -7722,14 +7721,14 @@ NOT_ITEM: ;
 
 	if ((type = string_is_ip_address(sub, &maskoffset)) == 0)
 	  {
-	  expand_string_message = string_sprintf("\"%s\" is not an IP address",
+	  expand_string_message = string_sprintf("%q is not an IP address",
 	   sub);
 	  goto EXPAND_FAILED;
 	  }
 
 	if (maskoffset == 0)
 	  {
-	  expand_string_message = string_sprintf("missing mask value in \"%s\"",
+	  expand_string_message = string_sprintf("missing mask value in %q",
 	    sub);
 	  goto EXPAND_FAILED;
 	  }
@@ -7738,7 +7737,7 @@ NOT_ITEM: ;
 
 	if (*endptr || mask < 0 || mask > (type == 4 ? 32 : 128))
 	  {
-	  expand_string_message = string_sprintf("mask value too big in \"%s\"",
+	  expand_string_message = string_sprintf("mask value too big in %q",
 	    sub);
 	  goto EXPAND_FAILED;
 	  }
@@ -7788,7 +7787,7 @@ NOT_ITEM: ;
 
 	  case 0:
 	    expand_string_message =
-	      string_sprintf("\"%s\" is not an IP address", sub);
+	      string_sprintf("%q is not an IP address", sub);
 	    goto EXPAND_FAILED;
 	  }
 
@@ -7956,7 +7955,7 @@ NOT_ITEM: ;
 	  if (!sub)
 	    {
 	    expand_string_message = string_sprintf(
-	      "\"%s\" unrecognized after \"${quote_%s\"",	/*}*/
+	      "%q unrecognized after \"${quote_%s\"",	/*}*/
 	      opt, arg);
 	    goto EXPAND_FAILED;
 	    }
@@ -8240,8 +8239,8 @@ NOT_ITEM: ;
 	int n = readconf_readtime(sub, 0, FALSE);
 	if (n < 0)
 	  {
-	  expand_string_message = string_sprintf("string \"%s\" is not an "
-	    "Exim time interval in \"%s\" operator", sub, name);
+	  expand_string_message = string_sprintf("string %q is not an "
+	    "Exim time interval in %q operator", sub, name);
 	  goto EXPAND_FAILED;
 	  }
 	yield = string_fmt_append(yield, "%d", n);
@@ -8254,8 +8253,8 @@ NOT_ITEM: ;
 	const uschar * t = read_number(&n, sub);
 	if (*t != 0) /* Not A Number*/
 	  {
-	  expand_string_message = string_sprintf("string \"%s\" is not a "
-	    "positive number in \"%s\" operator", sub, name);
+	  expand_string_message = string_sprintf("string %q is not a "
+	    "positive number in %q operator", sub, name);
 	  goto EXPAND_FAILED;
 	  }
 	t = readconf_printtime(n);
@@ -8285,8 +8284,8 @@ NOT_ITEM: ;
 	int len = b64decode(sub, &s, sub);
 	if (len < 0)
 	  {
-	  expand_string_message = string_sprintf("string \"%s\" is not "
-	    "well-formed for \"%s\" operator", sub, name);
+	  expand_string_message = string_sprintf("string %q is not "
+	    "well-formed for %q operator", sub, name);
 	  goto EXPAND_FAILED;
 	  }
 	yield = string_cat(yield, s);
@@ -8368,7 +8367,7 @@ NOT_ITEM: ;
 	    }
 	  else if (!isdigit(*arg) || INT_MAX/10 - 1 < *pn)
 	    {
-	    expand_string_message = string_sprintf("%s in \"%s\"",
+	    expand_string_message = string_sprintf("%s in %q",
 	      !isdigit(*arg) ? "non-digit after underscore" : "value too large",
 	      name);
 	    goto EXPAND_FAILED;
@@ -8486,7 +8485,7 @@ NOT_ITEM: ;
       /* Unknown operator */
       default:
 	expand_string_message =
-	  string_sprintf("unknown expansion operator \"%s\"", name);
+	  string_sprintf("unknown expansion operator %q", name);
 	goto EXPAND_FAILED;
       }	/* EOP_* switch */
 
@@ -8764,7 +8763,7 @@ static int_eximarith_t
 expanded_string_integer(const uschar *s, BOOL isplus)
 {
 int_eximarith_t value;
-uschar *msg = US"invalid integer \"%s\"";
+uschar *msg = US"invalid integer %q";
 uschar *endptr;
 
 /* If expansion failed, expand_string_message will be set. */
@@ -8794,9 +8793,9 @@ if (isspace(*s))
 value = strtoll(CS s, CSS &endptr, 10);
 
 if (endptr == s)
-  msg = US"integer expected but \"%s\" found";
+  msg = US"integer expected but %q found";
 else if (value < 0 && isplus)
-  msg = US"non-negative integer expected but \"%s\" found";
+  msg = US"non-negative integer expected but %q found";
 else
   {
   switch (tolower(*endptr))
@@ -8820,7 +8819,7 @@ else
       break;
     }
   if (errno == ERANGE)
-    msg = US"absolute value of integer \"%s\" is too large (overflow)";
+    msg = US"absolute value of integer %q is too large (overflow)";
   else
     if (Uskip_whitespace(&endptr) == 0) return value;
   }
@@ -8862,17 +8861,17 @@ if (!(expanded = expand_string(svalue)))
   {
   if (f.expand_string_forcedfail)
     {
-    DEBUG(dbg_opt) debug_printf("expansion of \"%s\" forced failure\n", oname);
+    DEBUG(dbg_opt) debug_printf("expansion of %q forced failure\n", oname);
     *rvalue = bvalue;
     return OK;
     }
-  addr->message = string_sprintf("failed to expand \"%s\" in %s %s: %s",
+  addr->message = string_sprintf("failed to expand %q in %s %s: %s",
       oname, mname, mtype, expand_string_message);
   DEBUG(dbg_opt) debug_printf("%s\n", addr->message);
   return DEFER;
   }
 
-DEBUG(dbg_opt) debug_printf("expansion of \"%s\" yields \"%s\"\n", oname,
+DEBUG(dbg_opt) debug_printf("expansion of %q yields %q\n", oname,
   expanded);
 
 if (strcmpic(expanded, US"true") == 0 || strcmpic(expanded, US"yes") == 0)
@@ -8881,8 +8880,8 @@ else if (strcmpic(expanded, US"false") == 0 || strcmpic(expanded, US"no") == 0)
   *rvalue = FALSE;
 else
   {
-  addr->message = string_sprintf("\"%s\" is not a valid value for the "
-    "\"%s\" option in the %s %s", expanded, oname, mname, mtype);
+  addr->message = string_sprintf("%q is not a valid value for the "
+    "%q option in the %s %s", expanded, oname, mname, mtype);
   return DEFER;
   }
 

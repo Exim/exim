@@ -510,8 +510,7 @@ if ((s = expand_getkeyed(US"hosts", rdata)) && *s)
     else if (Ustrcmp(ss, "bydns") == 0) lookup_type = LK_BYDNS;
     else
       {
-      addr->message = string_sprintf("bad lookup type \"%s\" yielded by "
-        "command", ss);
+      addr->message = string_sprintf("bad lookup type %q yielded by command", ss);
       log_write(0, LOG_PANIC, "%s router: %s", rblock->drinst.name, addr->message);
       return DEFER;
       }

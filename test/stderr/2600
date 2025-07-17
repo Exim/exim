@@ -736,7 +736,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=sqlite key="select name from them where id='userx';" opts=NULL
  database lookup required for select name from them where id='userx';
  creating new cache entry
@@ -762,7 +762,7 @@ dropping to exim gid; retaining priv uid
  search_find: file="NULL"
    key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=sqlite key="select name from them where id='userx';" opts=NULL
  database lookup required for select name from them where id='userx';
  sqlite3_exec failed: no such table: them

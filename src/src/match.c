@@ -242,7 +242,7 @@ if (cb->flags & MCS_AT_SPECIAL && pattern[0] == '@')
 
     if (rc == HOST_FIND_AGAIN)
       {
-      search_error_message = string_sprintf("DNS lookup of \"%s\" deferred", s);
+      search_error_message = string_sprintf("DNS lookup of %q deferred", s);
       return DEFER;
       }
 
@@ -526,11 +526,11 @@ else
     {
     if (f.expand_string_forcedfail)
       {
-      HDEBUG(D_lists) debug_printf_indent("expansion of \"%s\" forced failure: "
+      HDEBUG(D_lists) debug_printf_indent("expansion of %q forced failure: "
         "assume not in this list\n", *listptr);
       return FAIL;
       }
-    log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand \"%s\" while checking "
+    log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand %q while checking "
       "a list: %s", *listptr, expand_string_message);
     return DEFER;
     }
@@ -681,7 +681,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
       {
       const uschar * listname = readconf_find_option(listptr);
       if (!*listname)
-        listname = string_sprintf("\"%s\"", *listptr);
+        listname = string_sprintf("%q", *listptr);
       log_write_die(0, LOG_MAIN, "%s",
         string_open_failed("%s when checking %s", sss, listname));
       goto cppcheck_silencing;
@@ -727,7 +727,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
         {
         case OK:
 	  (void)fclose(f);
-	  HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\" in %s)\n",
+	  HDEBUG(D_lists) debug_printf_indent("%s %s (matched %q in %s)\n",
 	    ot, yield == OK ? "yes" : "no", sss, filename);
 
 	  /* The "pattern" being matched came from the file; we use a stack-local.
@@ -807,7 +807,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
     if (is_tainted_metadata(ss)) goto BAD_TAINT;
     if (!(t = tree_search(*anchorptr, ss+1)))
       {
-      log_write(0, LOG_MAIN|LOG_PANIC, "unknown named%s list \"%s\"",
+      log_write(0, LOG_MAIN|LOG_PANIC, "unknown named%s list %q",
 	type == MCL_DOMAIN ?    " domain" :
 	type == MCL_HOST ?      " host" :
 	type == MCL_ADDRESS ?   " address" :
@@ -918,7 +918,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 
     if ((bits & (-bits)) == bits)    /* Only one of the two bits is set */
       {
-      HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\"%s)\n", ot,
+      HDEBUG(D_lists) debug_printf_indent("%s %s (matched %q%s)\n", ot,
 	yield == OK ? "yes" : "no", sss, cached);
       goto YIELD_RETURN;
       }
@@ -932,13 +932,13 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
     switch ((func)(arg, ss, valueptr, &error))
       {
       case OK:
-	HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\")\n", ot,
+	HDEBUG(D_lists) debug_printf_indent("%s %s (matched %q)\n", ot,
 	  yield == OK ? "yes" : "no", sss);
 	goto YIELD_RETURN;
 
       case DEFER:
 	if (!error)
-	  error = string_sprintf("DNS lookup of \"%s\" deferred", ss);
+	  error = string_sprintf("DNS lookup of %q deferred", ss);
 	if (ignore_defer)
 	  {
 	  HDEBUG(D_lists)
@@ -1134,7 +1134,7 @@ empty. Otherwise, a subject with no domain is a serious configuration error. */
 if (!sdomain && *subject)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "no @ found in the subject of an "
-    "address list match: subject=\"%s\" pattern=\"%s\"", subject, pattern);
+    "address list match: subject=%q pattern=%q", subject, pattern);
   return FAIL;
   }
 
@@ -1161,7 +1161,7 @@ if (*s == ';')
   {
   if (Ustrncmp(pattern, "partial-", 8) == 0)
     log_write(0, LOG_MAIN|LOG_PANIC, "partial matching is not applicable to "
-      "whole-address lookups: ignored \"partial-\" in \"%s\"", pattern);
+      "whole-address lookups: ignored \"partial-\" in %q", pattern);
   return match_check_string(subject, pattern, -1, cb->flags, valueptr);
   }
 

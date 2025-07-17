@@ -11,7 +11,7 @@
 > 
 > name="\"stquot" id=quote2 
 > 
-> Failed: lookup of "servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';" gave DEFER: MySQL server "x" not found in mysql_servers
+> Failed: lookup of "servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';" gave DEFER: "MySQL server \"x\" not found in mysql_servers"
 > Philip Hazel
 > Philip Hazel
 > oldsyntax ipv6: Philip Hazel

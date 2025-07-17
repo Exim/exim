@@ -950,7 +950,7 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
   store_free(m.data);
   if (rc)
     return tls_error_gnu(NULL, US"gnutls_dh_params_import_pkcs3", rc, errstr);
-  DEBUG(D_tls) debug_printf("read D-H parameters from file \"%s\"\n", filename);
+  DEBUG(D_tls) debug_printf("read D-H parameters from file %q\n", filename);
   }
 
 /* If the file does not exist, fall through to compute new data and cache it.
@@ -960,10 +960,10 @@ else if (errno == ENOENT)
   {
   rc = -1;
   DEBUG(D_tls)
-    debug_printf("D-H parameter cache file \"%s\" does not exist\n", filename);
+    debug_printf("D-H parameter cache file %q does not exist\n", filename);
   }
 else
-  return tls_error(string_open_failed("\"%s\" for reading", filename),
+  return tls_error(string_open_failed("%q for reading", filename),
       NULL, NULL, errstr);
 
 /* If ret < 0, either the cache file does not exist, or the data it contains
@@ -1047,10 +1047,10 @@ if (rc < 0)
     return tls_error_sys(US"TLS cache write close() failed", errno, NULL, errstr);
 
   if (Urename(temp_fn, filename) < 0)
-    return tls_error_sys(string_sprintf("failed to rename \"%s\" as \"%s\"",
+    return tls_error_sys(string_sprintf("failed to rename %q as %q",
           temp_fn, filename), errno, NULL, errstr);
 
-  DEBUG(D_tls) debug_printf("wrote D-H parameters to file \"%s\"\n", filename);
+  DEBUG(D_tls) debug_printf("wrote D-H parameters to file %q\n", filename);
   }
 
 DEBUG(D_tls) debug_printf("initialized server D-H parameters\n");
@@ -1512,7 +1512,7 @@ else
   if (S_ISDIR(statbuf.st_mode))
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
-	"tls_verify_certificates \"%s\" is a directory", bundle);
+	"tls_verify_certificates %q is a directory", bundle);
     return DEFER;
     }
 #endif
@@ -1583,7 +1583,7 @@ if (!p)
   {
   p = exim_default_gnutls_priority;
   DEBUG(D_tls)
-    debug_printf("GnuTLS using default session cipher/priority \"%s\"\n", p);
+    debug_printf("GnuTLS using default session cipher/priority %q\n", p);
   }
 return gnutls_priority_init( (gnutls_priority_t *) &state->lib_state.pri_cache,
   CCS p, errpos);
@@ -2230,7 +2230,7 @@ if (host)
   if (state->tlsp->sni && *state->tlsp->sni)
     {
     DEBUG(D_tls)
-      debug_printf("Setting TLS client SNI to \"%s\"\n", state->tlsp->sni);
+      debug_printf("Setting TLS client SNI to %q\n", state->tlsp->sni);
     sz = Ustrlen(state->tlsp->sni);
     if ((rc = gnutls_server_name_set(state->session,
 	  GNUTLS_NAME_DNS, state->tlsp->sni, sz)))
@@ -2259,7 +2259,7 @@ if (!state->lib_state.pri_string)
     if (state->exp_tls_require_ciphers && *state->exp_tls_require_ciphers)
       {
       p = state->exp_tls_require_ciphers;
-      DEBUG(D_tls) debug_printf("GnuTLS session cipher/priority \"%s\"\n", p);
+      DEBUG(D_tls) debug_printf("GnuTLS session cipher/priority %q\n", p);
       }
     }
 
@@ -2469,7 +2469,7 @@ if ((ct = gnutls_certificate_type_get(session)) != GNUTLS_CRT_X509)
   {
   const uschar * ctn = US gnutls_certificate_type_get_name(ct);
   DEBUG(D_tls)
-    debug_printf("TLS: peer cert not X.509 but instead \"%s\"\n", ctn);
+    debug_printf("TLS: peer cert not X.509 but instead %q\n", ctn);
   if (state->verify_requirement >= VERIFY_REQUIRED)
     return tls_error(US"certificate verification not possible, unhandled type",
         ctn, state->host, errstr);
@@ -2706,7 +2706,7 @@ if (rc < 0 || verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED))
     }
 
   DEBUG(D_tls)
-    debug_printf("TLS certificate verification failed (%s): peerdn=\"%s\"\n",
+    debug_printf("TLS certificate verification failed (%s): peerdn=%q\n",
         *errstr, state->peerdn ? state->peerdn : US"<unset>");
 
   if (state->verify_requirement >= VERIFY_REQUIRED)
@@ -2735,7 +2735,7 @@ else
     }
 
   state->peer_cert_verified = TRUE;
-  DEBUG(D_tls) debug_printf("TLS certificate verified: peerdn=\"%s\"\n",
+  DEBUG(D_tls) debug_printf("TLS certificate verified: peerdn=%q\n",
       state->peerdn ? state->peerdn : US"<unset>");
   }
 
@@ -2833,7 +2833,7 @@ store_pool = old_pool;
 /* We set this one now so that variable expansions below will work */
 state->tlsp->sni = state->received_sni;
 
-DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", sni_name,
+DEBUG(D_tls) debug_printf("Received TLS SNI %q%s\n", sni_name,
     state->trigger_sni_changes ? "" : " (unused for certificate selection)");
 
 if (!state->trigger_sni_changes)
@@ -3358,7 +3358,7 @@ if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
     host->certname;
 #endif
   DEBUG(D_tls)
-    debug_printf("TLS: server cert verification includes hostname: \"%s\"\n",
+    debug_printf("TLS: server cert verification includes hostname: %q\n",
 		    state->exp_tls_verify_cert_hostnames);
   }
 }
@@ -3671,7 +3671,8 @@ if (ob->tls_alpn)
       DEBUG(D_tls) debug_printf("Setting TLS ALPN '%s'\n", ob->tls_alpn);
   }
 #else
-  log_write(0, LOG_MAIN, "ALPN unusable with this GnuTLS library version; ignoring \"%s\"\n",
+  log_write(0, LOG_MAIN,
+	  "ALPN unusable with this GnuTLS library version; ignoring %q\n",
           ob->tls_alpn);
 #endif
 
@@ -4355,7 +4356,7 @@ if (!(expciphers && *expciphers))
   return_deinit(NULL);
 
 DEBUG(D_tls)
-  debug_printf("tls_require_ciphers expands to \"%s\"\n", expciphers);
+  debug_printf("tls_require_ciphers expands to %q\n", expciphers);
 
 rc = gnutls_priority_init(&priority_cache, CS expciphers, &errpos);
 validate_check_rc(string_sprintf(

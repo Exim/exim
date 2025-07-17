@@ -140,7 +140,7 @@
 'b'
 'c'
 > 
-> Failed: error in expression evaluation: expecting number or opening parenthesis (after processing "0+") inside "reduce" item
+> Failed: "error in expression evaluation: expecting number or opening parenthesis (after processing \"0+\")" inside "reduce" item
 > reduce: 6
 > reduce: 6
 > reduce: 6
@@ -636,7 +636,7 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > abcd:abcd::   data for abcd:abcd::/32
 > abcd:abcd:1:: data for abcd:abcd::/32
 > abcd:abcd::3  data for abcd:abcd::/32
-> Failed: lookup of "rhubarb" gave DEFER: "rhubarb" is not a valid iplsearch key (an IP address, with optional CIDR mask, is wanted): in a host list, use net-iplsearch as the search type
+> Failed: lookup of "rhubarb" gave DEFER: "\"rhubarb\" is not a valid iplsearch key (an IP address, with optional CIDR mask, is wanted): in a host list, use net-iplsearch as the search type"
 > 
 > 
 > # Nested Lookups - style 1

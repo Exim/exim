@@ -401,7 +401,7 @@ if (info->magic != LOOKUP_MODULE_INFO_MAGIC)
   }
 
 addlookupmodule(info);
-DEBUG(D_lookup) debug_printf_indent("Loaded \"%s\" (%d lookup type%s)\n",
+DEBUG(D_lookup) debug_printf_indent("Loaded %q (%d lookup type%s)\n",
 				    name, info->lookupcount,
 				    info->lookupcount > 1 ? "s" : "");
 return TRUE;
@@ -481,7 +481,7 @@ if (mi->dyn_magic != MISC_MODULE_MAGIC)
   return FALSE;
   }
 
-DEBUG(D_lookup) debug_printf_indent("Loaded \"%s\"\n", name);
+DEBUG(D_lookup) debug_printf_indent("Loaded %q\n", name);
 misc_mod_add(mi);
 return mi;
 }

@@ -66,7 +66,7 @@ if (expandable)
     {
     addr->basic_errno = ERRNO_BADTRANSPORT;
     addr->message = string_sprintf("failed to expand transport "
-      "\"%s\" in %s router: %s", tpname, router_name, expand_string_message);
+      "%q in %s router: %s", tpname, router_name, expand_string_message);
     return FALSE;
     }
   if (is_tainted(ss))
@@ -91,7 +91,7 @@ for (transport_instance * tp = transports; tp; tp = tp->drinst.next)
     }
 
 addr->basic_errno = ERRNO_BADTRANSPORT;
-addr->message = string_sprintf("transport \"%s\" not found in %s router", ss,
+addr->message = string_sprintf("transport %q not found in %s router", ss,
   router_name);
 return FALSE;
 }

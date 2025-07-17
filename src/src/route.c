@@ -204,11 +204,11 @@ for (rr = routers; rr; rr = rr->drinst.next)
 
 if (!rr)
   log_write_die(0, LOG_CONFIG,
-    "new_router \"%s\" not found for \"%s\" router", name, r->drinst.name);
+    "new_router %q not found for %q router", name, r->drinst.name);
 
 if (after && !afterthis)
   log_write_die(0, LOG_CONFIG,
-    "new_router \"%s\" does not follow \"%s\" router", name, r->drinst.name);
+    "new_router %q does not follow %q router", name, r->drinst.name);
 }
 
 
@@ -676,7 +676,7 @@ while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
   if (!ss)
     {
     if (f.expand_string_forcedfail) continue;
-    *perror = string_sprintf("failed to expand \"%s\" for require_files: %s",
+    *perror = string_sprintf("failed to expand %q for require_files: %s",
       check, expand_string_message);
     goto RETURN_DEFER;
     }
@@ -703,7 +703,7 @@ while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
 
     if (!ok)
       {
-      *perror = string_sprintf("user \"%s\" for require_files not found", ss);
+      *perror = string_sprintf("user %q for require_files not found", ss);
       goto RETURN_DEFER;
       }
 
@@ -721,7 +721,7 @@ while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
     else
       if (!route_findgroup(comma + 1, &gid))
         {
-        *perror = string_sprintf("group \"%s\" for require_files not found\n",
+        *perror = string_sprintf("group %q for require_files not found\n",
           comma + 1);
         goto RETURN_DEFER;
         }
@@ -750,7 +750,7 @@ while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
 
   if (*ss != '/')
     {
-    *perror = string_sprintf("require_files: \"%s\" is not absolute", ss);
+    *perror = string_sprintf("require_files: %q is not absolute", ss);
     goto RETURN_DEFER;
     }
 
@@ -1030,7 +1030,7 @@ if (r->router_home_directory)
     }
   else if (!f.expand_string_forcedfail)
     {
-    *perror = string_sprintf("failed to expand \"%s\" for "
+    *perror = string_sprintf("failed to expand %q for "
       "router_home_directory: %s", r->router_home_directory,
       expand_string_message);
     return DEFER;
@@ -1169,7 +1169,7 @@ route_finduser(const uschar *s, struct passwd **pw, uid_t *return_uid)
 {
 BOOL cache_set = (Ustrcmp(lastname, s) == 0);
 
-DEBUG(D_uid) debug_printf_indent("seeking password data for user \"%s\": %s\n", s,
+DEBUG(D_uid) debug_printf_indent("seeking password data for user %q: %s\n", s,
   cache_set ? "using cached result" : "cache not available");
 
 if (!cache_set)
@@ -1309,7 +1309,7 @@ uschar *user = expand_string(string);
 
 if (!user)
   {
-  *errmsg = string_sprintf("Failed to expand user string \"%s\" for the "
+  *errmsg = string_sprintf("Failed to expand user string %q for the "
     "%s %s: %s", string, driver_name, driver_type, expand_string_message);
   log_write(0, LOG_MAIN|LOG_PANIC, "%s", *errmsg);
   return FALSE;
@@ -1317,8 +1317,8 @@ if (!user)
 
 if (route_finduser(user, pw, uid)) return TRUE;
 
-*errmsg = string_sprintf("Failed to find user \"%s\" from expanded string "
-  "\"%s\" for the %s %s", user, string, driver_name, driver_type);
+*errmsg = string_sprintf("Failed to find user %q from expanded string "
+  "%q for the %s %s", user, string, driver_name, driver_type);
 log_write(0, LOG_MAIN|LOG_PANIC, "%s", *errmsg);
 return FALSE;
 }
@@ -1351,7 +1351,7 @@ uschar *group = expand_string(string);
 
 if (!group)
   {
-  *errmsg = string_sprintf("Failed to expand group string \"%s\" for the "
+  *errmsg = string_sprintf("Failed to expand group string %q for the "
     "%s %s: %s", string, driver_name, driver_type, expand_string_message);
   log_write(0, LOG_MAIN|LOG_PANIC, "%s", *errmsg);
   return FALSE;
@@ -1359,8 +1359,8 @@ if (!group)
 
 if (!route_findgroup(group, gid))
   {
-  *errmsg = string_sprintf("Failed to find group \"%s\" from expanded string "
-    "\"%s\" for the %s %s", group, string, driver_name, driver_type);
+  *errmsg = string_sprintf("Failed to find group %q from expanded string "
+    "%q for the %s %s", group, string, driver_name, driver_type);
   log_write(0, LOG_MAIN|LOG_PANIC, "%s", *errmsg);
   yield = FALSE;
   }
@@ -1515,7 +1515,7 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
       {
       int yield;
       BOOL more;
-      DEBUG(D_route) debug_printf_indent("forced failure in expansion of \"%s\" "
+      DEBUG(D_route) debug_printf_indent("forced failure in expansion of %q "
 	  "(router variable): decline action taken\n", ele);
 
       /* Expand "more" if necessary; DEFER => an expansion failed */
@@ -1533,7 +1533,7 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
       }
     else
       {
-      addr->message = string_sprintf("expansion of \"%s\" failed "
+      addr->message = string_sprintf("expansion of %q failed "
 	"in %s router: %s", ele, drname, expand_string_message);
       /* Caller will replace that for logging, if a DB lookup, to avoid exposing
       passwords */
@@ -1806,7 +1806,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
       {
       if (f.expand_string_forcedfail)
         {
-        DEBUG(D_route) debug_printf_indent("forced failure in expansion of \"%s\" "
+        DEBUG(D_route) debug_printf_indent("forced failure in expansion of %q "
             "(address_data): decline action taken\n", r->address_data);
 
         /* Expand "more" if necessary; DEFER => an expansion failed */
@@ -1828,7 +1828,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
       else
         {
-        addr->message = string_sprintf("expansion of \"%s\" failed "
+        addr->message = string_sprintf("expansion of %q failed "
           "in %s router: %s", r->address_data, rname_l, expand_string_message);
         yield = DEFER;
         goto ROUTERS_LOOP_EXIT;

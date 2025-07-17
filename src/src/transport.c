@@ -2196,7 +2196,7 @@ argv[argcount] = NULL;
 
 if (*s)
   {
-  uschar *msg = string_sprintf("Too many arguments in command \"%s\" in "
+  uschar *msg = string_sprintf("Too many arguments in command %q in "
     "%s", cmd, etext);
   if (addr)
     {
@@ -2250,7 +2250,7 @@ if (flags & TSUC_EXPAND_ARGS)
       if (argcount + address_count - 1 > max_args)
         {
         addr->transport_return = FAIL;
-        addr->message = string_sprintf("Too many arguments to command \"%s\" "
+        addr->message = string_sprintf("Too many arguments to command %q "
           "in %s", cmd, etext);
         return FALSE;
         }
@@ -2306,8 +2306,8 @@ if (flags & TSUC_EXPAND_ARGS)
       if (!s || !*s)
         {
         addr->transport_return = FAIL;
-        addr->message = string_sprintf("Expansion of \"%s\" "
-           "from command \"%s\" in %s failed: %s",
+        addr->message = string_sprintf("Expansion of %q "
+           "from command %q in %s failed: %s",
            (addr->local_part + 1), cmd, etext, expand_string_message);
         return FALSE;
         }
@@ -2333,7 +2333,7 @@ if (flags & TSUC_EXPAND_ARGS)
       if (*s)
         {
         uschar * msg = string_sprintf("Too many arguments in $address_pipe "
-          "\"%s\" in %s", addr->local_part + 1, etext);
+          "%q in %s", addr->local_part + 1, etext);
 	addr->transport_return = FAIL;
 	addr->message = msg;
         return FALSE;
@@ -2347,7 +2347,7 @@ if (flags & TSUC_EXPAND_ARGS)
         {
         addr->transport_return = FAIL;
         addr->message = string_sprintf("Too many arguments to command "
-          "\"%s\" after expanding $address_pipe in %s", cmd, etext);
+          "%q after expanding $address_pipe in %s", cmd, etext);
         return FALSE;
         }
 
@@ -2397,8 +2397,8 @@ if (flags & TSUC_EXPAND_ARGS)
 
       if (!expanded_arg)
         {
-        uschar *msg = string_sprintf("Expansion of \"%s\" "
-          "from command \"%s\" in %s failed: %s",
+        uschar *msg = string_sprintf("Expansion of %q "
+          "from command %q in %s failed: %s",
           argv[i], cmd, etext, expand_string_message);
         if (addr)
           {

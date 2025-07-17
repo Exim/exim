@@ -1373,7 +1373,7 @@ dane_cert_list xlist = 0;
 dane_pkey_list klist = 0;
 const EVP_MD *md = 0;
 
-DEBUG(D_tls) debug_printf("Dane add-tlsa: usage %u sel %u mdname \"%s\"\n",
+DEBUG(D_tls) debug_printf("Dane add-tlsa: usage %u sel %u mdname %q\n",
 			  usage, selector, mdname);
 
 if(dane_idx < 0 || !(dane = SSL_get_ex_data(ssl, dane_idx)))

@@ -403,7 +403,7 @@ while (*++ptr && *ptr != '\"' && *ptr != '\n')
   }
 
 if (*ptr == '\"') ptr++;
-  else if (*error_pointer == NULL)
+  else if (!*error_pointer)
     *error_pointer = string_sprintf("quote missing at end of string "
       "in line %d", line_number);
 
@@ -652,7 +652,7 @@ for (;;)
         {
         if (!isptr)
           {
-          *error_pointer = string_sprintf("unrecognized condition word \"%s\" "
+          *error_pointer = string_sprintf("unrecognized condition word %q "
             "near line %d of filter file", buffer, line_number);
           break;
           }
@@ -774,8 +774,8 @@ for (;;)
 
     else
       {
-      *error_pointer = string_sprintf("\"and\" or \"or\" or \"%s\" "
-        "expected near line %d of filter file, but found \"%s\"",
+      *error_pointer = string_sprintf("\"and\" or \"or\" or %q "
+        "expected near line %d of filter file, but found %q",
           toplevel? "then" : ")", line_number, buffer);
       break;
       }
@@ -936,7 +936,7 @@ switch (command)
     if (seen_force || noerror_force)
       {
       *error_pointer = string_sprintf("\"seen\", \"unseen\", or \"noerror\" "
-	"found before an \"%s\" command near line %d",
+	"found before an %q command near line %d",
 	  command_list[command], line_number);
       yield = FALSE;
       }
@@ -956,7 +956,7 @@ switch (command)
 
     ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
     if (!*buffer)
-      *error_pointer = string_sprintf("\"%s\" requires an argument "
+      *error_pointer = string_sprintf("%q requires an argument "
 	"near line %d of filter file", command_list[command], line_number);
 
     if (*error_pointer) yield = FALSE; else
@@ -1096,7 +1096,7 @@ switch (command)
 		       (command == ELSE_COMMAND)? had_else : had_endif;
     else
       {
-      *error_pointer = string_sprintf("unexpected \"%s\" command near "
+      *error_pointer = string_sprintf("unexpected %q command near "
 	"line %d of filter file", buffer, line_number);
       yield = FALSE;
       }
@@ -1119,7 +1119,7 @@ switch (command)
   DEFER_FREEZE_FAIL:
     if (!(filter_options & cmd_bit))
       {
-      *error_pointer = string_sprintf("filtering command \"%s\" is disabled: "
+      *error_pointer = string_sprintf("filtering command %q is disabled: "
 	"near line %d of filter file", buffer, line_number);
       yield = FALSE;
       break;
@@ -1392,7 +1392,7 @@ switch (command)
   /* Oops */
 
   default:
-    *error_pointer = string_sprintf("unknown filtering command \"%s\" "
+    *error_pointer = string_sprintf("unknown filtering command %q "
       "near line %d of filter file", buffer, line_number);
     yield = FALSE;
     break;
@@ -1602,15 +1602,14 @@ if (!c) return TRUE;  /* does this ever occur? */
 switch (c->type)
   {
   case cond_and:
-    yield = test_condition(c->left.c, FALSE) &&
-	    *error_pointer == NULL &&
-	    test_condition(c->right.c, FALSE);
+    yield = test_condition(c->left.c, FALSE)
+	    && !*error_pointer
+	    && test_condition(c->right.c, FALSE);
     break;
 
   case cond_or:
-    yield = test_condition(c->left.c, FALSE) ||
-	    (*error_pointer == NULL &&
-	    test_condition(c->right.c, FALSE));
+    yield = test_condition(c->left.c, FALSE)
+	    || (!*error_pointer && test_condition(c->right.c, FALSE));
     break;
 
     /* The personal test is meaningless in a system filter. The tests are now in
@@ -1652,7 +1651,7 @@ switch (c->type)
     p = c->left.u;
     if (!(pp = expand_string(p)))
       {
-      *error_pointer = string_sprintf("failed to expand \"%s\" in "
+      *error_pointer = string_sprintf("failed to expand %q in "
 	"filter file: %s", p, expand_string_message);
       return FALSE;
       }
@@ -1701,7 +1700,7 @@ switch (c->type)
       {
       if (!(exp[i] = expand_string_2(p, &textonly_re)))
 	{
-	*error_pointer = string_sprintf("failed to expand \"%s\" in "
+	*error_pointer = string_sprintf("failed to expand %q in "
 	  "filter file: %s", p, expand_string_message);
 	return FALSE;
 	}
@@ -1778,7 +1777,7 @@ switch (c->type)
 	  val[i] = get_number(exp[i], &yield);
 	  if (!yield)
 	    {
-	    *error_pointer = string_sprintf("malformed numerical string \"%s\"",
+	    *error_pointer = string_sprintf("malformed numerical string %q",
 	      exp[i]);
 	    return FALSE;
 	    }
@@ -1851,7 +1850,7 @@ while (commands)
       expargs[i] = NULL;
     else if (!(expargs[i] = expand_string(ss)))
       {
-      *error_pointer = string_sprintf("failed to expand \"%s\" in "
+      *error_pointer = string_sprintf("failed to expand %q in "
 	"%s command: %s", ss, command_list[commands->command],
 	expand_string_message);
       return FF_ERROR;
@@ -1873,7 +1872,7 @@ while (commands)
 
 	if (i == 1 && (*ss++ != 'n' || ss[1] != 0))
 	  {
-	  *error_pointer = string_sprintf("unknown variable \"%s\" in \"add\" "
+	  *error_pointer = string_sprintf("unknown variable %q in \"add\" "
 	    "command", expargs[i]);
 	  return FF_ERROR;
 	  }
@@ -1884,7 +1883,7 @@ while (commands)
 	n[i] = (int)Ustrtol(ss, &end, 0);
 	if (*end != 0)
 	  {
-	  *error_pointer = string_sprintf("malformed number \"%s\" in \"add\" "
+	  *error_pointer = string_sprintf("malformed number %q in \"add\" "
 	    "command", ss);
 	  return FF_ERROR;
 	  }
@@ -1914,7 +1913,7 @@ while (commands)
 	      : rewrite_address_qualify(ss, TRUE);
 	  else
 	    {
-	    *error_pointer = string_sprintf("malformed address \"%s\" in "
+	    *error_pointer = string_sprintf("malformed address %q in "
 	      "filter file: %s", s, error);
 	    return FF_ERROR;
 	    }
@@ -2122,7 +2121,7 @@ while (commands)
 	  log_fd = Uopen(log_filename, O_CREAT|O_APPEND|O_WRONLY, log_mode);
 	  if (log_fd < 0)
 	    {
-	    *error_pointer = string_open_failed("filter log file \"%s\"",
+	    *error_pointer = string_open_failed("filter log file %q",
 	      log_filename);
 	    return FF_ERROR;
 	    }
@@ -2130,7 +2129,7 @@ while (commands)
 	len = Ustrlen(s);
 	if (write(log_fd, s, len) != len)
 	  {
-	  *error_pointer = string_sprintf("write error on file \"%s\": %s",
+	  *error_pointer = string_sprintf("write error on file %q: %s",
 	    log_filename, strerror(errno));
 	  return FF_ERROR;
 	  }
@@ -2215,7 +2214,7 @@ while (commands)
 	printf("%c%s text \"%s\"\n", toupper(ff_name[0]), ff_name+1, fmsg);
 	}
       else
-        DEBUG(D_filter) debug_printf_indent("Filter: %s \"%s\"\n", ff_name, fmsg);
+        DEBUG(D_filter) debug_printf_indent("Filter: %s %q\n", ff_name, fmsg);
       return ff_ret;
 
     case FINISH_COMMAND:
@@ -2299,7 +2298,7 @@ while (commands)
 	      {
 	      if (!mac_isprint(c))
 		{
-		*error_pointer = string_sprintf("non-printing character in \"%s\" "
+		*error_pointer = string_sprintf("non-printing character in %q "
 		  "in %s command", string_printing(t),
 		  command_list[commands->command]);
 		return FF_ERROR;

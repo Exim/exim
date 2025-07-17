@@ -247,10 +247,10 @@ switch(ident)
       eblock = eblock->next;
       }
 
-    fprintf(fp, (count == 1)? "\nThis address has been ignored. " :
+    fprintf(fp, count == 1 ? "\nThis address has been ignored. " :
       "\nThese addresses have been ignored. ");
 
-    fprintf(fp, (ident == ERRMESS_BADADDRESS)?
+    fprintf(fp, ident == ERRMESS_BADADDRESS ?
       "The other addresses in the message were\n"
       "syntactically valid and have been passed on for an attempt at delivery.\n" :
 
@@ -823,7 +823,7 @@ FILE * f;
 
 for (error_block * e = eblock; e; e = e->next)
   if (e->text2)
-    log_write(0, LOG_MAIN, "%s router: skipped error: %s in \"%s\"",
+    log_write(0, LOG_MAIN, "%s router: skipped error: %s in %q",
       rname, e->text1, e->text2);
   else
     log_write(0, LOG_MAIN, "%s router: skipped error: %s", rname,

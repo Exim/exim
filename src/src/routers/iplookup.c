@@ -194,7 +194,7 @@ else
     }
 
 query_len = Ustrlen(query);
-DEBUG(D_route) debug_printf("%s router query is \"%s\"\n", rblock->drinst.name,
+DEBUG(D_route) debug_printf("%s router query is %q\n", rblock->drinst.name,
   string_printing(query));
 
 /* Now connect to the required port for each of the hosts in turn, until a
@@ -291,7 +291,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     /* Success; break the loop */
 
     reply[count] = 0;
-    DEBUG(D_route) debug_printf("%s router received \"%s\" from %s\n",
+    DEBUG(D_route) debug_printf("%s router received %q from %s\n",
       rblock->drinst.name, string_printing(reply), h->address);
     break;
     }

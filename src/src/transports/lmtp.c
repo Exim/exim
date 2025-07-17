@@ -522,7 +522,7 @@ else
   DEBUG(D_transport) debug_printf("using socket %s\n", ob->skt);
   if (!(sockname = expand_string(ob->skt)))
     {
-    addrlist->message = string_sprintf("Expansion of \"%s\" (socket setting "
+    addrlist->message = string_sprintf("Expansion of %q (socket setting "
       "for %s transport) failed: %s", ob->skt, trname,
       expand_string_message);
     return FALSE;

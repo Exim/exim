@@ -5532,12 +5532,12 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
       if (!(expanded_hosts = expand_string(s)))
         {
         addrlist->message = string_sprintf("failed to expand list of hosts "
-          "\"%s\" in %s transport: %s", s, trname, expand_string_message);
+          "%q in %s transport: %s", s, trname, expand_string_message);
         addrlist->transport_return = f.search_find_defer ? DEFER : PANIC;
         return FALSE;     /* Only top address has status */
         }
-      DEBUG(D_transport) debug_printf("expanded list of hosts \"%s\" to "
-        "\"%s\"\n", s, expanded_hosts);
+      DEBUG(D_transport)
+	debug_printf("expanded list of hosts %q to %q\n", s, expanded_hosts);
       s = expanded_hosts;
       }
     else if (ob->hosts_randomize)

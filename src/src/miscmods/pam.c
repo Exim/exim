@@ -160,8 +160,7 @@ if (user == NULL || user[0] == 0) return FAIL;
 
 /* Start off PAM interaction */
 
-DEBUG(D_auth)
-  debug_printf("Running PAM authentication for user \"%s\"\n", user);
+DEBUG(D_auth) debug_printf("Running PAM authentication for user %q\n", user);
 
 pam_error = pam_start ("exim", CS user, &pamc, &pamh);
 

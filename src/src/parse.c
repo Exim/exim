@@ -569,7 +569,7 @@ s = read_local_part(s, t, errorptr, FALSE);
 if (*errorptr == NULL)
   if (*s != term)
     if (*s != '@')
-      *errorptr = string_sprintf("\"@\" or \".\" expected after \"%s\"", t);
+      *errorptr = string_sprintf("\"@\" or \".\" expected after %q", t);
     else
       {
       t += Ustrlen((const uschar *)t);
@@ -1391,7 +1391,7 @@ for (;;)
 
     if (flen > 255)
       {
-      *error = string_sprintf("included file name \"%s\" is too long", t);
+      *error = string_sprintf("included file name %q is too long", t);
       return FF_ERROR;
       }
 
@@ -1401,7 +1401,7 @@ for (;;)
 
     if (filename[0] != '/')
       {
-      *error = string_sprintf("included file \"%s\" is not an absolute path",
+      *error = string_sprintf("included file %q is not an absolute path",
         filename);
       return FF_ERROR;
       }
@@ -1678,7 +1678,7 @@ for (;;)
           }
         else
           {
-          *error = string_sprintf("%s in \"%s\"", *error, s_ltd);
+          *error = string_sprintf("%s in %q", *error, s_ltd);
           return FF_ERROR;
           }
         }
@@ -2123,7 +2123,7 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
     uschar extract[1024];
     Ustrncpy(extract, buffer+start, end-start);
     extract[end-start] = 0;
-    printf("%s %d %d %d \"%s\"\n", out, start, end, domain, extract);
+    printf("%s %d %d %d %q\n", out, start, end, domain, extract);
     }
   }
 
@@ -2144,7 +2144,7 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
     uschar extract[1024];
     Ustrncpy(extract, buffer+start, end-start);
     extract[end-start] = 0;
-    printf("%s %d %d %d \"%s\"\n", out, start, end, domain, extract);
+    printf("%s %d %d %d %q\n", out, start, end, domain, extract);
     }
   }
 allow_utf8_domains = FALSE;
@@ -2175,7 +2175,7 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
       uschar extract[1024];
       Ustrncpy(extract, buffer+start, end-start);
       extract[end-start] = 0;
-      printf("%s %d %d %d \"%s\"\n", out, start, end, domain, extract);
+      printf("%s %d %d %d %q\n", out, start, end, domain, extract);
       }
 
     s = ss + (terminator? 1:0);

@@ -814,7 +814,7 @@ for (m = macros; m; m = m->next)
     {
     if (!m->command_line && !redef)
       {
-      log_write(0, LOG_CONFIG|LOG_PANIC, "macro \"%s\" is already "
+      log_write(0, LOG_CONFIG|LOG_PANIC, "macro %q is already "
        "defined (use \"==\" if you want to redefine it)", name);
       return FALSE;
       }
@@ -823,8 +823,8 @@ for (m = macros; m; m = m->next)
 
   if (m->namelen < namelen && Ustrstr(name, m->name) != NULL)
     {
-    log_write(0, LOG_CONFIG|LOG_PANIC, "\"%s\" cannot be defined as "
-      "a macro because previously defined macro \"%s\" is a substring",
+    log_write(0, LOG_CONFIG|LOG_PANIC, "%q cannot be defined as "
+      "a macro because previously defined macro %q is a substring",
       name, m->name);
     return FALSE;
     }
@@ -833,8 +833,8 @@ for (m = macros; m; m = m->next)
   macro is permitted (there is even an example).
   *
   * if (m->namelen > namelen && Ustrstr(m->name, name) != NULL)
-  *   log_write_die(0, LOG_CONFIG|"\"%s\" cannot be defined as "
-  *     "a macro because it is a substring of previously defined macro \"%s\"",
+  *   log_write_die(0, LOG_CONFIG|"%q cannot be defined as "
+  *     "a macro because it is a substring of previously defined macro %q",
   *     name, m->name);
   */
   }
@@ -854,7 +854,7 @@ if (redef)
   else
     {
     log_write(0, LOG_CONFIG|LOG_PANIC, "can't redefine an undefined macro "
-      "\"%s\"", name);
+      "%q", name);
     return FALSE;
     }
 
@@ -1153,7 +1153,7 @@ for (;;)
     if (*ss != '/')
       if (include_if_exists)
 	log_write_die(0, LOG_CONFIG_IN,
-			".include specifies a non-absolute path \"%s\"", ss);
+			".include specifies a non-absolute path %q", ss);
       else
 	ss = string_sprintf("%s/%s", config_directory, ss);
 
@@ -1282,7 +1282,7 @@ if (isalpha(Uskip_whitespace(&s)))
 name[p] = 0;
 if (broken) {
   log_write_die(0, LOG_CONFIG_IN,
-            "exim item name too long (>%d), unable to use \"%s\" (truncated)",
+            "exim item name too long (>%d), unable to use %q (truncated)",
             len, name);
 }
 Uskip_whitespace(&s);
@@ -1781,7 +1781,7 @@ if (!(ol = find_option(name + offset, oltop, last)))
 
 if ((ol->type & opt_set)  && !(ol->type & (opt_rep_con | opt_rep_str)))
   log_write_die(0, LOG_CONFIG_IN,
-    "\"%s\" option set for the second time", name);
+    "%q option set for the second time", name);
 
 ol->type |= opt_set | issecure;
 type = ol->type & opt_mask;
@@ -2197,8 +2197,8 @@ switch (type)
       else if (strcmpic(name2, US"false") == 0 || strcmpic(name2, US"no") == 0)
 	boolvalue = FALSE;
       else log_write_die(0, LOG_CONFIG_IN,
-	"\"%s\" is not a valid value for the \"%s\" option", name2, name);
-      if (*s != 0) extra_chars_error(s, string_sprintf("\"%s\" ", name2),
+	"%q is not a valid value for the %q option", name2, name);
+      if (*s != 0) extra_chars_error(s, string_sprintf("%q ", name2),
 	US"for boolean option ", name);
       }
 
@@ -2290,7 +2290,7 @@ switch (type)
 
       if (errno == ERANGE || lvalue > INT_MAX || lvalue < INT_MIN)
 	log_write_die(0, LOG_CONFIG_IN,
-	  "absolute value of integer \"%s\" is too large (overflow)", s);
+	  "absolute value of integer %q is too large (overflow)", s);
 
       if (Uskip_whitespace(&endptr))
 	extra_chars_error(endptr, inttype, US"integer value for ", name);
@@ -2338,7 +2338,7 @@ switch (type)
       }
 
     if (errno == ERANGE) log_write_die(0, LOG_CONFIG_IN,
-      "absolute value of integer \"%s\" is too large (overflow)", s);
+      "absolute value of integer %q is too large (overflow)", s);
 
     if (Uskip_whitespace(&endptr))
       extra_chars_error(endptr, inttype, US"integer value for ", name);
@@ -2358,12 +2358,12 @@ switch (type)
 	"fixed-point number expected for %s", name);
 
     if (value < 0) log_write_die(0, LOG_CONFIG_IN,
-      "integer \"%s\" is too large (overflow)", s);
+      "integer %q is too large (overflow)", s);
 
     value *= 1000;
 
     if (value < 0) log_write_die(0, LOG_CONFIG_IN,
-      "integer \"%s\" is too large (overflow)", s);
+      "integer %q is too large (overflow)", s);
 
     /* We get a coverity error here for using count, as it derived
     from the tainted buffer pointed to by s, as parsed by sscanf().
@@ -2873,7 +2873,7 @@ if (!type)
         }
 
     if (!found)
-      printf("no address, domain, host, or local part list called \"%s\" "
+      printf("no address, domain, host, or local part list called %q "
         "exists\n", name+1);
 
     return found;
@@ -3129,7 +3129,7 @@ Uskip_whitespace(&s);
 
 if (!tree_insertnode(anchorp, t))
   log_write_die(0, LOG_CONFIG_IN,
-    "duplicate name \"%s\" for a named %s", t->name, tname);
+    "duplicate name %q for a named %s", t->name, tname);
 
 t->data.ptr = nb;
 nb->number = *numberp;
@@ -3137,7 +3137,7 @@ nb->number = *numberp;
 nb->hide = hide;
 
 if (*s++ != '=') log_write_die(0, LOG_CONFIG_IN,
-  "missing '=' after \"%s\"", t->name);
+  "missing '=' after %q", t->name);
 Uskip_whitespace(&s);
 nb->string = read_string(s, t->name);
 nb->cache_data = NULL;
@@ -3425,7 +3425,7 @@ while ((s = get_config_line()))
 
   else
     (void) readconf_handle_option(s, optionlist_config, optionlist_config_size,
-      NULL, US"main option \"%s\" unknown");
+      NULL, US"main option %q unknown");
   }
 
 
@@ -3525,7 +3525,7 @@ DEBUG(D_any) if (Ustrchr(spool_directory, '$'))
 
 if (!(s = expand_string(spool_directory)))
   log_write_die(0, LOG_MAIN, "failed to expand spool_directory "
-    "\"%s\": %s", spool_directory, expand_string_message);
+    "%q: %s", spool_directory, expand_string_message);
 spool_directory = s;
 
 /* Expand log_file_path, which must contain "%s" in any component that isn't
@@ -3538,7 +3538,7 @@ if (*log_file_path)
   int sep = ':';                       /* Fixed for log file path */
   if (!(s = expand_string(log_file_path)))
     log_write_die(0, LOG_MAIN, "failed to expand log_file_path "
-      "\"%s\": %s", log_file_path, expand_string_message);
+      "%q: %s", log_file_path, expand_string_message);
 
   ss = s;
   /* should never be a tainted list */
@@ -3547,12 +3547,12 @@ if (*log_file_path)
     uschar *t;
     if (sss[0] == 0 || Ustrcmp(sss, "syslog") == 0) continue;
     if (!(t = Ustrstr(sss, "%s")))
-      log_write_die(0, LOG_MAIN, "log_file_path \"%s\" does not "
+      log_write_die(0, LOG_MAIN, "log_file_path %q does not "
         "contain \"%%s\"", sss);
     *t = 'X';
     if ((t = Ustrchr(sss, '%')))
       if ((t[1] != 'D' && t[1] != 'M') || Ustrchr(t+2, '%') != NULL)
-        log_write_die(0, LOG_MAIN, "log_file_path \"%s\" contains "
+        log_write_die(0, LOG_MAIN, "log_file_path %q contains "
           "unexpected \"%%\" character", s);
     }
 
@@ -3581,7 +3581,7 @@ if (syslog_facility_str)
 
   if (i >= syslog_list_size)
     log_write_die(0, LOG_CONFIG,
-      "failed to interpret syslog_facility \"%s\"", syslog_facility_str);
+      "failed to interpret syslog_facility %q", syslog_facility_str);
   }
 
 /* Expand pid_file_path */
@@ -3591,7 +3591,7 @@ if (*pid_file_path)
   const uschar * t = expand_string(pid_file_path);
   if (!t)
     log_write_die(0, LOG_MAIN, "failed to expand pid_file_path "
-      "\"%s\": %s", pid_file_path, expand_string_message);
+      "%q: %s", pid_file_path, expand_string_message);
   pid_file_path = t;
   }
 
@@ -3674,7 +3674,7 @@ if (host_number_string)
 
   if (!s)
     log_write_die(0, LOG_MAIN,
-        "failed to expand localhost_number \"%s\": %s",
+        "failed to expand localhost_number %q: %s",
         host_number_string, expand_string_message);
   n = Ustrtol(s, &end, 0);
   if (Uskip_whitespace(&end))
@@ -3837,7 +3837,7 @@ else
 #endif	/* LOOKUP_MODULE_DIR */
 
 log_write_die(0, LOG_CONFIG_IN,
-  "%s %s: cannot find %s driver \"%s\"", class, d->name, class, d->driver_name);
+  "%s %s: cannot find %s driver %q", class, d->name, class, d->driver_name);
 
 found:
 
@@ -3860,7 +3860,7 @@ driver_info * di = d->info;
 
 if (!d->driver_name)
   log_write_die(0, LOG_CONFIG,
-    "no driver defined for %s \"%s\"", class, d->name);
+    "no driver defined for %s %q", class, d->name);
 (di->init)(d);
 }
 
@@ -3950,7 +3950,7 @@ while ((buffer = get_config_line()))
     for (d = *anchor; d; d = d->next)
       if (Ustrcmp(name, d->name) == 0)
         log_write_die(0, LOG_CONFIG,
-          "there are two %ss called \"%s\"", class, name);
+          "there are two %ss called %q", class, name);
 
     /* Set up a new driver instance data block on the chain, with
     its default values installed. */
@@ -4000,12 +4000,12 @@ while ((buffer = get_config_line()))
     {
     driver_info * di = d->info;
     readconf_handle_option(buffer, di->options,
-      *di->options_count, d, US"option \"%s\" unknown");
+      *di->options_count, d, US"option %q unknown");
     }
 
   /* The option is not generic and the driver name has not yet been given. */
 
-  else log_write_die(0, LOG_CONFIG_IN, "option \"%s\" unknown "
+  else log_write_die(0, LOG_CONFIG_IN, "option %q unknown "
     "(\"driver\" must be specified before any private options)", name);
   }
 
@@ -4049,7 +4049,7 @@ for (optionlist * ol = di->options; ol < di->options + count; ol++)
       {
       if (ss <= value || (ss[-1] != '$' && ss[-1] != '{') ||
 	isalnum(ss[Ustrlen(s)])) continue;
-      DEBUG(D_transport) debug_printf("driver %s: \"%s\" option depends on %s\n",
+      DEBUG(D_transport) debug_printf("driver %s: %q option depends on %s\n",
 	d->name, ol->name, s);
       return TRUE;
       }
@@ -4512,7 +4512,7 @@ while(acl_line)
   Ustrcpy(node->name, name);
   if (!tree_insertnode(&acl_anchor, node))
     log_write_die(0, LOG_CONFIG_IN,
-      "there are two ACLs called \"%s\"", name);
+      "there are two ACLs called %q", name);
 
   node->data.ptr = acl_read(acl_callback, &error);
 
@@ -4546,7 +4546,7 @@ log_write_die(0, LOG_CONFIG_IN, "local_scan() options not supported: "
 uschar *p;
 while ((p = get_config_line()))
   (void) readconf_handle_option(p, local_scan_options, local_scan_options_count,
-    NULL, US"local_scan option \"%s\" unknown");
+    NULL, US"local_scan option %q unknown");
 #endif
 }
 
@@ -4641,7 +4641,7 @@ save_config_line(string_sprintf("# Exim Configuration (%s)",
 static void
 save_config_position(const uschar *file, int line)
 {
-save_config_line(string_sprintf("# %d \"%s\"", line, file));
+save_config_line(string_sprintf("# %d %q", line, file));
 }
 
 /* Append a pre-parsed logical line to the config lines store,

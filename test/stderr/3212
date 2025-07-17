@@ -75,7 +75,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
   End
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=testdb key="something" opts=NULL
  database lookup required for something
  creating new cache entry
@@ -86,7 +86,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
   End
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=testdb key="something" opts=NULL
  cached data used for lookup of something
  lookup yielded: something
@@ -96,7 +96,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
   End
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=testdb key="nocache" opts=NULL
  database lookup required for nocache
  lookup forced cache cleanup
@@ -107,7 +107,7 @@ set_process_info: pppp expansion-test
  LRU list:
    0TESTSUITE/aux-fixed/3212.aliases
   End
- internal_search_find: file="NULL"
+ internal_search_find: file=<NULL>
    type=testdb key="something" opts=NULL
  database lookup required for something
  creating new cache entry

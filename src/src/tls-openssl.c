@@ -604,7 +604,7 @@ else
 
   if (!(pem = std_dh_prime_named(dhexpanded)))
     {
-    tls_error(string_sprintf("Unknown standard DH prime \"%s\"", dhexpanded),
+    tls_error(string_sprintf("Unknown standard DH prime %q", dhexpanded),
         NULL, US strerror(errno), errstr);
     return FALSE;
     }
@@ -620,7 +620,7 @@ if (!(
    ) )
   {
   BIO_free(bio);
-  tls_error(string_sprintf("Could not read tls_dhparams \"%s\"", dhexpanded),
+  tls_error(string_sprintf("Could not read tls_dhparams %q", dhexpanded),
       NULL, NULL, errstr);
   return FALSE;
   }
@@ -1189,7 +1189,7 @@ else
 	  *verify_mode, sender_host_address)
 	: US"";
       log_write(0, LOG_MAIN,
-	"[%s] SSL verify error%s: certificate name mismatch: DN=\"%s\" H=\"%s\"",
+	"[%s] SSL verify error%s: certificate name mismatch: DN=%q H=%q",
 	tlsp == &tls_out ? deliver_host_address : sender_host_address,
 	extra, dn, verify_cert_hostnames);
       *calledp = TRUE;
@@ -1327,7 +1327,7 @@ ERR_clear_error();
 if (!(bio = BIO_new_file(CS filename, "rb")))
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
-    "Failed to open OCSP response file \"%s\": %.100s",
+    "Failed to open OCSP response file %q: %.100s",
     filename, ERR_reason_error_string(ERR_get_error()));
   return;
   }
@@ -1339,7 +1339,7 @@ if (is_pem)
   long len;
   if (!PEM_read_bio(bio, &dummy, &dummy, &data, &len))
     {
-    log_write(0, LOG_MAIN|LOG_PANIC, "Failed to read PEM file \"%s\": %.100s",
+    log_write(0, LOG_MAIN|LOG_PANIC, "Failed to read PEM file %q: %.100s",
       filename, ERR_reason_error_string(ERR_get_error()));
     return;
     }
@@ -1353,7 +1353,7 @@ BIO_free(bio);
 
 if (!resp)
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "Error reading OCSP response from \"%s\": %s",
+  log_write(0, LOG_MAIN|LOG_PANIC, "Error reading OCSP response from %q: %s",
       filename, ERR_reason_error_string(ERR_get_error()));
   return;
   }
@@ -2225,7 +2225,7 @@ uschar * errstr;
 if (!servername)
   return SSL_TLSEXT_ERR_OK;
 
-DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", servername,
+DEBUG(D_tls) debug_printf("Received TLS SNI %q%s\n", servername,
     reexpand_tls_files_for_sni ? "" : " (unused for certificate selection)");
 
 /* Make the extension value available for expansion */
@@ -3890,7 +3890,7 @@ if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
 #else
     host->certname;
 #endif
-  DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
+  DEBUG(D_tls) debug_printf("Cert hostname to check: %q\n",
 		    state->verify_cert_hostnames);
   }
 return OK;
@@ -4354,7 +4354,8 @@ if (ob->tls_alpn)
       DEBUG(D_tls) debug_printf("Setting TLS ALPN '%s'\n", ob->tls_alpn);
   }
 #else
-  log_write(0, LOG_MAIN, "ALPN unusable with this OpenSSL library version; ignoring \"%s\"\n",
+  log_write(0, LOG_MAIN,
+	  "ALPN unusable with this OpenSSL library version; ignoring %q\n",
           ob->tls_alpn);
 #endif
 
@@ -4380,7 +4381,7 @@ SSL_set_connect_state(exim_client_ctx->ssl);
 
 if (tlsp->sni)
   {
-  DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tlsp->sni);
+  DEBUG(D_tls) debug_printf("Setting TLS SNI %q\n", tlsp->sni);
   SSL_set_tlsext_host_name(exim_client_ctx->ssl, tlsp->sni);
   }
 
@@ -4966,7 +4967,7 @@ err = NULL;
 if (lib_ctx_new(&ctx, NULL, &err) == OK)
   {
   DEBUG(D_tls)
-    debug_printf("tls_require_ciphers expands to \"%s\"\n", expciphers);
+    debug_printf("tls_require_ciphers expands to %q\n", expciphers);
 
   if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
     {
@@ -5203,7 +5204,7 @@ for (uschar * s = exp; *s; /**/)
   if (*s != '+' && *s != '-')
     {
     DEBUG(D_tls) debug_printf("malformed openssl option setting: "
-        "+ or - expected but found \"%s\"\n", s);
+        "+ or - expected but found %q\n", s);
     return FALSE;
     }
   adding = *s++ == '+';
@@ -5212,7 +5213,7 @@ for (uschar * s = exp; *s; /**/)
   item_parsed = tls_openssl_one_option_parse(string_copyn(s, end-s), &item);
   if (!item_parsed)
     {
-    DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"\n", s);
+    DEBUG(D_tls) debug_printf("openssl option setting unrecognised: %q\n", s);
     return FALSE;
     }
   DEBUG(D_tls) debug_printf("openssl option, %s %08lx: %08lx (%s)\n",

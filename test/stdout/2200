@@ -12,7 +12,7 @@ Second RR
 > >X,  txt=long.test.ex      This is a max-length chunk 789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234 A short chunk A final chunkXSecond RR
 > >X,Z txt=long.test.ex      This is a max-length chunk 789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234ZA short chunkZA final chunkXSecond RR
 > a=black-1.test.ex          V4NET.11.12.13
-> Failed: lookup of "xxx=test.ex" gave DEFER: unsupported DNS record type
+> Failed: lookup of "xxx=test.ex" gave DEFER: "unsupported DNS record type"
 > a=localhost.test.ex        127.0.0.1
 > cname=alias-eximtesthost.test.ex eximtesthost.test.ex
 > ns=test.ex                 exim.test.ex
@@ -49,12 +49,12 @@ ten-2.test.ex
 > ten-1:bad                  V4NET.0.0.1
 > bad:bad                    FAILED
 > 
-> Failed: lookup of "a=test.again.dns:test.again.dns" gave DEFER: 
+> Failed: lookup of "a=test.again.dns:test.again.dns" gave DEFER: ""
 > defer_lax:ten-1            V4NET.0.0.1
 > defer_lax:ten-1            V4NET.0.0.1
 > defer_never:ten-1          V4NET.0.0.1
 > defer_never:defer          
-> Failed: lookup of "defer_strict,a=test.again.dns:ten-1.test.ex" gave DEFER: 
+> Failed: lookup of "defer_strict,a=test.again.dns:ten-1.test.ex" gave DEFER: ""
 > 
 > # Retry timeout and count.  This only tests the syntax; we do not
 > # have any good way of testing the function.

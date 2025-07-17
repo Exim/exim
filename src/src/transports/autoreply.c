@@ -132,7 +132,7 @@ const uschar * ss = expand_string(s);
 if (!ss)
   {
   addr->transport_return = FAIL;
-  addr->message = string_sprintf("Expansion of \"%s\" failed in %s transport: "
+  addr->message = string_sprintf("Expansion of %q failed in %s transport: "
     "%s", s, name, expand_string_message);
   return NULL;
   }
@@ -145,7 +145,7 @@ if (type != cke_text) for (const uschar * t = ss; *t; t++)
   if (type == cke_hdr && c == '\n' && (t[1] == ' ' || t[1] == '\t')) continue;
   sp = string_printing(s);
   addr->transport_return = FAIL;
-  addr->message = string_sprintf("Expansion of \"%s\" in %s transport "
+  addr->message = string_sprintf("Expansion of %q in %s transport "
     "contains non-printing character %d", sp, name, c);
   return NULL;
   }
@@ -349,7 +349,7 @@ else
     if ((once_repeat_sec = readconf_readtime(oncerepeat, 0, FALSE)) < 0)
       {
       addr->transport_return = FAIL;
-      addr->message = string_sprintf("Invalid time value \"%s\" for "
+      addr->message = string_sprintf("Invalid time value %q for "
         "\"once_repeat\" in %s transport", oncerepeat, trname);
       return FALSE;
       }
@@ -365,7 +365,7 @@ if (ob->never_mail)
   if (!never_mail)
     {
     addr->transport_return = FAIL;
-    addr->message = string_sprintf("Failed to expand \"%s\" for "
+    addr->message = string_sprintf("Failed to expand %q for "
       "\"never_mail\" in %s transport", ob->never_mail, trname);
     return FALSE;
     }

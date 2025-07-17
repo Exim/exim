@@ -137,7 +137,7 @@ for (rewrite_rule * rule = rewrite_rules;
     if (!key)
       {
       if (!f.expand_string_forcedfail)
-        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand \"%s\" while "
+        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand %q while "
           "checking for SMTP rewriting: %s", rule->key, expand_string_message);
       continue;
       }
@@ -236,7 +236,7 @@ for (rewrite_rule * rule = rewrite_rules;
     else
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "Rewrite of %s yielded unqualified "
-        "address \"%s\"", subject, new);
+        "address %q", subject, new);
       break;   /* Give up on this address */
       }
     }
