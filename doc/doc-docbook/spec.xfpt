@@ -33370,8 +33370,9 @@ Exim does not share information between multiple incoming
 connections (but your local name server cache should be active).
 
 There are a number of DNS lists to choose from, some commercial, some free,
-or free for small deployments.  An overview can be found at
-&url(https://en.wikipedia.org/wiki/Comparison_of_DNS_blacklists).
+or free for small deployments.
+Wikipedia (&url(https://en.wikipedia.org/wiki/Domain_Name_System_blocklist))
+gives a conceptual overview and might provide inspiration for locating them.
 
 
 
