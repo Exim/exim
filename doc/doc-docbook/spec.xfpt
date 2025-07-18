@@ -822,7 +822,7 @@ Redistributions of any form whatsoever must retain the following
 acknowledgment:
 
 &"This product includes software developed by Computing Services
-at Carnegie Mellon University (&url(https://www.cmu.edu/computing/)."&
+at Carnegie Mellon University (&url(https://www.cmu.edu/computing/))."&
 
 CARNEGIE MELLON UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO
 THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
@@ -3880,7 +3880,7 @@ headers.)
 This option, which has the same effect as &%-oi%&, specifies that a dot on a
 line by itself should not terminate an incoming, non-SMTP message.
 Solaris 2.4 (SunOS 5.4) Sendmail has a similar &%-i%& processing option
-&url(https://docs.oracle.com/cd/E19457-01/801-6680-1M/801-6680-1M.pdf),
+(&url(https://docs.oracle.com/cd/E19457-01/801-6680-1M/801-6680-1M.pdf),
 p. 1M-529), and therefore a &%-oi%& command line option, which both are used
 by its &'mailx'& command.
 
