@@ -568,10 +568,12 @@ inside the &_exim4_& directory of the FTP site:
 &_exim-html-n.nn.tar.gz_&
 &_exim-pdf-n.nn.tar.gz_&
 &_exim-postscript-n.nn.tar.gz_&
-&_exim-texinfo-n.nn.tar.gz_&
 .endd
 These tar files contain only the &_doc_& directory, not the complete
 distribution, and are also available in &_.bz2_& and &_.xz_& forms.
+
+. &_exim-texinfo-n.nn.tar.gz_& seems to be no longer built; there are
+. traces in doc-docbook/Makefile, and Andreas builds it for Debian (2025/07)
 
 
 .section "Limitations" "SECID6"
@@ -2458,14 +2460,18 @@ make INSTALL_ARG='-no_symlink exim' install
 
 .section "Installing info documentation" "SECTinsinfdoc"
 .cindex "installing Exim" "&'info'& documentation"
-Not all systems use the GNU &'info'& system for documentation, and for this
-reason, the Texinfo source of Exim's documentation is not included in the main
-distribution. Instead it is available separately from the FTP site (see section
-&<<SECTavail>>&).
+. Not all systems use the GNU &'info'& system for documentation, and for this
+. reason, the Texinfo source of Exim's documentation is not included in the main
+. distribution. Instead it is available separately from the FTP site (see section
+. &<<SECTavail>>&).
 
-If you have defined INFO_DIRECTORY in &_Local/Makefile_& and the Texinfo
-source of the documentation is found in the source tree, running &`make
-install`& automatically builds the info files and installs them.
+. If you have defined INFO_DIRECTORY in &_Local/Makefile_& and the Texinfo
+. source of the documentation is found in the source tree, running &`make
+. install`& automatically builds the info files and installs them.
+
+The GNU &'info'& system for documentation has fallen out of support from
+the Exim maintainers. There are traces of the build still present in the
+documentation source directory for interested parties.
 
 
 
