@@ -2817,10 +2817,11 @@ no arguments.
 This option is an alias for &%-bV%& and causes version information to be
 displayed.
 
+. using .cmdopt here adds a blankline between the pair
 .vitem &%-Ac%& &&&
        &%-Am%&
-.oindex "&%-Ac%&"
-.oindex "&%-Am%&"
+.oindex &%-Ac%&
+.oindex &%-Am%&
 These options are used by Sendmail for selecting configuration files and are
 ignored by Exim.
 
@@ -3795,8 +3796,9 @@ could occur in some situations. As part of the same option, a message id may
 follow the characters &%-E%&. If it does, the log entry for the receipt of the
 new message contains the id, following &"R="&, as a cross-reference.
 
+. using .cmdopt here spits "validity error"s from xmlto; have not followed up
 .vitem &%-e%&&'x'&
-.oindex "&%-e%&&'x'&"
+.oindex &%-e%&&'x'&
 There are a number of Sendmail options starting with &%-oe%& which seem to be
 called by various programs without the leading &%o%& in the option. For
 example, the &%vacation%& program uses &%-eq%&. Exim treats all options of the
@@ -3925,12 +3927,11 @@ id, and the remaining ones must be email addresses. However, if the message is
 active (in the middle of a delivery attempt), it is not altered. This option
 can be used only by an admin user.
 
-.vitem "&%-MC%&&~<&'transport'&>&~<&'hostname'&>&&&
+.cmdopt &%-MC%& "<&'transport'&>&~<&'hostname'&>&&&
 	&~<&'host&~IP'&>&&&
 	&~<&'host&~port'&>&&&
 	&~<&'sequence&~number'&>&&&
         &~<&'message&~id'&>"
-.oindex "&%-MC%&"
 .cindex "SMTP" "passed connection"
 .cindex "SMTP" "multiple deliveries"
 .cindex "multiple SMTP deliveries"
@@ -4006,6 +4007,7 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 host to which Exim is connected supports TLS encryption.
 
+. using .cmdopt here adds a blankline between the pair
 .vitem &%-MCr%&&~<&'SNI'&> &&&
        &%-MCs%&&~<&'SNI'&>
 .oindex "&%-MCs%&"
@@ -4574,6 +4576,8 @@ order, which is essentially the order in which they arrived, by setting the
 &%queue_run_in_order%& option, but this is not recommended for normal use.
 
 .vitem &%-q%&<&'qflags'&>
+.oindex &%-q%&
+Perform a queue run.
 The &%-q%& option may be followed by one or more flag letters that change its
 behaviour. They are all optional, but if more than one is present, they must
 appear in the correct order. Each flag is described in a separate item below.
