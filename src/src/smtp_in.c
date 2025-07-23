@@ -557,7 +557,7 @@ if (!smtp_hasc() && !smtp_refill(lim)) return EOF;
 return *smtp_inptr++;
 }
 
-/* Get many bytes, refilling buffer if needed. Can return NULL. */
+/* Get many bytes, refilling buffer if needed. Can return NULL on EOF/errror. */
 
 uschar *
 smtp_getbuf(unsigned * len)
@@ -776,12 +776,16 @@ for(;;)
     uschar * buf = receive_getbuf(&nchars);		/* destructive read */
 
     incomplete_transaction_log(US"sync failure");
-    log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
-      "(next input sent too soon: pipelining was not advertised): "
-      "rejected %q %s next input=%q%s",
-      smtp_cmd_buffer, host_and_ident(TRUE),
-      string_printing(string_copyn(buf, nchars)),
-      smtp_inend - smtp_inptr > 0 ? "..." : "");
+    if (buf)
+      log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
+	"(next input sent too soon: pipelining was not advertised): "
+	"rejected %q %s next input=%q%s",
+	smtp_cmd_buffer, host_and_ident(TRUE),
+	string_printing(string_copyn(buf, nchars)),
+	smtp_inend - smtp_inptr > 0 ? "..." : "");
+    else
+      log_write(0, LOG_MAIN|LOG_REJECT, "Error or EOF on input from %s",
+	host_and_ident(TRUE));
     (void) synprot_error(L_smtp_protocol_error, 554, NULL,
       US"SMTP synchronization error");
     goto repeat_until_rset;
@@ -2825,10 +2829,14 @@ else						/* not already sent */
       unsigned nchars = 128;
       uschar * buf = receive_getbuf(&nchars);		/* destructive read */
 
-      log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
-	"synchronization error (input sent without waiting for greeting): "
-	"rejected connection from %s input=%q", host_and_ident(TRUE),
-	string_printing(string_copyn(buf, nchars)));
+      if (buf)
+	log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
+	  "synchronization error (input sent without waiting for greeting): "
+	  "rejected connection from %s input=%q", host_and_ident(TRUE),
+	  string_printing(string_copyn(buf, nchars)));
+      else
+	log_write(0, LOG_MAIN|LOG_REJECT, "Error or EOF on input from %s",
+	  host_and_ident(TRUE));
       smtp_printf("554 SMTP synchronization error\r\n", SP_NO_MORE);
       return FALSE;
       }
@@ -5932,6 +5940,9 @@ while (done <= 0)
 	    smtp_cmd_buffer, host_and_ident(TRUE),
 	    string_printing(buf), nchars);
 	  }
+	else
+	  log_write(0, LOG_MAIN|LOG_REJECT, "Error or EOF on input from %s",
+	    host_and_ident(TRUE));
 	smtp_notquit_exit(US"synchronization-error", US"554",
 	  US"SMTP synchronization error");
 	done = 1;   /* Pretend eof - drops connection */

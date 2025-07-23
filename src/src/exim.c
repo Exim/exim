@@ -5950,11 +5950,9 @@ for (BOOL more = TRUE; more; )
 
   if (smtp_input)
     {
-/*XXX somewhere around here.  Maybe earlier, but no later.  ATRN customer */
     int rc;
     if ((rc = smtp_setup_msg()) > 0)
       {
-/*XXX somewhere around here.  Maybe earlier, but no later.  ATRN customer */
       if (   real_sender_address
 	  && !receive_check_set_sender(sender_address))
         {
@@ -5993,7 +5991,6 @@ for (BOOL more = TRUE; more; )
       }
     else
       {
-/*XXX somewhere around here.  Maybe earlier, but no later.  ATRN customer */
       cancel_cutthrough_connection(TRUE, US"message setup dropped");
       smtp_log_no_mail();               /* Log no mail if configured */
       exim_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);

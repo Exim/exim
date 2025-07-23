@@ -180,7 +180,7 @@ int	(*lwr_receive_ungetc)(int)	= stdin_ungetc;
 BOOL	(*lwr_receive_hasc)(void)	= stdin_hasc;
 
 int	(*receive_getc)(unsigned) 	= stdin_getc;
-uschar * (*receive_getbuf)(unsigned *) 	= NULL;
+uschar * (*receive_getbuf)(unsigned *) 	= NULL;		/* can return NULL */
 void	(*receive_get_cache)(unsigned)	= NULL;
 BOOL	(*receive_hasc)(void)		= stdin_hasc;
 int	(*receive_ungetc)(int)    	= stdin_ungetc;
