@@ -42613,16 +42613,6 @@ If set, this option must expand to a colon-separated
 list of header names.
 Headers with these names, or the absence of such a header, will be included
 in the message signature.
-When unspecified, the header names listed in
-&url(https://www.rfc-editor.org/rfc/rfc4871,RFC 4871) will be used,
-whether or not each header is present in the message.
-The default list is available for the expansion in the macro
-&"_DKIM_SIGN_HEADERS"&
-and an oversigning variant is in &"_DKIM_OVERSIGN_HEADERS"&.
-
-If a name is repeated, multiple headers by that name (or the absence thereof)
-will be signed.  The textually later headers in the headers part of the
-message are signed first, if there are multiples.
 
 A name can be prefixed with either an &"="& or a &"+"& character.
 If an &"="& prefix is used, all headers that are present with this name
@@ -42630,6 +42620,19 @@ will be signed.
 If a &"+"& prefix if used, all headers that are present with this name
 will be signed, and one signature added for a missing header with the
 name will be appended.
+
+When unspecified, the header names listed in
+&url(https://www.rfc-editor.org/rfc/rfc4871,RFC 4871) will be used,
+with Resent-*: headers prefixed with &"="& so they are signed only
+when present (allowing forwarders to add them).
+The other headers listed are used whether or not they are present in the message.
+The default list is available for the expansion in the macro
+&"_DKIM_SIGN_HEADERS"&
+and a variant oversigning all listed headers is in &"_DKIM_OVERSIGN_HEADERS"&.
+
+If a name is repeated, multiple headers by that name (or the absence thereof)
+will be signed.  The textually later headers in the headers part of the
+message are signed first, if there are multiples.
 
 .option dkim_timestamps smtp integer&!! unset
 This option controls the inclusion of timestamp information in the signature.
