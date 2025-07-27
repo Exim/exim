@@ -2,6 +2,15 @@
 # Copyright (c) The Exim Maintainers 2020 - 2021
 export LC_ALL=C
 
+# Original
+DOCBOOK2TEXI=docbook2texi
+
+# Fedora
+DOCBOOK2TEXI_F=db2x_docbook2texi --encoding=UTF-8
+
+
+
+
 notarget:;    @echo "** You must specify a target, in the form x.y, where x is 'filter', 'spec',"
 	      @echo "** or 'test', and y is 'xml', 'fo', 'ps', 'pdf', 'txt', or 'info'."
 	      @echo "** One other possible targets 'exim.8', 'spec.utf8'".
@@ -109,7 +118,9 @@ filter.txt:   filter-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
 # work.
 
 filter.info:  filter-info.xml
-	      docbook2texi filter-info.xml
+	      [ -f /etc/redhat-release ] \
+		      && $(DOCBOOK2TEXI_F) filter-info.xml \
+		      || $(DOCBOOK2TEXI) filter-info.xml
 	      perl -ne 's/conceptindex/cindex/;s/optionindex/findex/;print;' \
 		<exim_filtering.texi | ./Tidytxt >filter.texinfo
 	      /bin/rm -rf exim_filtering.texi
@@ -200,7 +211,9 @@ spec.txt: spec-txt.html Tidytxt
 # work.
 
 spec.info:    spec-info.xml
-	      docbook2texi spec-info.xml
+	      [ -f /etc/redhat-release ] \
+		      && $(DOCBOOK2TEXI_F) spec-info.xml \
+		      || $(DOCBOOK2TEXI) spec-info.xml
 	      ./TidyInfo <the_exim_mta.texi >spec.texinfo
 	      /bin/rm -rf the_exim_mta.texi
 	      makeinfo -o spec.info --no-split spec.texinfo
@@ -285,7 +298,7 @@ test.txt:     test-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
 # work.
 
 test.info:    test-info.xml
-	      docbook2texi test-info.xml
+	      $(DOCBOOK2TEXI) test-info.xml
 	      ./TidyInfo <short_title.texi >test.texinfo
 	      /bin/rm -rf short_title.texi
 	      makeinfo -o test.info test.texinfo
