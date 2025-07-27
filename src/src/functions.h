@@ -400,6 +400,10 @@ extern const uschar *parse_message_id(const uschar *, uschar **, uschar **);
 extern const uschar *parse_quote_2047(const uschar *, int, const uschar *,
 				      BOOL);
 extern const uschar *parse_date_time(const uschar *str, time_t *t);
+#ifdef EXIM_PERL
+const misc_module_info * perl_startup(void);
+#endif
+
 extern void priv_drop_temp(const uid_t, const gid_t);
 extern void priv_restore(void);
 #ifdef SUPPORT_PROXY

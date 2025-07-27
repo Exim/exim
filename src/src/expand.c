@@ -4643,6 +4643,42 @@ if (nchar > 0 && is_tainted(value))
 }
 
 
+/************************************************/
+
+const misc_module_info *
+perl_startup(void)
+{
+const misc_module_info * mi;
+uschar * errstr;
+
+if (!(mi = misc_mod_find(US"perl", &errstr)))
+  expand_string_message =
+    string_sprintf("failed to locate perl module: %s", errstr);
+else if (!opt_perl_started)
+  {
+  uschar * initerror;
+  typedef uschar * (*fn_t)(uschar *);
+
+  if (!opt_perl_startup)
+    {
+    expand_string_message = US"A setting of perl_startup is needed when "
+      "using the Perl interpreter";
+    return NULL;
+    }
+  DEBUG(D_any) debug_printf("Starting Perl interpreter\n");
+  if ((initerror = (((fn_t *) mi->functions)[PERL_STARTUP]) (opt_perl_startup)))
+    {
+    expand_string_message =
+      string_sprintf("error in perl_startup code: %s\n", initerror);
+    return NULL;
+    }
+  opt_perl_started = TRUE;
+  }
+
+return mi;
+}
+
+
 /*************************************************
 *                 Expand string                  *
 *************************************************/
@@ -5326,18 +5362,10 @@ while (*s)	/* known to be untainted */
       uschar * sub_arg[EXIM_PERL_MAX_ARGS + 2];
       gstring * new_yield;
       const misc_module_info * mi;
-      uschar * errstr;
 
       if (expand_forbid & RDO_PERL)
         {
         expand_string_message = US"Perl calls are not permitted";
-        goto EXPAND_FAILED;
-        }
-
-      if (!(mi = misc_mod_find(US"perl", &errstr)))
-        {
-        expand_string_message =
-	  string_sprintf("failed to locate perl module: %s", errstr);
         goto EXPAND_FAILED;
         }
 
@@ -5352,27 +5380,8 @@ while (*s)	/* known to be untainted */
 
       /* Start the interpreter if necessary */
 
-      if (!opt_perl_started)
-        {
-        uschar * initerror;
-	typedef uschar * (*fn_t)(uschar *);
-
-        if (!opt_perl_startup)
-          {
-          expand_string_message = US"A setting of perl_startup is needed when "
-            "using the Perl interpreter";
-          goto EXPAND_FAILED;
-          }
-        DEBUG(D_any) debug_printf("Starting Perl interpreter\n");
-	initerror = (((fn_t *) mi->functions)[PERL_STARTUP]) (opt_perl_startup);
-        if (initerror)
-          {
-          expand_string_message =
-            string_sprintf("error in perl_startup code: %s\n", initerror);
-          goto EXPAND_FAILED;
-          }
-        opt_perl_started = TRUE;
-        }
+      if (!(mi = perl_startup()))
+	goto EXPAND_FAILED;
 
       /* Call the function */
 

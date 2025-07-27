@@ -4557,22 +4557,10 @@ opt_perl_xxx to avoid clashing with perl's namespace (perl_*). */
 
 #ifdef EXIM_PERL
 if (perl_start_option != 0)
-  opt_perl_at_start = (perl_start_option > 0);
-if (opt_perl_at_start && opt_perl_startup != NULL)
-  {
-  uschar * errstr;
-  const misc_module_info * mi = misc_mod_find(US"perl", &errstr);
-  typedef uschar * (*fn_t)(uschar *);
-
-  if (!mi)
-    exim_fail("error finding perl module: %s", errstr);
-
-  DEBUG(D_any) debug_printf("Starting Perl interpreter\n");
-
-  if ((errstr = (((fn_t *) mi->functions)[PERL_STARTUP]) (opt_perl_startup)))
-    exim_fail("error in perl_startup code: %s", errstr);
-  opt_perl_started = TRUE;
-  }
+  opt_perl_at_start = perl_start_option > 0;
+if (opt_perl_at_start && opt_perl_startup)
+  if (!perl_startup())
+    exim_fail(expand_string_message);
 #endif /* EXIM_PERL */
 
 /* Log the arguments of the call if the configuration file said so. This is
