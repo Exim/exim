@@ -12,7 +12,7 @@
 /* Function table entry numbers */
 
 #define	SPF_PROCESS		0
-#define SPF_GET_RESPONSE	1
+#define SPF_GET_RESULTS		1
 #define SPF_OPEN		2
 #define SPF_CLOSE		3
 #define SPF_FIND		4

@@ -459,13 +459,20 @@ return g;
 }
 
 
-/* Ugly; used only by dmarc (peeking into our data!)
-Exposure of values as $variables might be better? */
-
-static SPF_response_t *
-spf_get_response(void)
+static int
+spf_get_results(uschar ** human_readable_p)
 {
-return spf_response;
+uschar * s = NULL;
+int res = SPF_RESULT_INVALID;
+
+if (spf_response)
+  {
+  res = spf_response->result;
+  s = US spf_response->header_comment;
+  }
+*human_readable_p = s ? string_copy(s) : US"";
+DEBUG(D_acl) debug_printf("SPF: %d '%s'\n", res, s);
+return res;
 }
 
 /******************************************************************************/
@@ -566,7 +573,7 @@ static optionlist spf_options[] = {
 
 static void * spf_functions[] = {
   [SPF_PROCESS] =	(void *) spf_process,
-  [SPF_GET_RESPONSE] =	(void *) spf_get_response,	/* ugly; for dmarc */
+  [SPF_GET_RESULTS] =	(void *) spf_get_results,	/* for dmarc */
   
   [SPF_OPEN] =		(void *) spf_lookup_open,
   [SPF_CLOSE] =		(void *) spf_lookup_close,

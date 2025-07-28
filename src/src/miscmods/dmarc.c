@@ -34,8 +34,7 @@ header_line *from_header   = NULL;
 
 static misc_module_info * dmarc_dkim_mod_info;
 static misc_module_info * dmarc_spf_mod_info;
-SPF_response_t   *spf_response_p;
-int dmarc_spf_ares_result  = 0;
+int dmarc_spf_ares_result  = ARES_RESULT_UNDEFINED;
 uschar *spf_sender_domain  = NULL;
 uschar *spf_human_readable = NULL;
 u_char *header_from_sender = NULL;
@@ -148,7 +147,6 @@ dmarc_pass_fail    = US"skipped";
 dmarc_used_domain  = US"";
 f.dmarc_has_been_checked = FALSE;
 header_from_sender = NULL;
-spf_response_p	   = NULL;
 spf_sender_domain  = NULL;
 spf_human_readable = NULL;
 
@@ -326,7 +324,7 @@ g = string_fmt_append(NULL,
   message_id, primary_hostname, time(NULL), sender_host_address,
   header_from_sender, expand_string(US"$sender_address_domain"));
 
-if (spf_response_p)
+if (dmarc_spf_ares_result != ARES_RESULT_UNDEFINED)
   g = string_fmt_append(g, "spf %d\n", dmarc_spf_ares_result);
 
 if (dkim_history_buffer)
@@ -429,8 +427,8 @@ Called for the first ACL dmarc= condition. */
 static int
 dmarc_process(void)
 {
-int sr, origin;			/* used in SPF section */
-int dmarc_spf_result;		/* stores spf into dmarc conn ctx */
+int sr = SPF_RESULT_INVALID, origin;	/* used in SPF section */
+int dmarc_spf_result;			/* stores spf into dmarc conn ctx */
 int tmp_ans, c;
 uschar * rr;
 BOOL has_dmarc_record = TRUE;
@@ -499,13 +497,13 @@ if (!dmarc_abort && !sender_host_authenticated)
   spf_sender_domain = expand_string(US"$sender_address_domain");
 
     {
-    typedef SPF_response_t * (*fn_t)(void);
+    typedef int (*fn_t)(uschar **);
     if (dmarc_spf_mod_info)
-      /*XXX ugly use of a pointer */
-      spf_response_p = ((fn_t *) dmarc_spf_mod_info->functions)[SPF_GET_RESPONSE]();
+      sr = ((fn_t *) dmarc_spf_mod_info->functions)[SPF_GET_RESULTS]
+							  (&spf_human_readable);
     }
 
-  if (!spf_response_p)
+  if (sr == SPF_RESULT_INVALID)
     {
     /* No spf data means null envelope sender so generate a domain name
     from the sender_helo_name  */
@@ -526,7 +524,6 @@ if (!dmarc_abort && !sender_host_authenticated)
     }
   else
     {
-    sr = spf_response_p->result;
     dmarc_spf_result = sr == SPF_RESULT_NEUTRAL  ? DMARC_POLICY_SPF_OUTCOME_NONE :
 		       sr == SPF_RESULT_PASS     ? DMARC_POLICY_SPF_OUTCOME_PASS :
 		       sr == SPF_RESULT_FAIL     ? DMARC_POLICY_SPF_OUTCOME_FAIL :
@@ -541,9 +538,8 @@ if (!dmarc_abort && !sender_host_authenticated)
 			    sr == SPF_RESULT_PERMERROR ? ARES_RESULT_PERMERROR :
 			    ARES_RESULT_UNKNOWN;
     origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM;
-    spf_human_readable = US spf_response_p->header_comment;
-    DEBUG(D_receive)
-      debug_printf_indent("DMARC using SPF sender domain = %s\n", spf_sender_domain);
+    DEBUG(D_receive) debug_printf_indent("DMARC using SPF sender domain = %s\n",
+					spf_sender_domain);
     }
   if (strcmp( CCS spf_sender_domain, "") == 0)
     dmarc_abort = TRUE;
