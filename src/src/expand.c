@@ -4644,6 +4644,7 @@ if (nchar > 0 && is_tainted(value))
 
 
 /************************************************/
+#ifdef EXIM_PERL
 
 const misc_module_info *
 perl_startup(void)
@@ -4678,6 +4679,7 @@ else if (!opt_perl_started)
 return mi;
 }
 
+#endif	/*EXIM_PERL*/
 
 /*************************************************
 *                 Expand string                  *
