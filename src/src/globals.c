@@ -139,6 +139,7 @@ uschar *tls_dhparam            = NULL;
 uschar *tls_early_banner_hosts = US"";
 # endif
 uschar *tls_eccurve            = US"auto";
+BOOL    tls_ignore_missing_close_notify = TRUE;
 # ifndef DISABLE_OCSP
 uschar *tls_ocsp_file          = NULL;
 # endif
