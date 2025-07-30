@@ -47,7 +47,7 @@ Starting Perl interpreter
   ├───expanded: debug░from░Perl\n
   ╰─────result: debug░from░Perl↩
   
-debug from Perl
+ debug from Perl
  ├───expanded: ${perl{debug_write}{debug░from░Perl\n}}
  ╰─────result: Wrote░debug
  ╭considering: ${perl{log_write}{log░from░Perl}}
