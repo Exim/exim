@@ -57,13 +57,16 @@ static PerlInterpreter *interp_perl = 0;
 XS(xs_expand_string)
 {
   dXSARGS;
-  uschar *str;
+  const uschar * str;
   STRLEN len;
 
   if (items != 1)
     croak("Usage: Exim::expand_string(string)");
 
-  str = expand_string(US SvPV(ST(0), len));
+  str = CUS SvPV(ST(0), len);
+  str = string_copyn(str, len);
+  str = expand_string(str);
+
   ST(0) = sv_newmortal();
   if (str != NULL)
     sv_setpv(ST(0), CCS  str);
@@ -76,18 +79,22 @@ XS(xs_debug_write)
 {
   dXSARGS;
   STRLEN len;
+  const uschar * s;
   if (items != 1)
     croak("Usage: Exim::debug_write(string)");
-  debug_printf("%s", US SvPV(ST(0), len));
+  s = US SvPV(ST(0), len);
+  debug_printf_indent("%.*s", (int)len, s);
 }
 
 XS(xs_log_write)
 {
   dXSARGS;
   STRLEN len;
+  const uschar * s;
   if (items != 1)
     croak("Usage: Exim::log_write(string)");
-  log_write(0, LOG_MAIN, "%s", US SvPV(ST(0), len));
+  s = US SvPV(ST(0), len);
+  log_write(0, LOG_MAIN, "%.*s", (int)len, s);
 }
 
 static void  xs_init(pTHX)
