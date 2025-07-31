@@ -3786,7 +3786,7 @@ behaviour of the daemon without creating as much output as full debugging does.
 This option sets up a debug pretrigger buffer with given size (in bytes).
 The default is 16kB.
 
-.vitem &%-dt=<&'value'&>
+.vitem &%-dt%&=<&'value'&>
 .oindex "&%-dp%&"
 This option sets additional reasons for debug to trigger, over ACL-initiated
 triggers.
