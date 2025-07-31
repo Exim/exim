@@ -764,12 +764,13 @@ Returns:       FALSE iff fatal error
 */
 
 BOOL
-macro_read_assignment(uschar *s)
+macro_read_assignment(uschar * line)
 {
+uschar * s = line;
 uschar name[EXIM_DRIVERNAME_MAX];
 int namelen = 0;
 BOOL redef = FALSE;
-macro_item *m;
+macro_item * m;
 
 while (isalnum(*s) || *s == '_')
   {
@@ -786,7 +787,8 @@ name[namelen] = 0;
 Uskip_whitespace(&s);
 if (*s++ != '=')
   {
-  log_write(0, LOG_PANIC|LOG_CONFIG_IN, "malformed macro definition");
+  log_write(0, LOG_PANIC|LOG_CONFIG_IN,
+    "malformed macro definition %q", line);
   return FALSE;
   }
 
@@ -879,7 +881,7 @@ Return: pointer to first nonblank char in line
 */
 
 uschar *
-macros_expand(int len, int * newlen, BOOL * macro_found)
+macros_expand(int len, int * newlen, int * macro_found)
 {
 uschar * ss = big_buffer + len;
 uschar * s;
@@ -910,7 +912,7 @@ while (*s && !isupper(*s) && !(*s == '_' && isupper(s[1]))) s++;
 /* For each defined macro, scan the line (from after XXX= if present),
 replacing all occurrences of the macro. */
 
-*macro_found = FALSE;
+*macro_found = 0;
 if (*s) for (macro_item * m = *s == '_' ? macros : macros_user; m; m = m->next)
   {
   uschar * p, *pp;
@@ -955,7 +957,7 @@ if (*s) for (macro_item * m = *s == '_' ? macros : macros_user; m; m = m->next)
     Ustrncpy(p, m->replacement, m->replen);
     t = p + m->replen;
     while (*t && !isupper(*t) && !(*t == '_' && isupper(t[1]))) t++;
-    *macro_found = TRUE;
+    *macro_found |= s == big_buffer ? MACRO_FIRST|MACRO_FOUND : MACRO_FOUND;
     }
   }
 
@@ -995,7 +997,7 @@ int startoffset = 0;         /* To first non-blank char in logical line */
 int len = 0;                 /* Of logical line so far */
 int newlen;
 uschar *s, *ss;
-BOOL macro_found;
+int macro_found;
 
 /* Loop for handling continuation lines, skipping comments, and dealing with
 .include files. */
@@ -1092,7 +1094,7 @@ for (;;)
           log_write_die(0, LOG_CONFIG_IN,
             ".%s nested too deeply", c->name);
         cstate_stack[++cstate_stack_ptr] = cstate;
-        cstate = next_cstate[cstate][macro_found? c->action1 : c->action2];
+        cstate = next_cstate[cstate][macro_found ? c->action1 : c->action2];
         }
 
       /* For any of the others, stack underflow is an error. The next state
@@ -1104,7 +1106,7 @@ for (;;)
           log_write_die(0, LOG_CONFIG_IN,
             ".%s without matching .ifdef", c->name);
         cstate = (c->pushpop < 0)? cstate_stack[cstate_stack_ptr--] :
-          next_cstate[cstate][macro_found? c->action1 : c->action2];
+          next_cstate[cstate][macro_found ? c->action1 : c->action2];
         }
 
       /* Having dealt with a directive, break the loop */

@@ -1855,21 +1855,20 @@ Arguments:
 static void
 expansion_test_line(const uschar * line)
 {
-int len;
-BOOL dummy_macexp;
+int len, macro_found;
 const uschar * s;
 
 Ustrncpy(big_buffer, line, big_buffer_size);
 big_buffer[big_buffer_size-1] = '\0';
 len = Ustrlen(big_buffer);
 
-(void) macros_expand(0, &len, &dummy_macexp);
+(void) macros_expand(0, &len, &macro_found);
 
 #ifdef LOOKUP_MODULE_DIR
 //mod_load_check(big_buffer);
 #endif
 
-if (isupper(big_buffer[0]))
+if (isupper(big_buffer[0]) && !(macro_found & MACRO_FIRST))
   {
   if (macro_read_assignment(big_buffer))
     printf("Defined macro '%s'\n", mlast->name);

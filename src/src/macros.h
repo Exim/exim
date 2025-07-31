@@ -1235,6 +1235,10 @@ When doing en extended loop of matching, release store periodically. */
 #define WBR_DATA_OR_EOF	TRUE
 #define WBR_DATA_ONLY	FALSE
 
+/* Secondary-result bits for macros_expand() */
+#define MACRO_FOUND	BIT(0)	/* At least one macro was found in the line */
+#define MACRO_FIRST	BIT(1)	/* A macro was the first thing in the line */
+
 #endif	/* whole file */
 /* End of macros.h */
 /* vi: aw ai sw=2

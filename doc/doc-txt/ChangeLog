@@ -176,6 +176,12 @@ JH/39 Fix ARC signing, on lack of message body hash. Previously if this could
       uninitialized value was used for a memory allocation. Often this was
       visible as an internal check on the size.  Analysis by Qualys Security.
 
+JH/40 Fix "-be" test. If a single macro was expanded for the test, and the
+      result looked possible as a macro definition, an attempt to define a new
+      macro was done. This meant that "exim -be _DKIM_SIGN_HEADERS" failed.
+      Fix by avoiding new definitions if a macro had been expanded as the
+      first thing on a line.
+
 
 Exim version 4.98
 -----------------

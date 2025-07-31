@@ -326,7 +326,7 @@ extern BOOL    lookup_one_mod_load(const uschar *, uschar **);
 
 extern macro_item * macro_create(const uschar *, const uschar *, BOOL);
 extern BOOL    macro_read_assignment(uschar *);
-extern uschar *macros_expand(int, int *, BOOL *);
+extern uschar *macros_expand(int, int *, int *);
 extern void    mainlog_close(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     malware(const uschar *, BOOL, int);
