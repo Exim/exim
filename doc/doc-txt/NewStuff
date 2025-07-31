@@ -50,6 +50,8 @@ Version 4.98
  16. Log selector "tls_on_connect" to give distinguishable protocol labels
      for that case in received log lines. Also affects $received_protocol
 
+ 17. Command-line option for pre-config debug
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

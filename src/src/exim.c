@@ -2912,9 +2912,7 @@ on the second character (the one after '-'), to save some effort. */
     /* -dropcr: Set this option.  Now a no-op, retained for compatibility only. */
 
     if (Ustrcmp(argrest, "ropcr") == 0)
-      {
-      /* drop_cr = TRUE; */
-      }
+      /* drop_cr = TRUE */ ;
 
     /* -dp: Set up a debug pretrigger buffer with given size. */
 
@@ -2923,6 +2921,12 @@ on the second character (the one after '-'), to save some effort. */
 	badarg = TRUE;
       else
 	debug_pretrigger_setup(argv[i]);
+
+    /* -dS: enable startup-time debugging (before the config is read) */
+    /* Another debug channel per "-d" would be nicer, but we're at 32 already */
+
+    else if (Ustrcmp(argrest, "S") == 0)
+      debug_startup = TRUE;
 
     /* -dt: Set a debug trigger selector */
 
@@ -4560,7 +4564,7 @@ if (perl_start_option != 0)
   opt_perl_at_start = perl_start_option > 0;
 if (opt_perl_at_start && opt_perl_startup)
   if (!perl_startup())
-    exim_fail(expand_string_message);
+    exim_fail("%s\n", expand_string_message);
 #endif /* EXIM_PERL */
 
 /* Log the arguments of the call if the configuration file said so. This is

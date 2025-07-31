@@ -105,6 +105,13 @@ don't make the file descriptors two-way. */
 #define DEBUG(x)	if (IS_DEBUG(x))
 #define HDEBUG(x)	if (host_checking || IS_DEBUG(x))
 
+#define EARLY_DEBUG(x, fmt, ...) \
+  if (debug_startup) \
+    if (debug_fd < 0) \
+      fprintf(stderr, "%s", string_sprintf(fmt, __VA_ARGS__)); \
+    else DEBUG(x) \
+      debug_printf_indent(fmt, __VA_ARGS__);
+
 /* The default From: text for DSNs */
 
 #define DEFAULT_DSN_FROM "Mail Delivery System <Mailer-Daemon@$qualify_domain>"

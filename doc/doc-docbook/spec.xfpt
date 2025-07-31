@@ -3786,6 +3786,10 @@ This is an obsolete option that is now a no-op. It used to affect the way Exim
 handled CR and LF characters in incoming messages. What happens now is
 described in section &<<SECTlineendings>>&.
 
+.cmdopt -dS
+This option enables debug during the startup of Exim, before the completion
+of processing the configuration file(s).
+
 .cmdopt -E
 .cindex "bounce message" "generating"
 This option specifies that an incoming message is a locally-generated delivery

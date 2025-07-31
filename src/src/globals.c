@@ -710,7 +710,7 @@ int     debug_notall[]         = {
   -1
 };
 bit_table debug_options[]      = { /* must be in alphabetical order and use
-				 only the enum values from macro.h */
+				 only the enum values from macros.h */
   BIT_TABLE(D, acl),
   BIT_TABLE(D, all),
   BIT_TABLE(D, auth),
@@ -749,6 +749,7 @@ uschar   debuglog_name[LOG_NAME_SIZE] = {0};
 unsigned debug_pretrigger_bsize	= 0;
 uschar * debug_pretrigger_buf	= NULL;
 unsigned int debug_selector	= 0;
+BOOL	 debug_startup		= FALSE;
 
 int     delay_warning[DELAY_WARNING_SIZE] = { DELAY_WARNING_SIZE, 1, 24*60*60 };
 uschar *delay_warning_condition=

@@ -515,6 +515,7 @@ extern bit_table debug_options[];      /* Table of debug options */
 extern int     debug_options_count;    /* Size of table */
 extern unsigned debug_pretrigger_bsize;
 extern uschar *debug_pretrigger_buf;   /* circular buffer for precapture */
+extern BOOL    debug_startup;	       /* Pre-config-read debugging */
 extern BOOL    debug_store;	       /* Do extra checks on store_reset */
 extern uschar  debuglog_name[LOG_NAME_SIZE]; /* ACL-init debug */
 

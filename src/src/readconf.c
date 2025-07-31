@@ -17,8 +17,6 @@ implementation of the conditional .ifdef etc. */
 # include "macro_predef.h"
 #endif
 
-#define READCONF_DEBUG	if (FALSE)	/* Change to TRUE to enable */
-
 
 static uschar * syslog_facility_str;
 static void fn_smtp_receive_timeout(const uschar *, const uschar *, unsigned);
@@ -735,7 +733,7 @@ macro_create(const uschar * name, const uschar * val, BOOL command_line)
 {
 macro_item * m = store_get(sizeof(macro_item), GET_UNTAINTED);
 
-READCONF_DEBUG fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val);
+EARLY_DEBUG(D_any, "%s: '%s' '%s'\n", __FUNCTION__, name, val);
 m->next = NULL;
 m->command_line = command_line;
 m->namelen = Ustrlen(name);
@@ -926,7 +924,7 @@ if (*s) for (macro_item * m = *s == '_' ? macros : macros_user; m; m = m->next)
     {
     int moveby;
 
-    READCONF_DEBUG fprintf(stderr, "%s: matched '%s' in '%.*s'\n", __FUNCTION__,
+    EARLY_DEBUG(D_any, "%s: matched '%s' in '%.*s'\n", __FUNCTION__,
       m->name, (int) Ustrlen(ss)-1, ss);
     /* Expand the buffer if necessary */
 
@@ -4594,7 +4592,7 @@ while(next_section[0] != 0)
   int mid = last/2;
   int n = Ustrlen(next_section);
 
-  READCONF_DEBUG fprintf(stderr, "%s: %s\n", __FUNCTION__, next_section);
+  EARLY_DEBUG(D_any, "%s: %s\n", __FUNCTION__, next_section);
   if (tolower(next_section[n-1]) != 's') Ustrcpy(next_section+n, US"s");
 
   for (;;)
