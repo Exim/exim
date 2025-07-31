@@ -3781,6 +3781,19 @@ starts a daemon process. In that case, debugging is turned off for the
 subprocesses that the daemon creates. Thus, it is useful for monitoring the
 behaviour of the daemon without creating as much output as full debugging does.
 
+.vitem &%-dp%&<&'size'&>
+.oindex "&%-dp%&"
+This option sets up a debug pretrigger buffer with given size (in bytes).
+The default is 16kB.
+
+.vitem &%-dt=<&'value'&>
+.oindex "&%-dp%&"
+This option sets additional reasons for debug to trigger, over ACL-initiated
+triggers.
+A value with bit 0 set will trigger on a write to the panic log.
+If a pretrigger buffer had been set up (cf. the &%-dp%& option above)
+the debug trail leading up to this write will be available.
+
 .cmdopt -dropcr
 This is an obsolete option that is now a no-op. It used to affect the way Exim
 handled CR and LF characters in incoming messages. What happens now is
