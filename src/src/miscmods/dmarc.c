@@ -13,8 +13,9 @@
 /* Code for calling dmarc checks via libopendmarc. Called from acl.c. */
 
 #include "../exim.h"
+
 #ifdef SUPPORT_DMARC
-# if !defined SUPPORT_SPF
+# ifndef EXIM_HAVE_SPF
 #  error SPF must also be enabled for DMARC
 # elif defined DISABLE_DKIM
 #  error DKIM must also be enabled for DMARC

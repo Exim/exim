@@ -364,7 +364,8 @@ extern void    mime_set_anomaly(int);
 #endif
 
 extern gstring *misc_mod_authres(gstring *);
-extern int     misc_mod_conn_init(const uschar *, const uschar *);
+extern int     misc_mod_conn_init(const uschar *, const uschar *,
+		const uschar **);
 extern misc_module_info * misc_mod_find(const uschar * modname, uschar **);
 extern misc_module_info * misc_mod_findonly(const uschar * modname);
 extern int     misc_mod_msg_init(void);
@@ -401,7 +402,7 @@ extern const uschar *parse_quote_2047(const uschar *, int, const uschar *,
 				      BOOL);
 extern const uschar *parse_date_time(const uschar *str, time_t *t);
 #ifdef EXIM_PERL
-const misc_module_info * perl_startup(void);
+const misc_module_info * perl_startup(const uschar *);
 #endif
 
 extern void priv_drop_temp(const uid_t, const gid_t);

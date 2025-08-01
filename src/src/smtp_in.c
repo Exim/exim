@@ -4172,12 +4172,17 @@ while (done <= 0)
 
       /* For any misc-module having a connection-init routine, call it. */
       
-      if (misc_mod_conn_init(sender_helo_name, sender_host_address) != OK)
+      {
+      const uschar * errstr = NULL;
+      if (misc_mod_conn_init(sender_helo_name, sender_host_address, &errstr)
+	  != OK)
 	{
-	DEBUG(D_receive) debug_printf("A module conn-init routine failed\n");
+	DEBUG(D_receive)
+	  debug_printf("A module conn-init routine failed: %s\n", errstr);
 	done = 1;
 	break;
 	}
+      }
 
       /* Apply an ACL check if one is defined; afterwards, recheck
       synchronization in case the client started sending in a delay. */

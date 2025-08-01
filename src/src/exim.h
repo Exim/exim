@@ -544,7 +544,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 # include "bmi_spam.h"
 #endif
-#ifdef SUPPORT_SPF
+#if defined(SUPPORT_SPF) || defined(EXPERIMENTAL_SPF_PERL)
 # include "miscmods/spf.h"
 # include "miscmods/spf_api.h"
 #endif

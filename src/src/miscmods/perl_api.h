@@ -13,4 +13,4 @@
 
 #define	PERL_STARTUP	0
 #define	PERL_CAT	1
-#define	PERL_CLEANUP	2
+#define	PERL_ADDBLOCK	2

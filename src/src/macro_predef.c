@@ -191,8 +191,11 @@ due to conflicts with other common macros. */
 #ifdef TCP_FASTOPEN
   builtin_macro_create(US"_HAVE_TCP_FASTOPEN");
 #endif
-#ifdef SUPPORT_SPF
+#ifdef EXIM_HAVE_SPF
   builtin_macro_create(US"_HAVE_SPF");
+# ifdef EXPERIMENTAL_SPF_PERL
+  builtin_macro_create(US"_HAVE_EXPERIMENTAL_SPF_PERL");
+# endif
 #endif
 #ifdef SUPPORT_SRS
   builtin_macro_create(US"_HAVE_SRS");

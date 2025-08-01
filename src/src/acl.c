@@ -113,7 +113,7 @@ enum { ACLC_ACL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_SPAM,
 #endif
-#ifdef SUPPORT_SPF
+#ifdef EXIM_HAVE_SPF
        ACLC_SPF,
        ACLC_SPF_GUESS,
 #endif
@@ -336,9 +336,9 @@ static condition_def conditions[] = {
 				  ACL_BIT_NOTSMTP),
   },
 #endif
-#ifdef SUPPORT_SPF
+#ifdef EXIM_HAVE_SPF
   [ACLC_SPF] =			{ US"spf",
-# if SUPPORT_SPF==2
+# if EXIM_HAVE_SPF==2
 				  ACD_LOAD |
 # endif
 				  ACD_EXP,
@@ -349,7 +349,7 @@ static condition_def conditions[] = {
 				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START),
   },
   [ACLC_SPF_GUESS] =		{ US"spf_guess",
-# if SUPPORT_SPF==2
+# if EXIM_HAVE_SPF==2
 				  ACD_LOAD |
 # endif
 				  ACD_EXP,
@@ -400,7 +400,7 @@ typedef struct condition_module {
   const int *		conditions;	/* array of ACLC_*, -1 terminated */
 } condition_module;
 
-#  if SUPPORT_SPF==2
+#  if EXIM_HAVE_SPF==2
 static int spf_condx[] = { ACLC_SPF, ACLC_SPF_GUESS, -1 };
 #  endif
 #  if SUPPORT_DKIM==2
@@ -414,7 +414,7 @@ static int dmarc_condx[] = { ACLC_DMARC_STATUS, -1 };
 during readconf, The "arc" module is handled by custom coding. */
 
 static condition_module condition_modules[] = {
-#  if SUPPORT_SPF==2
+#  if EXIM_HAVE_SPF==2
   {.mod_name = US"spf", .conditions = spf_condx},
 #  endif
 #  if SUPPORT_DKIM==2
@@ -4243,7 +4243,7 @@ for (; cb; cb = cb->next)
       }
 #endif
 
-#ifdef SUPPORT_SPF
+#ifdef EXIM_HAVE_SPF
     case ACLC_SPF:
     case ACLC_SPF_GUESS:
       /* We have hardwired function-call numbers, and also prototypes for the

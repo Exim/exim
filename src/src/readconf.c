@@ -344,7 +344,7 @@ static optionlist optionlist_config[] = {
 #ifdef WITH_CONTENT_SCAN
   { "spamd_address",            opt_stringptr,   {&spamd_address} },
 #endif
-#ifdef SUPPORT_SPF
+#ifdef EXIM_HAVE_SPF
   { "spf_guess",                opt_module,	 {US"spf"} },
   { "spf_smtp_comment_template",opt_module,	 {US"spf"} },
 #endif

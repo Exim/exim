@@ -21,7 +21,7 @@ try option unknown_login
   ├considering: }}
   ├───expanded: arg1
   ╰─────result: arg1
-Starting Perl interpreter
+  Starting Perl interpreter
  ├───expanded: ${perl{foo}{arg1}}
  ╰─────result: Subroutine░foo░called░with░args:░arg1
  ╭considering: ${perl{foo_undef}}

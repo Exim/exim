@@ -11,6 +11,12 @@ acl_smtp_rcpt = check_rcpt
 begin acl
 
 check_rcpt:
+.ifdef _HAVE_EXPERIMENTAL_SPF_PERL
+# libspf2 alway pass for localhost, but Mail::SPF does not
+  accept	condition =	${if !eq {$received_port}{PORT_D2}}
+		hosts =		127.0.0.1
+.endif
+
   accept	condition =	${if eq {$received_port}{PORT_D}}
 		spf_guess =	pass
 		logwrite =	spf_result         $spf_result (guess <$spf_result_guessed>)

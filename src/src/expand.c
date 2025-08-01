@@ -720,7 +720,7 @@ static var_entry var_table[] = {
   { "spam_score",          vtype_stringptr,   &spam_score },
   { "spam_score_int",      vtype_stringptr,   &spam_score_int },
 #endif
-#ifdef SUPPORT_SPF
+#ifdef EXIM_HAVE_SPF
   { "spf_guess",           vtype_module,	US"spf" },
   { "spf_header_comment",  vtype_module,	US"spf" },
   { "spf_received",        vtype_module,	US"spf" },
@@ -4647,35 +4647,37 @@ if (nchar > 0 && is_tainted(value))
 #ifdef EXIM_PERL
 
 const misc_module_info *
-perl_startup(void)
+perl_startup(const uschar * startup_pl)
 {
-const misc_module_info * mi;
+const misc_module_info * mi = NULL;
 uschar * errstr;
 
-if (!(mi = misc_mod_find(US"perl", &errstr)))
+expand_level++;
+
+if (!startup_pl)
+  expand_string_message = US"A setting of perl_startup is needed when "
+    "using the Perl interpreter";
+
+else if (!(mi = misc_mod_find(US"perl", &errstr)))
   expand_string_message =
     string_sprintf("failed to locate perl module: %s", errstr);
+
 else if (!opt_perl_started)
   {
   uschar * initerror;
-  typedef uschar * (*fn_t)(uschar *);
+  typedef uschar * (*fn_t)(const uschar *);
 
-  if (!opt_perl_startup)
-    {
-    expand_string_message = US"A setting of perl_startup is needed when "
-      "using the Perl interpreter";
-    return NULL;
-    }
-  DEBUG(D_any) debug_printf("Starting Perl interpreter\n");
-  if ((initerror = (((fn_t *) mi->functions)[PERL_STARTUP]) (opt_perl_startup)))
+  DEBUG(D_any) debug_printf_indent("Starting Perl interpreter\n");
+  if ((initerror = (((fn_t *) mi->functions)[PERL_STARTUP]) (startup_pl)))
     {
     expand_string_message =
       string_sprintf("error in perl_startup code: %s\n", initerror);
-    return NULL;
+    mi = NULL;
     }
   opt_perl_started = TRUE;
   }
 
+expand_level--;
 return mi;
 }
 
@@ -5382,17 +5384,18 @@ while (*s)	/* known to be untainted */
 
       /* Start the interpreter if necessary */
 
-      if (!(mi = perl_startup()))
+      if (!(mi = perl_startup(opt_perl_startup)))
 	goto EXPAND_FAILED;
 
       /* Call the function */
 
       sub_arg[EXIM_PERL_MAX_ARGS + 1] = NULL;
 	{
-	typedef gstring * (*fn_t)(gstring *, uschar **, uschar *, uschar **);
+	typedef gstring * (*fn_t)
+			    (gstring *, uschar **, uschar *, const uschar **);
 	new_yield = (((fn_t *) mi->functions)[PERL_CAT])
 					      (yield, &expand_string_message,
-						sub_arg[0], sub_arg + 1);
+						sub_arg[0], CUSS sub_arg + 1);
 	}
 
       /* NULL yield indicates failure; if the message pointer has been set to

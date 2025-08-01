@@ -20,16 +20,17 @@ The API starts with a struct with a known name <foo>_module_info.
 For dynamic builds this includes a magic number permitting versioning
 of the highlevel interface.
 The structure has elements for some commonly-needed call types
-(init, version-report etc.).  Any my be left as null pointers;
+(init, version-report etc.).  Any may be left as null pointers;
 those present will be called at appropriate times.
 
 The current list is
-	init
+	init			(Exim startup if static, modload if dynamic)
 	lib_vers_report
+	conn_init
 	smtp_reset
 	msg_init
 
-Then there are three pair of elements, each being a table pointer
+Then there are three pairs of elements, each being a table pointer
 and table length, for options, functions, and variable that the
 module provides.
 

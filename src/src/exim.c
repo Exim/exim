@@ -1184,8 +1184,8 @@ gstring * b = NULL, * d = NULL;
   d = string_cat(d, US" redis");
 # endif
 #endif
-#ifdef SUPPORT_SPF
-# if SUPPORT_SPF!=2
+#ifdef EXIM_HAVE_SPF
+# if EXIM_HAVE_SPF !=2
   b = string_cat(b, US" spf");
 # else
   d = string_cat(d, US" spf");
@@ -1347,7 +1347,7 @@ g = string_cat(g, US"Support for:");
 #ifdef SUPPORT_SOCKS
   g = string_cat(g, US" SOCKS");
 #endif
-#ifdef SUPPORT_SPF
+#ifdef EXIM_HAVE_SPF
   g = string_cat(g, US" SPF");
 #endif
 #if defined(SUPPORT_SRS)
@@ -4562,7 +4562,7 @@ opt_perl_xxx to avoid clashing with perl's namespace (perl_*). */
 if (perl_start_option != 0)
   opt_perl_at_start = perl_start_option > 0;
 if (opt_perl_at_start && opt_perl_startup)
-  if (!perl_startup())
+  if (!perl_startup(opt_perl_startup))
     exim_fail("%s\n", expand_string_message);
 #endif /* EXIM_PERL */
 

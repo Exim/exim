@@ -708,6 +708,33 @@ The feature can be usefully combined with TCP Fast Open.
 
 
 
+SPF using Perl Mail::SPF
+---------------------------------------------------------------
+
+If compiled with EXPERIMENTAL_SPF_PERL=yes  :-
+
+Instead of the traditional implementation using libspf2 (which has seen
+little recent signs of maintenance) an interface to the Perl Mail::SPF
+module is used.
+
+Compilation must not specify SUPPORT_SPF and must specify EXIM_PERL.
+Building as a loadable module, using EXPERIMENTAL_SPF_PERL=2
+is also supported.
+
+The runtime system must have Mail::SPF installed.
+
+Variables $spf_result and $spf_received are supported.
+The other spf_* variables are not.  Currently they exist but with
+default values.  The spf_* options currently exist but are ignored.
+
+Note that the perl module behaves differently to libspf2 -
+for example, it does not give localhost a free pass.
+
+Use of the perl_at_startup option should be considered
+(but is not required).
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

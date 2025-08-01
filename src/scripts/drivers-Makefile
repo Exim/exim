@@ -132,11 +132,13 @@ emit_module_rule() {
   local mod_name pkgconf
   if [ "${name%:*}" = "$name" ]
   then
+    # Lower-case the name for mod_name.
     # Square brackets are redundant but benign for POSIX compliant tr,
     # however Solaris /usr/bin/tr requires them. Sometimes Solaris
     # gets installed without a complete set of xpg4 tools, sigh.
     mod_name=$(echo $name | tr [A-Z] [a-z])
   else
+    # There is a :suffix on the name. Put it into mod_name, strip it from name.
     mod_name="${name#*:}"
     name="${name%:*}"
   fi

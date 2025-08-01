@@ -52,6 +52,9 @@ Version 4.98
 
  17. Command-line option for pre-config debug
 
+ 18. EXPERIMENTAL_SPR_PERL optional build feature.  See the experimental.spec
+    file.
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

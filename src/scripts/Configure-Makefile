@@ -309,6 +309,7 @@ cp ../src/lookups/Makefile $look_mf_pre
 EGREP="$egrep" ../scripts/lookups-Makefile
 
 # make the Makefiles for routers, transports, auths and miscmods
+# An _ prefix on a name means the control in Local/Makefile is DISABLED_<name>
 #
 while read class classdef names
 do
@@ -320,7 +321,7 @@ done <<-END
  routers    ROUTER	ACCEPT DNSLOOKUP IPLITERAL IPLOOKUP MANUALROUTE QUERYPROGRAM REDIRECT
  transports TRANSPORT	APPENDFILE AUTOREPLY LMTP PIPE QUEUEFILE SMTP
  auths	    AUTH	CRAM_MD5 CYRUS_SASL DOVECOT EXTERNAL GSASL HEIMDAL_GSSAPI PLAINTEXT SPA TLS
- miscmods   SUPPORT	ARC _DKIM DMARC _EXIM_FILTER PAM PERL RADIUS _SIEVE_FILTER SPF
+ miscmods   SUPPORT	ARC _DKIM DMARC _EXIM_FILTER PAM PERL RADIUS _SIEVE_FILTER SPF SPF_PERL
 END
 
 # See if there is a definition of EXIM_PERL in what we have built so far.

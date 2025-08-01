@@ -107,7 +107,7 @@ for f in dummy.c \
 	perl.c perl_api.h \
 	radius.c radius_api.h \
 	sieve_filter.c sieve_filter_api.h \
-	spf.c spf.h spf_api.h
+	spf.c spf_perl.c spf.h spf_api.h
 do
   ln -s ../../src/$d/$f `basename $f`
 done

@@ -323,7 +323,7 @@ extern lookup_module_info redis_lookup_module_info;
 #if defined(LOOKUP_LMDB) && LOOKUP_LMDB!=2
 extern lookup_module_info lmdb_lookup_module_info;
 #endif
-#if defined(SUPPORT_SPF)
+#if defined(EXIM_HAVE_SPF)
 extern lookup_module_info spf_lookup_module_info;	/* see below */
 #endif
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
@@ -522,11 +522,11 @@ return NULL;
 
 int
 misc_mod_conn_init(const uschar * sender_helo_name,
-  const uschar * sender_host_address)
+  const uschar * sender_host_address, const uschar * * errstr)
 {
 for (const misc_module_info * mi = misc_module_list; mi; mi = mi->next)
   if (mi->conn_init)
-    if ((mi->conn_init) (sender_helo_name, sender_host_address) != OK)
+    if ((mi->conn_init) (sender_helo_name, sender_host_address, errstr) != OK)
       return FAIL;
 return OK;
 }
@@ -683,7 +683,7 @@ addlookupmodule(&whoson_lookup_module_info);
 linked statically whether or not the "misc" module (and hence libspf2) is
 dynamic-load. */
 
-#if defined(SUPPORT_SPF)
+#ifdef EXIM_HAVE_SPF
 addlookupmodule(&spf_lookup_module_info);
 #endif
 
@@ -746,7 +746,7 @@ extern misc_module_info dkim_module_info;
 #if defined(SUPPORT_DMARC) && SUPPORT_DMARC!=2
 extern misc_module_info dmarc_module_info;
 #endif
-#if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
+#if defined(EXIM_HAVE_SPF) && EXIM_HAVE_SPF!=2
 extern misc_module_info spf_module_info;
 #endif
 #if defined(EXPERIMENTAL_ARC) && (!defined(SUPPORT_ARC) || SUPPORT_ARC!=2)
@@ -778,7 +778,7 @@ onetime = TRUE;
 #if !defined(DISABLE_DKIM) && (!defined(SUPPORT_DKIM) || SUPPORT_DKIM!=2)
   misc_mod_add(&dkim_module_info);
 #endif
-#if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
+#if defined(EXIM_HAVE_SPF) && EXIM_HAVE_SPF!=2
   misc_mod_add(&spf_module_info);
 #endif
 #if defined(SUPPORT_DMARC) && SUPPORT_DMARC!=2

@@ -2,8 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Exim - SPF lookup module using libspf2
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/* Exim - SPF lookup module using Exim's "miscmod" SPF support for ACL
 
 Copyright (c) The Exim Maintainers 2020 - 2022
 Copyright (c) 2005 Chris Webb, Arachsys Internet Services Ltd
@@ -17,26 +16,34 @@ of the License, or (at your option) any later version.
 
 #include "../exim.h"
 
-#ifndef SUPPORT_SPF
+#ifndef EXIM_HAVE_SPF
 static void dummy(int x);
 static void dummy2(int x) { dummy(x-1); }
 static void dummy(int x) { dummy2(x-1); }
 #else
 
 #include "lf_functions.h"
-#if !defined(HAVE_NS_TYPE) && defined(NS_INADDRSZ)
-# define HAVE_NS_TYPE
+
+#ifndef EXPERIMENTAL_SPF_PERL
+
+/*XXX are these really needed? */
+
+# if !defined(HAVE_NS_TYPE) && defined(NS_INADDRSZ)
+#  define HAVE_NS_TYPE
+# endif
+# include <spf2/spf.h>
+# include <spf2/spf_dns_resolv.h>
+# include <spf2/spf_dns_cache.h>
+
 #endif
-#include <spf2/spf.h>
-#include <spf2/spf_dns_resolv.h>
-#include <spf2/spf_dns_cache.h>
 
 
 static void *
 spf_open(const uschar * filename, uschar ** errmsg)
 {
-misc_module_info * mi = misc_mod_find(US"spf", errmsg);
-if (mi)
+misc_module_info * mi;
+DEBUG(D_lookup) debug_printf_indent("spf lookup spf_open\n");
+if ((mi = misc_mod_find(US"spf", errmsg)))
   {
   typedef void * (*fn_t)(const uschar *, uschar **);
   return (((fn_t *) mi->functions)[SPF_OPEN]) (filename, errmsg);
@@ -112,4 +119,4 @@ static lookup_info spf_lookup_info = {
 static lookup_info *_lookup_list[] = { &spf_lookup_info };
 lookup_module_info spf_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
-#endif /* SUPPORT_SPF */
+#endif /* EXIM_HAVE_SPF */

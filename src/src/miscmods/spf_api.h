@@ -8,6 +8,23 @@
 
 /* API definitions for the spf module */
 
+#ifdef EXPERIMENTAL_SPF_PERL
+
+enum spf_result_code {
+        SPF_RESULT_INVALID = 0,
+        SPF_RESULT_NEUTRAL,
+        SPF_RESULT_PASS,
+        SPF_RESULT_FAIL,
+        SPF_RESULT_SOFTFAIL,
+
+        SPF_RESULT_NONE,
+        SPF_RESULT_TEMPERROR,
+        SPF_RESULT_PERMERROR
+};
+
+#else
+# include <spf2/spf_response.h>
+#endif
 
 /* Function table entry numbers */
 
