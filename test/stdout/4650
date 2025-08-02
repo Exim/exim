@@ -23,7 +23,7 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 >>> RSET
 ??? 250
 <<< 250 Reset OK
->>> MAIL FROM:<CALLER@bloggs.com>
+>>> MAIL FROM:<CALLER@not-exist.test.ex>
 ??? 250
 <<< 250 OK
 >>> RCPT TO:<a@test.ex>
@@ -74,7 +74,7 @@ reporter myhost.test.ex
 received 1692480217
 ipaddr ip4.ip4.ip4.ip4
 from test.ex
-mfrom bloggs.com
+mfrom not-exist.test.ex
 spf 6
 dkim test.ex sel 0
 pdomain test.ex

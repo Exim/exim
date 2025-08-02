@@ -154,7 +154,8 @@ debug_printf_indent(" dnsa answer %p len %d\n", dnsa->answer, dnsa->answerlen);
 */
 
 ST(0) = sv_newmortal();
-sv_setpvn(ST(0), CCS dnsa->answer, (STRLEN) dnsa->answerlen);
+sv_setpvn(ST(0), CCS dnsa->answer,
+		  (STRLEN) (dns_res == DNS_NODATA ? 0 : dnsa->answerlen));
 XSRETURN(1);	/* ? needed because there are 2 arg, but 1 res? */
 
 store_free_dns_answer(dnsa);

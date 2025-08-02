@@ -32,7 +32,7 @@ body line
 ??? 250
 RSET
 ??? 250
-MAIL FROM:<CALLER@bloggs.com>
+MAIL FROM:<CALLER@not-exist.test.ex>
 ??? 250
 RCPT TO:<a@test.ex>
 ??? 250

@@ -1295,9 +1295,10 @@ for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
 
 DEBUG(D_acl)
   if (gstring_length(g) == start)
-    debug_printf("DKIM:\tno authres\n");
+    debug_printf_indent("DKIM:\tno authres\n");
   else
-    debug_printf("DKIM:\tauthres '%.*s'\n", g->ptr - start - 3, g->s + start + 3);
+    debug_printf_indent("DKIM:\tauthres '%.*s'\n",
+				g->ptr - start - 3, g->s + start + 3);
 return g;
 }
 

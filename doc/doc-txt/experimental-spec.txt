@@ -723,15 +723,16 @@ is also supported.
 
 The runtime system must have Mail::SPF installed.
 
-Variables $spf_result and $spf_received are supported.
+Variables $spf_header_comment, $spf_result and $spf_received are supported.
 The other spf_* variables are not.  Currently they exist but with
 default values.  The spf_* options currently exist but are ignored.
 
 Note that the perl module behaves differently to libspf2 -
 for example, it does not give localhost a free pass.
 
-Use of the perl_at_startup option should be considered
-(but is not required).
+The embedded perl interpreter is started when an spf ACL condition or an
+spf lookup string-expansion is done, if not already running.  Use of the
+perl_at_startup option should be considered (but is not required).
 
 
 

@@ -2080,11 +2080,11 @@ if (arc_state)
     }
   else if (arc_state_reason)
     g = string_append(g, 3, US" (", arc_state_reason, US")");
-  DEBUG(D_acl) debug_printf("ARC:\tauthres '%.*s'\n",
+  DEBUG(D_acl) debug_printf_indent("ARC:\tauthres '%.*s'\n",
 		  gstring_length(g) - start - 3, g->s + start + 3);
   }
 else
-  DEBUG(D_acl) debug_printf("ARC:\tno authres\n");
+  DEBUG(D_acl) debug_printf_indent("ARC:\tno authres\n");
 return g;
 }
 

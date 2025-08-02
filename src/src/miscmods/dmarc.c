@@ -277,19 +277,20 @@ dmarc_dns_lookup(uschar * dom)
 {
 dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
-int rc = dns_lookup(dnsa, string_sprintf("_dmarc.%s", dom), T_TXT, NULL);
+uschar * res = NULL;
 
-if (rc == DNS_SUCCEED)
+expand_level++;
+
+if (dns_lookup(dnsa, string_sprintf("_dmarc.%s", dom), T_TXT, NULL)
+    == DNS_SUCCEED)
   for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
        rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
     if (rr->type == T_TXT && rr->size > 3)
-      {
-      uschar *record = string_copyn_taint(US rr->data, rr->size, GET_TAINTED);
-      store_free_dns_answer(dnsa);
-      return record;
-      }
+      res = string_copyn_taint(US rr->data, rr->size, GET_TAINTED);
+
+expand_level--;
 store_free_dns_answer(dnsa);
-return NULL;
+return res;
 }
 
 
@@ -771,11 +772,11 @@ if (f.dmarc_has_been_checked)
   g = string_append(g, 2, US";\n\tdmarc=", dmarc_pass_fail);
   if (header_from_sender)
     g = string_append(g, 2, US" header.from=", header_from_sender);
-  DEBUG(D_acl) debug_printf("DMARC:\tauthres '%.*s'\n",
+  DEBUG(D_acl) debug_printf_indent("DMARC:\tauthres '%.*s'\n",
 		  gstring_length(g) - start - 3, g->s + start + 3);
   }
 else
-  DEBUG(D_acl) debug_printf("DMARC:\tno authres\n");
+  DEBUG(D_acl) debug_printf_indent("DMARC:\tno authres\n");
 return g;
 }
 

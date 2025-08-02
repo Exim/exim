@@ -22,7 +22,7 @@ Called from acl.c and lookups/spf.c */
 #  error incompat: standard (libspf2) and Experimental (perl) implementations
 # endif
 
-/* must be kept in numeric order */
+/* should be kept in numeric order */
 static spf_result_id spf_result_id_list[] = {
   /* name		value */
   { US"invalid",	0},
@@ -75,6 +75,10 @@ static const uschar spf_pl[] =
 
 /******************************************************************************/
 
+/* Start the perl interpreter, if not already running, and add our perl
+spf lookup routine to it.  Safely does nothing if called again.
+*/
+
 static const misc_module_info *
 setup_spf_perl_mi(void)
 {
@@ -86,12 +90,17 @@ if (!spf_perl_mi)
     /* errstr = string_sprintf("spf: %s", expand_string_message); */
     return NULL;
 
-  //if ((errstr = (((fn_t *) spf_perl_mi->functions)[PERL_ADDBLOCK]) (spf_pl)))
+  /*XXX could return an error string here:
+  if ((errstr = (((fn_t *) spf_perl_mi->functions)[PERL_ADDBLOCK]) (spf_pl)))
+  */
+
   if ((((fn_t *) spf_perl_mi->functions)[PERL_ADDBLOCK]) (spf_pl))
     return spf_perl_mi = NULL;
   }
 return spf_perl_mi;
 }
+
+/* Call our perl routine */
 
 gstring *
 call_my_spf_req(const uschar ** argv)
@@ -112,11 +121,16 @@ return g;
 /******************************************************************************/
 
 
+#ifdef notdef
+/*API*/
 static gstring *
 spf_lib_version_report(gstring * g)
 {
+/*XXX Does Mail::SPF have a version? MetaCPAN says yes, but does not
+document a method that returns it. */
 return g;
 }
+#endif
 
 
 
@@ -124,6 +138,9 @@ return g;
 /* Set up a context that can be re-used for several
    messages on the same SMTP connection (that come from the
    same host with the same HELO string).
+
+We delay doing perl startup until spf processing time, as ACL might
+never need us on any given connection.
 
 Return: OK/FAIL
 */
@@ -149,19 +166,10 @@ return OK;
 static void
 spf_smtp_reset(void)
 {
-/*XXX keep */
 spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
 spf_result_guessed = FALSE;
 }
 
-
-#ifdef notdef
-static void
-spf_response_debug(SPF_response_t * spf_response)
-{
-/*XXX probably not */
-}
-#endif
 
 
 /*API*/
@@ -197,7 +205,7 @@ else
   {
   const uschar * argv[4] = {spf_envelope_sender, conn_addr, conn_helo, NULL};
   gstring * g;
-  uschar * res_list;
+  uschar * res_list, * s;
 
   if (!(g = call_my_spf_req(argv)))
     goto out;
@@ -207,14 +215,17 @@ else
 
   spf_result = string_nextinlist(CUSS &res_list, &sep, NULL, 0);
   DEBUG(D_acl) debug_printf_indent("SPF result is %s\n", spf_received);
-  spf_received = res_list;
-  }
 
-/*XXX what to do for spf_header_comment, spf_smtp_comment ?
-  spf_received is $result->received_spf_header
-but our PERL_CAT interface only supports the one retval
-We return a 2-element Exim list so far.
-*/
+  spf_received = res_list;		/* remainder of the returned string */
+
+  while (*res_list++ != ':') ;
+  spf_header_comment = res_list;	/* ditto with header name skipped */
+  if ((s = Ustrchr(res_list, '(')))
+    {
+    uschar * t = Ustrchr(s, ')');	/* grab a (comment) if there is one */
+    if (t) spf_header_comment = string_copyn(s+1, t-s-1);
+    }
+  }
 
 sep = 0;
 for (uschar * ele; ele = string_nextinlist(&arglist, &sep, NULL, 0); )
@@ -276,14 +287,17 @@ spf_get_results(uschar ** human_readable_p)
 uschar * s = NULL;
 int res = SPF_RESULT_INVALID;
 
-#ifdef notdef
-/*XXX todo*/
-if (spf_response)
+/* Translate result word to number */
+
+if (spf_result)
   {
-  res = spf_response->result;
-  s = US spf_response->header_comment;
+  for (spf_result_id * sip = spf_result_id_list;
+       sip < spf_result_id_list + nelem(spf_result_id_list);
+       sip++)
+    if (Ustrcmp(spf_result, sip->name) == 0) { res = sip->value; break; }
+
+  s = spf_header_comment;
   }
-#endif
 
 *human_readable_p = s ? string_copy(s) : US"";
 DEBUG(D_acl) debug_printf_indent("SPF: %d '%s'\n", res, s);
@@ -321,26 +335,23 @@ expand_level++;
 DEBUG(D_acl) debug_printf_indent("%s: mfrom:<%s> ip %q\n", __FUNCTION__,
 				  keystring, filename);
 
-if (!setup_spf_perl_mi())
-  ;
-
-else if (!filename)
-  *result = US"permerror";
-
-else
-  {
-  const uschar * argv[4] = {keystring, filename, conn_helo, NULL};
-  gstring * g;
-
-  if ((g = call_my_spf_req(argv)))
+if (setup_spf_perl_mi())
+  if (!filename)
+    *result = US"permerror";
+  else
     {
-    uschar * res_list = US string_from_gstring(g);
-    int sep = '\n';
-    *result = string_nextinlist(CUSS &res_list, &sep, NULL, 0);
-    DEBUG(D_acl) debug_printf_indent("SPF result is %s\n", *result);
-    res = OK;
+    const uschar * argv[4] = {keystring, filename, conn_helo, NULL};
+    gstring * g;
+
+    if ((g = call_my_spf_req(argv)))
+      {
+      uschar * res_list = US string_from_gstring(g);
+      int sep = '\n';
+      *result = string_nextinlist(CUSS &res_list, &sep, NULL, 0);
+      DEBUG(D_acl) debug_printf_indent("SPF result is %s\n", *result);
+      res = OK;
+      }
     }
-  }
 
 return res;
 }
