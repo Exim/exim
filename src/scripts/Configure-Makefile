@@ -197,7 +197,7 @@ then
           fi
           tls_libs=`pkg-config --libs $pc_value`
           echo "TLS_INCLUDE=$tls_include"
-          echo "TLS_LIBS=$tls_libs"
+          echo "TLS_LIBS += $tls_libs"
           # With hash.h pulling crypto into the core, we need to also handle that
           if [ ".$need_this" = ".t" ]; then
             echo "CFLAGS += $tls_include"
