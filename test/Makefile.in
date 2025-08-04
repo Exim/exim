@@ -54,7 +54,7 @@ bin/client:     $(SRC)/client.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client $(SRC)/client.c $(LIBS)
 
 bin/client-gnutls: $(SRC)/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls $(SRC)/client.c -lgnutls -lgcrypt $(LIBS)
+		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls $(SRC)/client.c -lgnutls $(LIBS)
 
 bin/client-ssl: $(SRC)/client.c Makefile
 		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl $(SRC)/client.c -lssl -lcrypto $(LIBS)
