@@ -45,8 +45,6 @@ static where_list_block where_list[] = {
   { rewrite_smtp|rewrite_smtp_sender, CUS"smtp sender" }
 };
 
-static int where_list_size = sizeof(where_list)/sizeof(where_list_block);
-
 
 
 /*************************************************
@@ -243,19 +241,20 @@ for (rewrite_rule * rule = rewrite_rules;
 
   /* We have a validly rewritten address */
 
-  if (LOGGING(address_rewrite) || (debug_selector & D_rewrite) != 0)
+  if (LOGGING(address_rewrite) || debug_selector & D_rewrite)
     {
-    const uschar *where = CUS"?";
+    const uschar * where = CUS"?";
 
-    for (int i = 0; i < where_list_size; i++)
+    for (int i = 0; i < nelem(where_list); i++)
       if (flag == where_list[i].bit)
-        {
-        where = where_list[i].string;
-        break;
-        }
+        { where = where_list[i].string; break; }
+
     log_write(L_address_rewrite,
-           LOG_MAIN, "\"%s\" from %s rewritten as \"%s\" by rule %d",
-           yield, where, new, rule_number);
+           LOG_MAIN, "\"%s\" from %s rewritten %s \"%s\" by rule %d",
+           yield, where,
+	   rule->flags & rewrite_whole || !Ustrchr(new, '<')
+	     ?  "as" : "with (address part of)",
+	   new, rule_number);
     }
 
   /* A header will only actually be added if header_last is non-NULL,
