@@ -433,13 +433,19 @@ misc_mod_add(misc_module_info * mi)
 mi->next = misc_module_list;
 misc_module_list = mi;
 
-if (mi->init && !mi->init(mi))
-  EARLY_DEBUG(D_any, "module init call failed for %s\n", mi->name);
+if (mi->init)
+  {
+  EARLY_DEBUG(D_any, "Module init: %q\n", mi->name);
+  expand_level++;
+  if (!mi->init(mi))
+    EARLY_DEBUG(D_any, "module init call failed for %q\n", mi->name);
+  expand_level--;
+  }
 
 if (mi->lib_vers_report)
   DEBUG(D_any) debug_printf_indent("%Y", mi->lib_vers_report(NULL));
 
-/* EARLY_DEBUG(D_any, "added %s\n", mi->name); */
+/* EARLY_DEBUG(D_any, "added %q\n", mi->name); */
 }
 
 
@@ -454,7 +460,7 @@ void * dl;
 struct misc_module_info * mi;
 const char * errormsg;
 
-EARLY_DEBUG(D_any, "loading module '%s'\n", name);
+EARLY_DEBUG(D_any, "loading module %q\n", name);
 if (!(dl = mod_open(name, US"miscmod", errstr)))
   {
   if (errstr) EARLY_DEBUG(D_any, " mod_open: %s\n", *errstr);
@@ -480,7 +486,7 @@ if (mi->dyn_magic != MISC_MODULE_MAGIC)
   return FALSE;
   }
 
-EARLY_DEBUG(D_lookup, "Loaded %q\n", name);
+EARLY_DEBUG(D_lookup, "loaded %q\n", name);
 misc_mod_add(mi);
 return mi;
 }
