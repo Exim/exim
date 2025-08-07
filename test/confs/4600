@@ -1,8 +1,35 @@
 # Exim test configuration 4600
 
-.include DIR/aux-var/std_conf_prefix
+keep_environment = PATH:EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+add_environment = SSLKEYLOGFILE=DIR/spool/sslkeys
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+
+.ifdef SERVER
+log_file_path = DIR/spool/log/SERVER%slog
+.else
+log_file_path = DIR/spool/log/%slog
+.endif
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+dns_cname_loops = 9
+chunking_advertise_hosts =
+
+.ifdef _HAVE_PIPE_CONNECT
+pipelining_connect_advertise_hosts = :
+.endif
+# .ifdef _HAVE_DMARC
+# dmarc_tld_file =
+# .endif
+.ifdef _EXP_LIMITS
+limits_advertise_hosts = !*
+.endif
+tls_advertise_hosts =
 
 primary_hostname = myhost.test.ex
+# log_selector = +millisec
 
 # ----- Main settings -----
 
