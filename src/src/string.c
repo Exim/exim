@@ -330,7 +330,7 @@ Returns:        string with non-printers encoded as printing sequences
 */
 
 const uschar *
-string_printing2(const uschar *s, int flags)
+string_printing2(const uschar * s, int flags)
 {
 int nonprintcount = 0;
 int length = 0;

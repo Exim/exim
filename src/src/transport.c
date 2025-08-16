@@ -1822,8 +1822,9 @@ while (1)
       {
       uschar buffer[256];
       DEBUG(D_hints_lookup)
-	debug_printf_indent("NOTE: old or corrupt message-id found in wait=%.200s"
-	  " hints DB; deleting records for %s\n", transport_name, hostname);
+	debug_printf_indent("NOTE: old or corrupt message-id found in"
+	  " wait=%.200s hints DB; deleting records for %s\n",
+	  transport_name, hostname);
       (void) dbfn_delete(dbp, hostname);
       for (int j = host_record->sequence - 1; j >= 0; j--)
 	(void) dbfn_delete(dbp,
@@ -1843,6 +1844,8 @@ while (1)
   for (i = 0; i < msgq_count; ++i)
     if (Ustrcmp(msgq[i].message_id, message_id) == 0)
       {
+      DEBUG(D_hints_lookup)
+	debug_printf_indent("dropping current msg from list\n");
       msgq[i].bKeep = FALSE;
       break;
       }
@@ -1859,6 +1862,8 @@ while (1)
       msgq[i].bKeep = FALSE;
     else if (!oicf_func || oicf_func(mid, oicf_data))
       {
+      DEBUG(D_hints_lookup)
+	debug_printf_indent("acceptable next: %s\n", mid);
       Ustrcpy_nt(new_message_id, mid);
       msgq[i].bKeep = FALSE;
       bFound = TRUE;
@@ -1868,8 +1873,9 @@ while (1)
 
   /* re-count */
   for (msgq_actual = 0, i = 0; i < msgq_count; ++i)
-    if (msgq[i].bKeep)
-      msgq_actual++;
+    if (msgq[i].bKeep) msgq_actual++;
+  DEBUG(D_hints_lookup)
+    debug_printf_indent("%d left in this record\n", msgq_actual);
 
   /* reassemble the host record, based on removed message ids, from in
   memory queue  */
@@ -1937,16 +1943,17 @@ while (1)
 
   if (host_length <= 0)
     {
-    DEBUG(D_transport) debug_printf_indent("waiting messages already delivered\n");
+    DEBUG(D_transport|D_hints_lookup)
+      debug_printf_indent("waiting messages already delivered\n");
     goto dbclose_false;
     }
 
   /* we were not able to find an acceptable message, nor was there a
-  continuation record.  So bug out, outer logic will clean this up.
-  */
+  continuation record.  So bug out, outer logic will clean this up. */
 
   if (!bContinuation)
     {
+    DEBUG(D_hints_lookup) debug_printf_indent("no further records\n");
     Ustrcpy(new_message_id, message_id);
     goto dbclose_false;
     }

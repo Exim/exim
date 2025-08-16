@@ -4833,7 +4833,7 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
     if (!continue_wait_db)
       {
       /* Any mem allocated here needs to be in a non-resettable pool
-      because we reset between continued" re-use of the transport. */
+      because we reset between "continued" re-use of the transport. */
       int old_pool = store_pool;
       store_pool = POOL_PERM;
       continue_wait_db = dbfn_open_multi(

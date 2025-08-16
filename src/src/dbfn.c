@@ -401,6 +401,9 @@ unsigned dlen;
 
 memcpy(key_copy, key, klen);
 
+/*XXX the %.*s will terminate early on a key with embedded NUL (legit for
+lookup dbmjz).  We do not have a convenient function; maybe extend
+string_printing2() ? */
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: key=%.*s\n", klen, key);
 
 exim_datum_init(&key_datum);         /* Some DBM libraries require the datum */
@@ -763,7 +766,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     while (count-- > 0)
       dbwait = (dbdata_wait *)dbfn_read_with_length(dbblock+ current, key, NULL);
     stop = clock();
-    printf("%s\n", (dbwait == NULL)? "<not found>" : CS dbwait->text);
+    printf("%s\n", dbwait ? CS dbwait->text : "<not found>");
     }
 
   else if (Ustrncmp(cmd, "delete", 6) == 0)

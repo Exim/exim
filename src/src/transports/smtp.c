@@ -4353,7 +4353,7 @@ else
   /* See if we can pipeline QUIT.  Reasons not to are
   - pipelining not active
   - not ok to send quit
-  - errors in amtp transation responses
+  - errors in smtp transation responses
   - more addrs to send for this message or this host
   - this message was being retried
   - more messages for this host

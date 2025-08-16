@@ -1056,7 +1056,7 @@ debug_print_string(r->debug_string);
 if ((rc = check_files(r->require_files, perror)) != OK)
   {
   DEBUG(D_route) debug_printf_indent("%s router %s: file check\n", rname,
-    (rc == SKIP)? "skipped" : "deferred");
+    rc == SKIP ? "skipped" : "deferred");
   return rc;
   }
 
