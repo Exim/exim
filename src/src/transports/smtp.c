@@ -1888,8 +1888,10 @@ typedef struct smtp_compare_s
 } smtp_compare_t;
 
 
-/* Create a unique string that identifies this message, it is based on
-sender_address, helo_data and tls_certificate if enabled.
+/* Create a unique string that identifies this message. It is based on
+sender_address, helo_data and (if enabled) tls_certificate.
+
+NOTE: We leave the "address expansion variables" unset.
 */
 
 static uschar *
@@ -1902,7 +1904,6 @@ uschar * helo1 = US"";
 #ifndef DISABLE_TLS
 uschar * tlsc1 = US"";
 #endif
-const uschar * save_sender_address = sender_address;
 uschar * local_identity = NULL;
 
 sender_address = sender;
@@ -1924,9 +1925,6 @@ local_identity = string_sprintf ("%s^%s^%s", if1, helo1, tlsc1);
 local_identity = string_sprintf ("%s^%s", if1, helo1);
 #endif
 
-deliver_set_expansions(NULL);
-sender_address = save_sender_address;
-
 return local_identity;
 }
 
@@ -1935,7 +1933,10 @@ return local_identity;
 /* This routine is a callback that is called from transport_check_waiting.
 This function will evaluate the incoming message versus the previous
 message.  If the incoming message is using a different local identity then
-we will veto this new message.  */
+we will veto this new message.
+
+We restore the "address expansion variables" to those for the current addr.
+*/
 
 static BOOL
 smtp_are_same_identities(const uschar * message_id, smtp_compare_t * s_compare)
@@ -1944,15 +1945,18 @@ const uschar * message_local_identity,
 	     * current_local_identity,
 	     * new_sender_address;
 
-current_local_identity =
-  smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
-
 if (!(new_sender_address = spool_sender_from_msgid(message_id)))
   return FALSE;
 
-
 message_local_identity =
   smtp_local_identity(new_sender_address, s_compare->tblock);
+DEBUG(D_transport)
+  debug_printf_indent("message local identity: %q\n", message_local_identity);
+
+current_local_identity =
+  smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
+DEBUG(D_transport)
+  debug_printf_indent("current local identity: %q\n", current_local_identity);
 
 return Ustrcmp(current_local_identity, message_local_identity) == 0;
 }
@@ -4385,6 +4389,9 @@ else
       HDEBUG(D_transport) debug_printf("will pipeline QUIT\n");
       tctx.options |= topt_no_flush;
       }
+
+    /* smtp_are_same_identities() changes some global state, so re-set it. */
+    deliver_set_expansions(addrlist);
     }
 
 #ifndef DISABLE_DKIM
@@ -4965,13 +4972,18 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
   else
 #endif
     {
+    BOOL send_rst;
     smtp_compare_t t_compare =
       {.tblock = tblock, .current_sender_address = sender_address};
 
     if (  sx->first_addr		/* more addrs for this message */
        || f.continue_more		/* more addrs for continued-host */
        || tcw_done && tcw		/* more messages for host */
-       || (
+       )
+      send_rst = TRUE;
+    else
+      {
+      send_rst =
 #ifndef DISABLE_TLS
 	     (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
 	     || verify_check_given_host(CUSS &ob->hosts_nopass_tls, host) != OK
@@ -4980,8 +4992,13 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 #endif
 	     transport_check_waiting(trname, host->name,
 	       sx->max_mail, continue_next_id,
-	       (oicf)smtp_are_same_identities, (void*)&t_compare)
-       )  )
+	       (oicf)smtp_are_same_identities, (void*)&t_compare);
+
+      /* smtp_are_same_identities() changes some global state, so re-set it. */
+      deliver_set_expansions(addrlist);
+      }
+
+      if (send_rst)
       {
       uschar * msg;
       BOOL pass_message;

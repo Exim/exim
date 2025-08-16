@@ -1,0 +1,50 @@
+
+******** SERVER ********
+Listening on port PORT_D ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Yo Matey
+250-PIPELINING
+250 Hello there
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<remote@test.ex>
+250 OK
+DATA
+354 Send it!
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbA-000000005vi-0000
+	for remote@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: trigger
+Message-Id: <E10HmbA-000000005vi-0000@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-r1: <was set>
+
+.
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<remote@test.ex>
+250 OK
+DATA
+354 Send it!
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-000000005vi-0000
+	for remote@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: queued
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-r1: <was set>
+
+.
+250 OK
+QUIT
+225 OK
+End of script

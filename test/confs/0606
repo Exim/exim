@@ -34,6 +34,12 @@ bad:
   set =		r_srs_domain = ${lookup mysql{wrong things
   transport =	local_delivery
 
+remote:
+  driver =	accept
+  local_parts =	remote
+  set =		r_r1 = was set
+  transport =	smtp
+
 alias:
   driver =	redirect
   debug_print = DEBUG: $r_r1 $r_r2
@@ -76,6 +82,13 @@ local_delivery:
   user = CALLER
   headers_add =	X-r1: <$r_r1>\nX-r2: <$r_r2>\nX-r3: <$r_r3>
 
+smtp:
+  driver =	smtp
+  debug_print = DEBUG: <$r_r1> <$r_r2>
+  hosts =	127.0.0.1
+  allow_localhost
+  port =	PORT_D
+  headers_add =	X-r1: <$r_r1>
 
 # ----- Retry -----
 begin retry

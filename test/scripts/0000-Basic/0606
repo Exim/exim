@@ -4,3 +4,41 @@ Subject: foo
 
 body
 ****
+#
+#
+# Check that a queued message (for an smtp tpt) does not mess up our message
+# (which was a bug...)
+exim -odi remote
+Subject: queued
+****
+sudo rm DIR/spool/db/retry*
+#
+server PORT_D
+220 Greetings
+EHLO
+250-Yo Matey
+250-PIPELINING
+250 Hello there
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 Send it!
+.
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 Send it!
+.
+250 OK
+QUIT
+225 OK
+****
+exim -odi remote
+Subject: trigger
+****
+no_msglog_check

@@ -182,6 +182,10 @@ JH/40 Fix "-be" test. If a single macro was expanded for the test, and the
       Fix by avoiding new definitions if a macro had been expanded as the
       first thing on a line.
 
+JH/41 Fix $r_* variables. When records were available in the wait-<transport>
+      hints database, the processing for a meesage during transport could lose
+      track of these per-address values.
+
 
 Exim version 4.98
 -----------------
