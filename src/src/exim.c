@@ -852,6 +852,8 @@ _exit(rc);
 }
 
 
+static void exim_fail_0(const char * fmt, ...) NORETURN;
+static void exim_fail(const char * fmt, ...) NORETURN;
 
 /* Print error string, then die */
 static void
