@@ -393,13 +393,21 @@ transport_write_block(transport_ctx * tctx, uschar *block, int len, BOOL more)
 {
 if (!(tctx->options & topt_output_string))
   return transport_write_block_fd(tctx, block, len, more);
+else
+  {
+  int old_pool = store_pool;
 
-/* Write to expanding-string.  NOTE: not NUL-terminated */
+  /* Write to expanding-string.  NOTE: not NUL-terminated.
+  Use perm-pool as our callers may be doing mark/release and we need
+  the stored string later. */
 
-if (!tctx->u.msg)
-  tctx->u.msg = string_get(1024);
+  store_pool = POOL_PERM;
+  if (!tctx->u.msg)
+    tctx->u.msg = string_get(1024);
 
-tctx->u.msg = string_catn(tctx->u.msg, block, len);
+  tctx->u.msg = string_catn(tctx->u.msg, block, len);
+  store_pool = old_pool;
+  }
 return TRUE;
 }
 
