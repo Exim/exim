@@ -49,7 +49,6 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1] D=qqs
 LOG: SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex> D=qqs
 Exim version x.yz ....
 Hints DB:
- try option 'spf_smtp_comment_template'
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
 environment after trimming:
@@ -176,7 +175,6 @@ SMTP<< data
 try option 'acl_smtp_predata'
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-try option 'dmarc_tld_file'
 SMTP>- ◀flush▶
 LOG: lost_incoming_connection MAIN
   SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex> D=qqs

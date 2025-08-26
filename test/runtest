@@ -1462,7 +1462,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # DKIM: Not all builds include
     next if /^DKIM( <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+|: no signatures)$/;
-    next if /try option acl_smtp_dkim$/;
+    next if /try option 'acl_smtp_dkim'$/;
 
     # Some platforms have TIOCOUT, some do not
     next if /\d+ bytes remain in socket output buffer$/;
@@ -1600,7 +1600,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
 
     # CONTENT_SCAN
-    next if /try option acl_(?:not_)?smtp_mime$/;
+    next if /try option 'acl_(?:not_)?smtp_mime'$/;
 
     # DISABLE_OCSP
     next if /in hosts_requ(?:est|ire)_ocsp\?/;
@@ -1668,11 +1668,11 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^DKIM >> Body data for hash, canonicalized/;
 
     # Not all platforms build with SOCKS enabled
-    next if /^try option socks_proxy$/;
+    next if /^try option 'socks_proxy'$/;
 
     # Not all platforms build with SPF enabled
     next if /(^$time_pid?spf_conn_init|spf_compile\.c)/;
-    next if /try option spf_smtp_comment_template$/;
+    next if /try option 'spf_smtp_comment_template'$/;
     next if /^$time_pid?Loaded "(?:dkim|dmarc|exim_filter|spf)"$/;
 
     # Not all platforms have sendfile support
@@ -1746,7 +1746,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/ \[\d+\] (?=(LOG:  redirecting log|HINT:  Future log output))/ [pppp] /;
 
     # Not all builds include DMARC
-    next if /try option dmarc_tld_file$/;
+    next if /try option 'dmarc_tld_file'$/;
     next if /^DMARC: no (dmarc_tld_file|sender_host_address)$/ ;
 
     # Platform differences in errno strings

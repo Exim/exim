@@ -140,7 +140,6 @@ try option 'interface'
 try option 'port'
 try option 'protocol'
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
-try option 'socks_proxy'
 try option 'dscp'
 connected
 try option 'helo_data'
@@ -299,7 +298,6 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
-try option 'dmarc_tld_file'
 try option 'message_id_header_domain'
 try option 'message_id_header_text'
  ╭considering: ${tod_full}
@@ -659,8 +657,6 @@ try option 'received_header_text'
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
-try option 'acl_smtp_dkim'
-try option 'acl_smtp_mime'
 try option 'acl_smtp_data'
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
@@ -824,7 +820,6 @@ try option 'interface'
 try option 'port'
 try option 'protocol'
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
-try option 'socks_proxy'
 try option 'dscp'
 connected
 try option 'helo_data'
@@ -933,7 +928,6 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
-try option 'dmarc_tld_file'
 try option 'message_id_header_domain'
 try option 'message_id_header_text'
  ╭considering: ${tod_full}
@@ -1293,8 +1287,6 @@ try option 'received_header_text'
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
-try option 'acl_smtp_dkim'
-try option 'acl_smtp_mime'
 try option 'acl_smtp_data'
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
@@ -1458,7 +1450,6 @@ try option 'interface'
 try option 'port'
 try option 'protocol'
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
-try option 'socks_proxy'
 try option 'dscp'
 connected
 try option 'helo_data'
@@ -1567,7 +1558,6 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
-try option 'dmarc_tld_file'
 try option 'message_id_header_domain'
 try option 'message_id_header_text'
  ╭considering: ${tod_full}
@@ -1927,8 +1917,6 @@ try option 'received_header_text'
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
-try option 'acl_smtp_dkim'
-try option 'acl_smtp_mime'
 try option 'acl_smtp_data'
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}

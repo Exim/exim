@@ -33,7 +33,6 @@
 01:01:01 p1237  >>>>>>>>>>>>>>>> Exim pid=p1237 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1239  Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=p1239 D=fff9ffff
 01:01:01 p1239  Hints DB:
-01:01:01 p1239   try option 'spf_smtp_comment_template'
 01:01:01 p1239  macros_trusted overridden to true by whitelisting
 01:01:01 p1239  changed uid/gid: forcing real = effective
 01:01:01 p1239    uid=uuuu gid=EXIM_GID pid=p1239
