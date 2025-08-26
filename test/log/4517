@@ -1,0 +1,13 @@
+1999-03-02 09:44:33 Start queue run: pid=p1234
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => rewrite@test.ex R=pass1 T=rewrite H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 End queue run: pid=p1234
+1999-03-02 09:44:33 Start queue run: pid=p1235
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => rewrite <rewrite@test.ex> R=pass2 T=file
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 End queue run: pid=p1235
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= someone@some.domain H=the.local.host.name (test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss DKIM=test.ex

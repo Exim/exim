@@ -1,0 +1,53 @@
+# Transport memory corruption
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# Create longsubject file
+write longsubject 620x11=_123456789
+Subject: This is just a very, very, very long subject  in front of the From: header that
+ should grow the deliver_out_buffer up to a size so that adding the From: header
+ after rewrite_header() will trigger header flushing. Together with the Received
+ header added by exim the all headers until From: must have a length less than .
+ DELIVER_OUT_BUFFER_SIZE (default 8192) but engough so that we exceed ..........
+ DELIVER_OUT_BUFFER_SIZE - nl_escape_length - 2 (see transport.c:452) ..........
+++++
+****
+#
+#
+#
+# Get the message spooled
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250 HELP
+mail from:<someone@some.domain>
+??? 250
+rcpt to:<rewrite@test.ex>
+??? 250
+data
+??? 354
+To: CALLER@test.ex
+<<< longsubject
+From: Very, very long from header to increase the chance that a header flush happens after rewrite_header() which causes a memory corruption <someone@some.domain>
+
+Test
+.
+??? 250
+quit
+??? 221
+****
+#
+# Get the message sent through smtp transport
+exim -q
+****
+# Get the message to file
+exim -q
+****
+#
+killdaemon
+sudo rm longsubject
+no_msglog_check
+no_stdout_check
