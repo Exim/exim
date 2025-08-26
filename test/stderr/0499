@@ -56,7 +56,7 @@ routing ph@mxt1.test.ex
  calling r1 router
  r1 router called for ph@mxt1.test.ex
    domain = mxt1.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = ph
  domain = mxt1.test.ex
    errors_to=NULL

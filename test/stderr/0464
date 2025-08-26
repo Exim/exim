@@ -108,7 +108,7 @@ Considering abc@xxx.domain1
   calling r2 router
   r2 router called for abc@xxx.domain1
     domain = xxx.domain1
-  set transport smtp
+  set transport 'smtp'
   queued for smtp transport: local_part = abc
   domain = xxx.domain1
     errors_to=NULL

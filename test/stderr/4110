@@ -94,7 +94,7 @@ routing userx@test.ex
  calling user_accept2 router
  user_accept2 router called for userx@test.ex
    domain = test.ex
- set transport appendfile
+ set transport 'appendfile'
  queued for appendfile transport: local_part = userx
  domain = test.ex
    errors_to=NULL

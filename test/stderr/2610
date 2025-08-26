@@ -255,6 +255,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1235  Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=p1235 D=fff9ffff
 01:01:01 p1235  Hints DB:
+01:01:01 p1235   try option 'spf_smtp_comment_template'
 01:01:01 p1235  macros_trusted overridden to true by whitelisting
 01:01:01 p1235  changed uid/gid: forcing real = effective
 01:01:01 p1235    uid=uuuu gid=CALLER_GID pid=p1235
@@ -267,18 +268,18 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    uid=EXIM_UID gid=EXIM_GID pid=p1235
 01:01:01 p1235  seeking password data for user "CALLER": cache not available
 01:01:01 p1235  getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-01:01:01 p1235  try option gecos_pattern
-01:01:01 p1235  try option gecos_name
-01:01:01 p1235  try option unknown_login
+01:01:01 p1235  try option 'gecos_pattern'
+01:01:01 p1235  try option 'gecos_name'
+01:01:01 p1235  try option 'unknown_login'
 01:01:01 p1235  originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 01:01:01 p1235  sender address = CALLER@myhost.test.ex
-01:01:01 p1235  try option smtp_active_hostname
+01:01:01 p1235  try option 'smtp_active_hostname'
 01:01:01 p1235  sender_fullhost = [10.0.0.0]
 01:01:01 p1235  sender_rcvhost = [10.0.0.0]
 01:01:01 p1235  host in hosts_connection_nolog? no (option unset)
 01:01:01 p1235  LOG: smtp_connection MAIN
 01:01:01 p1235    SMTP connection from [10.0.0.0]
-01:01:01 p1235  try option message_size_limit
+01:01:01 p1235  try option 'message_size_limit'
 01:01:01 p1235  host in host_lookup? no (option unset)
 01:01:01 p1235  set_process_info: pppp handling incoming connection from [10.0.0.0]
 01:01:01 p1235  host in host_reject_connection? no (option unset)
@@ -287,8 +288,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  host in helo_verify_hosts? no (option unset)
 01:01:01 p1235  host in helo_try_verify_hosts? no (option unset)
 01:01:01 p1235  host in helo_accept_junk_hosts? no (option unset)
-01:01:01 p1235  try option acl_smtp_connect
-01:01:01 p1235  try option smtp_banner
+01:01:01 p1235  try option 'acl_smtp_connect'
+01:01:01 p1235  try option 'smtp_banner'
 01:01:01 p1235   ╭considering: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
 01:01:01 p1235   ├──────value: myhost.test.ex
 01:01:01 p1235   ├considering: ░ESMTP░Exim░$version_number░$tod_full
@@ -316,15 +317,15 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  sender_fullhost = (test) [10.0.0.0]
 01:01:01 p1235  sender_rcvhost = [10.0.0.0] (helo=test)
 01:01:01 p1235  set_process_info: pppp handling incoming connection from (test) [10.0.0.0]
-01:01:01 p1235  try option acl_smtp_helo
+01:01:01 p1235  try option 'acl_smtp_helo'
 01:01:01 p1235  SMTP>| 250 myhost.test.ex Hello test [10.0.0.0]
 01:01:01 p1235  SMTP<< mail from:<a@b>
 01:01:01 p1235  spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 01:01:01 p1235  log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
-01:01:01 p1235  try option acl_smtp_mail
+01:01:01 p1235  try option 'acl_smtp_mail'
 01:01:01 p1235  SMTP>> 250 OK
 01:01:01 p1235  SMTP<< rcpt to:<c@d>
-01:01:01 p1235  try option acl_smtp_rcpt
+01:01:01 p1235  try option 'acl_smtp_rcpt'
 01:01:01 p1235  using ACL "check_recipient"
 01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 26)
 01:01:01 p1235   ╭considering: ok:░░░░${lookup░mysql░░░░░░░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
@@ -727,7 +728,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  LOG: MAIN REJECT
 01:01:01 p1235    H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 01:01:01 p1235  SMTP<< quit
-01:01:01 p1235  try option acl_smtp_quit
+01:01:01 p1235  try option 'acl_smtp_quit'
 01:01:01 p1235  SMTP>| 221 myhost.test.ex closing connection
 01:01:01 p1235  LOG: smtp_connection MAIN
 01:01:01 p1235    SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
@@ -863,7 +864,7 @@ LOG: MAIN PANIC
  calling r1 router
  r1 router called for ph10@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = ph10
  domain = myhost.test.ex
    errors_to=NULL

@@ -168,7 +168,7 @@ command wrote: PASS
 route_item = * 127.0.0.1 byname
  original list of hosts = '127.0.0.1' options = 'byname'
  expanded list of hosts = '127.0.0.1' options = 'byname'
- set transport smtp
+ set transport 'smtp'
  finding IP address for 127.0.0.1
  calling host_find_byname
 remote host address is the local host: some.host: configured to try delivery anyway
@@ -259,7 +259,7 @@ routing postmaster@test.ex
  calling pm router
  pm router called for postmaster@test.ex
    domain = test.ex
- set transport null
+ set transport 'null'
  queued for null transport: local_part = postmaster
  domain = test.ex
    errors_to=NULL

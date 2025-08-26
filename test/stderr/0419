@@ -68,7 +68,7 @@ routing k@mxt13.test.ex
   fully qualified name = mxt13.test.ex
   host_find_bydns yield = HOST_FOUND (3); returned hosts:
     other1.test.ex V4NET.12.4.5 MX=4 
- set transport smtp
+ set transport 'smtp'
  queued for smtp transport: local_part = k
  domain = mxt13.test.ex
    errors_to=NULL

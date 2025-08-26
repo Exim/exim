@@ -40,7 +40,7 @@ routing kilos@thishost.test.ex
  calling r5 router
  r5 router called for kilos@thishost.test.ex
    domain = thishost.test.ex
- set transport t2
+ set transport 't2'
  queued for t2 transport: local_part = kilos
  domain = thishost.test.ex
    errors_to=NULL
@@ -151,7 +151,7 @@ routing xxx@ten-1.test.ex
  r2 router called for xxx@ten-1.test.ex
    domain = ten-1.test.ex
  main lookup for domain
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = xxx
  domain = ten-1.test.ex
    errors_to=NULL

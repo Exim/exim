@@ -14,7 +14,7 @@ expanded: '/a/b/c' (tainted)
 file is not a filter file
 parse_forward_list: /a/b/c
 extract item: /a/b/c
- set transport tf1
+ set transport 'tf1'
 r1 router generated /a/b/c
   pipe, file, or autoreply
   errors_to=NULL transport=tf1
@@ -39,7 +39,7 @@ expanded: '/x/y/z' (tainted)
 file is not a filter file
 parse_forward_list: /x/y/z
 extract item: /x/y/z
- set transport tf2
+ set transport 'tf2'
 r1 router generated /x/y/z
   pipe, file, or autoreply
   errors_to=NULL transport=tf2

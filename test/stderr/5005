@@ -89,7 +89,7 @@ routing nofile@test.ex
  calling r1 router
  r1 router called for nofile@test.ex
    domain = test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = nofile
  domain = test.ex
    errors_to=NULL
@@ -275,7 +275,7 @@ routing userx@test.ex
  calling r1 router
  r1 router called for userx@test.ex
    domain = test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = userx
  domain = test.ex
    errors_to=NULL
@@ -463,7 +463,7 @@ routing userx@test.ex
  calling r1 router
  r1 router called for userx@test.ex
    domain = test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = userx
  domain = test.ex
    errors_to=NULL
@@ -661,7 +661,7 @@ routing userx@test.ex
  calling r1 router
  r1 router called for userx@test.ex
    domain = test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = userx
  domain = test.ex
    errors_to=NULL

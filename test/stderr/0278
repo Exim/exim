@@ -81,7 +81,7 @@ routing CALLER@test.ex
  calling r3 router
  r3 router called for CALLER@test.ex
    domain = test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = CALLER
  domain = test.ex
    errors_to=NULL
@@ -241,7 +241,7 @@ routing CALLER@test.ex
  calling r3 router
  r3 router called for CALLER@test.ex
    domain = test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = CALLER
  domain = test.ex
    errors_to=NULL

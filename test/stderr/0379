@@ -88,7 +88,7 @@ routing cccc@myhost.test.ex
  calling bc router
  bc router called for cccc@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = cccc
  domain = myhost.test.ex
    errors_to=NULL

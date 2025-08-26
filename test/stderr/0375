@@ -129,7 +129,7 @@ routing f3@myhost.test.ex
  calling ut6 router
  ut6 router called for f3@myhost.test.ex
    domain = myhost.test.ex
- set transport ut6
+ set transport 'ut6'
  queued for ut6 transport: local_part = f3
  domain = myhost.test.ex
    errors_to=
@@ -253,7 +253,7 @@ routing e1@myhost.test.ex
  calling ut5 router
  ut5 router called for e1@myhost.test.ex
    domain = myhost.test.ex
- set transport ut5
+ set transport 'ut5'
  queued for ut5 transport: local_part = e1
  domain = myhost.test.ex
    errors_to=NULL
@@ -285,7 +285,7 @@ routing d3@myhost.test.ex
  calling ut4 router
  ut4 router called for d3@myhost.test.ex
    domain = myhost.test.ex
- set transport ut4
+ set transport 'ut4'
  queued for ut4 transport: local_part = d3
  domain = myhost.test.ex
    errors_to=
@@ -377,7 +377,7 @@ routing c1@myhost.test.ex
  calling ut3 router
  ut3 router called for c1@myhost.test.ex
    domain = myhost.test.ex
- set transport ut3
+ set transport 'ut3'
  queued for ut3 transport: local_part = c1
  domain = myhost.test.ex
    errors_to=
@@ -400,7 +400,7 @@ routing b1@myhost.test.ex
  calling ut2 router
  ut2 router called for b1@myhost.test.ex
    domain = myhost.test.ex
- set transport ut2
+ set transport 'ut2'
  queued for ut2 transport: local_part = b1
  domain = myhost.test.ex
    errors_to=
@@ -418,7 +418,7 @@ routing a1@myhost.test.ex
  calling u1 router
  u1 router called for a1@myhost.test.ex
    domain = myhost.test.ex
- set transport ut1
+ set transport 'ut1'
  queued for ut1 transport: local_part = a1
  domain = myhost.test.ex
    errors_to=
@@ -486,7 +486,7 @@ routing f3@myhost.test.ex
  calling real router
  real router called for f3@myhost.test.ex
    domain = myhost.test.ex
- set transport real
+ set transport 'real'
  queued for real transport: local_part = f3
  domain = myhost.test.ex
    errors_to=NULL
@@ -978,7 +978,7 @@ routing CALLER@myhost.test.ex
  calling real router
  real router called for CALLER@myhost.test.ex
    domain = myhost.test.ex
- set transport real
+ set transport 'real'
  queued for real transport: local_part = CALLER
  domain = myhost.test.ex
    errors_to=NULL
@@ -1068,7 +1068,7 @@ routing h1@myhost.test.ex
  ut8 router called for h1@myhost.test.ex
    domain = myhost.test.ex
 forced expansion failure - ignoring errors_to
- set transport ut1
+ set transport 'ut1'
  queued for ut1 transport: local_part = h1
  domain = myhost.test.ex
    errors_to=NULL
@@ -1088,7 +1088,7 @@ routing h1@myhost.test.ex
  calling real router
  real router called for h1@myhost.test.ex
    domain = myhost.test.ex
- set transport real
+ set transport 'real'
  queued for real transport: local_part = h1
  domain = myhost.test.ex
    errors_to=NULL

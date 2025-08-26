@@ -75,7 +75,7 @@ routing userx@alias-eximtesthost.test.ex
   fully qualified name = alias-eximtesthost.test.ex
   eximtesthost.test.ex ip4.ip4.ip4.ip4 mx=-1 sort=xx 
 remote host address is the local host: alias-eximtesthost.test.ex: configured to try delivery anyway
- set transport smtp
+ set transport 'smtp'
  queued for smtp transport: local_part = userx
  domain = alias-eximtesthost.test.ex
    errors_to=NULL
@@ -132,7 +132,7 @@ routing userx@alias-eximtesthost.test.ex
   fully qualified name = alias-eximtesthost.test.ex
   eximtesthost.test.ex ip4.ip4.ip4.ip4 mx=-1 sort=xx 
 remote host address is the local host: alias-eximtesthost.test.ex: configured to try delivery anyway
- set transport smtp
+ set transport 'smtp'
  queued for smtp transport: local_part = userx
  domain = alias-eximtesthost.test.ex
    errors_to=NULL

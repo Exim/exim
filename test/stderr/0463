@@ -89,7 +89,7 @@ routing x@ten-1.test.ex
   DNS lookup of ten-1.test.ex (A) succeeded
   fully qualified name = ten-1.test.ex
   ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
- set transport smtp
+ set transport 'smtp'
  queued for smtp transport: local_part = x
  domain = ten-1.test.ex
    errors_to=NULL

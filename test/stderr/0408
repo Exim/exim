@@ -110,7 +110,7 @@ Considering usery@test.ex
   r1 router called for usery@test.ex
     domain = test.ex
 skipped verify errors_to address: already verifying
-  set transport t1
+  set transport 't1'
   queued for t1 transport: local_part = usery
   domain = test.ex
     errors_to=usery

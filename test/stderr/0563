@@ -44,7 +44,7 @@ routing joe-real@testexim.test.ex
  calling router2 router
  router2 router called for joe-real@testexim.test.ex
    domain = testexim.test.ex
- set transport local_delivery
+ set transport 'local_delivery'
  queued for local_delivery transport: local_part = joe
  domain = testexim.test.ex
    errors_to=NULL

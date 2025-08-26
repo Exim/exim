@@ -624,7 +624,7 @@ routing userx@myhost.test.ex
  calling r1 router
  r1 router called for userx@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = userx
  domain = myhost.test.ex
    errors_to=NULL

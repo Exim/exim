@@ -216,7 +216,7 @@ routing cccc@myhost.test.ex
  calling cccc_accept router
  cccc_accept router called for cccc@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = cccc
  domain = myhost.test.ex
    errors_to=NULL
@@ -264,7 +264,7 @@ routing bbbb@myhost.test.ex
  calling bbbb_0 router
  bbbb_0 router called for bbbb@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = bbbb
  domain = myhost.test.ex
    errors_to=NULL
@@ -295,7 +295,7 @@ routing aaaa@myhost.test.ex
  calling seen_aaaa router
  seen_aaaa router called for aaaa@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = aaaa
  domain = myhost.test.ex
    errors_to=NULL
@@ -416,7 +416,7 @@ routing bbbb@myhost.test.ex
  calling bbbb_0 router
  bbbb_0 router called for bbbb@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = bbbb
  domain = myhost.test.ex
    errors_to=NULL
@@ -442,7 +442,7 @@ routing aaaa@myhost.test.ex
  calling seen_aaaa router
  seen_aaaa router called for aaaa@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = aaaa
  domain = myhost.test.ex
    errors_to=NULL
@@ -562,7 +562,7 @@ routing cccc@myhost.test.ex
  calling cccc_accept router
  cccc_accept router called for cccc@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = cccc
  domain = myhost.test.ex
    errors_to=NULL
@@ -677,7 +677,7 @@ routing bbbb@myhost.test.ex
  calling bbbb_0 router
  bbbb_0 router called for bbbb@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = bbbb
  domain = myhost.test.ex
    errors_to=NULL
@@ -703,7 +703,7 @@ routing aaaa@myhost.test.ex
  calling seen_aaaa router
  seen_aaaa router called for aaaa@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = aaaa
  domain = myhost.test.ex
    errors_to=NULL
@@ -823,7 +823,7 @@ routing cccc@myhost.test.ex
  calling cccc_accept router
  cccc_accept router called for cccc@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = cccc
  domain = myhost.test.ex
    errors_to=NULL

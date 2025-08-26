@@ -85,7 +85,7 @@ else
 for (transport_instance * tp = transports; tp; tp = tp->drinst.next)
   if (Ustrcmp(tp->drinst.name, ss) == 0)
     {
-    DEBUG(D_route) debug_printf_indent("set transport %s\n", ss);
+    DEBUG(D_route) debug_printf_indent("set transport '%s'\n", ss);
     *tpptr = tp;
     return TRUE;
     }

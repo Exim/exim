@@ -128,7 +128,7 @@ routing unknown@recurse.test.ex.test.ex
  r1 router called for unknown@recurse.test.ex.test.ex
    domain = recurse.test.ex.test.ex
  main lookup for domain
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = unknown
  domain = recurse.test.ex.test.ex
    errors_to=postmaster@test.ex

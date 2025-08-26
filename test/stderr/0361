@@ -209,7 +209,7 @@ routing kilos@recurse.test.ex.test.ex
  calling r4 router
  r4 router called for kilos@recurse.test.ex.test.ex
    domain = recurse.test.ex.test.ex
- set transport t2
+ set transport 't2'
  queued for t2 transport: local_part = kilos
  domain = recurse.test.ex.test.ex
    errors_to=NULL

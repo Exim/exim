@@ -30,7 +30,7 @@ routing y@ten-1.test.ex
  r1 router called for y@ten-1.test.ex
    domain = ten-1.test.ex
  main lookup for domain
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = y
  domain = ten-1.test.ex
    errors_to=NULL
@@ -94,7 +94,7 @@ routing y@ten-2.test.ex
  r2 router called for y@ten-2.test.ex
    domain = ten-2.test.ex
  main lookup for domain
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = y
  domain = ten-2.test.ex
    errors_to=NULL

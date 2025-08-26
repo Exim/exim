@@ -216,7 +216,7 @@ routing x@test.ex
  calling smart2 router
  smart2 router called for x@test.ex
    domain = test.ex
- set transport dummy
+ set transport 'dummy'
  queued for dummy transport: local_part = x
  domain = test.ex
    errors_to=NULL

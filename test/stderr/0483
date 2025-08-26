@@ -16,7 +16,7 @@ sender_data=SenderData
   calling r1 router
   r1 router called for recip@domain2
     domain = domain2
-  set transport t1
+  set transport 't1'
   queued for t1 transport: local_part = recip
   domain = domain2
     errors_to=NULL

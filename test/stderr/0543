@@ -16,7 +16,7 @@ routing userx@domain1
  calling smarthost router
  smarthost router called for userx@domain1
    domain = domain1
- set transport smtp
+ set transport 'smtp'
  queued for smtp transport: local_part = userx
  domain = domain1
    errors_to=NULL

@@ -5,18 +5,19 @@ environment after trimming:
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
-try option gecos_pattern
-try option gecos_name
-try option unknown_login
-try option smtp_active_hostname
-try option message_size_limit
-try option acl_not_smtp_start
-try option message_id_header_domain
-try option message_id_header_text
+try option 'gecos_pattern'
+try option 'gecos_name'
+try option 'unknown_login'
+try option 'smtp_active_hostname'
+try option 'message_size_limit'
+try option 'acl_not_smtp_start'
+try option 'dmarc_tld_file'
+try option 'message_id_header_domain'
+try option 'message_id_header_text'
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
  ╰─────result: Tue,░2░Mar░1999░09:44:33░+0000
-try option received_header_text
+try option 'received_header_text'
  ╭considering: Received:░${if░def:sender_rcvhost░{from░$sender_rcvhost↩
  ␉}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
  ␉}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -351,7 +352,8 @@ try option received_header_text
  ╰─────result: Received:░from░CALLER░by░the.local.host.name░with░local░(Exim░x.yz)↩
  ␉(envelope-from░<CALLER@test.ex>)↩
  ␉id░10HmaX-000000005vi-0000
-try option acl_not_smtp
+try option 'acl_not_smtp_mime'
+try option 'acl_not_smtp'
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
  ╰─────result: Tue,░2░Mar░1999░09:44:33░+0000
@@ -367,27 +369,27 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
- try option router_home_directory
- try option set
- try option errors_to
- try option headers_add
- try option headers_remove
- try option transport
- try option fallback_hosts
+ try option 'router_home_directory'
+ try option 'set'
+ try option 'errors_to'
+ try option 'headers_add'
+ try option 'headers_remove'
+ try option 'transport'
+ try option 'fallback_hosts'
 try option unseen
- try option router_home_directory
- try option set
- try option errors_to
- try option headers_add
- try option headers_remove
- try option transport
- try option fallback_hosts
+ try option 'router_home_directory'
+ try option 'set'
+ try option 'errors_to'
+ try option 'headers_add'
+ try option 'headers_remove'
+ try option 'transport'
+ try option 'fallback_hosts'
 try option unseen
 try option multi_domain
-try option max_rcpt
+try option 'max_rcpt'
 try option multi_domain
-try option max_parallel
-try option return_path
+try option 'max_parallel'
+try option 'return_path'
 try option hosts_randomize
  ╭considering: $domain
  ├──────value: domain1.ex
@@ -400,7 +402,7 @@ LOG: MAIN
   == userx@domain1.ex R=smarthost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 LOG: MAIN
   == userx@domain2.ex R=smarthost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
-try option delay_warning_condition
+try option 'delay_warning_condition'
  ╭considering: ${if░or░{{░!eq{$h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
   cond: or
    cond: eq
@@ -463,15 +465,15 @@ environment after trimming:
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
-try option gecos_pattern
-try option gecos_name
-try option unknown_login
-try option smtp_active_hostname
+try option 'gecos_pattern'
+try option 'gecos_name'
+try option 'unknown_login'
+try option 'smtp_active_hostname'
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
-try option message_size_limit
-try option acl_smtp_connect
-try option smtp_banner
+try option 'message_size_limit'
+try option 'acl_smtp_connect'
+try option 'smtp_banner'
  ╭considering: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ├──────value: the.local.host.name
  ├considering: ░ESMTP░Exim░$version_number░$tod_full
@@ -484,7 +486,7 @@ try option smtp_banner
  ├──────value: Tue,░2░Mar░1999░09:44:33░+0000
  ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ╰─────result: the.local.host.name░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
-try option acl_smtp_helo
+try option 'acl_smtp_helo'
  ╭considering: ${if░match_domain░{$sender_helo_name}{+dlist}}
   cond: match_domain
    ╭considering: $sender_helo_name}{+dlist}}
@@ -509,12 +511,12 @@ try option acl_smtp_helo
  ├─────result: true
  ├───expanded: ${if░match_domain░{$sender_helo_name}{+dlist}}
  ╰─────result: true
-try option acl_smtp_atrn
-try option acl_smtp_etrn
-try option acl_smtp_vrfy
-try option acl_smtp_expn
+try option 'acl_smtp_atrn'
+try option 'acl_smtp_etrn'
+try option 'acl_smtp_vrfy'
+try option 'acl_smtp_expn'
  in chunking_advertise_hosts? no (end of list)
-try option acl_smtp_mail
+try option 'acl_smtp_mail'
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├───────text: domain=
  ├considering: $domain/sender_domain=$sender_address_domain
@@ -528,7 +530,7 @@ try option acl_smtp_mail
  ╰─────result: domain=/sender_domain=sender.domain
             ╰──(tainted)
  in "domain=/sender_domain=sender.domain"? no (end of list)
-try option acl_smtp_rcpt
+try option 'acl_smtp_rcpt'
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├───────text: domain=
  ├considering: $domain/sender_domain=$sender_address_domain
@@ -557,7 +559,7 @@ recipient.domain in "domain=recipient.domain/sender_domain=sender.domain"? no (e
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
             ╰──(tainted)
 sender.domain in "domain=recipient.domain/sender_domain=sender.domain"? no (end of list)
-try option acl_smtp_quit
+try option 'acl_smtp_quit'
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -106,7 +106,7 @@ Considering x@x.test.ex
   calling r2 router
   r2 router called for x@x.test.ex
     domain = x.test.ex
-  set transport t2
+  set transport 't2'
   queued for t2 transport: local_part = x
   domain = x.test.ex
     errors_to=NULL

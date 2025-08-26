@@ -79,7 +79,7 @@ domain_data=b.domain-data
  calling r2 router
  r2 router called for x@b.domain
    domain = b.domain
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = x
  domain = b.domain
    errors_to=NULL
@@ -165,7 +165,7 @@ domain_data=a.domain-data
  calling r3 router
  r3 router called for x@a.domain
    domain = a.domain
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = x
  domain = a.domain
    errors_to=NULL

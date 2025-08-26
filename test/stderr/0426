@@ -37,7 +37,7 @@ routing x@uppercase.test.ex
   fully qualified name = UpperCase.test.ex
   uppercase.test.ex 127.0.0.1 mx=-1 sort=xx 
 remote host address is the local host: uppercase.test.ex: configured to try delivery anyway
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = x
  domain = uppercase.test.ex
    errors_to=NULL

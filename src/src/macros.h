@@ -1219,7 +1219,7 @@ When doing en extended loop of matching, release store periodically. */
 /* Debug an option access. Use for non-list ones about to be expanded
 (lists have their own debugging, under D_list). */
 #define GET_OPTION(name) \
-  DEBUG(D_expand) debug_printf_indent("try option " name "\n");
+  DEBUG(D_expand) debug_printf_indent("try option '" name "'\n");
 
 
 #ifdef EXPERIMENTAL_SRV_SMTPS

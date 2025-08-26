@@ -15,7 +15,7 @@ routing ok@no.delay
  calling r1 router
  r1 router called for ok@no.delay
    domain = no.delay
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = ok
  domain = no.delay
    errors_to=NULL

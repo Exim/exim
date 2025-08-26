@@ -145,7 +145,7 @@ routing abcd@ten-1.test.ex
   DNS lookup of ten-1.test.ex (A) succeeded
   fully qualified name = ten-1.test.ex
   ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
- set transport smtp
+ set transport 'smtp'
  queued for smtp transport: local_part = abcd
  domain = ten-1.test.ex
    errors_to=NULL
@@ -183,7 +183,7 @@ route_item = * $domain bydns
   test.again.dns in "*"? yes (matched "*")
  original list of hosts = '$domain' options = 'bydns'
  expanded list of hosts = 'test.again.dns' options = 'bydns'
- set transport smtp
+ set transport 'smtp'
  finding IP address for test.again.dns
 doing DNS lookup
  check dnssec require list
@@ -439,7 +439,7 @@ routing abcd@ten-1.test.ex
   DNS lookup of ten-1.test.ex (A) succeeded
   fully qualified name = ten-1.test.ex
   ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
- set transport smtp
+ set transport 'smtp'
  queued for smtp transport: local_part = abcd
  domain = ten-1.test.ex
    errors_to=NULL
@@ -477,7 +477,7 @@ route_item = * $domain bydns
   test.fail.dns in "*"? yes (matched "*")
  original list of hosts = '$domain' options = 'bydns'
  expanded list of hosts = 'test.fail.dns' options = 'bydns'
- set transport smtp
+ set transport 'smtp'
  finding IP address for test.fail.dns
 doing DNS lookup
  check dnssec require list
@@ -733,7 +733,7 @@ routing abcd@ten-1.test.ex
   DNS lookup of ten-1.test.ex (A) succeeded
   fully qualified name = ten-1.test.ex
   ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
- set transport smtp
+ set transport 'smtp'
  queued for smtp transport: local_part = abcd
  domain = ten-1.test.ex
    errors_to=NULL
@@ -771,7 +771,7 @@ route_item = * $domain bydns
   nonexist.test.ex in "*"? yes (matched "*")
  original list of hosts = '$domain' options = 'bydns'
  expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
- set transport smtp
+ set transport 'smtp'
  finding IP address for nonexist.test.ex
 doing DNS lookup
  check dnssec require list

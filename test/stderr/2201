@@ -61,7 +61,7 @@ routing test.ex@test.ex
  calling r1 router
  r1 router called for test.ex@test.ex
    domain = test.ex
- set transport local_delivery
+ set transport 'local_delivery'
  queued for local_delivery transport: local_part = test.ex
  domain = test.ex
    errors_to=NULL
@@ -152,7 +152,7 @@ routing unknown@test.ex
  calling r2 router
  r2 router called for unknown@test.ex
    domain = test.ex
- set transport local_delivery
+ set transport 'local_delivery'
  queued for local_delivery transport: local_part = unknown
  domain = test.ex
    errors_to=NULL

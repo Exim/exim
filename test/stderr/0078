@@ -14,7 +14,7 @@ routing xx@mxt6.test.ex
  lookuphost router called for xx@mxt6.test.ex
    domain = mxt6.test.ex
  main lookup for domain
- set transport remote_smtp
+ set transport 'remote_smtp'
  queued for remote_smtp transport: local_part = xx
  domain = mxt6.test.ex
    errors_to=NULL
@@ -53,7 +53,7 @@ self_hostname=eximtesthost.test.ex
 route_item = * $local_part byname
  original list of hosts = '$local_part' options = 'byname'
  expanded list of hosts = 'myhost.test.ex' options = 'byname'
- set transport remote_smtp
+ set transport 'remote_smtp'
  finding IP address for myhost.test.ex
  calling host_find_byname
  queued for remote_smtp transport: local_part = myhost.test.ex
@@ -94,7 +94,7 @@ self_hostname=eximtesthost.test.ex
 route_item = * $local_part byname
  original list of hosts = '$local_part' options = 'byname'
  expanded list of hosts = 'xx' options = 'byname'
- set transport remote_smtp
+ set transport 'remote_smtp'
  finding IP address for xx
  calling host_find_byname
  self router passed for xx@mxt1.test.ex
@@ -109,7 +109,7 @@ self_hostname=eximtesthost.test.ex
 route_item = * myhost.test.ex byname
  original list of hosts = 'myhost.test.ex' options = 'byname'
  expanded list of hosts = 'myhost.test.ex' options = 'byname'
- set transport remote_smtp
+ set transport 'remote_smtp'
  finding IP address for myhost.test.ex
  calling host_find_byname
  queued for remote_smtp transport: local_part = xx

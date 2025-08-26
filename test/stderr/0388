@@ -35,7 +35,7 @@ route_item = * "127.0.0.1 : V4NET.0.0.0"
   y in "*"? yes (matched "*")
  original list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
  expanded list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
- set transport smtp
+ set transport 'smtp'
  finding IP address for 127.0.0.1
  calling host_find_byname
  using host_fake_gethostbyname for 127.0.0.1 (IPv4)

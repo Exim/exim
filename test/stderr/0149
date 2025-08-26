@@ -71,7 +71,7 @@ routing x@test1
  calling local router
  local router called for x@test1
    domain = test1
- set transport local_delivery
+ set transport 'local_delivery'
  queued for local_delivery transport: local_part = x
  domain = test1
    errors_to=NULL

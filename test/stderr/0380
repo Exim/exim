@@ -45,7 +45,7 @@ ignore_enotdir set => skip checking parent directory
  calling r3 router
  r3 router called for bbbb@myhost.test.ex
    domain = myhost.test.ex
- set transport t1
+ set transport 't1'
  queued for t1 transport: local_part = bbbb
  domain = myhost.test.ex
    errors_to=NULL

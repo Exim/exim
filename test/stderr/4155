@@ -208,7 +208,7 @@ Filter: end of processing
  search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
 rda_interpret: subprocess yield=0 error=NULL
- set transport t1
+ set transport 't1'
 r2 router generated >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...
   pipe, file, or autoreply
   errors_to=NULL transport=t1
@@ -7023,7 +7023,7 @@ routing sender@test.ex
  calling r1 router
  r1 router called for sender@test.ex
    domain = test.ex
- set transport t2
+ set transport 't2'
  queued for t2 transport: local_part = sender
  domain = test.ex
    errors_to=NULL
