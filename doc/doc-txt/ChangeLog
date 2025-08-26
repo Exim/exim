@@ -186,6 +186,10 @@ JH/41 Fix $r_* variables. When records were available in the wait-<transport>
       hints database, the processing for a meesage during transport could lose
       track of these per-address values.
 
+JH/42 Bug 3155: Fix header processing in smtp transport. When combined with
+      DKIM signing, large aggregate size of headers could result in a
+      use-after-free. Fix by avoiding free of the memory being used.
+
 
 Exim version 4.98
 -----------------

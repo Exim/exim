@@ -1,0 +1,59 @@
+# Exim test configuration 0640
+# Mem corruption in transport
+
+.include DIR/aux-var/std_conf_prefix
+
+pipelining_advertise_hosts = :
+limits_advertise_hosts = :
+
+# ----- Main settings -----
+
+primary_hostname = test.ex
+queue_only
+
+acl_smtp_rcpt = accept
+
+# ----- ACL -----
+
+begin acl
+
+begin routers
+
+pass1:
+  driver =	manualroute
+  condition =	${if eq {$sender_host_address}{127.0.0.1} {yes}}
+  route_data =	HOSTIPV4::PORT_D
+  self =	send
+  transport =	${if eq {$local_part}{rewrite} {rewrite} {env_to_add}}
+
+pass2:
+  driver =	accept
+  transport =	file
+
+begin transports
+
+rewrite:
+  driver =	smtp
+  headers_rewrite = someone@some.domain someone@some.domain f
+
+  dkim_domain =	test.ex
+  dkim_selector = sel
+  dkim_private_key = DIR/aux-fixed/dkim/dkim.private
+
+env_to_add:
+  driver =	smtp
+  envelope_to_add = true
+
+  dkim_domain =	test.ex
+  dkim_selector = sel
+  dkim_private_key = DIR/aux-fixed/dkim/dkim.private
+
+
+
+file:
+  driver =	appendfile
+  file =	DIR/test-mail/t1
+  create_file =	DIR/test-mail
+  user =	CALLER
+
+# End
