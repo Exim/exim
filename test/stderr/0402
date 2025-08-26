@@ -974,6 +974,7 @@ changed uid/gid: local delivery to CALLER <CALLER@test.ex> transport=t1
   home=/non-exist/CALLER current=/
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 to CALLER using t1
 appendfile transport entered
+try option 'file'
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=/dev/null format=unix
   message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
@@ -1013,6 +1014,7 @@ changed uid/gid: local delivery to usery <usery@test.ex> transport=t1
   home=/non-exist/usery current=/
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 to usery using t1
 appendfile transport entered
+try option 'file'
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=/dev/null format=unix
   message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
@@ -1052,6 +1054,7 @@ changed uid/gid: local delivery to userz <userz@test.ex> transport=t2
   home=/userz current=/
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 to userz using t2
 appendfile transport entered
+try option 'file'
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=/dev/null format=unix
   message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n

@@ -1158,9 +1158,8 @@ appendfile_transport_entry(
 appendfile_transport_options_block * ob = tblock->drinst.options_block;
 const uschar * trname = tblock->drinst.name;
 struct stat statbuf;
-const uschar * deliver_dir;
-uschar * fdname = NULL, * filename = NULL;
-uschar * hitchname = NULL, * dataname = NULL;
+const uschar * fdname = NULL, * deliver_dir;
+uschar * filename = NULL, * hitchname = NULL, * dataname = NULL;
 uschar * lockname = NULL, * newname = NULL;
 uschar * nametag = NULL, * cr = US"";
 uschar * filecount_msg = US"";
@@ -1222,6 +1221,7 @@ explicitly set and (b) a non-address_file delivery, where one of "file" or
 
 if (!fdname)
   {
+  GET_OPTION("file");
   if (!(fdname = ob->filename))
     {
     GET_OPTION("directory");
@@ -1246,13 +1246,20 @@ if ((ob->maildir_format || ob->mailstore_format) && !isdirectory)
   goto ret_panic;
   }
 
-if (!(path = expand_string(fdname)))
-  {
-  addr->message = string_sprintf("Expansion of %q (file or directory "
-    "name for %s transport) failed: %s", fdname, trname,
-    expand_string_message);
-  goto ret_panic;
-  }
+ /* We overwrite slashes in the path while symlink checking, so must
+ ensure a private copy here. */
+ {
+  const uschar * p;
+  BOOL not_dynamic;
+  if (!(p = expand_string_2(fdname, &not_dynamic)))
+    {
+    addr->message = string_sprintf("Expansion of %q (file or directory "
+      "name for %s transport) failed: %s", fdname, trname,
+      expand_string_message);
+    goto ret_panic;
+    }
+  path = not_dynamic ? string_copy(p) : US p;
+ }
 
 if (path[0] != '/')
   {
