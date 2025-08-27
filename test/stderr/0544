@@ -351,7 +351,6 @@ try option 'received_header_text'
  ╰─────result: Received:░from░CALLER░by░the.local.host.name░with░local░(Exim░x.yz)↩
  ␉(envelope-from░<CALLER@test.ex>)↩
  ␉id░10HmaX-000000005vi-0000
-try option 'acl_not_smtp_mime'
 try option 'acl_not_smtp'
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
