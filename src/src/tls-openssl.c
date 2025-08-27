@@ -73,7 +73,9 @@ change this guard and punt the issue for a while longer. */
 #  ifndef DISABLE_OCSP
 #   define EXIM_HAVE_OCSP
 #  endif
-#  define EXIM_HAVE_ALPN /* fail ret from hshake-cb is ignored by LibreSSL */
+#  ifndef __FreeBSD__	/* OpenSSL 3.0.15 gives "bad extension" */
+#   define EXIM_HAVE_ALPN /* fail ret from hshake-cb is ignored by LibreSSL */
+#  endif
 # else
 #  define EXIM_NEED_OPENSSL_INIT
 # endif
