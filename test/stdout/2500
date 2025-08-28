@@ -28,4 +28,7 @@
 > ok,cached:  test-data
 > fail,no_rd  FAIL
 > fail:       FAIL
+> createfile: OK
+> ok,no       test-data
+> fail,cached:FAIL
 > 

@@ -6782,10 +6782,15 @@ and a comma-separated list of options.
 Each option is a &"name=value"& pair.
 Whether an option is meaningful depends on the lookup type.
 
-All lookups support the option &"cache=no_rd"&.
-If this is given then the cache that Exim manages for lookup results
+.new
+All lookups support the option &"cache="&, with values &"no_rd"&, &"no_wr"&
+or &"no"&.
+If this is given with &"no"& or &"no_rd"&
+then the cache that Exim manages for lookup results
 is not checked before doing the lookup.
-The result of the lookup is still written to the cache.
+If this is given with &"no"& or &"no_wr"&
+then the result of the lookup is not written to the cache.
+.wen
 
 The rest of this chapter describes the different lookup types that are
 available. Any of them can be used in any part of the configuration where a

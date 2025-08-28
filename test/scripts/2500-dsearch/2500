@@ -31,6 +31,9 @@ delfile:    ${run {/bin/rm DIR/test-data}                            {OK}{FAIL}}
 ok,cached:  ${lookup{test-data}   dsearch               {DIR/}         {$value}{FAIL}}
 fail,no_rd  ${lookup{test-data}   dsearch,cache=no_rd   {DIR/}         {$value}{FAIL}}
 fail:       ${lookup{test-data}   dsearch               {DIR/}         {$value}{FAIL}}
+createfile: ${run {/bin/cp DIR/aux-fixed/TESTNUM.tst DIR/test-data} {OK}{FAIL}}
+ok,no       ${lookup{test-data}   dsearch,cache=no      {DIR/}         {$value}{FAIL}}
+fail,cached:${lookup{test-data}   dsearch               {DIR/}         {$value}{FAIL}}
 ****
 #
 1

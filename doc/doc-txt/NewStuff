@@ -55,6 +55,8 @@ Version 4.98
  18. EXPERIMENTAL_SPR_PERL optional build feature.  See the experimental.spec
     file.
 
+ 19. An option for lookups to not write the cache
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

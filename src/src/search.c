@@ -45,6 +45,9 @@ static int open_filecount = 0;
 
 static rmark search_reset_point = NULL;
 
+/* Cache control bits for results cache */
+#define CACHE_RD	BIT(0)
+#define CACHE_WR	BIT(1)
 
 
 /*************************************************
@@ -514,13 +517,13 @@ return t;
 is cached.
 
 Arguments:
-  handle       the handle from search_open; points to tree node
-  filename     the filename that was handed to search_open, or
-               NULL for query-style searches
-  keystring    the keystring for single-key+file lookups, or
-               the querystring for query-style lookups
-  cache_rd     FALSE to avoid lookup in cache layer
-  opts	       type-specific options
+  handle	the handle from search_open; points to tree node
+  filename	the filename that was handed to search_open, or
+		NULL for query-style searches
+  keystring	the keystring for single-key+file lookups, or
+		the querystring for query-style lookups
+  cache		cache control bits (RD, WR)
+  opts		type-specific options
 
 Returns:       a pointer to a dynamic string containing the answer,
                or NULL if the query failed or was deferred; in the
@@ -530,7 +533,7 @@ Returns:       a pointer to a dynamic string containing the answer,
 
 static uschar *
 internal_search_find(void * handle, const uschar * filename,
-  const uschar * keystring, BOOL cache_rd, const uschar * opts)
+  const uschar * keystring, unsigned cache, const uschar * opts)
 {
 tree_node * t = (tree_node *)handle;
 search_cache * c = (search_cache *)(t->data.ptr);
@@ -564,7 +567,7 @@ whether we want to use the cache entry last so that we can always replace it. */
 if (  (t = tree_search(c->item_cache, keystring))
    && (!(e = t->data.ptr)->expiry || e->expiry > time(NULL))
    && (!opts && !e->opts  ||  opts && e->opts && Ustrcmp(opts, e->opts) == 0)
-   && cache_rd
+   && cache & CACHE_RD
    )
   { /* Data was in the cache already; set the pointer from the tree node */
   data = e->data.ptr;
@@ -574,7 +577,7 @@ if (  (t = tree_search(c->item_cache, keystring))
   }
 else
   {
-  uint do_cache = UINT_MAX;
+  uint do_cache = cache & CACHE_WR ? UINT_MAX : 0;
   int keylength = Ustrlen(keystring);
 
   DEBUG(D_lookup)
@@ -582,7 +585,7 @@ else
     if (t)
       debug_printf_indent("cached data found but %s; ",
 	e->expiry && e->expiry <= time(NULL) ? "out-of-date"
-	: cache_rd ? "wrong opts" : "no_rd option set");
+	: cache & CACHE_RD ? "wrong opts" : "no_rd option set");
     debug_printf_indent("%s lookup required for %s%s%s\n",
       filename ? US"file" : US"database",
       keystring,
@@ -683,14 +686,17 @@ else
     e->data.ptr = data;
     }
 
-/* If caching was disabled, empty the cache tree. We just set the cache
-pointer to NULL here, because we cannot release the store at this stage. */
+/* If caching was disabled by the method call (as opposed to a no_wr option),
+empty the cache tree. We just set the cache pointer to NULL here, because we
+cannot release the store at this stage. */
 
-  else
+  else if (cache & CACHE_WR)
     {
     DEBUG(D_lookup) debug_printf_indent("lookup forced cache cleanup\n");
     c->item_cache = NULL; 	/* forget all lookups on this connection */
     }
+  else DEBUG(D_lookup)
+    debug_printf_indent("no_wr option: no cache invalidate\n");
   }
 
 out:
@@ -745,7 +751,8 @@ search_find(void * handle, const uschar * filename, const uschar * keystring,
   int * expand_setup, const uschar * opts)
 {
 tree_node * t = (tree_node *)handle;
-BOOL set_null_wild = FALSE, cache_rd = TRUE, ret_key = FALSE;
+BOOL set_null_wild = FALSE, ret_key = FALSE;
+unsigned cache = CACHE_RD | CACHE_WR;
 uschar * yield;
 
 DEBUG(D_lookup)
@@ -769,8 +776,10 @@ if (opts)
   gstring * g = NULL;
 
   for (const uschar * ele; ele = string_nextinlist(&opts, &sep, NULL, 0); )
-    if (Ustrcmp(ele, "ret=key") == 0) ret_key = TRUE;
-    else if (Ustrcmp(ele, "cache=no_rd") == 0) cache_rd = FALSE;
+    if (Ustrcmp(ele, "ret=key") == 0)		ret_key = TRUE;
+    else if (Ustrcmp(ele, "cache=no") == 0)	cache = 0;
+    else if (Ustrcmp(ele, "cache=no_rd") == 0)	cache &= ~CACHE_RD;
+    else if (Ustrcmp(ele, "cache=no_wr") == 0)	cache &= ~CACHE_WR;
     else g = string_append_listele(g, ',', ele);
 
   opts = string_from_gstring(g);
@@ -784,11 +793,10 @@ if (open_top != (tree_node *)handle)
   const lookup_info * li = lookup_with_acq_num(t->name[0]-'0');
   if (li && li->type == lookup_absfile)
     {
-    search_cache *c = (search_cache *)(t->data.ptr);
-    tree_node *up = c->up;
-    tree_node *down = c->down;
+    search_cache * c = (search_cache *)(t->data.ptr);
+    tree_node * up = c->up, * down = c->down;
 
-    /* Cut it out of the list. A newly opened file will a NULL up pointer.
+    /* Cut it out of the list. A newly opened file will have a NULL up pointer.
     Otherwise there will be a non-NULL up pointer, since we checked above that
     this block isn't already at the top of the list. */
 
@@ -826,7 +834,7 @@ DEBUG(D_lookup)
 /* First of all, try to match the key string verbatim. If matched a complete
 entry but could have been partial, flag to set up variables. */
 
-yield = internal_search_find(handle, filename, keystring, cache_rd, opts);
+yield = internal_search_find(handle, filename, keystring, cache, opts);
 if (f.search_find_defer) return NULL;
 
 if (yield) { if (partial >= 0) set_null_wild = TRUE; }
@@ -853,7 +861,7 @@ else if (partial >= 0)
     Ustrncpy(keystring2, affix, affixlen);
     Ustrcpy(keystring2 + affixlen, keystring);
     DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring2);
-    yield = internal_search_find(handle, filename, CUS keystring2, cache_rd, opts);
+    yield = internal_search_find(handle, filename, CUS keystring2, cache, opts);
     if (f.search_find_defer) return NULL;
     }
 
@@ -892,7 +900,7 @@ else if (partial >= 0)
 
       DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring3);
       yield = internal_search_find(handle, filename, CUS keystring3,
-		cache_rd, opts);
+		cache, opts);
       if (f.search_find_defer) return NULL;
       if (yield)
         {
@@ -936,7 +944,7 @@ if (!yield  &&  starflags & SEARCH_STARAT)
     *atat = '*';
 
     DEBUG(D_lookup) debug_printf_indent("trying default match %s\n", atat);
-    yield = internal_search_find(handle, filename, atat, cache_rd, opts);
+    yield = internal_search_find(handle, filename, atat, cache, opts);
     *atat = savechar;
     if (f.search_find_defer) return NULL;
 
@@ -959,7 +967,7 @@ and the second is empty. */
 if (!yield  &&  starflags & (SEARCH_STAR|SEARCH_STARAT))
   {
   DEBUG(D_lookup) debug_printf_indent("trying to match *\n");
-  yield = internal_search_find(handle, filename, US"*", cache_rd, opts);
+  yield = internal_search_find(handle, filename, US"*", cache, opts);
   if (yield && expand_setup && *expand_setup >= 0)
     {
     *expand_setup += 1;
