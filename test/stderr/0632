@@ -512,7 +512,6 @@ LOG: smtp_connection MAIN
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 p1234 1 SMTP accept process running
-p1234 Listening...
 p1234 child p1235 ended: status=0x0
 p1234   normal exit, 0
 p1234 0 SMTP accept processes now running
@@ -520,17 +519,14 @@ p1234 daemon_notification (from unknown addr)
 p1234 compiled caseless RE '^nomatch_list' not found in local cache
 p1234 compiling caseless RE '^nomatch_list'
 p1234 compiled RE '^nomatch_list' saved in local cache
-p1234 Listening...
 p1234 daemon_notification (from unknown addr)
 p1234 compiled RE 'static_RE' not found in local cache
 p1234 compiling RE 'static_RE'
 p1234 compiled RE 'static_RE' saved in local cache
-p1234 Listening...
 p1234 daemon_notification (from unknown addr)
 p1234 compiled RE 'tricky_static_RE$' not found in local cache
 p1234 compiling RE 'tricky_static_RE$'
 p1234 compiled RE 'tricky_static_RE$' saved in local cache
-p1234 Listening...
 p1234 Connection request from 127.0.0.1 port sssss
 p1234 try option 'smtp_accept_max_per_host'
 p1234 search_tidyup called
