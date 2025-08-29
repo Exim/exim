@@ -3609,9 +3609,23 @@ if (  tls_in.on_connect			/* Not usable for STARTTLS */
   switch (SSL_read_early_data(ssl, buf, sizeof(buf), &n_read))
     {
     case SSL_READ_EARLY_DATA_ERROR:
-      DEBUG(D_tls) debug_printf("SSL_read_early_data: %d\n",
-	SSL_get_error(ssl, SSL_READ_EARLY_DATA_ERROR));
+      {
+      int err = SSL_get_error(ssl, SSL_READ_EARLY_DATA_ERROR);
+      DEBUG(D_tls) debug_printf("SSL_read_early_data: %d\n", err);
+      if (err == SSL_ERROR_SYSCALL)
+	{
+	if (!errno)
+	  {
+	  *errstr = US"SSL_read_early_data: TCP connection closed by peer";
+#ifndef DISABLE_EVENT
+	  (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
+#endif
+	  return FAIL;
+	  }
+	DEBUG(D_tls) debug_printf(" - syscall %s\n", strerror(errno));
+	}
       return tls_error(US"SSL_read_early_data", NULL, NULL, errstr);
+      }
 
     case SSL_READ_EARLY_DATA_SUCCESS:
       DEBUG(D_tls) debug_printf("TLS: unexpected early data from client!\n");
