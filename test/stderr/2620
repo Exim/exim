@@ -246,10 +246,10 @@ LOG: MAIN
  lookup forced cache cleanup
  lookup yielded: 1
 search_tidyup called
-close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER
-close PGSQL connection: ::1.PORT_N/test/CALLER
-close PGSQL connection: 127.0.0.1:PORT_N/test/CALLER
-close PGSQL connection: localhost:PORT_N/test/CALLER
+ close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER
+ close PGSQL connection: ::1.PORT_N/test/CALLER
+ close PGSQL connection: 127.0.0.1:PORT_N/test/CALLER
+ close PGSQL connection: localhost:PORT_N/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -669,7 +669,7 @@ LOG: smtp_connection MAIN
   SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
 SMTP>- ◀flush▶
 search_tidyup called
-close PGSQL connection: localhost:PORT_N/test/CALLER
+ close PGSQL connection: localhost:PORT_N/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -790,7 +790,7 @@ After routing:
   Failed addresses:
   Deferred addresses:
 search_tidyup called
-close PGSQL connection: localhost:PORT_N/test/CALLER
+ close PGSQL connection: localhost:PORT_N/test/CALLER
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> CALLER@myhost.test.ex <--------
 no retry data available
@@ -828,7 +828,7 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-close PGSQL connection: localhost:PORT_N/test/CALLER
+ close PGSQL connection: localhost:PORT_N/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=p1239 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling CALLER@myhost.test.ex
 t1 transport returned OK for CALLER@myhost.test.ex
@@ -879,7 +879,7 @@ dropping to exim gid; retaining priv uid
  creating new cache entry
  lookup yielded: Philip░Hazel
 search_tidyup called
-close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER
+ close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

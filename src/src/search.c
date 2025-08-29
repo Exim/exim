@@ -321,6 +321,7 @@ search_tidyup(void)
 int old_pool = store_pool;
 
 DEBUG(D_lookup) debug_printf_indent("search_tidyup called\n");
+expand_level++;
 
 /* Close individually each cached open file. */
 
@@ -339,6 +340,7 @@ tree_walk(lookups_tree, tidy_cb, NULL);
 
 if (search_reset_point) search_reset_point = store_reset(search_reset_point);
 store_pool = old_pool;
+expand_level--;
 }
 
 

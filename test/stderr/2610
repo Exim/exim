@@ -248,10 +248,10 @@ LOG: MAIN
  lookup forced cache cleanup
  lookup yielded: 1
 search_tidyup called
-close MYSQL connection: localhost(TESTSUITE/mysql/sock)/test/root
-close MYSQL connection: ip4.ip4.ip4.ip4:PORT_N/test/root
-close MYSQL connection: ::1.PORT_N/test/root
-close MYSQL connection: 127.0.0.1:PORT_N/test/root
+ close MYSQL connection: localhost(TESTSUITE/mysql/sock)/test/root
+ close MYSQL connection: ip4.ip4.ip4.ip4:PORT_N/test/root
+ close MYSQL connection: ::1.PORT_N/test/root
+ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1235  Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=p1235 D=fff9ffff
 01:01:01 p1235  Hints DB:
@@ -733,7 +733,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
 01:01:01 p1235  SMTP>- ◀flush▶
 01:01:01 p1235  search_tidyup called
-01:01:01 p1235  close MYSQL connection: 127.0.0.1:PORT_N/test/root
+01:01:01 p1235   close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -879,7 +879,7 @@ After routing:
   Failed addresses:
   Deferred addresses:
 search_tidyup called
-close MYSQL connection: 127.0.0.1:PORT_N/test/root
+ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> ph10@myhost.test.ex <--------
 no retry data available
@@ -922,7 +922,7 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-close MYSQL connection: 127.0.0.1:PORT_N/test/root
+ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1238 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling ph10@myhost.test.ex
 t1 transport returned OK for ph10@myhost.test.ex
