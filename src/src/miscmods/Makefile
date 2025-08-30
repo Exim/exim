@@ -2,7 +2,7 @@
 # This is called from the main make file, after cd'ing
 # to the misc_modules subdirectory.
 #
-# Copyright (c) The Exim Maintainers 2024
+# Copyright (c) The Exim Maintainers 2024 - 2025
 
 # nb: at build time, the version of this file used will have had some
 #     extra variable definitions and prepended to it and module build rules

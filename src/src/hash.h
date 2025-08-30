@@ -1,6 +1,6 @@
 /*
  *  Exim - an Internet mail transport agent
- *  Copyright (c) The Exim Maintainers 1995 - 2022
+ *  Copyright (c) The Exim Maintainers 1995 - 2025
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  *  Hash interface functions

@@ -3,7 +3,7 @@
 # to the directors subdirectory. The library also contains functions that
 # are called only from within the individual routers.
 #
-# Copyright (c) The Exim Maintainers 2021 - 2024
+# Copyright (c) The Exim Maintainers 2021 - 2025
 
 # nb: at build time, the version of this file used will have had some
 #     extra variable definitions and prepended to it and module build rules

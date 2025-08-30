@@ -3,7 +3,7 @@
 *************************************************/
 
 /*
- * Copyright (c) The Exim Maintainers 2022 - 2023
+ * Copyright (c) The Exim Maintainers 2022 - 2025
  * Copyright (c) Heiko Schlittermann 2016
  * hs@schlittermann.de
  * See the file NOTICE for conditions of use and distribution.

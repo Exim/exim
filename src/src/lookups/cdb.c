@@ -6,7 +6,7 @@
  * Exim - CDB database lookup module
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Copyright (c) The Exim Maintainers 2020 - 2022
+ * Copyright (c) The Exim Maintainers 2020 - 2025
  * Copyright (c) 1998 Nigel Metheringham, Planet Online Ltd
  * SPDX-License-Identifier: GPL-2.0-or-later
  *

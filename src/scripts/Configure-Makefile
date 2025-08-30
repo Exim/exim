@@ -4,7 +4,7 @@
 # just got too horrendous to get it right in "make", because of the optionally
 # existing configuration files.
 #
-# Copyright (c) The Exim Maintainers 1995 - 2024
+# Copyright (c) The Exim Maintainers 1995 - 2025
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 

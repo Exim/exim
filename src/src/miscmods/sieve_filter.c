@@ -3,7 +3,7 @@
 *************************************************/
 
 /*
-Copyright (c) The Exim Maintainers 2016 - 2024
+Copyright (c) The Exim Maintainers 2016 - 2025
 Copyright (c) Michael Haardt 2003 - 2015
 See the file NOTICE for conditions of use and distribution.
 SPDX-License-Identifier: GPL-2.0-or-later

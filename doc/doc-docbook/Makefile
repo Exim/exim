@@ -1,5 +1,5 @@
 # Make file for Exim documentation from xfpt source.
-# Copyright (c) The Exim Maintainers 2020 - 2021
+# Copyright (c) The Exim Maintainers 2020 - 2025
 export LC_ALL=C
 
 # Original

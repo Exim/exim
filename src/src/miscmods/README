@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-Copyright (c) The Exim Maintainers 2024
+Copyright (c) The Exim Maintainers 2024 - 2025
 
 This directory contains source for modules that can be built as part
 of Exim, either static-linked or as dynamic-load modules. Doing the

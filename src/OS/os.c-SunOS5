@@ -2,9 +2,9 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 2016 */
-/* Copyright (c) Jeremy Harris 2016 - 2025 */
 /* Copyright (c) The Exim Maintainers 2025 */
+/* Copyright (c) Jeremy Harris 2016 - 2025 */
+/* Copyright (c) University of Cambridge 2016 */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* See the file NOTICE for conditions of use and distribution. */
 

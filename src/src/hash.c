@@ -1,7 +1,7 @@
 /*
  *  Exim - an Internet mail transport agent
  *
- *  Copyright (c) The Exim Maintainers 2010 - 2023
+ *  Copyright (c) The Exim Maintainers 2010 - 2025
  *  Copyright (c) University of Cambridge 1995 - 2009
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *

@@ -1,8 +1,13 @@
+/*************************************************
+*     Exim - an Internet mail transport agent    *
+*************************************************/
+
 /*
  *  PDKIM - a RFC4871 (DKIM) implementation
  *
- *  Copyright (C) 2009 - 2012  Tom Kistner <tom@duncanthrax.net>
+ *  Copyright (c) The Exim Maintainers 2025
  *  Copyright (c) 2016 - 2020  Jeremy Harris
+ *  Copyright (C) 2009 - 2012  Tom Kistner <tom@duncanthrax.net>
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  *  http://duncanthrax.net/pdkim/

@@ -2,7 +2,7 @@
 # appropriate links, and then creating and running the main makefile in that
 # directory.
 
-# Copyright (c) The Exim Maintainers 2022 - 2023
+# Copyright (c) The Exim Maintainers 2022 - 2025
 # Copyright (c) University of Cambridge, 1995 - 2018
 # SPDX-License-Identifier: GPL-2.0-or-later
 # See the file NOTICE for conditions of use and distribution.

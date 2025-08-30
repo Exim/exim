@@ -2,7 +2,7 @@
 #          The Exim mail transport agent         #
 ##################################################
 
-# Copyright (c) The Exim Maintainers 2022
+# Copyright (c) The Exim Maintainers 2022 - 2025
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 # Generic default make file containing settings that relate to the OS or

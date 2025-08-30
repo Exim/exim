@@ -5,7 +5,7 @@
 # after cd'ing to the auths subdirectory. When the relevant AUTH_ macros are
 # defined, the equivalent modules herein is not included in the final binary.
 #
-# Copyright (c) The Exim Maintainers 2024
+# Copyright (c) The Exim Maintainers 2024 - 2025
 
 # nb: at build time, the version of this file used will have had some
 #     extra variable definitions and prepended to it and module build rules

@@ -1,5 +1,9 @@
+/*************************************************
+*     Exim - an Internet mail transport agent    *
+*************************************************/
+
 /*
- * Copyright (c) The Exim Maintainers 2024
+ * Copyright (c) The Exim Maintainers 2024 - 2025
  * Copyright (c) 2000-2002
  *   Chris Adams <cmadams@iruntheinter.net>
  *   written for HiWAAY Internet Services
