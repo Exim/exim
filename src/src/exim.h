@@ -610,13 +610,16 @@ union sockaddr_46 {
 /* If DISABLE_TLS is defined, ensure that USE_GNUTLS is not defined
 so that if USE_GNUTLS *is* set, we can assume DISABLE_TLS is not set.
 Ditto USE_OPENSSL.
-Likewise, OSCP, AUTH_TLS and CERTNAMES cannot be supported. */
+Likewise, resumption, OSCP, AUTH_TLS and CERTNAMES cannot be supported. */
 
 #ifdef DISABLE_TLS
 # undef USE_OPENSSL
 # undef USE_GNUTLS
 # ifndef DISABLE_OCSP
 #  define DISABLE_OCSP
+# endif
+# ifndef DISABLE_TLS_RESUME
+#  define DISABLE_TLS_RESUME
 # endif
 # undef EXPERIMENTAL_CERTNAMES
 # undef AUTH_TLS
