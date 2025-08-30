@@ -83,17 +83,21 @@ sub exim_binary {
     # get a list of directories having the "scripts/{os,arch}-type"
     # scripts
     my @candidates = grep { -x "$_/scripts/os-type" and -x "$_/scripts/arch-type" }
-        "$prefix/exim-snapshot", "$prefix/exim4", # highest priority
-        (reverse sort {                           # list of exim-*.* directories
+      "$prefix/exim-snapshot", "$prefix/exim4", # highest priority
+      (reverse sort {                           # list of exim-*.* directories
         # split version number from RC number
         my @a = ($a =~ /(\d+\.\d+)(?:RC(\d+))?/);
         my @b = ($b =~ /(\d+\.\d+)(?:RC(\d+))?/);
         # if the versions are not equal, we're fine,
         # but otherwise we've to compare the RC number, where an
-        # empty RC number is better than a non-empty
-        ($a[0] cmp $b[0]) || (defined $a[1] ? defined $b[1] ? $a[1] cmp $b[1] : -1 : 1)
+        # empty RC number is better than a non-empty.
+	# Avoid whine when version is undef.
+	(
+	   (defined $a[0] ? defined $b[0] ? $a[0] cmp $b[0] : -1 : 1)
+	|| (defined $a[1] ? defined $b[1] ? $a[1] cmp $b[1] : -1 : 1)
+	)
         } glob "$prefix/exim-*.*"),
-        "$prefix/src";                       # the "normal" source
+      "$prefix/src";                       # the "normal" source
 
     # binaries should be found now depending on the os-type and
     # arch-type in the directories we got above
