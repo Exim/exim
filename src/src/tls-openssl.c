@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2024 */
+/* Copyright (c) The Exim Maintainers 2020 - 2025 */
 /* Copyright (c) University of Cambridge 1995 - 2019 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -3717,6 +3717,8 @@ if (rc <= 0)
       }
 
     default:
+      {
+      uschar * s;
       DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
       if (error == SSL_ERROR_SYSCALL)
 	{
@@ -3728,16 +3730,20 @@ if (rc <= 0)
 #endif
 	  return FAIL;
 	  }
-	DEBUG(D_tls) debug_printf(" - syscall %s\n", strerror(errno));
+	s = string_sprintf("syscall %s", strerror(errno));
+	DEBUG(D_tls) debug_printf(" - %s\n", s);
 	}
+      else
+	s = string_sprintf("ret %d", error);
+
       (void) tls_error(US"SSL_accept", NULL,
-		      sigalrm_seen ? US"timed out"
-		      : ERR_peek_error() ? NULL : string_sprintf("ret %d", error),
-		      errstr);
+		    sigalrm_seen ? US"timed out" : ERR_peek_error() ? NULL : s,
+		    errstr);
 #ifndef DISABLE_EVENT
       (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
 #endif
       return FAIL;
+      }
     }
   }
 
