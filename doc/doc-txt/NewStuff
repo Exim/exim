@@ -6,7 +6,7 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the Git before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
-Version 4.98
+Version 4.99
 ------------
  1. A sieve_inbox option for redirect routers
 
@@ -56,6 +56,8 @@ Version 4.98
     file.
 
  19. An option for lookups to not write the cache
+
+ 20. EXPERIMENTAL_NMH optional build feature.  See the experimental.spec file.
 
 Version 4.98
 ------------
