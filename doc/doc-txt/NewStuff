@@ -52,7 +52,7 @@ Version 4.99
 
  17. Command-line option for pre-config debug
 
- 18. EXPERIMENTAL_SPR_PERL optional build feature.  See the experimental.spec
+ 18. EXPERIMENTAL_SPF_PERL optional build feature.  See the experimental.spec
     file.
 
  19. An option for lookups to not write the cache
