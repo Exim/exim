@@ -406,8 +406,7 @@ __
     sub build_doc_packages_directory {
         my $context = shift;
 
-        ##foreach my $format (qw/pdf postscript texinfo info/) {
-        foreach my $format (qw/pdf postscript/) {
+        foreach my $format (qw/pdf postscript texinfo info/) {
             my $target = catdir $context->{d}{pkg_trees}, "exim-$format-$context->{v}{release}", 'doc';
             make_path( $target, { verbose => $verbose || $debug } );
 
