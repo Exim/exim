@@ -2921,6 +2921,12 @@ if (init_options)
 #ifdef OPENSSL_MIN_PROTO_VERSION
   SSL_CTX_set_min_proto_version(ctx, SSL3_VERSION);
 #endif
+#ifdef SSL_OP_IGNORE_UNEXPECTED_EOF
+  if(tls_ignore_missing_close_notify) {
+    init_options |= SSL_OP_IGNORE_UNEXPECTED_EOF;
+  }
+#endif
+
   DEBUG(D_tls) debug_printf("setting  SSL CTX options: %016lx\n", init_options);
   SSL_CTX_set_options(ctx, init_options);
    {
