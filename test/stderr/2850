@@ -112,6 +112,8 @@ LOG: H=(test) [11.0.0.1] F=<a@b> rejected RCPT <c@d>: relay not permitted
 >>> deny: condition test succeeded in ACL check_recipient
 >>> end of ACL check_recipient: DENY
 LOG: H=(test) [2002:db8::1] F=<a@b> rejected RCPT <c@d>: relay not permitted
+1999-03-02 09:44:33 nmh lookup: connect '@nmhd': Connection refused
+
 ### start a db server, UDP mode
 
 ******** SERVER ********

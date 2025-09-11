@@ -106,6 +106,7 @@ if (connect(fd, (const struct sockaddr *)&s_un, (socklen_t)slen) < 0)
   {
   (void) close(fd);
   *errmsg= string_sprintf("connect '%s': %s", server, strerror(errno));
+  log_write(0, LOG_MAIN|LOG_PANIC, "nmh lookup: %s\n", *errmsg);
   return -1;
   }
 return fd;
@@ -116,7 +117,7 @@ mk_udp_sock(const uschar * server, int port, uschar ** errmsg)
 {
 if (port > 0)
   {
-  int fd =ip_connectedsocket(SOCK_DGRAM, server, port, port,
+  int fd = ip_connectedsocket(SOCK_DGRAM, server, port, port,
 			    5, NULL, errmsg, NULL);
   callout_address = NULL;
   return fd;
@@ -291,6 +292,7 @@ if (i != gstring_length(g))
 if (!poll_one_fd(sock, POLLIN, read_timeout * 1000))
   {
   *errmsg = US"read timed out";
+  log_write(0, LOG_MAIN|LOG_PANIC, "Timeout on nmh lookup on %q\n", filename);
   return DEFER;
   }
 if (read(sock, resp, 1) != 1)

@@ -83,7 +83,7 @@ killdaemon
 # Daemon not present; expect DEFER
 #exim -d-all+lookup+expand -be
 exim -be
-no-daemon	<${lookup {127.0.0.2}	nmh {@nmhd}}>
+no-daemon	<${lookup {127.0.0.2}	nmh {@nmhd} {A}{N}}>
 ****
 #
 #
