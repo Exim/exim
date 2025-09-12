@@ -12,4 +12,7 @@ exim -q
 killdaemon
 exim -DSERVER=server -DNOTDAEMON -q
 ****
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E 'AUTHENTICATOR(S|_TLS)'");
+****
 no_msglog_check

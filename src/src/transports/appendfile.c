@@ -3332,6 +3332,7 @@ ret_panic:
 # ifdef DYNLOOKUP
 #  define appendfile_transport_info _transport_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 transport_info appendfile_transport_info = {
 .drinfo = {
@@ -3351,6 +3352,5 @@ transport_info appendfile_transport_info = {
 .local =	TRUE
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*TRANSPORT_APPENDFILE*/
 /* End of transport/appendfile.c */

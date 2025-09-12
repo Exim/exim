@@ -328,6 +328,12 @@ return smtp_read_response(sx, US buffer, buffsize, '2', timeout)
 # ifdef DYNLOOKUP
 #  define cram_md5_auth_info _auth_info
 # endif
+#  endif  /*AUTH_CRAM_MD5*/
+# endif  /*!STAND_ALONE*/
+#endif	/*!MACRO_PREDEF*/
+
+#ifndef STAND_ALONE
+# ifdef AUTH_CRAM_MD5
 
 auth_info cram_md5_auth_info = {
 .drinfo = {
@@ -347,9 +353,8 @@ auth_info cram_md5_auth_info = {
 .macros_create =	NULL,
 };
 
-
-#  endif  /*AUTH_CRAM_MD5*/
-# endif  /*!STAND_ALONE*/
+# endif  /*AUTH_CRAM_MD5*/
+#endif  /*!STAND_ALONE*/
 
 /*************************************************
 **************************************************
@@ -376,5 +381,4 @@ return 0;
 
 # endif	/*STAND_ALONE*/
 
-#endif	/*!MACRO_PREDEF*/
 /* End of cram_md5.c */

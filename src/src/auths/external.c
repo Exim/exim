@@ -162,6 +162,7 @@ return OK;
 # ifdef DYNLOOKUP
 #  define external_auth_info _auth_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 auth_info external_auth_info = {
 .drinfo = {
@@ -181,6 +182,5 @@ auth_info external_auth_info = {
 .macros_create =	NULL,
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*AUTH_EXTERNAL*/
 /* End of external.c */

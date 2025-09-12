@@ -1,4 +1,7 @@
 # queuefile transport test non existant directory
 exim -odi userx
 ****
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E 'TRANSPORT_QUEUEFILE'");
+****
 no_msglog_check

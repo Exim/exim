@@ -6532,6 +6532,7 @@ return TRUE;   /* Each address has its status */
 # ifdef DYNLOOKUP
 #  define smtp_transport_info _transport_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 transport_info smtp_transport_info = {
 .drinfo = {
@@ -6551,7 +6552,6 @@ transport_info smtp_transport_info = {
 .local =	FALSE
 };
 
-#endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */
 /* End of transport/smtp.c */

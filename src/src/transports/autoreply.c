@@ -807,6 +807,7 @@ return FALSE;
 # ifdef DYNLOOKUP
 #  define autoreply_transport_info _transport_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 transport_info autoreply_transport_info = {
 .drinfo = {
@@ -826,8 +827,7 @@ transport_info autoreply_transport_info = {
 .local =	TRUE
 };
 
-#endif	/*!MACRO_PREDEF*/
-#endif	/*TRANSPORT_AUTOREPOL*/
+#endif	/*TRANSPORT_AUTOREPLY*/
 /* End of transport/autoreply.c */
 /* vi: aw ai sw=2
 */

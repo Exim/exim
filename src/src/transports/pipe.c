@@ -1132,6 +1132,7 @@ return FALSE;
 # ifdef DYNLOOKUP
 #  define pipe_transport_info _transport_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 transport_info pipe_transport_info = {
 .drinfo = {
@@ -1151,6 +1152,5 @@ transport_info pipe_transport_info = {
 .local =	TRUE
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*TRASPORT_PIPE*/
 /* End of transport/pipe.c */

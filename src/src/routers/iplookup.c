@@ -422,6 +422,7 @@ return OK;
 # ifdef DYNLOOKUP
 #  define iplookup_router_info _router_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 router_info iplookup_router_info =
 {
@@ -441,6 +442,5 @@ router_info iplookup_router_info =
 .ri_flags =		ri_notransport
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_IPLOOKUP*/
 /* End of routers/iplookup.c */

@@ -184,6 +184,7 @@ return FAIL;
 # ifdef DYNLOOKUP
 #  define plaintext_auth_info _auth_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 auth_info plaintext_auth_info = {
 .drinfo = {
@@ -203,6 +204,5 @@ auth_info plaintext_auth_info = {
 .macros_create =	NULL,
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*AUTH_PLAINTEST*/
 /* End of plaintext.c */

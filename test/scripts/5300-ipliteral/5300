@@ -20,5 +20,7 @@ RCPT TO:<x@[1.2.3.4]>
 RCPT TO:<x@[ipv4:1.2.3.4]>
 quit
 ****
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E 'ROUTER_IPLITERAL'");
+****
 no_msglog_check
-

@@ -91,6 +91,44 @@ optionlist optionlist_transports[] = {
 
 int optionlist_transports_size = nelem(optionlist_transports);
 
+/******************************************************************************/
+/*
+ * Needed by both MACRO_PREDEF and the actual exim binary: build a list
+ * of transport drivers. The content differs for the two cases.
+ */
+static void
+transport_init_statics(transport_info ** anchor)
+{
+driver_info ** a = (driver_info **) anchor;
+
+#if defined(TRANSPORT_APPENDFILE) && (TRANSPORT_APPENDFILE!=2 || defined(MACRO_PREDEF))
+  extern transport_info appendfile_transport_info;
+  add_driver_info(a, &appendfile_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(TRANSPORT_AUTOREPLY) && (TRANSPORT_AUTOREPLY!=2 || defined(MACRO_PREDEF))
+  extern transport_info autoreply_transport_info;
+  add_driver_info(a, &autoreply_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(TRANSPORT_LMTP) && (TRANSPORT_LMTP!=2 || defined(MACRO_PREDEF))
+  extern transport_info lmtp_transport_info;
+  add_driver_info(a, &lmtp_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(TRANSPORT_PIPE) && (TRANSPORT_PIPE!=2 || defined(MACRO_PREDEF))
+  extern transport_info pipe_transport_info;
+  add_driver_info(a, &pipe_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(EXPERIMENTAL_QUEUEFILE) && (EXPERIMENTAL_QUEUEFILE!=2 || defined(MACRO_PREDEF))
+  extern transport_info queuefile_transport_info;
+  add_driver_info(a, &queuefile_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(TRANSPORT_SMTP) && (TRANSPORT_SMTP!=2 || defined(MACRO_PREDEF))
+  extern transport_info smtp_transport_info;
+  add_driver_info(a, &smtp_transport_info.drinfo, sizeof(transport_info));
+#endif
+}
+
+/******************************************************************************/
+
 #ifdef MACRO_PREDEF
 
 # include "macro_predef.h"
@@ -98,12 +136,14 @@ int optionlist_transports_size = nelem(optionlist_transports);
 void
 options_transports(void)
 {
-uschar buf[64];
-
 options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSPORTS", NULL);
+
+transport_init_statics(&transports_available);
 
 for (driver_info * di= (driver_info *)transports_available; di; di = di->next)
   {
+  uschar buf[64];
+
   spf(buf, sizeof(buf), US"_DRIVER_TRANSPORT_%T", di->driver_name);
   builtin_macro_create(buf);
   options_from_list(di->options, (unsigned)*di->options_count,
@@ -148,39 +188,14 @@ transport_init(void)
 int old_pool = store_pool;
 store_pool = POOL_PERM;
   {
-  driver_info ** anchor = (driver_info **) &transports_available;
-
   /* Add the transport drivers that are built for static linkage to the
   list of availables. */
 
-#if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE!=2
-  extern transport_info appendfile_transport_info;
-  add_driver_info(anchor, &appendfile_transport_info.drinfo, sizeof(transport_info));
-#endif
-#if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY!=2
-  extern transport_info autoreply_transport_info;
-  add_driver_info(anchor, &autoreply_transport_info.drinfo, sizeof(transport_info));
-#endif
-#if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP!=2
-  extern transport_info lmtp_transport_info;
-  add_driver_info(anchor, &lmtp_transport_info.drinfo, sizeof(transport_info));
-#endif
-#if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE!=2
-  extern transport_info pipe_transport_info;
-  add_driver_info(anchor, &pipe_transport_info.drinfo, sizeof(transport_info));
-#endif
-#if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE!=2
-  extern transport_info queuefile_transport_info;
-  add_driver_info(anchor, &queuefile_transport_info.drinfo, sizeof(transport_info));
-#endif
-#if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP!=2
-  extern transport_info smtp_transport_info;
-  add_driver_info(anchor, &smtp_transport_info.drinfo, sizeof(transport_info));
-#endif
+  transport_init_statics(&transports_available);
   }
 store_pool = old_pool;
 
-/* Read the config file "transports" section, creating a transportsinstance list.
+/* Read the config file "transports" section, creating a transports instance list.
 For any yet-undiscovered driver, check for a loadable module and add it to
 those available. */
 

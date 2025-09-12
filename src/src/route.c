@@ -148,6 +148,48 @@ optionlist optionlist_routers[] = {
 int optionlist_routers_size = nelem(optionlist_routers);
 
 
+/******************************************************************************/
+/*
+ * Needed by both MACRO_PREDEF and the actual exim binary: build a list
+ * of router drivers. The content differs for the two cases.
+ */
+static void
+router_init_statics(router_info ** anchor)
+{
+driver_info ** a = (driver_info **) anchor;
+
+#if defined(ROUTER_ACCEPT) && (ROUTER_ACCEPT!=2 || defined(MACRO_PREDEF))
+  extern router_info accept_router_info;
+  add_driver_info(a, &accept_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_DNSLOOKUP) && (ROUTER_DNSLOOKUP!=2 || defined(MACRO_PREDEF))
+  extern router_info dnslookup_router_info;
+  add_driver_info(a, &dnslookup_router_info.drinfo, sizeof(router_info));
+#endif
+# if defined(ROUTER_IPLITERAL) && (ROUTER_IPLITERAL!=2 || defined(MACRO_PREDEF))
+  extern router_info ipliteral_router_info;
+  add_driver_info(a, &ipliteral_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_IPLOOKUP) && (ROUTER_IPLOOKUP!=2 || defined(MACRO_PREDEF))
+  extern router_info iplookup_router_info;
+  add_driver_info(a, &iplookup_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_MANUALROUTE) && (ROUTER_MANUALROUTE!=2 || defined(MACRO_PREDEF))
+  extern router_info manualroute_router_info;
+  add_driver_info(a, &manualroute_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_REDIRECT) && (ROUTER_REDIRECT!=2 || defined(MACRO_PREDEF))
+  extern router_info redirect_router_info;
+  add_driver_info(a, &redirect_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_QUERYPROGRAM) && (ROUTER_QUERYPROGRAM!=2 || defined(MACRO_PREDEF))
+  extern router_info queryprogram_router_info;
+  add_driver_info(a, &queryprogram_router_info.drinfo, sizeof(router_info));
+#endif
+}
+
+/******************************************************************************/
+
 #ifdef MACRO_PREDEF
 
 # include "macro_predef.h"
@@ -155,12 +197,14 @@ int optionlist_routers_size = nelem(optionlist_routers);
 void
 options_routers(void)
 {
-uschar buf[64];
-
 options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NULL);
+
+router_init_statics(&routers_available);
 
 for (driver_info * di = (driver_info *)routers_available; di; di = di->next)
   {
+  uschar buf[64];
+
   spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", di->driver_name);
   builtin_macro_create(buf);
   options_from_list(di->options, (unsigned)*di->options_count,
@@ -230,39 +274,10 @@ route_init(void)
 int old_pool = store_pool;
 store_pool = POOL_PERM;
   {
-  driver_info ** anchor = (driver_info **) &routers_available;
-
   /* Add the router drivers that are built for static linkage to the
   list of availables. */
 
-#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
-  extern router_info accept_router_info;
-  add_driver_info(anchor, &accept_router_info.drinfo, sizeof(router_info));
-#endif
-#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP!=2
-  extern router_info dnslookup_router_info;
-  add_driver_info(anchor, &dnslookup_router_info.drinfo, sizeof(router_info));
-#endif
-# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL!=2
-  extern router_info ipliteral_router_info;
-  add_driver_info(anchor, &ipliteral_router_info.drinfo, sizeof(router_info));
-#endif
-#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP!=2
-  extern router_info iplookup_router_info;
-  add_driver_info(anchor, &iplookup_router_info.drinfo, sizeof(router_info));
-#endif
-#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE!=2
-  extern router_info manualroute_router_info;
-  add_driver_info(anchor, &manualroute_router_info.drinfo, sizeof(router_info));
-#endif
-#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT!=2
-  extern router_info redirect_router_info;
-  add_driver_info(anchor, &redirect_router_info.drinfo, sizeof(router_info));
-#endif
-#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM!=2
-  extern router_info queryprogram_router_info;
-  add_driver_info(anchor, &queryprogram_router_info.drinfo, sizeof(router_info));
-#endif
+  router_init_statics(&routers_available);
   }
 store_pool = old_pool;
 

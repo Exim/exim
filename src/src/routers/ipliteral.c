@@ -207,6 +207,7 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
 # ifdef DYNLOOKUP
 #  define ipliteral_router_info _router_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 router_info ipliteral_router_info =
 {
@@ -226,6 +227,5 @@ router_info ipliteral_router_info =
 .ri_flags =		ri_yestransport
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_IPLITERAL*/
 /* End of routers/ipliteral.c */

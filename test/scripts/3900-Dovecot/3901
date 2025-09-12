@@ -34,5 +34,8 @@ killdaemon
 #****
 ##
 #killdaemon
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E '(AUTHENTICATORS|DOVECOT)'");
+****
 no_stdout_check
 no_msglog_check

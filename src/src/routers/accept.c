@@ -145,6 +145,7 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ? OK : DEFER;
 # ifdef DYNLOOKUP
 #  define accept_router_info _router_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 router_info accept_router_info =
 {
@@ -164,7 +165,6 @@ router_info accept_router_info =
 .ri_flags =		ri_yestransport
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_ACCEPT*/
 
 /* End of routers/accept.c */

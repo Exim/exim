@@ -793,6 +793,7 @@ return yield;
 # ifdef DYNLOOKUP
 #  define redirect_router_info _router_info
 # endif
+#endif   /*!MACRO_PREDEF*/
 
 router_info redirect_router_info =
 {
@@ -812,6 +813,5 @@ router_info redirect_router_info =
 .ri_flags =		ri_notransport
 };
 
-#endif   /*!MACRO_PREDEF*/
 #endif	/*ROUTER_REDIRECT*/
 /* End of routers/redirect.c */

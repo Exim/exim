@@ -615,6 +615,7 @@ return string_fmt_append(g, "Library version: Heimdal: Runtime: %s\n"
 # ifdef DYNLOOKUP
 #  define heimdal_gssapi_auth_info _auth_info
 # endif
+#endif   /*!MACRO_PREDEF*/
 
 auth_info heimdal_gssapi_auth_info = {
 .drinfo = {
@@ -634,7 +635,6 @@ auth_info heimdal_gssapi_auth_info = {
 .macros_create =	NULL,
 };
 
-#endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_HEIMDAL_GSSAPI */
 
 /* End of heimdal_gssapi.c */

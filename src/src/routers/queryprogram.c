@@ -538,6 +538,7 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ? OK : DEFER;
 # ifdef DYNLOOKUP
 #  define queryprogram_router_info _router_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 router_info queryprogram_router_info =
 {
@@ -557,6 +558,5 @@ router_info queryprogram_router_info =
 .ri_flags =           0
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_QUERYPROGRAM*/
 /* End of routers/queryprogram.c */

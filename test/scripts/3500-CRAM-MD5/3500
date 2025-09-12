@@ -43,4 +43,7 @@ Testing authenticated CRAM-MD5.
 .
 quit
 ****
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E '(AUTHENTICATORS|CRAM_MD5)'");
+****
 no_msglog_check

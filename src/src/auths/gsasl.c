@@ -1063,6 +1063,7 @@ void auth_gsasl_macros(void) {}
 # ifdef DYNLOOKUP
 #  define gsasl_auth_info _auth_info
 # endif
+#endif   /*!MACRO_PREDEF*/
 
 auth_info gsasl_auth_info = {
 .drinfo = {
@@ -1082,7 +1083,6 @@ auth_info gsasl_auth_info = {
 .macros_create =	auth_gsasl_macros,
 };
 
-#endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_GSASL */
 
 /* End of gsasl_exim.c */

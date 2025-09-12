@@ -32,3 +32,6 @@ mail from:<x@y>
 rcpt to:<"FAIL cannot route this one (FAIL)"@some.host>
 quit
 ****
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E 'ROUTER_QUERYPROGRAM'");
+****

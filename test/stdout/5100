@@ -3,3 +3,10 @@
 first failed = time last try = time2 next try = time2 + 86400
   T:tom@myhost.test.ex -44 12800 LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
 first failed = time last try = time2 next try = time2 + 60
+_OPT_TRANSPORT_LMTP_TIMEOUT=y
+_OPT_TRANSPORT_LMTP_SOCKET=y
+_OPT_TRANSPORT_LMTP_IGNORE_QUOTA=y
+_OPT_TRANSPORT_LMTP_COMMAND=y
+_OPT_TRANSPORT_LMTP_BATCH_MAX=y
+_OPT_TRANSPORT_LMTP_BATCH_ID=y
+_DRIVER_TRANSPORT_LMTP=y

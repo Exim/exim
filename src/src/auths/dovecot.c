@@ -554,6 +554,7 @@ return ret;
 # ifdef DYNLOOKUP
 #  define dovecot_auth_info _auth_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 auth_info dovecot_auth_info = {
 .drinfo = {
@@ -573,6 +574,5 @@ auth_info dovecot_auth_info = {
 .macros_create =	NULL,
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*AUTH_DOVECOT*/
 /* end of auths/dovecot.c */

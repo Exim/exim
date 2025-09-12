@@ -473,6 +473,7 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ?  OK : DEFER;
 # ifdef DYNLOOKUP
 #  define dnslookup_router_info _router_info
 # endif
+#endif	/*!MACRO_PREDEF*/
 
 router_info dnslookup_router_info =
 {
@@ -492,7 +493,6 @@ router_info dnslookup_router_info =
 .ri_flags =		ri_yestransport
 };
 
-#endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_DNSLOOKUP*/
 /* End of routers/dnslookup.c */
 /* vi: aw ai sw=2

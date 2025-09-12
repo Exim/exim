@@ -511,6 +511,7 @@ return FAIL;
 # ifdef DYNLOOKUP
 #  define cyrus_sasl_auth_info _auth_info
 # endif
+#endif   /*!MACRO_PREDEF*/
 
 auth_info cyrus_sasl_auth_info = {
 .drinfo = {
@@ -530,7 +531,6 @@ auth_info cyrus_sasl_auth_info = {
 .macros_create =	NULL,
 };
 
-#endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_CYRUS_SASL */
 
 /* End of cyrus_sasl.c */

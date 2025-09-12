@@ -40,4 +40,7 @@ exim -odi userx usery
 script: 10
 This is a test message.
 ****
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E 'TRANSPORT_LMTP'");
+****
 no_msglog_check

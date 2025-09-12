@@ -414,6 +414,68 @@ static optionlist optionlist_config[] = {
 static int optionlist_config_size = nelem(optionlist_config);
 #endif
 
+/******************************************************************************/
+/* Add a driver info struct to a list. */
+
+void
+add_driver_info(driver_info ** drlist_p, const driver_info * newent,
+  size_t size)
+{
+#ifdef MACRO_PREDEF
+driver_info * listent = malloc(size);
+#else
+driver_info * listent = store_get(size, newent);
+#endif
+memcpy(listent, newent, size);
+listent->next = *drlist_p;
+*drlist_p= listent;
+}
+
+
+static void
+auths_init_statics(auth_info ** anchor)
+{
+driver_info ** a = (driver_info **) anchor;
+
+#if defined(AUTH_CRAM_MD5) && (AUTH_CRAM_MD5!=2 || defined(MACRO_PREDEF))
+  extern auth_info cram_md5_auth_info;
+  add_driver_info(a, &cram_md5_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_CYRUS_SASL) && (AUTH_CYRUS_SASL!=2 || defined(MACRO_PREDEF))
+  extern auth_info cyrus_sasl_auth_info;
+  add_driver_info(a, &cyrus_sasl_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_DOVECOT) && (AUTH_DOVECOT!=2 || defined(MACRO_PREDEF))
+  extern auth_info dovecot_auth_info;
+  add_driver_info(a, &dovecot_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_EXTERNAL) && (AUTH_EXTERNAL!=2 || defined(MACRO_PREDEF))
+  extern auth_info external_auth_info;
+  add_driver_info(a, &external_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_GSASL) && (AUTH_GSASL!=2 || defined(MACRO_PREDEF))
+  extern auth_info gsasl_auth_info;
+  add_driver_info(a, &gsasl_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_HEIMDAL_GSSAPI) && (AUTH_HEIMDAL_GSSAPI!=2 || defined(MACRO_PREDEF))
+  extern auth_info heimdal_gssapi_auth_info;
+  add_driver_info(a, &heimdal_gssapi_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_PLAINTEXT) && (AUTH_PLAINTEXT!=2 || defined(MACRO_PREDEF))
+  extern auth_info plaintext_auth_info;
+  add_driver_info(a, &plaintext_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_SPA) && (AUTH_SPA!=2 || defined(MACRO_PREDEF))
+  extern auth_info spa_auth_info;
+  add_driver_info(a, &spa_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_TLS) && (AUTH_TLS!=2 || defined(MACRO_PREDEF))
+  extern auth_info tls_auth_info;
+  add_driver_info(a, &tls_auth_info.drinfo, sizeof(auth_info));
+#endif
+}
+/******************************************************************************/
+
 
 #ifdef MACRO_PREDEF
 
@@ -429,14 +491,15 @@ options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN", NULL);
 void
 options_auths(void)
 {
-uschar buf[EXIM_DRIVERNAME_MAX];
-
 options_from_list(optionlist_auths, optionlist_auths_size,
   US"AUTHENTICATORS", NULL);
+
+auths_init_statics(&auths_available);
 
 for (driver_info * di = (driver_info *)auths_available; di; di = di->next)
   {
   auth_info * ai = (auth_info *)di;
+  uschar buf[EXIM_DRIVERNAME_MAX];
 
   spf(buf, sizeof(buf), US"_DRIVER_AUTHENTICATOR_%T", di->driver_name);
   builtin_macro_create(buf);
@@ -3722,19 +3785,6 @@ if (!nowarn && !keep_environment && environ && *environ)
 }
 
 
-
-/* Add a driver info struct to a list. */
-
-void
-add_driver_info(driver_info ** drlist_p, const driver_info * newent,
-  size_t size)
-{
-driver_info * listent = store_get(size, newent);
-memcpy(listent, newent, size);
-listent->next = *drlist_p;
-*drlist_p= listent;
-}
-
 /*************************************************
 *          Initialize one driver                 *
 *************************************************/
@@ -4359,47 +4409,10 @@ int nauths = 0;
 int old_pool = store_pool;
 store_pool = POOL_PERM;
   {
-  driver_info ** anchor = (driver_info **) &auths_available;
-
   /* Add the transport drivers that are built for static linkage to the
   list of availables. */
 
-#if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5!=2
-  extern auth_info cram_md5_auth_info;
-  add_driver_info(anchor, &cram_md5_auth_info.drinfo, sizeof(auth_info));
-#endif
-#if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL!=2
-  extern auth_info cyrus_sasl_auth_info;
-  add_driver_info(anchor, &cyrus_sasl_auth_info.drinfo, sizeof(auth_info));
-#endif
-#if defined(AUTH_DOVECOT) && AUTH_DOVECOT!=2
-  extern auth_info dovecot_auth_info;
-  add_driver_info(anchor, &dovecot_auth_info.drinfo, sizeof(auth_info));
-#endif
-#if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL!=2
-  extern auth_info external_auth_info;
-  add_driver_info(anchor, &external_auth_info.drinfo, sizeof(auth_info));
-#endif
-#if defined(AUTH_GSASL) && AUTH_GSASL!=2
-  extern auth_info gsasl_auth_info;
-  add_driver_info(anchor, &gsasl_auth_info.drinfo, sizeof(auth_info));
-#endif
-#if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI!=2
-  extern auth_info heimdal_gssapi_auth_info;
-  add_driver_info(anchor, &heimdal_gssapi_auth_info.drinfo, sizeof(auth_info));
-#endif
-#if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT!=2
-  extern auth_info plaintext_auth_info;
-  add_driver_info(anchor, &plaintext_auth_info.drinfo, sizeof(auth_info));
-#endif
-#if defined(AUTH_SPA) && AUTH_SPA!=2
-  extern auth_info spa_auth_info;
-  add_driver_info(anchor, &spa_auth_info.drinfo, sizeof(auth_info));
-#endif
-#if defined(AUTH_TLS) && AUTH_TLS!=2
-  extern auth_info tls_auth_info;
-  add_driver_info(anchor, &tls_auth_info.drinfo, sizeof(auth_info));
-#endif
+  auths_init_statics(&auths_available);
   }
 store_pool = old_pool;
 

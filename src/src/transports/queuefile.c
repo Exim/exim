@@ -290,6 +290,7 @@ return FALSE;
 # ifdef DYNLOOKUP
 #  define queuefile_transport_info _transport_info
 # endif
+#endif /*!MACRO_PREDEF*/
 
 transport_info queuefile_transport_info = {
 .drinfo = {
@@ -309,5 +310,4 @@ transport_info queuefile_transport_info = {
 .local =	TRUE
 };
 
-#endif /*!MACRO_PREDEF*/
 #endif /*EXPERIMENTAL_QUEUEFILE*/
