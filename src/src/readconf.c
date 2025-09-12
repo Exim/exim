@@ -2873,7 +2873,7 @@ if (!type)
         }
 
     if (!found)
-      printf("no address, domain, host, or local part list called %q "
+      printf("no address, domain, host, or local part list called '%s' "
         "exists\n", name+1);
 
     return found;
