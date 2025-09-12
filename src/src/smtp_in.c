@@ -2780,10 +2780,7 @@ smtps port for use with older style SSL MTAs. */
 #ifndef DISABLE_TLS
 if (tls_in.on_connect)
   {
-  gstring * g = NULL;
-# ifdef EXPERIMENTAL_TLS_EARLY_BANNER
-  if (verify_check_host(&tls_early_banner_hosts) == OK) g = ss;
-# endif
+  gstring * g = verify_check_host(&tls_early_banner_hosts) == OK ? ss : NULL;
 
   if (tls_server_start(&user_msg, g) != OK)
     return smtp_log_tls_fail(user_msg);
@@ -2796,7 +2793,6 @@ fl.pipe_connect_acceptable = sender_host_address
 		    && verify_check_host(&pipe_connect_advertise_hosts) == OK;
 #endif
 
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
 if (gstring_length(ss) == 0)			/* banner already sent */
   {
   if (f.running_in_test_harness)		/* make visible to testsuite */
@@ -2807,8 +2803,6 @@ if (gstring_length(ss) == 0)			/* banner already sent */
     }
   }
 else						/* not already sent */
-#endif
-
   {
   /* Before we write the banner, check that there is no input pending, unless
   this synchronisation check is disabled. */

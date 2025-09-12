@@ -15128,6 +15128,7 @@ listed in more than one group.
 .row &%tls_crl%&                     "certificate revocation list"
 .row &%tls_dh_max_bits%&             "clamp D-H bit count suggestion"
 .row &%tls_dhparam%&                 "DH parameters for server"
+.row &%tls_early_banner_hosts%&      "banner as early as possible"
 .row &%tls_eccurve%&                 "EC curve selection for server"
 .row &%tls_ocsp_file%&               "location of server certificate status proof"
 .row &%tls_on_connect_ports%&        "specify SSMTP (SMTPS) ports"
@@ -18921,6 +18922,21 @@ mail user agents (MUAs). The lower bound comes from Debian installs of Exim4
 prior to the 4.80 release, as Debian used to patch Exim to raise the minimum
 acceptable bound from 1024 to 2048.
 
+
+.new
+.option tls_early_banner_hosts main host list&!! unset
+.cindex banner "for TLS-on-connect"
+.cindex TLS "early banner"
+This option, after expansion, lists hosts for which
+the SMTP banner may be sent without waiting for the client
+Certificate and Finished TLS records.
+This will only be done on a TLS-on-connect port,
+when the connection uses TLSv1.3,
+and when verification of the client certificate is not needed.
+
+When it is possible it saves one whole roundtrip time.
+The feature may usefully be combined with TCP Fast Open.
+.wen
 
 .option tls_eccurve main string list&!! &`auto`&
 .cindex TLS "EC cryptography"

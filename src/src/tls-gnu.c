@@ -116,12 +116,8 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # endif
 #endif
 
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
-# if GNUTLS_VERSION_NUMBER >= 0x030604
-#  define GNUTLS_EARLY_DATA
-# else
-#  error GnuTLS version too old for early-banner
-# endif
+#if GNUTLS_VERSION_NUMBER >= 0x030604
+# define EXIM_TLS_EARLY_BANNER
 #endif
 
 #if GNUTLS_VERSION_NUMBER >= 0x030200
@@ -208,7 +204,7 @@ typedef struct exim_gnutls_state {
   int			fd_in;
   int			fd_out;
 
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+#ifdef EXIM_TLS_EARLY_BANNER
   BOOL			early_banner:1;
 #endif
   BOOL			peer_cert_verified:1;
@@ -2189,7 +2185,7 @@ else
 
   DEBUG(D_tls) debug_printf("initialising GnuTLS server session\n");
 
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+#ifdef EXIM_TLS_EARLY_BANNER
   if (state->early_banner)
     {
     DEBUG(D_tls) debug_printf("TLS: setting early-start flag\n");
@@ -3149,7 +3145,7 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
   gettimeofday(&t0, NULL);
 #endif
 
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+#ifdef EXIM_TLS_EARLY_BANNER
   if (banner && state_server.verify_requirement == VERIFY_NONE)
     state_server.early_banner = TRUE;
 #endif
@@ -3258,7 +3254,7 @@ if (rc != GNUTLS_E_SUCCESS)
 
 state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+#ifdef EXIM_TLS_EARLY_BANNER
 if (  gnutls_protocol_get_version(state->session) > GNUTLS_TLS1_2
    && state->early_banner)
   {

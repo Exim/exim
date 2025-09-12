@@ -224,7 +224,6 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_QUEUEFILE
 #define EXPERIMENTAL_SPF_PERL
 #define EXPERIMENTAL_SRV_SMTPS
-#define EXPERIMENTAL_TLS_EARLY_BANNER
 #define EXPERIMENTAL_XCLIENT
 
 

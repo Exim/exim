@@ -84,7 +84,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
 # endif
 # if OPENSSL_VERSION_NUMBER >= 0x010101000L
-#  define OPENSSL_EARLY_DATA
+#  define EXIM_TLS_EARLY_BANNER
 # endif
 # if OPENSSL_VERSION_NUMBER <  0x030200020L
 #  define EXIM_OPENSSL_BOGUS_SERVER_ALPN	/*XXX when was this fixed? */
@@ -144,12 +144,6 @@ change this guard and punt the issue for a while longer. */
 # endif
 # ifndef MACRO_PREDEF
 #  include "tls-cipher-stdname.c"
-# endif
-#endif
-
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
-# ifndef OPENSSL_EARLY_DATA
-#  error Need at least OpenSSL 1.1.1 for early-data
 # endif
 #endif
 
@@ -3455,7 +3449,7 @@ uschar * expciphers;
 exim_openssl_state_st * dummy_statep;
 SSL_CTX * ctx;
 SSL * ssl;
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+#ifdef EXIM_TLS_EARLY_BANNER
 BOOL verify_client_cert = FALSE;
 #endif
 static uschar peerdn[256];
@@ -3522,7 +3516,7 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 else
   goto skip_certs;
 
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+#ifdef EXIM_TLS_EARLY_BANNER
 verify_client_cert = TRUE;
 #endif
  {
@@ -3598,7 +3592,7 @@ SSL_set_wfd(ssl, smtp_out_fd);
 SSL_set_rfd(ssl, smtp_in_fd);
 SSL_set_accept_state(ssl);
 
-# ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+# ifdef EXIM_TLS_EARLY_BANNER
 if (  tls_in.on_connect			/* Not usable for STARTTLS */
    && !verify_client_cert		/* Avoid tx before we see client cert */
    && banner)
@@ -3668,7 +3662,7 @@ if (  tls_in.on_connect			/* Not usable for STARTTLS */
       gstring_reset(banner);
       }
   }
-# endif /*EXPERIMENTAL_TLS_EARLY_BANNER*/
+# endif /*EXIM_TLS_EARLY_BANNER*/
 
 DEBUG(D_tls) debug_printf("Calling SSL_accept\n");
 

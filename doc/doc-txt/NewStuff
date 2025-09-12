@@ -53,11 +53,14 @@ Version 4.99
  17. Command-line option for pre-config debug
 
  18. EXPERIMENTAL_SPF_PERL optional build feature.  See the experimental.spec
-    file.
+     file.
 
  19. An option for lookups to not write the cache
 
  20. EXPERIMENTAL_NMH optional build feature.  See the experimental.spec file.
+
+ 21. Main-section option "tls_early_banner_hosts" for a tls-on-connect
+     performance feature.
 
 Version 4.98
 ------------
