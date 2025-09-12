@@ -4102,14 +4102,20 @@ do
 while (inbytes == GNUTLS_E_AGAIN);
 
 if (inbytes > 0) return inbytes;
-if (inbytes == 0)
+if (inbytes == 0
+    // there is a "bug" in Gmail and Yandex servers where they do not send the tls-protocol-mandated `close_notify` on connection close.
+    // They do it intentionally to save time (skip a roundtrip), but it is against tls-protocol and does spam the exim4 errorlogs like
+    // 2024-10-12 09:22:27 1szVWE-0071qn-2C H=gmail-smtp-in.l.google.com [142.250.102.27] TLS error on connection (recv_tls_read): The TLS connection was non-properly terminated.
+    // optionally treat this as a normal EOF.
+    // This is equivalent to OpenSSL's SSL_OP_IGNORE_UNEXPECTED_EOF flag.
+    || (tls_ignore_missing_close_notify && inbytes == GNUTLS_E_PREMATURE_TERMINATION))
   {
-  DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
+    DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
   }
 else
   {
-  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv\n", __FUNCTION__);
-  record_io_error(state, (int)inbytes, US"recv", NULL);
+    DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv\n", __FUNCTION__);
+    record_io_error(state, (int)inbytes, US"recv", NULL);
   }
 
 return -1;
