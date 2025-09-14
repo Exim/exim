@@ -131,3 +131,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 221
 <<< 221 the.local.host.name closing connection
 End of script
+_OPT_TRANSPORT_SMTP_HOSTS_PIPE_CONNECT=y
+_OPT_MAIN_PIPELINING_CONNECT_ADVERTISE_HOSTS=y
+_HAVE_PIPE_CONNECT=y

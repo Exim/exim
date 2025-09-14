@@ -34,6 +34,8 @@
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaZ-000000005vi-0000
 221 myhost.test.ex closing connection
+_OPT_TRANSPORT_SMTP_SOCKS_PROXY=y
+_HAVE_SOCKS=y
 
 ******** SERVER ********
 Listening on port PORT_D ... 

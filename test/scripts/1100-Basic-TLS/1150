@@ -13,3 +13,9 @@ exim -v -qf
 killdaemon
 exim -DSERVER=server -DNOTDAEMON -qf
 ****
+#
+#
+#
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E '_OPT_TRANSPORT_SMTP_(HOST_NAME_EXTRAC|.*(TLS|OCSP|ALPN))'");
+****

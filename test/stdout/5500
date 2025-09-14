@@ -249,3 +249,8 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
+_EXP_VAR_PRDR_REQUESTED=y
+_OPT_TRANSPORT_SMTP_HOSTS_TRY_PRDR=y
+_OPT_MAIN_PRDR_ENABLE=y
+_OPT_MAIN_ACL_SMTP_DATA_PRDR=y
+_HAVE_PRDR=y

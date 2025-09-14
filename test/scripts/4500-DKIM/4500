@@ -261,5 +261,12 @@ QUIT
 ****
 killdaemon
 #
-no_stdout_check
+#
+#
+#
+sudo rm test-stdout
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep 'DKIM' | grep -v 'DMARC'");
+****
+#
 no_msglog_check

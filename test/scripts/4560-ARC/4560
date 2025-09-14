@@ -453,7 +453,10 @@ QUIT
 #
 #
 #
+sudo rm test-stdout
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E '_ARC'");
+****
 #
 killdaemon
-no_stdout_check
 no_msglog_check

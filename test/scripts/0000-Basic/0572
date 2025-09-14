@@ -35,5 +35,5 @@ exim -n -bP config
 #
 perl
 system("eximdir/exim -C ./test-config -bP macros | grep -E 'ROUTER(S|_(DNSLOOKUP|MANUALROUTE|REDIRECT))'");
-system("eximdir/exim -C ./test-config -bP macros | grep -E 'TRANSPORT(S|_(APPENDFILE|SMTP))' | grep -vE '(MAILDIR(FOLDER)?|MAILSTORE|MBX)_'");
+system("eximdir/exim -C ./test-config -bP macros | grep -E 'TRANSPORT(S|_(APPENDFILE|SMTP))' | grep -vE '((MAILDIR(FOLDER)?|MAILSTORE|MBX)_|(ALPN|ARC_SIGN|DANE|DKIM_|HOST_NAME_EXTRACT|TLS|PIPE_CONNECT|OCSP|PRDR|SOCKS|UTF8))'");
 ****

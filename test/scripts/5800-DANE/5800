@@ -10,3 +10,10 @@ dnslookup tlsa: ${lookup dnsdb {tlsa=_PORT_D._tcp.dane512ee.test.ex} \
                         {$value}{none}}
 
 ****
+#
+#
+#
+#
+perl
+system("eximdir/exim -C ./test-config -bP macros | grep -E 'DANE'");
+****

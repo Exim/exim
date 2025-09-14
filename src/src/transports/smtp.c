@@ -42,9 +42,9 @@ optionlist smtp_transport_options[] = {
   { "connect_timeout",      opt_time,	   LOFF(connect_timeout) },
   { "connection_max_messages", opt_int | opt_public,
       OPT_OFF(transport_instance, connection_max_messages) },
-# ifdef SUPPORT_DANE
+#ifdef SUPPORT_DANE
   { "dane_require_tls_ciphers", opt_stringptr, LOFF(dane_require_tls_ciphers) },
-# endif
+#endif
   { "data_timeout",         opt_time,	   LOFF(data_timeout) },
   { "delay_after_cutoff",   opt_bool,	   LOFF(delay_after_cutoff) },
 #ifndef DISABLE_DKIM
@@ -70,7 +70,7 @@ optionlist smtp_transport_options[] = {
   { "helo_data",            opt_stringptr, LOFF(helo_data) },
 #if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
   { "host_name_extract",    opt_stringptr, LOFF(host_name_extract) },
-# endif
+#endif
   { "hosts",                opt_stringptr, LOFF(hosts) },
   { "hosts_avoid_esmtp",    opt_stringptr, LOFF(hosts_avoid_esmtp) },
   { "hosts_avoid_pipelining", opt_stringptr, LOFF(hosts_avoid_pipelining) },
@@ -91,7 +91,9 @@ optionlist smtp_transport_options[] = {
 #if !defined(DISABLE_TLS) && !defined(DISABLE_OCSP)
   { "hosts_request_ocsp",   opt_stringptr, LOFF(hosts_request_ocsp) },
 #endif
+#ifndef DISABLE_TLS
   { "hosts_require_alpn",   opt_stringptr, LOFF(hosts_require_alpn) },
+#endif
   { "hosts_require_auth",   opt_stringptr, LOFF(hosts_require_auth) },
 #ifndef DISABLE_TLS
 # ifdef SUPPORT_DANE
