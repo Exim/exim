@@ -190,6 +190,9 @@ JH/42 Bug 3155: Fix header processing in smtp transport. When combined with
       DKIM signing, large aggregate size of headers could result in a
       use-after-free. Fix by avoiding free of the memory being used.
 
+JH/43 Expansions: add parsing test for leading-underbar-arguments on expansion
+      operators not supporting them.
+
 
 Exim version 4.98
 -----------------

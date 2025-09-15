@@ -7355,13 +7355,37 @@ NOT_ITEM: ;
 	*arg = 0;
       if ((c = chop_match(name, op_table_main, nelem(op_table_main))) >= 0)
 	c += nelem(op_table_underscore);
-      if (arg) *arg++ = '_';		/* Put back for error messages */
+      if (arg)
+	{
+	*arg++ = '_';		/* Put back for error messages */
+
+	/* Check that only specific operators permit arguments */
+	switch (c)
+	  {
+	  case EOP_SHA2: case EOP_SHA256: case EOP_SHA3:
+	  case EOP_HEADERWRAP:
+	  case EOP_LISTNAMED:
+	  case EOP_MASK:
+	  case EOP_QUOTE:  case EOP_QUOTE_LOCAL_PART:
+	  case EOP_LENGTH: case EOP_L: case EOP_SUBSTR: case EOP_S:
+	  case EOP_HASH:   case EOP_H: case EOP_NHASH:  case EOP_NH:
+	  case -1:
+	    break;
+
+	  default:
+	    expand_string_message =
+	      string_sprintf("unknown expansion operator %q"
+		" (\"%.*s\" does not take an _arg)",
+		name, (int)(arg-1 - name), name);
+	    goto EXPAND_FAILED;
+	  }
+	}
       }
 
     /* Deal specially with operators that might take a certificate variable
     as we do not want to do the usual expansion. For most, expand the string.*/
 
-    switch(c)
+    switch (c)
       {
 #ifndef DISABLE_TLS
       case EOP_MD5:

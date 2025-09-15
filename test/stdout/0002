@@ -169,6 +169,7 @@
 > addrss: local-part@dom.ain
 > addrss: local-part.dot-atom@dom.ain
 > addrss: local-part@dom.ain
+> Failed: unknown expansion operator "address_domain" ("address" does not take an _arg)
 > domain: dom.ain
 > domain: dom.ain
 > domain: dom.ain

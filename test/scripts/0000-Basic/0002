@@ -177,6 +177,7 @@ addrss: ${address:Exim Person <local-part@dom.ain(comment)> (that's me)}
 addrss: ${address:Exim Person <local-part(comment)@dom.ain(comment2)> (that's me)}
 addrss: ${address:Exim Person <local-part.(comment)dot-atom@dom.ain(comment2)> (that's me)}
 addrss: ${address:Exim Person <(comment)local-part@dom.ain(comment2)> (that's me)}
+addrss_BAD: ${address_domain:aaaa@bbbb.pl}
 domain: ${domain:local-part@dom.ain}
 domain: ${domain:Exim Person <local-part@dom.ain> (that's me)}
 domain: ${domain:Exim Person <local-part(foo)@(bar)dom.ain> (that's me)}
