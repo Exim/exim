@@ -3369,9 +3369,13 @@ tls_dump_keylog(const SSL * ssl)
   BIO * bp = BIO_new(BIO_s_mem());
   uschar * s = NULL;
   int len;
-  SSL_SESSION_print_keylog(bp, SSL_get_session(ssl));
-  len = (int) BIO_get_mem_data(bp, CSS &s);
-  if (len > 0) debug_printf("%.*s", len, s);
+  if (SSL_SESSION_print_keylog(bp, SSL_get_session(ssl)) == 0)
+    debug_printf("(SSL_SESSION_print_keylog returned error)\n");
+  else
+    {
+    len = (int) BIO_get_mem_data(bp, CSS &s);
+    if (len > 0) debug_printf("%.*s", len, s);
+    }
   BIO_free(bp);
 #endif
 }
