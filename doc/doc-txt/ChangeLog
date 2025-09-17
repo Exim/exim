@@ -193,6 +193,10 @@ JH/42 Bug 3155: Fix header processing in smtp transport. When combined with
 JH/43 Expansions: add parsing test for leading-underbar-arguments on expansion
       operators not supporting them.
 
+JH/44 String formatting: fix use of %.*s with strings not nul-terminated.
+      Previously this could result in an out-of-bounds read; possibly a
+      SIGSEGV. Seen under debug, but could possibly occur elsewhere.
+
 
 Exim version 4.98
 -----------------

@@ -1802,7 +1802,7 @@ while (*fp)
       s = va_arg(ap, char *);
 
       if (!s) s = null;
-      slen = Ustrlen(s);
+      slen = precision < 0 ? Ustrlen(s) : strnlen(CCS s, precision);
 
     INSERT_GSTRING:		/* Come to from %Y above */
 
