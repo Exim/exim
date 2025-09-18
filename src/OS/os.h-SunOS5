@@ -36,15 +36,16 @@ it seems. */
 /* default is non-const */
 #define ICONV_ARG2_TYPE const char **
 
-#if _POSIX_C_SOURCE < 200112L
+#if _POSIX_C_SOURCE + 0 < 200112L
 # define MISSING_UNSETENV_3
 #endif
 
-#if _POSIX_C_SOURCE < 200809L
+#if _POSIX_C_SOURCE + 0 < 200809L
 # define MISSING_POSIX_MEMALIGN
 # define MISSING_POSIX_STPCPY
-#endif
 
+extern size_t strnlen(const char *, size_t);
+#endif
 
 /* SunOS5 doesn't accept getcwd(NULL, 0) to auto-allocate
 a buffer */

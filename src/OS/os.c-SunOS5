@@ -40,6 +40,14 @@ ret = vdprintf(fd, fmt, ap);
 va_end(ap);
 return ret;
 }
+
+size_t
+strnlen(const char * s, size_t maxlen)
+{
+size_t len = 0;
+while (len < maxlen && *s++) len++;
+return len;
+}
 #endif
 
 /* End of os.c-SunOS5 */
