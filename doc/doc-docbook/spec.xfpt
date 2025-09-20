@@ -16126,7 +16126,8 @@ this will result in verify failure for IPv6 connections or ones using names
 only valid for IPv6 addresses.
 
 
-.option dns_retrans main time 0s
+.options dns_retrans main time 0s &&&
+	 dns_retry main integer 0
 .cindex "DNS" "resolver options"
 .cindex timeout "dns lookup"
 .cindex "DNS" timeout
@@ -16141,9 +16142,6 @@ but nowhere does it seem to describe how they are used or what you might want
 to set in them.
 See also the &%slow_lookup_log%& option.
 
-
-.option dns_retry main integer 0
-See &%dns_retrans%& above.
 
 
 .option dns_trust_aa main "domain list&!!" unset
@@ -17386,14 +17384,11 @@ local parts. Exim's default configuration does this.
 
 
 .options perl_at_start main boolean false &&&
-	 perl_startup main string unset
+	 perl_startup main string unset &&&
+	 perl_taintmode main boolean false
 .cindex "Perl"
 These options are available only when Exim is built with an embedded Perl
 interpreter. See chapter &<<CHAPperl>>& for details of their use.
-
-.option perl_taintmode main boolean false
-.cindex "Perl"
-This option enables the taint mode of the embedded Perl interpreter.
 
 
 .option pgsql_servers main "string list" unset
@@ -18147,7 +18142,7 @@ verification if there is no remote transport from which to obtain a
 If this option is set to greater than zero, and the backlog of available
 TCP connections on a socket listening for SMTP is larger than it, a line
 is logged giving the value and the socket address and port.
-The value is retrived jsut before an accept call.
+The value is retrieved just before an accept call.
 This facility is only available on Linux.
 
 .option smtp_banner main string&!! "see below"
@@ -19136,7 +19131,8 @@ trusted. The users can be specified numerically or by name. See section
 If neither &%trusted_groups%& nor &%trusted_users%& is set, only root and the
 Exim user are trusted.
 
-.option unknown_login main string&!! unset
+.options unknown_login main string&!! unset &&&
+	 unknown_username main string unset
 .cindex "uid (user id)" "unknown caller"
 .vindex "&$caller_uid$&"
 This is a specialized feature for use in unusual configurations. By default, if
@@ -19146,9 +19142,6 @@ used in this circumstance. It is expanded, so values like &%user$caller_uid%&
 can be set. When &%unknown_login%& is used, the value of &%unknown_username%&
 is used for the user's real name (gecos field), unless this has been set by the
 &%-F%& option.
-
-.option unknown_username main string unset
-See &%unknown_login%&.
 
 .option untrusted_set_sender main "address list&!!" unset
 .cindex "trusted users"
@@ -19201,7 +19194,8 @@ envelope sender address, the user's login is shown in parentheses after the
 sender address.
 
 
-.option uucp_from_pattern main string "see below"
+.options uucp_from_pattern main string "see below" &&&
+	 uucp_from_sender main string&!! &`$1`&
 .cindex "&""From""& line"
 .cindex "UUCP" "&""From""& line"
 Some applications that pass messages to an MTA via a command line interface use
@@ -19226,9 +19220,6 @@ regular expression by a parenthesized subpattern. The default value for
 (&"ph10"& in the example above) as the message's sender. See also
 &%ignore_fromline_hosts%&.
 
-
-.option uucp_from_sender main string&!! &`$1`&
-See &%uucp_from_pattern%& above.
 
 
 .option warn_message_file main string&!! unset
