@@ -2469,7 +2469,7 @@ else
 
     for (int i = 1;; i++)
       {
-      uschar *basename;
+      uschar * basename;
 
       (void)gettimeofday(&msg_tv, NULL);
       basename = string_sprintf(TIME_T_FMT ".M%luP" PID_T_FMT ".%s",
@@ -2492,8 +2492,14 @@ else
 
       if (i >= ob->maildir_retries)
         {
+	DEBUG(D_transport)
+	  {
+	  char buf[PATH_MAX];
+	  debug_printf(" (euid=%ld egid=%ld cwd=%s)\n",
+	    (long)geteuid(), (long)getegid(), getcwd(buf, sizeof(buf)));
+	  }
         addr->message = string_sprintf ("failed to open %s (%d tr%s)",
-          filename, i, (i == 1) ? "y" : "ies");
+          filename, i, i == 1 ? "y" : "ies");
         addr->basic_errno = errno;
         if (errno == errno_quota || errno == ENOSPC)
           addr->user_message = US"mailbox is full";
