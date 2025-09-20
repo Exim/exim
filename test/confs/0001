@@ -65,7 +65,6 @@ dns_check_names_pattern = ^.*$
 dns_ipv4_lookup = *
 dns_retrans = 0s
 dns_retry = 0
-drop_cr
 envelope_to_remove
 errors_copy =
 errors_reply_to = postmaster@cam.ac.uk

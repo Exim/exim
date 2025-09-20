@@ -2,6 +2,13 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Since Exim version 4.99
+-----------------
+
+JH/01 The obsolete (since 4.21) main config option "drop_cr" and the command
+      line option "-dropcr" are no longer supported; using either will result in
+      an error.
+
 Exim version 4.99
 -----------------
 

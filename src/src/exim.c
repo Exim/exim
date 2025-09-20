@@ -2914,14 +2914,9 @@ on the second character (the one after '-'), to save some effort. */
 
     case 'd':
 
-    /* -dropcr: Set this option.  Now a no-op, retained for compatibility only. */
-
-    if (Ustrcmp(argrest, "ropcr") == 0)
-      /* drop_cr = TRUE */ ;
-
     /* -dp: Set up a debug pretrigger buffer with given size. */
 
-    else if (Ustrcmp(argrest, "p") == 0)
+    if (Ustrcmp(argrest, "p") == 0)
       if (++i >= argc)
 	badarg = TRUE;
       else

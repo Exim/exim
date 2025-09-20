@@ -366,7 +366,6 @@ BOOL    disable_fsync          = FALSE;
 #endif
 BOOL    disable_ipv6           = FALSE;
 BOOL    dns_csa_use_reverse    = TRUE;
-BOOL    drop_cr                = FALSE;         /* No longer used */
 
 BOOL    envelope_to_remove     = TRUE;
 BOOL    exim_gid_set           = TRUE;          /* This gid is always set */

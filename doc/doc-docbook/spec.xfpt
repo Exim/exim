@@ -3794,11 +3794,6 @@ A value with bit 0 set will trigger on a write to the panic log.
 If a pretrigger buffer had been set up (cf. the &%-dp%& option above)
 the debug trail leading up to this write will be available.
 
-.cmdopt -dropcr
-This is an obsolete option that is now a no-op. It used to affect the way Exim
-handled CR and LF characters in incoming messages. What happens now is
-described in section &<<SECTlineendings>>&.
-
 .cmdopt -dS
 This option enables debug during the startup of Exim, before the completion
 of processing the configuration file(s).
@@ -16187,11 +16182,6 @@ OpenBSD's asr resolver routines are known to ignore the EDNS0 option; this
 means that DNSSEC will not work with Exim on that platform either, unless Exim
 is linked against an alternative DNS client library.
 
-
-.option drop_cr main boolean false
-This is an obsolete option that is now a no-op. It used to affect the way Exim
-handled CR and LF characters in incoming messages. What happens now is
-described in section &<<SECTlineendings>>&.
 
 .option dsn_advertise_hosts main "host list&!!" unset
 .cindex "bounce messages" "success"

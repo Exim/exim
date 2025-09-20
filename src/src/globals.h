@@ -575,8 +575,6 @@ extern uschar *dnslist_value;          /* DNS (black) list IP address */
 extern tree_node *domainlist_anchor;   /* Tree of defined domain lists */
 extern int     domainlist_count;       /* Number defined */
 
-/* This option is now a no-opt, retained for compatibility */
-extern BOOL    drop_cr;                /* For broken local MUAs */
 extern const uschar *driver_srcfile;   /* For debug & errors */
 extern int     driver_srcline;	       /* For debug & errors */
 
