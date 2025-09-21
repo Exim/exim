@@ -3730,7 +3730,7 @@ are:
 .irow receive        "general message reception logic"
 .irow resolver       "turn on the DNS resolver's debugging output"
 .irow retry          "retry handling"
-.irow rewrite        "address rewriting""
+.irow rewrite        "address rewriting"
 .irow route          "address routing"
 .irow timestamp      "modifier: add timestamp to debug output lines"
 .irow tls            "TLS logic"
@@ -3769,7 +3769,7 @@ in processing.
 The &`noutf8`& selector disables the use of
 UTF-8 line-drawing characters to group related information.
 When disabled. ascii-art is used instead.
-Using the &`+all`& option does not set this modifier,
+Using the &`+all`& option does not set this modifier.
 
 If the &%debug_print%& option is set in any driver, it produces output whenever
 any debugging is selected, or if &%-v%& is used.
