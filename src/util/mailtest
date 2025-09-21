@@ -380,7 +380,7 @@ Print a brief help message and exits.
 
 =item B<-d, --debug>
 
-Enables debugging, outpus additional information whilst processing requests.
+Enables debugging, outputs additional information whilst processing requests.
 
 =item B<-h, --host>=I<host>
 
