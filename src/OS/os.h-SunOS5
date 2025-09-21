@@ -44,7 +44,7 @@ it seems. */
 # define MISSING_POSIX_MEMALIGN
 # define MISSING_POSIX_STPCPY
 
-extern size_t strnlen(const char *, size_t);
+extern unsigned long strnlen(const char *, unsigned long);
 #endif
 
 /* SunOS5 doesn't accept getcwd(NULL, 0) to auto-allocate
