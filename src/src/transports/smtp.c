@@ -2246,7 +2246,8 @@ else
       }
     else if (strcmpic(ob->protocol, US"smtp") != 0)
       {
-      DEBUG(D_transport) debug_printf(" bad protocol '%s'\n", ob->protocol);
+      log_write(0, LOG_MAIN|LOG_PANIC,
+	"bad protocol option in transport: '%s'\n", ob->protocol);
       return ERROR;
       }
   }
