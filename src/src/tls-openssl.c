@@ -509,6 +509,22 @@ return host ? FAIL : DEFER;
 }
 
 
+static void
+tls_debug_err(SSL * ssl, uschar * where, int rc)
+{
+BIO * bio = BIO_new(BIO_s_mem());
+char * buf = NULL;
+size_t len;
+int error = SSL_get_error(ssl, rc);
+
+ERR_error_string_n(ERR_peek_error(), ssl_errstring, sizeof(ssl_errstring));
+ERR_print_errors(bio);
+len = BIO_get_mem_data(bio, &buf);
+debug_printf("%s: error %d\n%.*s\n", where, error, (int)len, buf);
+BIO_free (bio);
+}
+
+
 
 /**************************************************
 * General library initalisation                   *
@@ -983,24 +999,24 @@ DEBUG(D_tls)
   if (where & SSL_CB_HANDSHAKE_DONE)  g = string_append_listele(g, ',', US"hshake_done");
 
   if (where & SSL_CB_LOOP)
-     debug_printf("SSL %s: %s\n", g->s, SSL_state_string_long(s));
+     debug_printf("SSL %Y: %s\n", g, SSL_state_string_long(s));
   else if (where & SSL_CB_ALERT)
-    debug_printf("SSL %s %s:%s\n", g->s,
+    debug_printf("SSL %Y %s:%s\n", g,
 	  SSL_alert_type_string_long(ret), SSL_alert_desc_string_long(ret));
   else if (where & SSL_CB_EXIT)
     {
     if (ret <= 0)
-      debug_printf("SSL %s: %s in %s\n", g->s,
+      debug_printf("SSL %Y: %s in %s\n", g,
 	ret == 0 ? "failed" : "error", SSL_state_string_long(s));
     }
   else if (where & (SSL_CB_HANDSHAKE_START | SSL_CB_HANDSHAKE_DONE))
-     debug_printf("SSL %s: %s\n", g->s, SSL_state_string_long(s));
+     debug_printf("SSL %Y: %s\n", g, SSL_state_string_long(s));
   }
 }
 
 #ifdef OPENSSL_HAVE_KEYLOG_CB
 static void
-keylog_callback(const SSL *ssl, const char *line)
+keylog_callback(const SSL * ssl, const char * line)
 {
 char * filename;
 FILE * fp;
@@ -4533,11 +4549,10 @@ static BOOL
 tls_refill(unsigned lim)
 {
 SSL * ssl = state_server.lib_state.lib_ssl;
-int error;
-int inbytes;
+int error, inbytes;
 
-DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", ssl,
-  ssl_xfer_buffer, ssl_xfer_buffer_size);
+DEBUG(D_tls) debug_printf("Calling SSL_read(tls_refill %p, %p, %u)\n",
+  ssl, ssl_xfer_buffer, ssl_xfer_buffer_size);
 
 ERR_clear_error();
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
@@ -4579,8 +4594,9 @@ switch(error)
     uschar * conn_info = smtp_get_connection_info();
     if (Ustrncmp(conn_info, US"SMTP ", 5) == 0) conn_info += 5;
     /* I'd like to get separated H= here, but too hard for now */
-    ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
+    ERR_error_string_n(ERR_peek_error(), ssl_errstring, sizeof(ssl_errstring));
     log_write(0, LOG_MAIN, "TLS error (SSL_read): on %s %s", conn_info, ssl_errstring);
+    DEBUG(D_tls) tls_debug_err(ssl, US"SSL_read", inbytes);
     ssl_xfer_error = TRUE;
     return FALSE;
     }
@@ -4701,29 +4717,30 @@ Only used by the client-side TLS.
 */
 
 int
-tls_read(void * ct_ctx, uschar *buff, size_t len)
+tls_read(void * ct_ctx, uschar * buff, size_t len)
 {
 SSL * ssl = ct_ctx ? ((exim_openssl_client_tls_ctx *)ct_ctx)->ssl
 		  : state_server.lib_state.lib_ssl;
 int inbytes;
 int error;
 
-DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", ssl,
-  buff, (unsigned int)len);
+DEBUG(D_tls) debug_printf("Calling SSL_read(tls_read %p, %p, %u)\n",
+  ssl, buff, (unsigned int)len);
 
 ERR_clear_error();
 inbytes = SSL_read(ssl, CS buff, len);
 error = SSL_get_error(ssl, inbytes);
 
-if (error == SSL_ERROR_ZERO_RETURN)
-  {
-  DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
-  return -1;
-  }
-else if (error != SSL_ERROR_NONE)
-  return -1;
+if (error == SSL_ERROR_NONE)
+  return inbytes;
 
-return inbytes;
+else DEBUG(D_tls)
+  if (error == SSL_ERROR_ZERO_RETURN)
+    debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
+  else
+    tls_debug_err(ssl, US"SSL_read", inbytes);
+ERR_clear_error();
+return -1;
 }
 
 
@@ -4861,12 +4878,9 @@ if ((o_ctx ? tls_out.active.sock : tls_in.active.sock) < 0)
 tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
 HDEBUG(D_transport|D_tls|D_acl|D_v) debug_printf_indent("  SMTP(TLS shutdown)>>\n");
-rc = SSL_shutdown(ssl);
-if (rc < 0) DEBUG(D_tls)
-  {
-  ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
-  debug_printf("SSL_shutdown: %s\n", ssl_errstring);
-  }
+ERR_clear_error();
+if ((rc = SSL_shutdown(ssl)) < 0)
+  DEBUG(D_tls) tls_debug_err(ssl, US"SSL_shutdown", rc);
 }
 
 /*************************************************
@@ -4905,6 +4919,7 @@ if (do_shutdown > TLS_NO_SHUTDOWN)
 
   tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
+  ERR_clear_error();
   if (  (  do_shutdown >= TLS_SHUTDOWN_WONLY
 	|| (rc = SSL_shutdown(*sslp)) == 0	/* send "close notify" alert */
 	)
@@ -4919,11 +4934,7 @@ if (do_shutdown > TLS_NO_SHUTDOWN)
     ALARM_CLR(0);
     }
 
-  if (rc < 0) DEBUG(D_tls)
-    {
-    ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
-    debug_printf("SSL_shutdown: %s\n", ssl_errstring);
-    }
+  if (rc < 0) DEBUG(D_tls) tls_debug_err(*sslp, US"SSL_shutdown", rc);
   }
 
 if (!o_ctx)		/* server side */
