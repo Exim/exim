@@ -41,6 +41,7 @@ va_end(ap);
 return ret;
 }
 
+# ifdef __SunOS_5_10
 /* This should properly use size_t, but finding the defn seems too hard.
 For our purposes, ulong should be enough. */
 
@@ -51,6 +52,7 @@ size_t len = 0;
 while (len < maxlen && *s++) len++;
 return len;
 }
+# endif
 #endif
 
 /* End of os.c-SunOS5 */
