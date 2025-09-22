@@ -160,20 +160,11 @@ LOG: MAIN
 LOG: queue_run MAIN
   End queue run: pid=p1235 -qq
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
-Exim version x.yz ....
-Hints DB:
-configuration file is TESTSUITE/test-config
-admin user
-dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1236 -qqf
 delivering 10HmbA-000000005vi-0000 (queue run pid p1236)
- test.ex in ""? no (end of list)
- CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
->>>>>>>>>>>>>>>> Exim pid=p1253 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1254 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbB-000000005vi-0000 (queue run pid p1236)
 R: bounce  (ACL)
 LOG: MAIN
@@ -182,17 +173,10 @@ LOG: MAIN
   CALLER@test.ex: error ignored
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1255 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbC-000000005vi-0000 (queue run pid p1236)
- test.ex in ""? no (end of list)
- CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
->>>>>>>>>>>>>>>> Exim pid=p1256 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1257 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1236)
- test.ex in ""? no (end of list)
- CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
@@ -210,23 +194,13 @@ connected
   SMTP>> RSET
   SMTP<< 250 OK
 cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:550:503:RSET:250'
->>>>>>>>>>>>>>>> Exim pid=p1258 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
-qrun-delivery becomes continued-delivery
 LOG: MAIN
   ** b@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<b@test.ex>: 550 Unknown
-Exim version x.yz ....
-Hints DB:
-configuration file is TESTSUITE/test-config
-trusted user
-admin user
 LOG: MAIN
   <= <> R=10HmbA-000000005vi-0000 U=EXIMUSER P=local S=sss
->>>>>>>>>>>>>>>> Exim pid=p1259 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
 delivering 10HmbC-000000005vi-0000 (queue run pid p1236)
- test.ex in ""? no (end of list)
- CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP|> MAIL FROM:<CALLER@test.ex>
@@ -243,12 +217,9 @@ T: send_to_server  (ACL)
   SMTP<< 250 OK
   SMTP(close)>>
 cmdlog: 'MAIL|:RCPT|:DATA:250:250:351:.+:QUIT+:250:250'
->>>>>>>>>>>>>>>> Exim pid=p1260 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => c@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1261 (continued-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1236 -qqf
->>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
