@@ -156,8 +156,6 @@ configuration file.  We also use this for some other short strings, such
 as queue names.
 Also TLS ciphersuite name (no real known limit since the protocols use
 integers, but max seen in reality is 45 octets).
-
-RFC 1413 gives us the 512 limit on IDENT protocol userids.
 */
 
 #define EXIM_EMAILADDR_MAX     256

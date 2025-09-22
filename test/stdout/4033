@@ -1,7 +1,6 @@
 ### (1) non-prox plain receive (not advertised) (2) XCLIENT refules when not advertised
 
 **** SMTP testing session as if from host 127.0.0.1
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -23,7 +22,6 @@
 ### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress
 
 **** SMTP testing session as if from host ip4.ip4.ip4.ip4
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -73,7 +71,6 @@
 ###          (4) no operands to XCLIENT (5,6) unrecognised operands
 
 **** SMTP testing session as if from host ip4.ip4.ip4.ip4
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -92,7 +89,6 @@
 ###          (7) operand with zero-len value (8) operand with no value
 
 **** SMTP testing session as if from host ip4.ip4.ip4.ip4
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

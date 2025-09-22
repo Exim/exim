@@ -33,7 +33,6 @@
 > 
 
 **** SMTP testing session as if from host 10.0.0.1
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -43,7 +42,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 11.0.0.1
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -53,7 +51,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 2001:db8::1
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -63,7 +60,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 2002:db8::1
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

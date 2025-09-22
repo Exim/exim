@@ -696,7 +696,6 @@ extern int     verify_check_given_host(const uschar **, const host_item *);
 extern int     verify_check_this_host(const uschar **, unsigned int *,
 	         const uschar*, const uschar *, const uschar **);
 extern address_item *verify_checked_sender(const uschar *);
-extern void    verify_get_ident(int);
 extern void    verify_quota(uschar *);
 extern int     verify_quota_call(const uschar *, int, int, uschar **);
 extern BOOL    verify_sender(int *, uschar **);

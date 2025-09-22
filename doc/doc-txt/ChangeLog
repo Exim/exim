@@ -9,6 +9,12 @@ JH/01 The obsolete (since 4.21) main config option "drop_cr" and the command
       line option "-dropcr" are no longer supported; using either will result in
       an error.
 
+JH/02 Support for identd (RFC 1413) lookups on received connections is removed.
+      This includes the main options "rfc1413_query_timeout" and
+      "rfc1413_hosts", the debug option "ident" and the log_selector name
+      "ident_timeout"; using any will result in an error.
+      The default options had the lookup disabled since 4.86.
+
 Exim version 4.99
 -----------------
 

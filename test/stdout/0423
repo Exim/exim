@@ -1,6 +1,5 @@
 
 **** SMTP testing session as if from host V4NET.13.13.1
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 550-xxxxxxxxxxxxxx has refused this message because it looks like it is

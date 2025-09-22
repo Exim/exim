@@ -719,7 +719,6 @@ bit_table debug_options[]      = { /* must be in alphabetical order and use
   BIT_TABLE(D, filter),
   BIT_TABLE(D, hints_lookup),
   BIT_TABLE(D, host_lookup),
-  BIT_TABLE(D, ident),
   BIT_TABLE(D, interface),
   BIT_TABLE(D, lists),
   BIT_TABLE(D, load),
@@ -1002,7 +1001,6 @@ bit_table log_options[]        = { /* must be in alphabetical order,
   BIT_TABLE(L, dnssec),
   BIT_TABLE(L, etrn),
   BIT_TABLE(L, host_lookup_failed),
-  BIT_TABLE(L, ident_timeout),
   BIT_TABLE(L, incoming_interface),
   BIT_TABLE(L, incoming_port),
   BIT_TABLE(L, lost_incoming_connection),
@@ -1252,8 +1250,6 @@ int     retry_maximum_timeout  = 0;        /* set from retry config */
 retry_config  *retries         = NULL;
 const uschar *return_path            = NULL;
 int     rewrite_existflags     = 0;
-uschar *rfc1413_hosts          = US"@[]";
-int     rfc1413_query_timeout  = 0;
 uid_t   root_gid               = ROOT_GID;
 uid_t   root_uid               = ROOT_UID;
 
@@ -1415,7 +1411,6 @@ uid_t   system_filter_uid      = (uid_t)-1;
 
 blob	tcp_fastopen_nodata    = { .data = NULL, .len = 0 };
 tfo_state_t tcp_out_fastopen   = TFO_NOT_USED;
-int	test_harness_identd_port  = IDENT_PORT;
 int     test_harness_load_avg  = 0;
 int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;

@@ -5610,9 +5610,7 @@ if (raw_active_hostname)
 /* Handle host checking: this facility mocks up an incoming SMTP call from a
 given IP address so that the blocking and relay configuration can be tested.
 Unless a sender_ident was set by -oMt, we discard it (the default is the
-caller's login name). An RFC 1413 call is made only if we are running in the
-test harness and an incoming interface and both ports are specified, because
-there is no TCP/IP call to find the ident for. */
+caller's login name). */
 
 if (host_checking)
   {
@@ -5620,12 +5618,7 @@ if (host_checking)
   int size;
 
   if (!sender_ident_set)
-    {
     sender_ident = NULL;
-    if (f.running_in_test_harness && sender_host_port
-       && interface_address && interface_port)
-      verify_get_ident(test_harness_identd_port);
-    }
 
   /* In case the given address is a non-canonical IPv6 address, canonicalize
   it. Use the compressed form for IPv6. */
@@ -5648,7 +5641,6 @@ if (host_checking)
   debug_file = stderr;
   debug_fd = fileno(debug_file);
   dprintf(smtp_out_fd, "\n**** SMTP testing session as if from host %s\n"
-    "**** but without any ident (RFC 1413) callback.\n"
     "**** This is not for real!\n\n",
       sender_host_address);
 
@@ -5760,14 +5752,12 @@ sendmail error modes other than -oem ever actually used? Later: yes.) */
 if (!smtp_input) error_handling = arg_error_handling;
 
 /* If this is an inetd call, ensure that stderr is closed to prevent panic
-logging being sent down the socket and make an identd call to get the
-sender_ident. */
+logging being sent down the socket. */
 
 else if (f.is_inetd && !atrn_mode)
   {
   (void)fclose(stderr);
   exim_nullstd();                       /* Re-open to /dev/null */
-  verify_get_ident(IDENT_PORT);
   host_build_sender_fullhost();
   set_process_info("handling incoming connection from %s via inetd",
     sender_fullhost);

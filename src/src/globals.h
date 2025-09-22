@@ -920,8 +920,6 @@ extern int     retry_maximum_timeout;  /* The maximum timeout */
 extern const uschar *return_path;            /* Return path for a message */
 extern BOOL    return_path_remove;     /* Remove return-path headers */
 extern int     rewrite_existflags;     /* Indicate which headers have rewrites */
-extern uschar *rfc1413_hosts;          /* RFC hosts */
-extern int     rfc1413_query_timeout;  /* Timeout on RFC 1413 calls */
 /* extern BOOL    rfc821_domains;  */       /* If set, syntax is 821, not 822 => being abolished */
 extern uid_t   root_gid;               /* The gid for root */
 extern uid_t   root_uid;               /* The uid for root */
@@ -1062,7 +1060,6 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 extern blob    tcp_fastopen_nodata;    /* for zero-data TFO connect requests */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
 extern tfo_state_t tcp_out_fastopen;   /* TCP fast open */
-extern int     test_harness_identd_port; /* For use when testing */
 extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
