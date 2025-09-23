@@ -60,4 +60,8 @@ a buffer */
 # define MAX(a,b) (((a)>(b))?(a):(b))
 #endif
 
+#ifdef __SunOS_5_11
+# include <strings.h>	/* for bzero() on Solaris 11.4 */
+#endif
+
 /* End */

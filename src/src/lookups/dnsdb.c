@@ -535,7 +535,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  else yield = string_cat(yield, s);
 
 	  p += rc;
-	  if (!rr_bad_increment(rr, p, 5 * sizeof(u_int32_t)))
+	  if (!rr_bad_increment(rr, p, 5 * sizeof(uint32_t)))
 	    {
 	    GETLONG(serial, p); GETLONG(refresh, p);
 	    GETLONG(retry,  p); GETLONG(expire,  p); GETLONG(minimum, p);
