@@ -73,14 +73,21 @@ static XtResource resources[] = {
 
 /* Added argument types to these to shut picky compilers up. PH */
 
-static void CreateGC(StripChartWidget, unsigned int);
-static void DestroyGC(StripChartWidget, unsigned int);
-static void Initialize(), Destroy(), Redisplay();
-static void MoveChart(StripChartWidget, Boolean);
-static void SetPoints(StripChartWidget);
-static Boolean SetValues();
+static void CreateGC(StripChartWidget w, unsigned int which);
+static void DestroyGC(StripChartWidget w, unsigned int which);
 
-int repaint_window(StripChartWidget, int, int);     /* PH hack */
+static void Initialize (Widget greq, Widget gnew, ArgList unused_Arglist,
+    Cardinal* unused_Cardinal);
+static void Destroy (Widget gw);
+static void Redisplay( Widget w, XEvent *event, Region region);
+static void MoveChart(StripChartWidget, Boolean);
+static void SetPoints(StripChartWidget w);
+static Boolean SetValues (Widget current, Widget request, Widget new,
+    ArgList unused_Arglist,
+    Cardinal* unused_Cardinal
+		);
+
+int repaint_window(StripChartWidget w, int left, int width);  /* PH hack */
 /* static int repaint_window(); */
 
 StripChartClassRec stripChartClassRec = {
@@ -132,7 +139,10 @@ WidgetClass mystripChartWidgetClass = (WidgetClass) &stripChartClassRec;
  *
  ****************************************************************/
 
-static void draw_it();
+static void
+draw_it(XtPointer client_data, XtIntervalId * id);
+
+
 
 /*	Function Name: CreateGC
  *	Description: Creates the GC's
@@ -142,9 +152,7 @@ static void draw_it();
  */
 
 static void
-CreateGC(w, which)
-StripChartWidget w;
-unsigned int which;
+CreateGC(StripChartWidget w, unsigned int which)
 {
   XGCValues	myXGCV;
 
@@ -167,9 +175,7 @@ unsigned int which;
  */
 
 static void
-DestroyGC(w, which)
-StripChartWidget w;
-unsigned int which;
+DestroyGC(StripChartWidget w, unsigned int which)
 {
   if (which & FOREGROUND)
     XtReleaseGC((Widget) w, w->strip_chart.fgGC);
@@ -179,8 +185,9 @@ unsigned int which;
 }
 
 /* ARGSUSED */
-static void Initialize (greq, gnew)
-    Widget greq, gnew;
+static void
+Initialize(Widget greq, Widget gnew,
+    ArgList unused_Arglist, Cardinal * unused_Cardinal)
 {
     StripChartWidget w = (StripChartWidget)gnew;
 
@@ -198,8 +205,8 @@ static void Initialize (greq, gnew)
     SetPoints(w);
 }
 
-static void Destroy (gw)
-     Widget gw;
+static void
+Destroy(Widget gw)
 {
      StripChartWidget w = (StripChartWidget)gw;
 
@@ -217,10 +224,8 @@ static void Destroy (gw)
  */
 
 /* ARGSUSED */
-static void Redisplay(w, event, region)
-     Widget w;
-     XEvent *event;
-     Region region;
+static void
+Redisplay(Widget w, XEvent * event, Region region)
 {
     if (event->type == GraphicsExpose)
 	(void) repaint_window ((StripChartWidget)w, event->xgraphicsexpose.x,
@@ -232,9 +237,9 @@ static void Redisplay(w, event, region)
 
 /* ARGSUSED */
 static void
-draw_it(client_data, id)
-XtPointer client_data;
-XtIntervalId *id;		/* unused */
+draw_it(XtPointer client_data,
+  XtIntervalId * id		/* unused */
+  )
 {
    StripChartWidget w = (StripChartWidget)client_data;
    double value;
@@ -303,9 +308,7 @@ XtIntervalId *id;		/* unused */
 
 /* static int */
 int              /* PH hack */
-repaint_window(w, left, width)
-StripChartWidget w;
-int left, width;
+repaint_window(StripChartWidget w, int left, int width)
 {
     register int i, j;
     register int next = w->strip_chart.interval;
@@ -431,8 +434,9 @@ MoveChart(StripChartWidget w, Boolean blit)
 }
 
 /* ARGSUSED */
-static Boolean SetValues (current, request, new)
-    Widget current, request, new;
+static Boolean
+SetValues(Widget current, Widget request, Widget new,
+    ArgList unused_Arglist, Cardinal * unused_Cardinal)
 {
     StripChartWidget old = (StripChartWidget)current;
     StripChartWidget w = (StripChartWidget)new;
@@ -478,8 +482,7 @@ static Boolean SetValues (current, request, new)
 #define HEIGHT ( (unsigned int) w->core.height)
 
 static void
-SetPoints(w)
-StripChartWidget w;
+SetPoints(StripChartWidget w)
 {
     XPoint * points;
     Cardinal size;

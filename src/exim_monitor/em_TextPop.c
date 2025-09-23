@@ -95,7 +95,7 @@ static void  SetResource(Widget, char *, XtArgVal);
 static void  SetSearchLabels(struct SearchAndReplace *, String, String,
   Boolean);
 static Widget CreateDialog(Widget, String, String,
-  void (*)(Widget, char *, Widget));
+		void (*func)(Widget, String, Widget));
 static Widget  GetShell(Widget);
 static void SetWMProtocolTranslations(Widget w);
 static Boolean DoSearch(struct SearchAndReplace *);
@@ -637,10 +637,8 @@ XEvent *event;
  */
 
 static Widget
-CreateDialog(parent, ptr, name, func)
-Widget parent;
-String ptr, name;
-void (*func)();
+CreateDialog(Widget parent, String ptr, String name,
+		void (*func)(Widget form, String ptr, Widget parent))
 {
   Widget popup, form;
   Arg args[5];
