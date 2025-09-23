@@ -1915,7 +1915,7 @@ sub generate_parser {
     # Rejects can have no MSGID...
     if ($flag eq "Re" && $id !~ /^[-0-9a-zA-Z]+$/) {
       $id   = "reject:" . ++$rej_id;
-      $extra -= 17;
+      $extra -= length($id) + 1;
     }
 ';
 
