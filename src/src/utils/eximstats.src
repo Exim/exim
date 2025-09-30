@@ -1852,7 +1852,7 @@ EoText
 sub generate_parser {
   my $parser = '
   my($ip,$host,$email,$edomain,$domain,$thissize,$size,$old,$new);
-  my($tod,$m_hour,$m_min,$id,$flag,$extra,$length);
+  my($tod,$m_hour,$m_min,$id,$flag,$offset,$length);
   my($seconds,$queued,$rcpt_time,$local_domain);
   my $rej_id = 0;
   while (<$fh>) {
@@ -1865,72 +1865,68 @@ sub generate_parser {
     $length = length($_);
     next if ($length < 38);
     next unless /^
-		(\\d{4}\\-\\d\\d-\\d\\d\\s	# 1: YYYYMMDD HHMMSS
-			(\\d\\d)		# 2: HH
-			:
-			(\\d\\d)		# 3: MM
-			:\\d\\d
-		)
-		(\\.\\d+)?			# 4: subseconds
-		(\s[-+]\\d\\d\\d\\d)?		# 5: tz-offset
-		(\s\\[\\d+\\])?			# 6: pid
+		(\\d{4}\\-\\d\\d-\\d\\d\\s	# 1: YYYYMMDD HHMMSS	11
+			(\\d\\d)		# 2: HH			 2
+			:			#			 1
+			(\\d\\d)		# 3: MM			 2
+			:\\d\\d			#			 3
+		)					#	=	19
+		(\\.\\d+)?			# 4: subseconds		(var)
+		(\s[-+]\\d{4})?			# 5: tz-offset		 6
+		(\s\\[\\d+\\])?			# 6: pid		(var)
 		/ox;
+    $offset = 19;
 
     $tod = defined($5) ?  $1 . $5 : $1;
     ($m_hour,$m_min) = ($2,$3);
 
-    # PH - watch for GMT offsets in the timestamp.
-    if (defined($5)) {
-      $extra = 6;
-      next if ($length < 44);
-    }
-    else {
-      $extra = 0;
-    }
-
     # watch for subsecond precision
     if (defined($4)) {
-      $extra += length($4);
-      next if ($length < 38 + $extra);
+      $offset += length($4);
+      next if ($length < 19 + $offset);
+    }
+
+    # PH - watch for GMT offsets in the timestamp.
+    if (defined($5)) {
+      $offset += 6;
+      next if ($length < 44);
+      next if ($length < 19 + $offset);
     }
 
     # PH - watch for PID added after the timestamp.
     if (defined($6)) {
-      $extra += length($6);
-      next if ($length < 38 + $extra);
+      $offset += length($6);
+      next if ($length < 19 + $offset);
     }
 
-    # jgh 2025/09/30 - I really dislike this magic "20" offset...
-    # It would be better to develop it from the substrings captured so far.
+    # skip space after the initial groups
+    $offset++;
 
-    # $id = substr($_, 20 + $extra, 16);	# old ID was 16 chars
-    $id = substr($_, 20 + $extra, 23);		# new ID is 23 chars
+    $id = substr($_, $offset, 23);		# new ID is 23 chars, old 16
     $id =~ s/(\S+).*/$1/;
-    #
-    # jgh 2025/09/30 - very fragile when this word was not an ID;
-    # could be shorter than 16.
-    $extra += length($id) - 16;
 
-    # 37 = 20+16+1     so next field after ID.  Assuming there was really an ID.
-    $flag = substr($_, 37 + $extra, 2);
+    # skip ID and space
+    $offset += length($id) + 1;
+
+    $flag = substr($_, $offset, 2);
 
     # jgh 2025/09/30 -
-    # 2020-05-12 17:31:41.630 [23229] auth_login authenticator failed for (User) [185.143.75.81]:28556 I=[192.168.56.110]:25: 535 Incorrect authentication data (set_id=dropped@kiev.ua)
-    # OTOH the "refused" and "dropped" probably are referring to connectios
-    # rather than messages.
+    # 2020-05-12 17:31:41.630 [23229] auth_login authenticator failed for (User) [185.143.75.81]:28556 I=[192.168.56.110]:25: 535 Incorrect authentication data (set_id=dropped@foo.us)
+    # We now count these as cause for connection-drop, since the client often
+    # does on getting an auth-fail (distributed password-guessing attacks...).
     #
     # The "[-<>=*(]+" will be for ignoring accept & delivery lines.
     # What is the "SA"?  SpamAssissin ?
     if ($flag !~ /^([-<>=*(]+|SA)$/ && / (rejected|refused|dropped|authenticator failed)/) {
       $flag = "Re";
-      $extra -= 3;
+    } else {
+      # skip flag and space
+      $offset += 3;
     }
 
     # Rejects might have no MSGID...
-    # Note that $extra can go negative here.  Really, a $offset would be
-    # much more clear.
     if ($flag eq "Re" && $id !~ /^[-0-9a-zA-Z]+$/) {
-      $extra -= length($id) + 1;
+      $offset -= length($id) + 1;
       $id   = "reject:" . ++$rej_id;
     }
 ';
@@ -1947,11 +1943,13 @@ sub generate_parser {
   }
 
   $parser .= '
-    next unless ($flag =~ /<=|=>|->|==|\\*\\*|Co|SA|Re/);
+    next unless ($flag =~ /<=|\(=|=>|->|==|\\*\\*|Co|SA|Re/);
 
-    #Strip away the timestamp, ID and flag to speed up later pattern matches.
-    #The flags include Co (Completed), Re (Rejected), and SA (SpamAssassin).
-    $_ = substr($_, 40 + $extra);  # PH
+    # TODO: handling for fakereject [ flag (= ]
+
+    # Strip away the timestamp, ID and flag to speed up later pattern matches.
+    # The flags include Co (Completed), Re (Rejected), and SA (SpamAssassin).
+    $_ = substr($_, $offset);  # PH
 
     # Alias @message to the array of information about the message.
     # This minimises the number of calls to hash functions.
