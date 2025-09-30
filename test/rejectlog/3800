@@ -1,4 +1,4 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 sasl2 authenticator (PLAIN): Cyrus SASL permanent failure: generic failure
-1999-03-02 09:44:33 sasl2 authenticator failed for (xxxx) [127.0.0.1]: 535 Incorrect authentication data (set_id=ph10)
+1999-03-02 09:44:33 sasl2 authenticator failed for H=(xxxx) [127.0.0.1]: 535 Incorrect authentication data (set_id=ph10)

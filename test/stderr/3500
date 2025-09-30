@@ -158,7 +158,7 @@ LOG: 10HmaY-000000005vi-0000 <= userx@some.domain H=(test.host) [10.0.0.1] P=esm
 >>>   $1 = tim
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> expanded string: 
-LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect authentication data (set_id=tim)
+LOG: cram_md5 authenticator failed for H=(test.host) [10.0.0.5]: 535 Incorrect authentication data (set_id=tim)
 >>> using ACL "check_recipient"
 >>> processing ACL check_recipient "warn" (TESTSUITE/test-config 31)
 >>> check hosts = 10.0.0.5
