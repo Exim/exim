@@ -1921,7 +1921,7 @@ sub generate_parser {
     #
     # The "[-<>=*(]+" will be for ignoring accept & delivery lines.
     # What is the "SA"?  SpamAssissin ?
-    if ($flag !~ /^([-<>=*(]+|SA)$/ && / (rejected|refused|dropped|authenticator failed/)) {
+    if ($flag !~ /^([-<>=*(]+|SA)$/ && / (rejected|refused|dropped|authenticator failed)/) {
       $flag = "Re";
       $extra -= 3;
     }
