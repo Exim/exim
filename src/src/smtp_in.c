@@ -4038,7 +4038,7 @@ while (done <= 0)
 	      log_write(0, LOG_MAIN|LOG_REJECT, "%s", logmsg);
 	    else
 	      log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
-		au->drinst.name, host_and_ident(FALSE), errmsg);
+		au->drinst.name, host_and_ident(TRUE), errmsg);
 	    }
 	  }
 	else
