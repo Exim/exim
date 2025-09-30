@@ -1900,22 +1900,38 @@ sub generate_parser {
       next if ($length < 38 + $extra);
     }
 
+    # jgh 2025/09/30 - I really dislike this magic "20" offset...
+    # It would be better to develop it from the substrings captured so far.
+
     # $id = substr($_, 20 + $extra, 16);	# old ID was 16 chars
     $id = substr($_, 20 + $extra, 23);		# new ID is 23 chars
     $id =~ s/(\S+).*/$1/;
+    #
+    # jgh 2025/09/30 - very fragile when this word was not an ID;
+    # could be shorter than 16.
     $extra += length($id) - 16;
 
+    # 37 = 20+16+1     so next field after ID.  Assuming there was really an ID.
     $flag = substr($_, 37 + $extra, 2);
 
-    if ($flag !~ /^([<>=*-]+|SA)$/ && /rejected|refused|dropped/) {
+    # jgh 2025/09/30 -
+    # 2020-05-12 17:31:41.630 [23229] auth_login authenticator failed for (User) [185.143.75.81]:28556 I=[192.168.56.110]:25: 535 Incorrect authentication data (set_id=dropped@kiev.ua)
+    # OTOH the "refused" and "dropped" probably are referring to connectios
+    # rather than messages.
+    #
+    # The "[-<>=*(]+" will be for ignoring accept & delivery lines.
+    # What is the "SA"?  SpamAssissin ?
+    if ($flag !~ /^([-<>=*(]+|SA)$/ && / (rejected|refused|dropped|authenticator failed/)) {
       $flag = "Re";
       $extra -= 3;
     }
 
-    # Rejects can have no MSGID...
+    # Rejects might have no MSGID...
+    # Note that $extra can go negative here.  Really, a $offset would be
+    # much more clear.
     if ($flag eq "Re" && $id !~ /^[-0-9a-zA-Z]+$/) {
-      $id   = "reject:" . ++$rej_id;
       $extra -= length($id) + 1;
+      $id   = "reject:" . ++$rej_id;
     }
 ';
 
