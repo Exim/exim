@@ -8,72 +8,72 @@ dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp expansion-test
- search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
- search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ search_open: lsearch "TESTSUITE/aux-fixed/2212.aliases"
+ search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
- internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ internal_search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    type=lsearch key="list" opts=NULL
  file lookup required for list
-   in TESTSUITE/aux-fixed/3212.aliases
+   in TESTSUITE/aux-fixed/2212.aliases
  creating new cache entry
  lookup yielded: userx,░usery
- search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
+ search_open: lsearch "TESTSUITE/aux-fixed/2212.aliases"
    cached open
- search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
- internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ internal_search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
-   in TESTSUITE/aux-fixed/3212.aliases
+   in TESTSUITE/aux-fixed/2212.aliases
  lookup yielded: userx,░usery
- search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
+ search_open: lsearch "TESTSUITE/aux-fixed/2212.aliases"
    cached open
- search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
- internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ internal_search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    type=lsearch key="root" opts=NULL
  file lookup required for root
-   in TESTSUITE/aux-fixed/3212.aliases
+   in TESTSUITE/aux-fixed/2212.aliases
  creating new cache entry
  lookup yielded: userx
- search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
+ search_open: lsearch "TESTSUITE/aux-fixed/2212.aliases"
    cached open
- search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
- internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ internal_search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    type=lsearch key="root" opts=NULL
  cached data used for lookup of root
-   in TESTSUITE/aux-fixed/3212.aliases
+   in TESTSUITE/aux-fixed/2212.aliases
  lookup yielded: userx
- search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
+ search_open: lsearch "TESTSUITE/aux-fixed/2212.aliases"
    cached open
- search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
- internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ internal_search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
-   in TESTSUITE/aux-fixed/3212.aliases
+   in TESTSUITE/aux-fixed/2212.aliases
  lookup yielded: userx,░usery
  search_open: testdb "NULL"
  search_find: file="NULL"
    key="something" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
  internal_search_find: file=<NULL>
    type=testdb key="something" opts=NULL
@@ -84,7 +84,7 @@ set_process_info: pppp expansion-test
  search_find: file="NULL"
    key="something" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
  internal_search_find: file=<NULL>
    type=testdb key="something" opts=NULL
@@ -94,7 +94,7 @@ set_process_info: pppp expansion-test
  search_find: file="NULL"
    key="nocache" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
  internal_search_find: file=<NULL>
    type=testdb key="nocache" opts=NULL
@@ -105,36 +105,36 @@ set_process_info: pppp expansion-test
  search_find: file="NULL"
    key="something" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
  internal_search_find: file=<NULL>
    type=testdb key="something" opts=NULL
  database lookup required for something
  creating new cache entry
  lookup yielded: something
- search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
+ search_open: lsearch "TESTSUITE/aux-fixed/2212.aliases"
    cached open
- search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
- internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ internal_search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
-   in TESTSUITE/aux-fixed/3212.aliases
+   in TESTSUITE/aux-fixed/2212.aliases
  lookup yielded: userx,░usery
- search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
+ search_open: lsearch "TESTSUITE/aux-fixed/2212.aliases"
    cached open
- search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
-   0TESTSUITE/aux-fixed/3212.aliases
+   0TESTSUITE/aux-fixed/2212.aliases
   End
- internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
+ internal_search_find: file="TESTSUITE/aux-fixed/2212.aliases"
    type=lsearch key="root" opts=NULL
  cached data used for lookup of root
-   in TESTSUITE/aux-fixed/3212.aliases
+   in TESTSUITE/aux-fixed/2212.aliases
  lookup yielded: userx
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
