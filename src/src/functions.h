@@ -601,11 +601,11 @@ extern const uschar *string_printing2(const uschar *, int);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_unprinting(uschar *);
 #ifdef SUPPORT_I18N
-extern uschar *string_address_utf8_to_alabel(const uschar *, uschar **);
+extern const uschar *string_address_utf8_to_alabel(const uschar *, uschar **);
 extern uschar *string_domain_alabel_to_utf8(const uschar *, uschar **);
-extern uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
+extern const uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
 extern uschar *string_localpart_alabel_to_utf8(const uschar *, uschar **);
-extern uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
+extern const uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
 #endif
 
 #define string_format(buf, siz, fmt, ...) \
