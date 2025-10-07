@@ -7128,9 +7128,32 @@ be followed by optional colons.
 &((n)wildlsearch)& can &'not'& be turned into a DBM or cdb file, because those
 lookup types support only literal keys.
 
+.new
+.subsection "Public Suffix List"
+.cindex "psl lookup type"
+.cindex lookup psl
+.cindex "regdom lookup type"
+.cindex lookup regdom
+&(psl)& or &(regdom)&: These search a Public Suffix List file.
+For both, the key is a candidate domain.
+The &(psl)& lookup returns the public suffix for the domain;
+the &(regdom)& lookup returns the registered domain.
+
+It is the operator's responsibility to provide an up-to-date PSL file.
+Many OS distributions provide one
+(Eg. package &"publicsuffix-list"& from Fedora;
+&"publicsuffix"& from Debian),
+or one could be regularly fetched from
+&url(https://publicsuffix.org/,publicsuffix.org).
+
+The result will have the same A-label/U-label state as the key,
+and will be untainted.
+.wen
+
+
 .subsection spf
 .cindex "spf lookup type"
-.cindex "lookup" "spf"
+.cindex lookup spf
 If Exim is built with SPF support, manual lookups can be done
 (as opposed to the standard ACL condition method).
 For details see section &<<SECSPF>>&.

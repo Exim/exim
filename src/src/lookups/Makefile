@@ -8,8 +8,8 @@
 #     extra variable definitions and prepended to it and module build rules
 #     interpolated below. This is done by scripts/lookups-Makefile.
 
-# When adding a new driver here, attend also to scripts/lookups-Makefile
-# and scripts/MakeLinks
+# When adding a new driver here, attend also to scripts/lookups-Makefile,
+# scripts/MakeLinks and src/drtables.c
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
@@ -44,6 +44,7 @@ nmh.o nmh.so:		$(HDRS) nmh.c
 oracle.o oracle.so:     $(HDRS) oracle.c
 passwd.o passwd.so:     $(HDRS) passwd.c
 pgsql.o pgsql.so:       $(HDRS) pgsql.c
+psl.o psl.so:       	$(HDRS) psl.c
 readsock.o readsock.so: $(HDRS) readsock.c
 redis.o redis.so:       $(HDRS) redis.c
 spf.o spf.so:           $(HDRS) spf.c

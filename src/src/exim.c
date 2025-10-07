@@ -1186,6 +1186,13 @@ gstring * b = NULL, * d = NULL;
   d = string_cat(d, US" pgsql");
 # endif
 #endif
+#ifdef LOOKUP_PSL
+# if LOOKUP_PSL!=2
+  b = string_cat(b, US" psl");
+# else
+  d = string_cat(d, US" psl");
+# endif
+#endif
 #ifdef LOOKUP_REDIS
 # if LOOKUP_REDIS!=2
   b = string_cat(b, US" redis");

@@ -283,6 +283,10 @@ due to conflicts with other common macros. */
 #ifdef LOOKUP_PGSQL
   builtin_macro_create(US"_HAVE_LOOKUP_PGSQL");
 #endif
+#ifdef LOOKUP_PSL
+  builtin_macro_create(US"_HAVE_LOOKUP_PSL");
+  builtin_macro_create(US"_HAVE_LOOKUP_REGDOM");
+#endif
 #ifdef LOOKUP_REDIS
   builtin_macro_create(US"_HAVE_LOOKUP_REDIS");
 #endif

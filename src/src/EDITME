@@ -447,6 +447,7 @@ LOOKUP_DNSDB=yes
 # LOOKUP_ORACLE=yes
 # LOOKUP_PASSWD=yes
 # LOOKUP_PGSQL=yes
+# LOOKUP_PSL=yes
 # LOOKUP_REDIS=yes
 # LOOKUP_SQLITE=yes
 # LOOKUP_SQLITE_PC=sqlite3
@@ -530,10 +531,11 @@ SUPPORT_DANE=yes
 # LOOKUP_LIBS=-L/usr/local/lib -lldap -llber
 # Some platforms may need this for LOOKUP_NIS:
 #LOOKUP_LIBS += -lnsl
+
+# These lookup types need appropriate libraries
 #LOOKUP_LIBS += -ljansson
 #LOOKUP_LIBS += -lhiredis
 
-#------------------------------------------------------------------------------
 # If you included LOOKUP_LMDB above you will need the library. Depending
 # on where installed you may also need an include directory
 #
@@ -541,6 +543,7 @@ SUPPORT_DANE=yes
 # LOOKUP_LIBS += -llmdb
 # For dynamic-modules builds, use instead LOOKUP_LMDB_INCLUDE & LOOKUP_LMDB_LIBS
 
+# LOOKUP_PSL will require that SUPPORT_I18N is defined (but needs no libraries)
 
 #------------------------------------------------------------------------------
 # Compiling the Exim monitor: If you want to compile the Exim monitor, a

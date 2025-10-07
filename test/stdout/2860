@@ -1,0 +1,35 @@
+> builtin macros:
+> y y
+> 
+> Defined macro 'PSLFILE'
+> 
+> psl:
+> not found	()
+> sole direct	()
+> subdom direct	(aero)
+> sub sub dom	(aerobatic.aero)
+> subdom UC	(aero)
+> prefix on match	()
+> wildcard direct	(foo.wildcard.zabc.net)
+> wildcard sub	(foo.wildcard.zabc.net)
+> nonexception	(w3.ck)
+> exception	(ck)
+> exception sub	(ck)
+> i18n		(三重.jp)
+> i18n sub	(三重.jp)
+> i18n isub	(三重.jp)
+> i18n punycode	(xn--ehqz56n.jp)
+> 
+> regdom:
+> subdom direct	(aerobatic.aero)
+> subdom proper	(bill.aerobatic.aero)
+> wildcard direct	()
+> wildcard sub	(baz.foo.wildcard.zabc.net)
+> nonexception	()
+> exception	(www.ck)
+> exception sub	(www.ck)
+> i18n		(sub1.三重.jp)
+> i18n sub	(sub1.三重.jp)
+> i18n isub	(三重.三重.jp)
+> i18n punycode	(sub1.xn--ehqz56n.jp)
+> 

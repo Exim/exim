@@ -1059,7 +1059,7 @@ else
     s = addr->domain;
 #ifdef SUPPORT_I18N
     if (testflag(addr, af_utf8_downcvt))
-      s = string_localpart_utf8_to_alabel(s, NULL);
+      s = string_domain_utf8_to_alabel(US s, NULL);
 #endif
     g = string_cat(g, s);
     }
