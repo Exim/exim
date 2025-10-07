@@ -269,10 +269,6 @@ if (spam_score_int) spool_var_write(fp, US"spam_score_int", spam_score_int);
 if (f.deliver_manual_thaw) fprintf(fp, "-manual_thaw\n");
 if (f.sender_set_untrusted) fprintf(fp, "-sender_set_untrusted\n");
 
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-if (bmi_verdicts) spool_var_write(fp, US"bmi_verdicts", bmi_verdicts);
-#endif
-
 #ifndef DISABLE_TLS
 if (tls_in.certificate_verified) fprintf(fp, "-tls_certificate_verified\n");
 if (tls_in.cipher) spool_var_write(fp, US"tls_cipher", tls_in.cipher);

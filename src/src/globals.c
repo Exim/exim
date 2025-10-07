@@ -584,15 +584,6 @@ uschar *base62_chars= US"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 uschar *bi_command             = NULL;
 uschar *big_buffer             = NULL;
 int     big_buffer_size        = BIG_BUFFER_SIZE;
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-uschar *bmi_alt_location       = NULL;
-uschar *bmi_base64_tracker_verdict = NULL;
-uschar *bmi_base64_verdict     = NULL;
-uschar *bmi_config_file        = US"/opt/brightmail/etc/brightmail.cfg";
-int     bmi_deliver            = 1;
-int     bmi_run                = 0;
-uschar *bmi_verdicts           = NULL;
-#endif
 int     bsmtp_transaction_linecount = 0;
 int     body_8bitmime          = 0;
 int     body_linecount         = 0;

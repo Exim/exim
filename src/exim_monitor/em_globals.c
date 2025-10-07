@@ -44,11 +44,6 @@ uschar  actioned_message[24];
 uschar *action_required;
 uschar *alternate_config = NULL;
 
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-int     bmi_run                = 0;
-uschar *bmi_verdicts           = NULL;
-#endif
-
 int     body_max = 20000;
 
 uschar *exim_path              = US BIN_DIRECTORY "/exim"

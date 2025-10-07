@@ -1780,10 +1780,6 @@ memset(sender_address_cache, 0, sizeof(sender_address_cache));
 memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
 
 authenticated_sender = NULL;
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-bmi_run = 0;
-bmi_verdicts = NULL;
-#endif
 dnslist_domain = dnslist_matched = NULL;
 
 dsn_ret = 0;

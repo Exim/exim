@@ -206,13 +206,6 @@ router_var = addr->prop.variables;
 deliver_domain = addr->domain;
 self_hostname = addr->self_hostname;
 
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-bmi_deliver = 1;    /* deliver by default */
-bmi_alt_location = NULL;
-bmi_base64_verdict = NULL;
-bmi_base64_tracker_verdict = NULL;
-#endif
-
 /* If there's only one address we can set everything. */
 
 if (!addr->next)
@@ -268,17 +261,6 @@ if (!addr->next)
       deliver_localpart_suffix_v = addr->parent->suffix_v;
       }
     }
-
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-    /* Set expansion variables related to Brightmail AntiSpam */
-    bmi_base64_verdict = bmi_get_base64_verdict(deliver_localpart_orig, deliver_domain_orig);
-    bmi_base64_tracker_verdict = bmi_get_base64_tracker_verdict(bmi_base64_verdict);
-    /* get message delivery status (0 - don't deliver | 1 - deliver) */
-    bmi_deliver = bmi_get_delivery_status(bmi_base64_verdict);
-    /* if message is to be delivered, get eventual alternate location */
-    if (bmi_deliver == 1)
-      bmi_alt_location = bmi_get_alt_location(bmi_base64_verdict);
-#endif
 
   }
 

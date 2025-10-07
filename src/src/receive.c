@@ -533,11 +533,6 @@ if (recipients_count >= recipients_list_max)
 
 recipients_list[recipients_count].address = recipient;
 recipients_list[recipients_count].pno = pno;
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-recipients_list[recipients_count].bmi_optin = bmi_current_optin;
-/* reset optin string pointer for next recipient */
-bmi_current_optin = NULL;
-#endif
 recipients_list[recipients_count].orcpt = NULL;
 recipients_list[recipients_count].dsn_flags = 0;
 recipients_list[recipients_count++].errors_to = NULL;
@@ -3977,14 +3972,6 @@ if (fake_response != OK)
 /* Ensure the first time flag is set in the newly-received message. */
 
 f.deliver_firsttime = TRUE;
-
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-if (bmi_run == 1)
-  { /* rewind data file */
-  lseek(data_fd, (long int)spool_data_start_offset(message_id), SEEK_SET);
-  bmi_verdicts = bmi_process_message(header_list, data_fd);
-  }
-#endif
 
 /* Update the timestamp in our Received: header to account for any time taken by
 an ACL or by local_scan(). The new time is the time that all reception

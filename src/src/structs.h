@@ -299,9 +299,6 @@ typedef struct router_instance {
   driver_instance drinst;
 
   uschar *address_data;           /* Arbitrary data */
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  uschar *bmi_rule;               /* Brightmail AntiSpam rule checking */
-#endif
   uschar *cannot_route_message;   /* Used when routing fails */
   uschar *condition;              /* General condition */
   uschar *current_directory;      /* For use during delivery */
@@ -330,11 +327,6 @@ typedef struct router_instance {
   uschar *transport_name;         /* Transport name */
 
   BOOL    address_test;           /* Use this router when testing addresses */
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  BOOL    bmi_deliver_alternate;  /* TRUE => BMI said that message should be delivered to alternate location */
-  BOOL    bmi_deliver_default;    /* TRUE => BMI said that message should be delivered to default location */
-  BOOL    bmi_dont_deliver;       /* TRUE => BMI said that message should not be delivered at all */
-#endif
   BOOL    expn;                   /* Use this router when processing EXPN */
   BOOL    caseful_local_part;     /* TRUE => don't lowercase */
   BOOL    check_local_user;       /* TRUE => check local user */

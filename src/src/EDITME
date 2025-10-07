@@ -696,15 +696,6 @@ DISABLE_MAL_MKS=yes
 # support.  You must have SPF and DKIM support enabled also.
 # EXPERIMENTAL_ARC=yes
 
-# Uncomment the following lines to add Brightmail AntiSpam support. You need
-# to have the Brightmail client SDK installed. Please check the experimental
-# documentation for implementation details. You need to edit the CFLAGS and
-# LDFLAGS lines.
-
-# EXPERIMENTAL_BRIGHTMAIL=yes
-# CFLAGS  += -I/opt/brightmail/bsdk-6.0/include
-# LDFLAGS += -lxml2_single -lbmiclient_single -L/opt/brightmail/bsdk-6.0/lib
-
 # Uncomment the following to include extra information in fail DSN message (bounces)
 # EXPERIMENTAL_DSN_INFO=yes
 

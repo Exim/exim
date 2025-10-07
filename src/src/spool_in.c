@@ -263,11 +263,6 @@ f.spool_file_wireformat = FALSE;
 #endif
 tree_nonrecipients = NULL;
 
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-bmi_run = 0;
-bmi_verdicts = NULL;
-#endif
-
 #ifndef DISABLE_DKIM
 f.dkim_disable_verify = FALSE;
 # ifdef COMPILE_UTILITY
@@ -615,10 +610,6 @@ for (;;)
       body_linecount = Uatoi(var + 14);
     else if (Ustrncmp(p, "ody_zerocount", 13) == 0)
       body_zerocount = Uatoi(var + 14);
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-    else if (Ustrncmp(p, "mi_verdicts ", 12) == 0)
-      bmi_verdicts = string_copy_taint(var + 13, proto_mem);
-#endif
     break;
 
     case 'd':

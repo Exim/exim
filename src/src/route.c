@@ -35,16 +35,6 @@ optionlist optionlist_routers[] = {
                  LOFF(address_data) },
   { "address_test",       opt_bool|opt_public,
                  LOFF(address_test) },
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  { "bmi_deliver_alternate",   opt_bool | opt_public,
-                 LOFF(bmi_deliver_alternate) },
-  { "bmi_deliver_default",   opt_bool | opt_public,
-                 LOFF(bmi_deliver_default) },
-  { "bmi_dont_deliver",   opt_bool | opt_public,
-                 LOFF(bmi_dont_deliver) },
-  { "bmi_rule",           opt_stringptr|opt_public,
-                 LOFF(bmi_rule) },
-#endif
   { "cannot_route_message", opt_stringptr | opt_public,
                  LOFF(cannot_route_message) },
   { "caseful_local_part", opt_bool | opt_public,
@@ -1094,48 +1084,6 @@ if (r->condition)
     return SKIP;
     }
   }
-
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-/* check if a specific Brightmail AntiSpam rule fired on the message */
-if (r->bmi_rule)
-  {
-  DEBUG(D_route) debug_printf_indent("checking bmi_rule\n");
-  if (bmi_check_rule(bmi_base64_verdict, r->bmi_rule) == 0)
-    {    /* none of the rules fired */
-    DEBUG(D_route)
-      debug_printf_indent("%s router skipped: none of bmi_rule rules fired\n", rname);
-    return SKIP;
-    }
-  }
-
-/* check if message should not be delivered */
-if (r->bmi_dont_deliver && bmi_deliver == 1)
-  {
-  DEBUG(D_route)
-    debug_printf_indent("%s router skipped: bmi_dont_deliver is FALSE\n", rname);
-  return SKIP;
-  }
-
-/* check if message should go to an alternate location */
-if (  r->bmi_deliver_alternate
-   && (bmi_deliver == 0 || !bmi_alt_location)
-   )
-  {
-  DEBUG(D_route)
-    debug_printf_indent("%s router skipped: bmi_deliver_alternate is FALSE\n", rname);
-  return SKIP;
-  }
-
-/* check if message should go to default location */
-if (  r->bmi_deliver_default
-   && (bmi_deliver == 0 || bmi_alt_location)
-   )
-  {
-  DEBUG(D_route)
-    debug_printf_indent("%s router skipped: bmi_deliver_default is FALSE\n", rname);
-  return SKIP;
-  }
-#endif
 
 /* All the checks passed. */
 

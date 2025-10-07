@@ -475,12 +475,6 @@ static var_entry var_table[] = {
 #ifdef WITH_CONTENT_SCAN
   { "av_failed",           vtype_int,         &av_failed },
 #endif
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  { "bmi_alt_location",    vtype_stringptr,   &bmi_alt_location },
-  { "bmi_base64_tracker_verdict", vtype_stringptr, &bmi_base64_tracker_verdict },
-  { "bmi_base64_verdict",  vtype_stringptr,   &bmi_base64_verdict },
-  { "bmi_deliver",         vtype_int,         &bmi_deliver },
-#endif
   { "body_linecount",      vtype_int,         &body_linecount },
   { "body_zerocount",      vtype_int,         &body_zerocount },
   { "bounce_recipient",    vtype_stringptr,   &bounce_recipient },

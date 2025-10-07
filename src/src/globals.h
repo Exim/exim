@@ -396,15 +396,6 @@ extern uschar *base62_chars;           /* Table of base-62 characters */
 extern uschar *bi_command;             /* Command for -bi option */
 extern uschar *big_buffer;             /* Used for various temp things */
 extern int     big_buffer_size;        /* Current size (can expand) */
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-extern uschar *bmi_alt_location;       /* expansion variable that contains the alternate location for the rcpt (available during routing) */
-extern uschar *bmi_base64_tracker_verdict; /* expansion variable with base-64 encoded OLD verdict string (available during routing) */
-extern uschar *bmi_base64_verdict;     /* expansion variable with base-64 encoded verdict string (available during routing) */
-extern uschar *bmi_config_file;        /* Brightmail config file */
-extern int     bmi_deliver;            /* Flag that determines if the message should be delivered to the rcpt (available during routing) */
-extern int     bmi_run;                /* Flag that determines if message should be run through Brightmail server */
-extern uschar *bmi_verdicts;           /* BASE64-encoded verdicts with recipient lists */
-#endif
 extern int     bsmtp_transaction_linecount; /* Start of last transaction */
 extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern uschar *bounce_message_file;    /* Template file */

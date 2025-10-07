@@ -203,9 +203,6 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_ARC
   builtin_macro_create(US"_HAVE_ARC");
 #endif
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  builtin_macro_create(US"_HAVE_BRIGHTMAIL");
-#endif
 #ifdef SUPPORT_DANE
   builtin_macro_create(US"_HAVE_DANE");
 #endif
@@ -325,9 +322,6 @@ exp_features(void)
 {
 #ifdef EXPERIMENTAL_ARC
   builtin_macro_create(US"_EXP_ARC");
-#endif
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  builtin_macro_create(US"_EXP_BMI");
 #endif
 #ifdef EXPERIMENTAL_DCC
   builtin_macro_create(US"_EXP_DCC");

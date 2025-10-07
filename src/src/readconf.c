@@ -79,9 +79,6 @@ static optionlist optionlist_config[] = {
   { "av_scanner",               opt_stringptr,   {&av_scanner} },
 #endif
   { "bi_command",               opt_stringptr,   {&bi_command} },
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  { "bmi_config_file",          opt_stringptr,   {&bmi_config_file} },
-#endif
   { "bounce_message_file",      opt_stringptr,   {&bounce_message_file} },
   { "bounce_message_text",      opt_stringptr,   {&bounce_message_text} },
   { "bounce_return_body",       opt_bool,        {&bounce_return_body} },

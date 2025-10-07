@@ -1376,9 +1376,6 @@ g = string_cat(g, US"Support for:");
 #ifdef EXPERIMENTAL_ARC
   g = string_cat(g, US" Experimental_ARC");
 #endif
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  g = string_cat(g, US" Experimental_Brightmail");
-#endif
 #ifdef EXPERIMENTAL_DCC
   g = string_cat(g, US" Experimental_DCC");
 #endif

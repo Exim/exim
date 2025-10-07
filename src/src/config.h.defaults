@@ -218,7 +218,6 @@ Do not put spaces between # and the 'define'.
 
 /* EXPERIMENTAL features */
 #define EXPERIMENTAL_ARC
-#define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_NMH
