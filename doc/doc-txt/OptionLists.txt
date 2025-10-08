@@ -330,7 +330,6 @@ hosts_try_auth                       host list       unset         smtp         
 hosts_try_dane                       host list       unset         smtp              4.91 (4.85 experimental)
 hosts_try_fastopen                   host list       unset         smtp              4.88
 hosts_try_prdr                       host list       unset         smtp              4.82 if experimental_prdr
-ibase_servers                        string          unset         main              4.23
 ignore_bounce_errors_after           time            0s            main              4.00
 ignore_eacces                        boolean         false         redirect          4.00
 ignore_enotdir                       boolean         false         redirect          4.00

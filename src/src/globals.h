@@ -40,10 +40,6 @@ extern BOOL    opt_perl_taintmode;     /* Enable taint mode in Perl */
 extern tree_node *dlobj_anchor;        /* Tree of dynamically-loaded objects */
 #endif
 
-#ifdef LOOKUP_IBASE
-extern uschar *ibase_servers;
-#endif
-
 #ifdef LOOKUP_LDAP
 extern uschar *eldap_ca_cert_dir;      /* Directory with CA certificates */
 extern uschar *eldap_ca_cert_file;     /* CA certificate file */

@@ -1109,13 +1109,6 @@ gstring * b = NULL, * d = NULL;
   d = string_cat(d, US" dsearch");
 # endif
 #endif
-#ifdef LOOKUP_IBASE
-# if LOOKUP_IBASE!=2
-  b = string_cat(b, US" ibase");
-# else
-  d = string_cat(d, US" ibase");
-# endif
-#endif
 #ifdef LOOKUP_JSON
 # if LOOKUP_JSON!=2
   b = string_cat(b, US" json");

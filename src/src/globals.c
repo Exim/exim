@@ -58,10 +58,6 @@ BOOL    opt_perl_taintmode     = FALSE;
 tree_node *dlobj_anchor        = NULL;
 #endif
 
-#ifdef LOOKUP_IBASE
-uschar *ibase_servers          = NULL;
-#endif
-
 #ifdef LOOKUP_LDAP
 uschar *eldap_ca_cert_dir      = NULL;
 uschar *eldap_ca_cert_file     = NULL;

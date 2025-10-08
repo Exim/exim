@@ -249,9 +249,6 @@ due to conflicts with other common macros. */
 #ifdef LOOKUP_DSEARCH
   builtin_macro_create(US"_HAVE_LOOKUP_DSEARCH");
 #endif
-#ifdef LOOKUP_IBASE
-  builtin_macro_create(US"_HAVE_LOOKUP_IBASE");
-#endif
 #ifdef LOOKUP_LMDB
   builtin_macro_create(US"_HAVE_LMDB");
   builtin_macro_create(US"_HAVE_LOOKUP_LMDB");

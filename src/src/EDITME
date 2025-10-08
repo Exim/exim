@@ -435,7 +435,6 @@ LOOKUP_DNSDB=yes
 
 # LOOKUP_CDB=yes
 # LOOKUP_DSEARCH=yes
-# LOOKUP_IBASE=yes
 # LOOKUP_JSON=yes
 # LOOKUP_LDAP=yes
 # LOOKUP_LMDB=yes
@@ -460,9 +459,6 @@ LOOKUP_DNSDB=yes
 # LOOKUP_WILDLSEARCH=yes
 # LOOKUP_NWILDLSEARCH=yes
 
-
-# For IBASE you may need:
-#LIBS += -lfbclient
 
 #------------------------------------------------------------------------------
 # If you have set LOOKUP_LDAP, you should set LDAP_LIB_TYPE to indicate
@@ -512,7 +508,7 @@ SUPPORT_DANE=yes
 # the command for linking Exim itself, not on any auxiliary programs. You
 # don't need to set LOOKUP_INCLUDE if the relevant directories are already
 # specified in INCLUDE. The settings below are just examples; -lpq is for
-# PostgreSQL, -lgds is for Interbase, -lsqlite3 is for SQLite, -lhiredis
+# PostgreSQL, -lsqlite3 is for SQLite, -lhiredis
 # is for Redis, -ljansson for JSON.
 #
 # You do not need to use this for any lookup information added via pkg-config.
@@ -526,7 +522,7 @@ SUPPORT_DANE=yes
 
 # LOOKUP_INCLUDE=-I /usr/local/ldap/include -I /usr/local/mysql/include -I /usr/local/pgsql/include
 # LOOKUP_INCLUDE +=-I /usr/local/include
-# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3 -llmdb
+# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lsqlite3 -llmdb
 
 # LOOKUP_LIBS=-L/usr/local/lib -lldap -llber
 # Some platforms may need this for LOOKUP_NIS:

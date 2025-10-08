@@ -32,7 +32,6 @@ cdb.o cdb.so:           $(HDRS) cdb.c
 dbmdb.o dbmdb.so:       $(HDRS) dbmdb.c
 dnsdb.o dnsdb.so:       $(HDRS) dnsdb.c
 dsearch.o dsearch.so:   $(HDRS) dsearch.c
-ibase.o ibase.so:       $(HDRS) ibase.c
 ldap.o ldap.so:         $(HDRS) ldap.c
 lmdb.o lmdb.so:         $(HDRS) lmdb.c
 json.o json.so:         $(HDRS) json.c

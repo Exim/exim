@@ -102,7 +102,6 @@ Do not put spaces between # and the 'define'.
 #define LOOKUP_DBM
 #define LOOKUP_DNSDB
 #define LOOKUP_DSEARCH
-#define LOOKUP_IBASE
 #define LOOKUP_JSON
 #define LOOKUP_LDAP
 #define LOOKUP_LMDB

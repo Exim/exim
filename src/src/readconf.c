@@ -186,9 +186,6 @@ static optionlist optionlist_config[] = {
 #ifdef EXPERIMENTAL_XCLIENT
   { "hosts_xclient",		opt_stringptr,	 {&hosts_xclient} },
 #endif
-#ifdef LOOKUP_IBASE
-  { "ibase_servers",            opt_stringptr,   {&ibase_servers} },
-#endif
   { "ignore_bounce_errors_after", opt_time,      {&ignore_bounce_errors_after} },
   { "ignore_fromline_hosts",    opt_stringptr,   {&ignore_fromline_hosts} },
   { "ignore_fromline_local",    opt_bool,        {&ignore_fromline_local} },

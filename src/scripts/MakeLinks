@@ -32,7 +32,7 @@ d="lookups"
 mkdir $d
 cd $d
 # Makefile is generated
-for f in README cdb.c dbmdb.c dnsdb.c dsearch.c ibase.c json.c ldap.c \
+for f in README cdb.c dbmdb.c dnsdb.c dsearch.c json.c ldap.c \
   lmdb.c lsearch.c mysql.c nis.c nisplus.c nmh.c oracle.c passwd.c \
   pgsql.c psl.c readsock.c redis.c spf.c sqlite.c testdb.c whoson.c \
   lf_functions.h lf_check_file.c lf_quote.c lf_sqlperform.c

@@ -7172,11 +7172,6 @@ This does a DNS search for one or more records whose domain names
 are given in the supplied query. The resulting data is the contents of the
 records. See section &<<SECTdnsdb>>&.
 
-.subsection ibase
-.cindex "InterBase lookup type"
-.cindex "lookup" "InterBase"
-This does a lookup in an InterBase database.
-
 .subsection ldap
 .cindex "LDAP" "lookup type"
 .cindex "lookup" "LDAP"
@@ -8109,11 +8104,9 @@ operator is to double any quote characters within the text.
 .cindex "lookup" "PostgreSQL"
 .cindex "Oracle" "lookup type"
 .cindex "lookup" "Oracle"
-.cindex "InterBase lookup type"
-.cindex "lookup" "InterBase"
 .cindex "Redis lookup type"
 .cindex lookup Redis
-Exim can support lookups in InterBase, MySQL, Oracle, PostgreSQL, Redis,
+Exim can support lookups in MySQL, Oracle, PostgreSQL, Redis,
 and SQLite
 databases. Queries for these databases contain SQL statements, so an example
 might be
@@ -8141,26 +8134,23 @@ If the result of the query yields more than one row, it is all concatenated,
 with a newline between the data for each row.
 
 
-.subsection "More about MySQL, PostgreSQL, Oracle, InterBase, and Redis" SECID72
+.subsection "More about MySQL, PostgreSQL, Oracle, and Redis" SECID72
 .cindex "MySQL" "lookup type"
 .cindex "PostgreSQL lookup type"
 .cindex "lookup" "MySQL"
 .cindex "lookup" "PostgreSQL"
 .cindex "Oracle" "lookup type"
 .cindex "lookup" "Oracle"
-.cindex "InterBase lookup type"
-.cindex "lookup" "InterBase"
 .cindex "Redis lookup type"
 .cindex lookup Redis
-If any MySQL, PostgreSQL, Oracle, InterBase or Redis lookups are used, the
-&%mysql_servers%&, &%pgsql_servers%&, &%oracle_servers%&, &%ibase_servers%&,
+If any MySQL, PostgreSQL, Oracle, or Redis lookups are used, the
+&%mysql_servers%&, &%pgsql_servers%&, &%oracle_servers%&,
 or &%redis_servers%&
 option (as appropriate) must be set to a colon-separated list of server
 information.
 .oindex &%mysql_servers%&
 .oindex &%pgsql_servers%&
 .oindex &%oracle_servers%&
-.oindex &%ibase_servers%&
 .oindex &%redis_servers%&
 (For MySQL and PostgreSQL, the global option need not be set if all
 queries contain their own server information &-- see section
@@ -8212,7 +8202,7 @@ The &%quote_redis%& expansion operator
 escapes whitespace and backslash characters with a backslash.
 
 .subsection "Specifying the server in the query" SECTspeserque
-For MySQL, PostgreSQL and Redis lookups (but not currently for Oracle and InterBase),
+For MySQL, PostgreSQL and Redis lookups (but not currently for Oracle),
 it is possible to specify a list of servers with an individual query. This is
 done by appending a comma-separated option to the query type:
 .display
@@ -14968,7 +14958,6 @@ listed in more than one group.
 
 .section "Data lookups" "SECID101"
 .table2
-.row &%ibase_servers%&               "InterBase servers"
 .row &%ldap_ca_cert_dir%&            "dir of CA certs to verify LDAP server's"
 .row &%ldap_ca_cert_file%&           "file of CA certs to verify LDAP server's"
 .row &%ldap_cert_file%&              "client cert file for LDAP"
@@ -16684,14 +16673,6 @@ section &<<SECTdomainlist>>&), and when checking the &%hosts%& option in the
 that transport). See also &%local_interfaces%&, &%extra_local_interfaces%&, and
 chapter &<<CHAPinterfaces>>&, which contains a discussion about local network
 interfaces and recognizing the local host.
-
-
-.option ibase_servers main "string list" unset
-.cindex "InterBase" "server list"
-This option provides a list of InterBase servers and associated connection data,
-to be used in conjunction with &(ibase)& lookups (see section &<<SECID72>>&).
-The option is available only if Exim has been built with InterBase support.
-
 
 
 .option ignore_bounce_errors_after main time 10w

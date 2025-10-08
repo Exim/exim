@@ -287,9 +287,6 @@ extern lookup_module_info dnsdb_lookup_module_info;
 #if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
 extern lookup_module_info dsearch_lookup_module_info;
 #endif
-#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-extern lookup_module_info ibase_lookup_module_info;
-#endif
 #if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
 extern lookup_module_info json_lookup_module_info;
 #endif
@@ -629,10 +626,6 @@ addlookupmodule(&dnsdb_lookup_module_info);
 
 #if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
 addlookupmodule(&dsearch_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-addlookupmodule(&ibase_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
