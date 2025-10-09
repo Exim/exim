@@ -153,6 +153,7 @@ typedef struct driver_instance {
 typedef struct driver_info {
   struct driver_info * next;
   uschar *driver_name;            /* Name of driver */
+  uschar *avail_string;		  /* if set, display rather than name */
 
   optionlist *options;            /* Table of private options names */
   int    *options_count;          /* -> Number of entries in table */

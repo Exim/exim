@@ -3343,12 +3343,23 @@ ret_panic:
 transport_info appendfile_transport_info = {
 .drinfo = {
   .driver_name =	US"appendfile",
+  .avail_string =	US" appendfile"
+# ifdef SUPPORT_MAILDIR
+			  "/maildir"
+# endif
+# ifdef SUPPORT_MAILSTORE
+			  "/mailstore"
+# endif
+# ifdef SUPPORT_MBX
+			  "/mbx"
+# endif
+			,
   .options =		appendfile_transport_options,
   .options_count =	&appendfile_transport_options_count,
   .options_block =	&appendfile_transport_option_defaults,	/* private options defaults */
   .options_len =	sizeof(appendfile_transport_options_block),
   .init =		appendfile_transport_init,
-# ifdef DYNLOOKUP
+# if TRANSPORT_APPENDFILE==2
   .dyn_magic =		TRANSPORT_MAGIC,
 # endif
   },

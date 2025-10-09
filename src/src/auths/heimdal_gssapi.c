@@ -625,7 +625,7 @@ auth_info heimdal_gssapi_auth_info = {
   .options_block =	&auth_heimdal_gssapi_option_defaults,
   .options_len =	sizeof(auth_heimdal_gssapi_options_block),
   .init =		auth_heimdal_gssapi_init,
-# ifdef DYNLOOKUP
+# if AUTH_HEIMDAL_GSSAPI==2
   .dyn_magic =		AUTH_MAGIC,
 # endif
   },

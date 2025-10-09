@@ -31,198 +31,50 @@ transport_info * transports_available = NULL;
 
 #ifndef MACRO_PREDEF
 
+static gstring *
+dr_show_list(gstring * g, const uschar ** list, const uschar * label,
+  const uschar * class)
+{
+if (*list)
+  {
+  const uschar ** ele = list;
+  g = string_fmt_append(g, "%s (%s): ", class, label);
+  while (*ele) ele++;
+  while (--ele >= list) g = string_fmt_append(g, " %s", *ele);
+  g = string_catn(g, US"\n", 1);
+  }
+return g;
+}
+
+static gstring *
+dr_show_supported(gstring * g,
+  const uschar ** statics, const uschar ** dynamics, const uschar * class)
+{
+g = dr_show_list(g, statics, US"built-in", class);
+g = dr_show_list(g, dynamics, US"dynamic", class);
+return g;
+}
+
 gstring *
 auth_show_supported(gstring * g)
 {
-uschar * b = US""               /* static-build authenticatornames */
-#if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5!=2
-  " cram_md5"
-#endif
-#if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL!=2
-  " cyrus_sasl"
-#endif
-#if defined(AUTH_DOVECOT) && AUTH_DOVECOT!=2
-  " dovecot"
-#endif
-#if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL!=2
-  " external"
-#endif
-#if defined(AUTH_GSASL) && AUTH_GSASL!=2
-  " gsasl"
-#endif
-#if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI!=2
-  " heimdal_gssapi"
-#endif
-#if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT!=2
-  " plaintext"
-#endif
-#if defined(AUTH_SPA) && AUTH_SPA!=2
-  " spa"
-#endif
-#if defined(AUTH_TLS) && AUTH_TLS!=2
-  " tls"
-#endif
-  ;
-
-uschar * d = US""		/* dynamic-module authenticator names */
-#if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5==2
-  " cram_md5"
-#endif
-#if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL==2
-  " cyrus_sasl"
-#endif
-#if defined(AUTH_DOVECOT) && AUTH_DOVECOT==2
-  " dovecot"
-#endif
-#if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL==2
-  " external"
-#endif
-#if defined(AUTH_GSASL) && AUTH_GSASL==2
-  " gsasl"
-#endif
-#if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI==2
-  " heimdal_gssapi"
-#endif
-#if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT==2
-  " plaintext"
-#endif
-#if defined(AUTH_SPA) && AUTH_SPA==2
-  " spa"
-#endif
-#if defined(AUTH_TLS) && AUTH_TLS==2
-  " tls"
-#endif
-  ;
-
-if (*b) g = string_fmt_append(g, "Authenticators (built-in):%s\n", b);
-if (*d) g = string_fmt_append(g, "Authenticators (dynamic): %s\n", d);
-return g;
+return dr_show_supported(g, avail_static_auths, avail_dynamic_auths,
+  US"Authenticators");
 }
 
 gstring *
 route_show_supported(gstring * g)
 {
-uschar * b = US""		/* static-build router names */
-#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
-  " accept"
-#endif
-#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP!=2
-  " dnslookup"
-#endif
-# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL!=2
-  " ipliteral"
-#endif
-#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP!=2
-  " iplookup"
-#endif
-#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE!=2
-  " manualroute"
-#endif
-#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT!=2
-  " redirect"
-#endif
-#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM!=2
-  " queryprogram"
-#endif
-  ;
-
-uschar * d = US""		/* dynamic-module router names */
-#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT==2
-  " accept"
-#endif
-#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP==2
-  " dnslookup"
-#endif
-# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL==2
-  " ipliteral"
-#endif
-#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP==2
-  " iplookup"
-#endif
-#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE==2
-  " manualroute"
-#endif
-#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT==2
-  " redirect"
-#endif
-#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM==2
-  " queryprogram"
-#endif
-  ;
-
-if (*b) g = string_fmt_append(g, "Routers (built-in):%s\n", b);
-if (*d) g = string_fmt_append(g, "Routers (dynamic): %s\n", d);
-return g;
+return dr_show_supported(g, avail_static_routers, avail_dynamic_routers,
+  US"Routers");
 }
 
 gstring *
 transport_show_supported(gstring * g)
 {
-uschar * b = US""		/* static-build transportnames */
-#if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE!=2
-  " appendfile"
-# ifdef SUPPORT_MAILDIR
-    "/maildir"
-# endif
-# ifdef SUPPORT_MAILSTORE
-    "/mailstore"
-# endif
-# ifdef SUPPORT_MBX
-    "/mbx"
-# endif
-#endif
-#if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY!=2
-  " autoreply"
-#endif
-#if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP!=2
-  " lmtp"
-#endif
-#if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE!=2
-  " pipe"
-#endif
-#if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE!=2
-  " queuefile"
-#endif
-#if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP!=2
-  " smtp"
-#endif
-  ;
-
-uschar * d = US""		/* dynamic-module transportnames */
-#if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE==2
-  " appendfile"
-# ifdef SUPPORT_MAILDIR
-    "/maildir"
-# endif
-# ifdef SUPPORT_MAILSTORE
-    "/mailstore"
-# endif
-# ifdef SUPPORT_MBX
-    "/mbx"
-# endif
-#endif
-#if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY==2
-  " autoreply"
-#endif
-#if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP==2
-  " lmtp"
-#endif
-#if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE==2
-  " pipe"
-#endif
-#if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE==2
-  " queuefile"
-#endif
-#if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP==2
-  " smtp"
-#endif
-  ;
-
-if (*b) g = string_fmt_append(g, "Transports (built-in):%s\n", b);
-if (*d) g = string_fmt_append(g, "Transports (dynamic): %s\n", d);
-return g;
+return dr_show_supported(g, avail_static_transports, avail_dynamic_transports,
+  US"Transports");
 }
-
 
 
 static void

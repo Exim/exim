@@ -6544,7 +6544,7 @@ transport_info smtp_transport_info = {
   .options_block =	&smtp_transport_option_defaults,
   .options_len =	sizeof(smtp_transport_options_block),
   .init =		smtp_transport_init,
-# ifdef DYNLOOKUP
+# if TRANSPORT_SMTP==2
   .dyn_magic =		TRANSPORT_MAGIC,
 # endif
   },

@@ -218,7 +218,7 @@ router_info ipliteral_router_info =
   .options_block =	&ipliteral_router_option_defaults,
   .options_len =	sizeof(ipliteral_router_options_block),
   .init =		ipliteral_router_init,
-# ifdef DYNLOOKUP
+# if ROUTER_IPLITERAL==2
   .dyn_magic =		ROUTER_MAGIC,
 # endif
   },

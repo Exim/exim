@@ -108,7 +108,7 @@ auth_info tls_auth_info = {
   .options_block =	&auth_tls_option_defaults,
   .options_len =	sizeof(auth_tls_options_block),
   .init =		auth_tls_init,
-# ifdef DYNLOOKUP
+# if AUTH_TLS==2
   .dyn_magic =		AUTH_MAGIC,
 # endif
   },

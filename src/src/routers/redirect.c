@@ -804,7 +804,7 @@ router_info redirect_router_info =
   .options_block =	&redirect_router_option_defaults,
   .options_len =	sizeof(redirect_router_options_block),
   .init =		redirect_router_init,
-# ifdef DYNLOOKUP
+# if ROUTER_REDIRECT==2
   .dyn_magic =		ROUTER_MAGIC,
 # endif
   },

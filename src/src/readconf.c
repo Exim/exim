@@ -3812,13 +3812,12 @@ for (di = *info_anchor; di; di = di->next)
 /* Potentially a loadable module. Look for a file with the right name. */
 
 if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
-  {
   log_write(0, LOG_MAIN|LOG_PANIC,
-	    "Couldn't open %s: not loading driver modules\n", LOOKUP_MODULE_DIR);
-  }
+	  "Couldn't open %s: not loading driver modules\n", LOOKUP_MODULE_DIR);
 else
   {
-  uschar * fname = string_sprintf("%s_%s." DYNLIB_FN_EXT, d->driver_name, class), * sname;
+  uschar * fname = string_sprintf("%s_%s." DYNLIB_FN_EXT,
+				  d->driver_name, class);
   const char * errormsg;
 
   DEBUG(D_any) debug_printf("Loading %s %s driver from %s\n",

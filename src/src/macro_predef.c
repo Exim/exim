@@ -2,13 +2,13 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2024 */
+/* Copyright (c) The Exim Maintainers 2020 - 2025 */
 /* Copyright (c) Jeremy Harris 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Create a static data structure with the predefined macros, to be
-included in the main Exim build */
+included in the main Exim build. Also, table for various drivers. */
 
 #include "exim.h"
 #include "macro_predef.h"
@@ -353,6 +353,41 @@ params_dkim();
 #endif
 }
 
+/******************************************************************************/
+static void
+avail_append(const driver_info * di)
+{
+const uschar * avail_string = di->avail_string;
+if (!avail_string) avail_string = di->driver_name;
+  printf(" US\"%s\",", avail_string);
+}
+
+static void
+avail_list(const driver_info * drtable, const uschar * tag,
+  const uschar * group, BOOL magic)
+{
+printf("const uschar * avail_%s_%s[] = {", group, tag);
+for (const driver_info * di = drtable; di; di = di->next)
+  if (!!di->dyn_magic == magic) avail_append(di);
+printf(" NULL};\n");
+}
+
+static void
+avail_drs(const driver_info * drtable, const uschar * tag)
+{
+avail_list(drtable, tag, US"static", FALSE);
+avail_list(drtable, tag, US"dynamic", TRUE);
+}
+
+static void
+avail(void)
+{
+avail_drs((driver_info *)auths_available, US"auths");
+avail_drs((driver_info *)routers_available, US"routers");
+avail_drs((driver_info *)transports_available, US"transports");
+}
+
+/******************************************************************************/
 
 int
 main(void)
@@ -363,8 +398,10 @@ exp_features();
 options();
 expansions();
 params();
-
 printf("macro_item * macros = &p%u;\n", mp_index-1);
 printf("macro_item * mlast = &p0;\n");
+
+avail();
+
 exit(0);
 }

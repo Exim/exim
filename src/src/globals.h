@@ -388,6 +388,13 @@ extern int     av_failed;              /* TRUE if the AV process failed */
 extern uschar *av_scanner;             /* AntiVirus scanner to use for the malware condition */
 #endif
 
+extern const uschar * avail_static_auths[];	/* List of built-in driver names */
+extern const uschar * avail_dynamic_auths[];	/* List of dynamic-load driver names */
+extern const uschar * avail_static_routers[];
+extern const uschar * avail_dynamic_routers[];
+extern const uschar * avail_static_transports[];
+extern const uschar * avail_dynamic_transports[];
+
 extern uschar *base62_chars;           /* Table of base-62 characters */
 extern uschar *bi_command;             /* Command for -bi option */
 extern uschar *big_buffer;             /* Used for various temp things */

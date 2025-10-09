@@ -300,7 +300,7 @@ transport_info queuefile_transport_info = {
   .options_block =	&queuefile_transport_option_defaults,
   .options_len =	sizeof(queuefile_transport_options_block),
   .init =		queuefile_transport_init,
-# ifdef DYNLOOKUP
+# if EXPERIMENTAL_QUEUEFILE==2
   .dyn_magic =		TRANSPORT_MAGIC,
 # endif
   },
