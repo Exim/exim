@@ -388,6 +388,8 @@ extern int     av_failed;              /* TRUE if the AV process failed */
 extern uschar *av_scanner;             /* AntiVirus scanner to use for the malware condition */
 #endif
 
+extern lookup_module_info * avail_static_lookups[];/* List of built-in lookup drivers */
+
 extern const uschar * avail_static_auths[];	/* List of built-in driver names */
 extern const uschar * avail_dynamic_auths[];	/* List of dynamic-load driver names */
 extern const uschar * avail_static_routers[];

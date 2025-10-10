@@ -61,9 +61,9 @@ typedef struct lookup_info {
 /* Version 5 change: version report now adds to a gstring */
 
 typedef struct lookup_module_info {
-  uint magic;
+  uint		magic;
   lookup_info **lookups;
-  uint lookupcount;
+  uint		lookupcount;
 } lookup_module_info;
 
 /* End of lookupapi.h */

@@ -9,16 +9,36 @@
 #     interpolated below. This is done by scripts/lookups-Makefile.
 
 # When adding a new driver here, attend also to scripts/lookups-Makefile,
-# scripts/MakeLinks and src/drtables.c
+# and scripts/MakeLinks.
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
+
+# This assumes that the driver and object-file names match
+AVAIL= $(OBJ:.o=)
+
 all:             Makefile lookups.a $(MODS)
 
-lookups.a:       $(OBJ)
+# We assume here that the driver name is used as the prefix for
+# its module_info struct.
+avail_static_lookups.c: Makefile
+	@echo "make $@"
+	$(FE)echo '/* File built by lookups/Makefile */' >$@
+	$(FE)echo '#include "../exim.h"' >>$@
+	$(FE)for f in $(AVAIL); do \
+	 echo "extern lookup_module_info $${f}_lookup_module_info;" >>$@; \
+	done
+	$(FE)echo 'lookup_module_info * avail_static_lookups[] = {' >>$@
+	$(FE)for f in $(AVAIL); do \
+	 echo "& $${f}_lookup_module_info," >>$@; \
+	done
+	$(FE)echo 'NULL };' >>$@
+avail_static_lookups.o: $(HDRS) avail_static_lookups.c
+
+lookups.a:       avail_static_lookups.o $(OBJ)
 		 @$(RM_COMMAND) -f lookups.a
 		 @echo "$(AR) lookups.a"
-		 @$(AR) lookups.a $(OBJ)
+		 @$(AR) lookups.a avail_static_lookups.o $(OBJ)
 		 $(RANLIB) $@
 
 .SUFFIXES:       .o .c .so

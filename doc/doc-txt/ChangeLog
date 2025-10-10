@@ -15,6 +15,9 @@ JH/02 Support for identd (RFC 1413) lookups on received connections is removed.
       "ident_timeout"; using any will result in an error.
       The default options had the lookup disabled since 4.86.
 
+JH/03 The -bV option now only reports dynamic-load lookups for which the driver
+      library is present.
+
 Exim version 4.99
 -----------------
 

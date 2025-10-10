@@ -320,6 +320,7 @@ extern void    log_write_die(unsigned, int, const char * format, ...)
 
 extern const lookup_info * lookup_with_acq_num(unsigned);
 #ifdef LOOKUP_MODULE_DIR
+extern gstring *lookup_dynamic_supported(gstring *);
 extern BOOL    lookup_one_mod_load(const uschar *, uschar **);
 #endif
 

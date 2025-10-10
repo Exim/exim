@@ -123,77 +123,6 @@ return li;
 
 
 
-/* These need to be at file level for old versions of gcc (2.95.2 reported),
-which give parse errors on an extern in function scope.  Each entry needs
-to also be invoked in init_lookup_list() below  */
-
-#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-extern lookup_module_info cdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-extern lookup_module_info dbmdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-extern lookup_module_info dnsdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-extern lookup_module_info dsearch_lookup_module_info;
-#endif
-#if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
-extern lookup_module_info json_lookup_module_info;
-#endif
-#if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
-extern lookup_module_info ldap_lookup_module_info;
-#endif
-#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-extern lookup_module_info lsearch_lookup_module_info;
-#endif
-#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-extern lookup_module_info mysql_lookup_module_info;
-#endif
-#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-extern lookup_module_info nis_lookup_module_info;
-#endif
-#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-extern lookup_module_info nisplus_lookup_module_info;
-#endif
-#if defined(EXPERIMENTAL_NMH) && EXPERIMENTAL_NMH!=2
-extern lookup_module_info nmh_lookup_module_info;
-#endif
-#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-extern lookup_module_info oracle_lookup_module_info;
-#endif
-#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-extern lookup_module_info passwd_lookup_module_info;
-#endif
-#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-extern lookup_module_info pgsql_lookup_module_info;
-#endif
-#if defined(LOOKUP_PSL) && LOOKUP_PSL!=2
-extern lookup_module_info psl_lookup_module_info;
-#endif
-#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-extern lookup_module_info redis_lookup_module_info;
-#endif
-#if defined(LOOKUP_LMDB) && LOOKUP_LMDB!=2
-extern lookup_module_info lmdb_lookup_module_info;
-#endif
-#if defined(EXIM_HAVE_SPF)
-extern lookup_module_info spf_lookup_module_info;	/* see below */
-#endif
-#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-extern lookup_module_info sqlite_lookup_module_info;
-#endif
-#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-extern lookup_module_info testdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-extern lookup_module_info whoson_lookup_module_info;
-#endif
-
-extern lookup_module_info readsock_lookup_module_info;
-
-
 #ifdef LOOKUP_MODULE_DIR
 static void *
 mod_open(const uschar * name, const uschar * class, uschar ** errstr)
@@ -233,13 +162,13 @@ static BOOL
 lookup_mod_load(const uschar * name, uschar ** errstr)
 {
 void * dl;
-struct lookup_module_info * info;
+lookup_module_info * info;
 const char * errormsg;
 
 if (!(dl = mod_open(name, US"lookup", errstr)))
   return FALSE;
 
-info = (struct lookup_module_info *) dlsym(dl, "_lookup_module_info");
+info = (lookup_module_info *) dlsym(dl, "_lookup_module_info");
 if ((errormsg = dlerror()))
   {
   EARLY_DEBUG(D_any, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
@@ -274,6 +203,43 @@ lookup_one_mod_load(const uschar * name, uschar ** errstr)
 if (!lookup_mod_load(name, errstr)) return FALSE;
 /*XXX notify daemon? */
 return TRUE;
+}
+
+/* Look at all the lookup module files and add a name from each lookup type */
+
+gstring *
+lookup_dynamic_supported(gstring * g)
+{
+DIR * dd;
+const pcre2_code * regex_islookupmod = regex_must_compile(
+  US"^([a-z0-9]+)_lookup\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
+
+if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
+  g = string_cat(g, US"FAIL exim_opendir");
+else
+  for (struct dirent * ent; ent = readdir(dd); )
+    {
+    void * dl;
+    uschar * errstr;
+
+    if (  regex_match_and_setup(regex_islookupmod, US ent->d_name, 0, 0)
+       && (dl = mod_open(expand_nstring[1], US"lookup", &errstr))
+       )
+      {
+      lookup_module_info * lmi=
+	(lookup_module_info *) dlsym(dl, "_lookup_module_info");
+
+      if (  ! dlerror()
+	 && lmi->magic == LOOKUP_MODULE_INFO_MAGIC
+         )
+	for (lookup_info ** lip = lmi->lookups;
+	    lip < lmi->lookups + lmi->lookupcount; lip++)
+	  g = string_fmt_append(g, " %s", (*lip)->name);
+
+      dlclose(dl);
+      }
+    }
+return g;
 }
 
 #endif	/*LOOKUP_MODULE_DIR*/
@@ -464,99 +430,8 @@ if (lookup_list_init_done)
   return;
 lookup_list_init_done = TRUE;
 
-#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-addlookupmodule(&cdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-addlookupmodule(&dbmdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-addlookupmodule(&dnsdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-addlookupmodule(&dsearch_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
-addlookupmodule(&ldap_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
-addlookupmodule(&json_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-addlookupmodule(&lsearch_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-addlookupmodule(&mysql_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-addlookupmodule(&nis_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-addlookupmodule(&nisplus_lookup_module_info);
-#endif
-
-#if defined(EXPERIMENTAL_NMH) && EXPERIMENTAL_NMH!=2
-addlookupmodule(&nmh_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-addlookupmodule(&oracle_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-addlookupmodule(&passwd_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-addlookupmodule(&pgsql_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_PSL) && LOOKUP_PSL!=2
-addlookupmodule(&psl_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-addlookupmodule(&redis_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_LMDB) && LOOKUP_LMDB!=2
-addlookupmodule(&lmdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-addlookupmodule(&sqlite_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-addlookupmodule(&testdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-addlookupmodule(&whoson_lookup_module_info);
-#endif
-
-/* This is provided by the spf "misc" module, and the lookup aspect is always
-linked statically whether or not the "misc" module (and hence libspf2) is
-dynamic-load. */
-
-#ifdef EXIM_HAVE_SPF
-addlookupmodule(&spf_lookup_module_info);
-#endif
-
-/* This is a custom expansion, and not available as either
-a list-syntax lookup or a lookup expansion. However, it is
-implemented by a lookup module. */
-
-addlookupmodule(&readsock_lookup_module_info);
+for (lookup_module_info ** avi = avail_static_lookups; *avi; avi++)
+  addlookupmodule(*avi);
 
 DEBUG(D_lookup) debug_printf_indent("Total %d built-in lookups\n", lookup_list_count);
 
@@ -579,10 +454,7 @@ else
 
   EARLY_DEBUG(D_lookup, "Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
   while ((ent = readdir(dd)))
-    {
-    char * name = ent->d_name;
-    int len = (int)strlen(name);
-    if (regex_match_and_setup(regex_islookupmod, US name, 0, 0))
+    if (regex_match_and_setup(regex_islookupmod, US ent->d_name, 0, 0))
       {
       uschar * errstr;
       if (lookup_mod_load(expand_nstring[1], &errstr))
@@ -593,7 +465,6 @@ else
 	log_write(0, LOG_MAIN|LOG_PANIC, "%s", errstr);
 	}
       }
-    }
   closedir(dd);
   }
 
