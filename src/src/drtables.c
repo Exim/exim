@@ -205,11 +205,14 @@ if (!lookup_mod_load(name, errstr)) return FALSE;
 return TRUE;
 }
 
+#endif	/*LOOKUP_MODULE_DIR*/
+
 /* Look at all the lookup module files and add a name from each lookup type */
 
 gstring *
 lookup_dynamic_supported(gstring * g)
 {
+#ifdef LOOKUP_MODULE_DIR
 DIR * dd;
 const pcre2_code * regex_islookupmod = regex_must_compile(
   US"^([a-z0-9]+)_lookup\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
@@ -239,10 +242,9 @@ else
       dlclose(dl);
       }
     }
+#endif	/*!LOOKUP_MODULE_DIR*/
 return g;
 }
-
-#endif	/*LOOKUP_MODULE_DIR*/
 
 
 
