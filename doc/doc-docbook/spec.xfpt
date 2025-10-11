@@ -8343,7 +8343,7 @@ The second, which allows separate files for each query,
 is to use an option appended, comma-separated, to the &"sqlite"&
 lookup type word.  The option is the word &"file"&, then an equals,
 then the filename.
-The filename in this case cannot contain whitespace or open-brace charachters.
+The filename in this case cannot contain whitespace or open-brace characters.
 
 A deprecated method is available, prefixing the query with the filename
 separated by white space.
@@ -23313,7 +23313,7 @@ removed early in parsing (see &<<SECTstrings>>&).
 Then, for this option, quotes protect against whitespace being
 regarded as a separator while splitting into the command argument vector.
 Either double or single quotes can be used here;
-the former interprets backlash-quoted charachters
+the former interprets backlash-quoted characters
 and the latter does not.
 
 If double quotes had been used in this example, they would have been
