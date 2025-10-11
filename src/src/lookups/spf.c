@@ -4,7 +4,7 @@
 
 /* Exim - SPF lookup module using Exim's "miscmod" SPF support for ACL
 
-Copyright (c) The Exim Maintainers 2020 - 2022
+Copyright (c) The Exim Maintainers 2020 - 2025
 Copyright (c) 2005 Chris Webb, Arachsys Internet Services Ltd
 SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -15,13 +15,6 @@ of the License, or (at your option) any later version.
 */
 
 #include "../exim.h"
-
-#ifndef EXIM_HAVE_SPF
-static void dummy(int x);
-static void dummy2(int x) { dummy(x-1); }
-static void dummy(int x) { dummy2(x-1); }
-#else
-
 #include "lf_functions.h"
 
 #ifndef EXPERIMENTAL_SPF_PERL
@@ -119,4 +112,3 @@ static lookup_info spf_lookup_info = {
 static lookup_info *_lookup_list[] = { &spf_lookup_info };
 lookup_module_info spf_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
-#endif /* EXIM_HAVE_SPF */
