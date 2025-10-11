@@ -13,9 +13,10 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
+OBJS = $(OBJ) $(OBJ_ALWAYS)
 
 # This assumes that the driver and object-file names match
-AVAIL= $(OBJ:.o=)
+AVAIL= $(OBJS:.o=)
 
 all:             Makefile lookups.a $(MODS)
 
@@ -35,10 +36,10 @@ avail_static_lookups.c: Makefile
 	$(FE)echo 'NULL };' >>$@
 avail_static_lookups.o: $(HDRS) avail_static_lookups.c
 
-lookups.a:       avail_static_lookups.o $(OBJ) $(OBJ_ALWAYS)
+lookups.a:       avail_static_lookups.o $(OBJS)
 		 @$(RM_COMMAND) -f lookups.a
 		 @echo "$(AR) lookups.a"
-		 @$(AR) lookups.a avail_static_lookups.o $(OBJ) $(OBJ_ALWAYS)
+		 @$(AR) lookups.a avail_static_lookups.o $(OBJS)
 		 $(RANLIB) $@
 
 .SUFFIXES:       .o .c .so
