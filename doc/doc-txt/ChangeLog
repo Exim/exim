@@ -18,6 +18,9 @@ JH/02 Support for identd (RFC 1413) lookups on received connections is removed.
 JH/03 The -bV option now only reports dynamic-load lookups for which the driver
       library is present.
 
+JH/04 Add taint-tracking for certain certextract expansions. For now we define
+      both endpoint certs as tainted.
+
 Exim version 4.99
 -----------------
 

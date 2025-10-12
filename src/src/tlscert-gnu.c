@@ -150,6 +150,7 @@ if ((ret = gnutls_x509_crt_get_issuer_dn(cert, CS cp, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gi0", __FUNCTION__, ret);
 
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
 cp = store_get(siz, GET_TAINTED);
 if ((ret = gnutls_x509_crt_get_issuer_dn(cert, CS cp, &siz)) < 0)
   return g_err("gi1", __FUNCTION__, ret);
@@ -226,14 +227,15 @@ return algo < 0 ? NULL : string_copy(US gnutls_sign_get_name(algo));
 uschar *
 tls_cert_subject(void * cert, const uschar * mod)
 {
-uschar * cp = NULL;
+uschar * cp;
 int ret;
 size_t siz = 0;
 
-if ((ret = gnutls_x509_crt_get_dn(cert, CS cp, &siz))
+if ((ret = gnutls_x509_crt_get_dn(cert, NULL, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gs0", __FUNCTION__, ret);
 
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
 cp = store_get(siz, GET_TAINTED);
 if ((ret = gnutls_x509_crt_get_dn(cert, CS cp, &siz)) < 0)
   return g_err("gs1", __FUNCTION__, ret);
@@ -262,6 +264,7 @@ ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
 if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("ge0", __FUNCTION__, ret);
 
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
 cp1 = store_get(siz*4 + 1, GET_TAINTED);
 
 ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
@@ -317,6 +320,7 @@ for (int index = 0;; index++)
       return g_err("gs0", __FUNCTION__, ret);
     }
 
+  /*XXX we might want to distinguish ourcert from peercert (but this is safe) */
   ele = store_get(siz+1, GET_TAINTED);
   if ((ret = gnutls_x509_crt_get_subject_alt_name(
     (gnutls_x509_crt_t)cert, index, ele, &siz, NULL)) < 0)
@@ -347,7 +351,8 @@ tls_cert_ocsp_uri(void * cert, const uschar * mod)
 gnutls_datum_t uri;
 int ret;
 uschar sep = '\n';
-gstring * list = NULL;
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
+gstring * list = string_get_tainted(0, GET_TAINTED);
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -381,7 +386,8 @@ tls_cert_crl_uri(void * cert, const uschar * mod)
 {
 int ret;
 uschar sep = '\n';
-gstring * list = NULL;
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
+gstring * list = string_get_tainted(0, GET_TAINTED);
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -394,7 +400,7 @@ for (int index = 0;; index++)
     (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL, NULL))
     {
     case GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE:
-      return string_from_gstring(list);
+      return gstring_length(list) > 0 ? string_from_gstring(list) : NULL;
     case GNUTLS_E_SHORT_MEMORY_BUFFER:
       break;
     default:
@@ -449,6 +455,7 @@ if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, NULL, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gf0", __FUNCTION__, ret);
 
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
 cp = store_get(siz*3+1, GET_TAINTED);
 if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, cp, &siz)) < 0)
   return g_err("gf1", __FUNCTION__, ret);

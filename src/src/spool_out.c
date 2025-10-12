@@ -274,6 +274,7 @@ if (tls_in.certificate_verified) fprintf(fp, "-tls_certificate_verified\n");
 if (tls_in.cipher) spool_var_write(fp, US"tls_cipher", tls_in.cipher);
 if (tls_in.peercert)
   {
+  /* -- marks as tainted */
   if (tls_export_cert(big_buffer, big_buffer_size, tls_in.peercert))
     fprintf(fp, "--tls_peercert %s\n", CS big_buffer);
   }

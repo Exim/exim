@@ -213,7 +213,9 @@ uschar *
 tls_cert_issuer(void * cert, const uschar * mod)
 {
 uschar * cp = x509_name_copy(X509_get_issuer_name((X509 *)cert));
-return mod ? tls_field_from_dn(cp, mod) : cp;
+if (mod) cp = tls_field_from_dn(cp, mod);
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
+return cp ? string_copy_taint(cp, GET_TAINTED) : cp;
 }
 
 uschar *
@@ -312,7 +314,9 @@ uschar *
 tls_cert_subject(void * cert, const uschar * mod)
 {
 uschar * cp = x509_name_copy(X509_get_subject_name((X509 *)cert));
-return mod ? tls_field_from_dn(cp, mod) : cp;
+if (mod) cp = tls_field_from_dn(cp, mod);
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
+return cp ? string_copy_taint(cp, GET_TAINTED) : cp;
 }
 
 uschar *
@@ -345,6 +349,7 @@ M_ASN1_OCTET_STRING_print(bp, adata);
 /* binary data, DER encoded */
 /* just dump for now */
 len = BIO_get_mem_data(bp, &cp1);
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
 cp3 = cp2 = store_get(len*3+1, GET_TAINTED);
 
 while(len)
@@ -360,14 +365,13 @@ return cp3;
 uschar *
 tls_cert_subject_altname(void * cert, const uschar * mod)
 {
-gstring * list = NULL;
 STACK_OF(GENERAL_NAME) * san = (STACK_OF(GENERAL_NAME) *)
   X509_get_ext_d2i((X509 *)cert, NID_subject_alt_name, NULL, NULL);
 uschar osep = '\n';
-uschar * tag = US"";
-uschar * ele;
-int match = -1;
-int len;
+uschar * tag = US"", * ele;
+int match = -1,  len;
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
+gstring * list = string_get_tainted(0, GET_TAINTED);
 
 if (!san) return NULL;
 
@@ -417,7 +421,7 @@ while (sk_GENERAL_NAME_num(san) > 0)
   }
 
 sk_GENERAL_NAME_free(san);
-return string_from_gstring(list);
+return gstring_length(list) > 0 ? string_from_gstring(list) : NULL;
 }
 
 uschar *
@@ -427,7 +431,8 @@ STACK_OF(ACCESS_DESCRIPTION) * ads = (STACK_OF(ACCESS_DESCRIPTION) *)
   X509_get_ext_d2i((X509 *)cert, NID_info_access, NULL, NULL);
 int adsnum = sk_ACCESS_DESCRIPTION_num(ads);
 uschar sep = '\n';
-gstring * list = NULL;
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
+gstring * list = string_get_tainted(0, GET_TAINTED);
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -442,7 +447,7 @@ for (int i = 0; i < adsnum; i++)
       ASN1_STRING_length(ad->location->d.ia5));
   }
 sk_ACCESS_DESCRIPTION_free(ads);
-return string_from_gstring(list);
+return gstring_length(list) > 0 ? string_from_gstring(list) : NULL;
 }
 
 uschar *
@@ -453,7 +458,8 @@ STACK_OF(DIST_POINT) * dps = (STACK_OF(DIST_POINT) *)
     NULL, NULL);
 DIST_POINT * dp;
 uschar sep = '\n';
-gstring * list = NULL;
+/*XXX we might want to distinguish ourcert from peercert (but this is safe) */
+gstring * list = string_get_tainted(0, GET_TAINTED);
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -473,7 +479,7 @@ if (dps) for (int i = 0, dpsnum = sk_DIST_POINT_num(dps); i < dpsnum; i++)
 	  ASN1_STRING_length(np->d.uniformResourceIdentifier));
     }
 sk_DIST_POINT_free(dps);
-return string_from_gstring(list);
+return gstring_length(list) > 0 ? string_from_gstring(list) : NULL;
 }
 
 

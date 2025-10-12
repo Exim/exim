@@ -14119,7 +14119,7 @@ on an outbound SMTP connection; the meaning of
 this depends upon the TLS implementation used.
 If TLS has not been negotiated, the value will be 0.
 
-.vitem &$tls_in_ourcert$&
+.tvar &$tls_in_ourcert$&
 .vindex "&$tls_in_ourcert$&"
 .cindex certificate variables
 This variable refers to the certificate presented to the peer of an
@@ -14133,7 +14133,7 @@ when a list of more than one
 file is used for &%tls_certificate%&, this variable is not reliable.
 The macro "_TLS_BAD_MULTICERT_IN_OURCERT" will be defined for those versions.
 
-.vitem &$tls_in_peercert$&
+.tvar &$tls_in_peercert$&
 .vindex "&$tls_in_peercert$&"
 This variable refers to the certificate presented by the peer of an
 inbound connection when the message was received.
@@ -14143,14 +14143,14 @@ or a &%def%& condition.
 If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
 
-.vitem &$tls_out_ourcert$&
+.tvar &$tls_out_ourcert$&
 .vindex "&$tls_out_ourcert$&"
 This variable refers to the certificate presented to the peer of an
 outbound connection.  It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
 or a &%def%& condition.
 
-.vitem &$tls_out_peercert$&
+.tvar &$tls_out_peercert$&
 .vindex "&$tls_out_peercert$&"
 This variable refers to the certificate presented by the peer of an
 outbound connection.  It is only useful as the argument of a
