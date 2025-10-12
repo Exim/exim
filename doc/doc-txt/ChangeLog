@@ -202,6 +202,10 @@ JH/45 Bug 2574: Add H= and U= tags to "authenticator failed" log lines. The
       available to the eximstats script.  Note that the change could disrupt
       other, non-project, log-scraping operations.
 
+JH/46 Bug 3165: Fix message_id_header_domain/message_id_header_text option
+      handling. If configured, without any expansions but with certain
+      characters, a crash could result for command-line message insertion.
+
 
 Exim version 4.98
 -----------------

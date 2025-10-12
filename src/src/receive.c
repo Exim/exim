@@ -2830,8 +2830,7 @@ any illegal characters therein. */
 if (  !msgid_header
    && ((!sender_host_address && !f.suppress_local_fixups) || f.submission_mode))
   {
-  uschar *id_text = US"";
-  uschar *id_domain = primary_hostname;
+  uschar * id_text = US"",  * id_domain = primary_hostname;
   header_line * h;
 
   /* Permit only letters, digits, dots, and hyphens in the domain */
@@ -2839,7 +2838,8 @@ if (  !msgid_header
   GET_OPTION("message_id_header_domain");
   if (message_id_domain)
     {
-    uschar *new_id_domain = expand_string(message_id_domain);
+    BOOL t_only = FALSE;
+    const uschar * new_id_domain = expand_string_2(message_id_domain, &t_only);
     if (!new_id_domain)
       {
       if (!f.expand_string_forcedfail)
@@ -2849,7 +2849,8 @@ if (  !msgid_header
       }
     else if (*new_id_domain)
       {
-      id_domain = new_id_domain;
+      /* deconst safe due to the t_only check */
+      id_domain = t_only ? string_copy(new_id_domain) : US new_id_domain;
       for (uschar * p = id_domain; *p; p++)
         if (!isalnum(*p) && *p != '.') *p = '-';  /* No need to test '-' ! */
       }
@@ -2861,7 +2862,8 @@ if (  !msgid_header
   GET_OPTION("message_id_header_text");
   if (message_id_text)
     {
-    uschar *new_id_text = expand_string(message_id_text);
+    BOOL t_only = FALSE;
+    const uschar * new_id_text = expand_string_2(message_id_text, &t_only);
     if (!new_id_text)
       {
       if (!f.expand_string_forcedfail)
@@ -2871,8 +2873,10 @@ if (  !msgid_header
       }
     else if (*new_id_text)
       {
-      id_text = new_id_text;
-      for (uschar * p = id_text; *p; p++) if (mac_iscntrl_or_special(*p)) *p = '-';
+      /* deconst safe due to the t_only check */
+      id_text = t_only ? string_copy(new_id_text) : US new_id_text;
+      for (uschar * p = id_text; *p; p++)
+	if (mac_iscntrl_or_special(*p)) *p = '-';
       }
     }
 

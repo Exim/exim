@@ -8,7 +8,7 @@ NL=FALSE
 # ----- Main settings -----
 
 message_body_newlines = NL
-message_id_header_domain = test.ex
+message_id_header_domain = hyphen-ated.ex
 qualify_domain = test.ex
 # Omit Received: so as to keep the header size fixed
 received_header_text =
