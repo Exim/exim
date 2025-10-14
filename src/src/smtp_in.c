@@ -1795,8 +1795,12 @@ prdr_requested = FALSE;
 #ifdef SUPPORT_I18N
 message_smtputf8 = FALSE;
 #endif
+#ifdef SUPPORT_SRS
+srs_recipient = NULL;
+#endif
 #ifdef WITH_CONTENT_SCAN
 regex_vars_clear();
+malware_name = NULL;
 #endif
 #ifdef EXPERIMENTAL_DCC
 dcc_header = dcc_result = NULL;
