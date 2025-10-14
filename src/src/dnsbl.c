@@ -369,8 +369,11 @@ if (cb->rc == DNS_SUCCEED)
 	  }
     }
 
-  dnslist_value = addlist;
-  dnslist_text = cb->text;
+  /* $dnslist_* likely apply to the conn not a message, so we want them not
+  destroyed by reset_store() between messages */
+
+  dnslist_value = addlist ? string_copy_perm(addlist, FALSE) : NULL;
+  dnslist_text = cb->text ? string_copy_perm(cb->text, FALSE) : NULL;
   yield = OK;
   goto out;
   }
@@ -606,8 +609,8 @@ while ((domain = string_nextinlist(&list, &sep, NULL, 0)))
       iplist, bitmask, match_type, defer_return);
     if (rc == OK)
       {
-      dnslist_domain = string_copy(domain_txt);
-      dnslist_matched = string_copy(sender_host_address);
+      dnslist_domain = domain_txt ? string_copy_perm(domain_txt, FALSE) : NULL;
+      dnslist_matched = string_copy_perm(sender_host_address, FALSE);
       HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n",
         sender_host_address, dnslist_domain);
       }
@@ -638,8 +641,8 @@ while ((domain = string_nextinlist(&list, &sep, NULL, 0)))
         bitmask, match_type, defer_return);
       if (rc == OK)
         {
-        dnslist_domain = string_copy(domain_txt);
-        dnslist_matched = string_copy(keydomain);
+        dnslist_domain = domain_txt ? string_copy_perm(domain_txt, FALSE) :NULL;
+        dnslist_matched = keydomain ? string_copy_perm(keydomain, FALSE) : NULL;
         HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n",
           keydomain, dnslist_domain);
         return OK;

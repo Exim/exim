@@ -1784,7 +1784,6 @@ authenticated_sender = NULL;
 bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
-dnslist_domain = dnslist_matched = NULL;
 
 dsn_ret = 0;
 dsn_envid = NULL;
