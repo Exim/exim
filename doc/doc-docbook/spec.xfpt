@@ -14103,6 +14103,13 @@ condition = ${if > {$spool_space}{50000}}
 .endd
 See also the &%check_spool_space%& option.
 
+.new
+.tvar &$srs_recipient$&
+If an &*inbound_srs{}*& expansion condition succeeds
+this variable is set to the decoded (original) recipient.
+See section &<<SECTSRS>>& for more information on SRS.
+.wen
+
 
 .vitem &$thisaddress$&
 .vindex "&$thisaddress$&"
@@ -43233,6 +43240,7 @@ If the messages is not for an SRS-encoded recipient the condition will
 return false.
 If it is, the condition will return true and the variable
 &$srs_recipient$& will be set to the decoded (original) value.
+.vindex &$srs_recipient$&
 
 If the second argument is empty then the condition returns true if
 the first argument is in valid SRS formet, else false.
