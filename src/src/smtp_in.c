@@ -1798,6 +1798,9 @@ message_smtputf8 = FALSE;
 #ifdef WITH_CONTENT_SCAN
 regex_vars_clear();
 #endif
+#ifdef EXPERIMENTAL_DCC
+dcc_header = dcc_result = NULL;
+#endif
 body_linecount = body_zerocount = 0;
 
 lookup_value = NULL;				/* Can be set by ACL */
