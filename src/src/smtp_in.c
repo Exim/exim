@@ -1781,29 +1781,34 @@ memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
 
 authenticated_sender = NULL;
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-bmi_run = 0;
-bmi_verdicts = NULL;
+ bmi_run = 0;
+ bmi_verdicts = NULL;
 #endif
 
 dsn_ret = 0;
 dsn_envid = NULL;
 deliver_host = deliver_host_address = NULL;	/* Can be set by ACL */
+#ifndef DISABLE_TLS
+ memset(&tls_out, 0, sizeof(tls_out));		/* Can be set by callout */
+ tls_out.active.sock = -1;
+#endif
 #ifndef DISABLE_PRDR
-prdr_requested = FALSE;
+ prdr_requested = FALSE;
 #endif
 #ifdef SUPPORT_I18N
-message_smtputf8 = FALSE;
+ message_smtputf8 = FALSE;
 #endif
 #ifdef SUPPORT_SRS
-srs_recipient = NULL;
+ srs_recipient = NULL;
 #endif
 #ifdef WITH_CONTENT_SCAN
-regex_vars_clear();
-malware_name = NULL;
+ regex_vars_clear();
+ malware_name = NULL;
 #endif
 #ifdef EXPERIMENTAL_DCC
-dcc_header = dcc_result = NULL;
+ dcc_header = dcc_result = NULL;
 #endif
+
 body_linecount = body_zerocount = 0;
 
 lookup_value = NULL;				/* Can be set by ACL */

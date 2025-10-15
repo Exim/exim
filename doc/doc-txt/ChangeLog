@@ -206,7 +206,8 @@ JH/46 Bug 3165: Fix message_id_header_domain/message_id_header_text option
       handling. If configured, without any expansions but with certain
       characters, a crash could result for command-line message insertion.
 
-JH/47 Fix potential UAFs for $value, $srs_recipient and $malware_name.
+JH/47 Fix potential UAFs for $value, $tls_out_*, $srs_recipient and
+      $malware_name.
 
 
 Exim version 4.98
