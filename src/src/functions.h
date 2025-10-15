@@ -947,18 +947,23 @@ Returns:  copy of string in new store
 */
 
 static inline uschar *
-string_copy_perm(const uschar *s, BOOL force_taint)
+string_copy_pool(const uschar * s, BOOL force_taint, int use_pool)
 {
 int old_pool = store_pool;
 int len = Ustrlen(s) + 1;
 uschar *ss;
 
-store_pool = POOL_PERM;
+store_pool = use_pool;
 ss = store_get(len, force_taint ? GET_TAINTED : s);
 memcpy(ss, s, len);
 store_pool = old_pool;
 return ss;
 }
+
+static inline uschar *
+string_copy_perm(const uschar * s, BOOL force_taint)
+{ return string_copy_pool(s, force_taint, POOL_PERM); }
+
 # endif
 
 

@@ -1381,10 +1381,14 @@ static certfield certfields[] =
   { US"crl_uri",	 7,  &tls_cert_crl_uri },
 };
 
+/* All string returns are in allocated memory, from the search pool */
+
 static uschar *
 expand_getcertele(uschar * field, uschar * certvar)
 {
 var_entry * vp;
+int old_pool = store_pool;
+uschar * res = NULL;
 
 if (!(vp = find_var_ent(certvar, var_table, nelem(var_table))))
   {
@@ -1403,8 +1407,13 @@ if (vp->type != vtype_cert)
 if (!*(void **)vp->value)
   return NULL;
 
+store_pool = POOL_SEARCH;
+
 if (*field >= '0' && *field <= '9')
-  return tls_cert_ext_by_oid(*(void **)vp->value, field, 0);
+  {
+  res = tls_cert_ext_by_oid(*(void **)vp->value, field, 0);
+  goto out;
+  }
 
 for (certfield * cp = certfields;
      cp < certfields + nelem(certfields);
@@ -1413,12 +1422,16 @@ for (certfield * cp = certfields;
     {
     uschar * modifier = *(field += cp->namelen) == ','
       ? ++field : NULL;
-    return (*cp->getfn)( *(void **)vp->value, modifier );
+    res = (*cp->getfn)( *(void **)vp->value, modifier );
+    goto out;
     }
 
 expand_string_message =
   string_sprintf("bad field selector %q for certextract", field);
-return NULL;
+
+out:
+  store_pool = old_pool;
+  return res;
 }
 #endif	/*DISABLE_TLS*/
 
@@ -2886,7 +2899,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	case FAIL:
           lookup_value = NULL;
 	  if (user_msg)
-            lookup_value = string_copy(user_msg);
+            lookup_value = string_copy_pool(user_msg, FALSE, POOL_SEARCH);
 	  *yield = cond == testfor;
 	  break;
 
@@ -3325,7 +3338,7 @@ switch(cond_type = identify_operator(&s, &opname))
       {
       const uschar * list = sub[1];
       int sep;
-      uschar *save_iterate_item = iterate_item;
+      uschar * save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
       DEBUG(D_expand) debug_printf_indent("condition: %s  item: %s\n", opname, sub[0]);
@@ -3346,7 +3359,7 @@ switch(cond_type = identify_operator(&s, &opname))
         if (compare(sub[0], iterate_item) == 0)
           {
           tempcond = TRUE;
-	  lookup_value = iterate_item;
+	  lookup_value = string_copy_pool(iterate_item, FALSE, POOL_SEARCH);
           break;
           }
 	}
@@ -5115,7 +5128,7 @@ while (*s)	/* known to be untainted */
       switch(process_yesno(
                flags,			/* were previously skipping */
                cond,			/* success/failure indicator */
-               lookup_value,			/* value to reset for string2 */
+               lookup_value,		/* value to reset for string2 */
                &s,			/* input pointer */
                &yield,			/* output pointer */
                US"if",			/* condition type */
@@ -5893,8 +5906,9 @@ while (*s)	/* known to be untainted */
 
         /* Read the pipe to get the command's output into $value (which is kept
         in lookup_value). Read during execution, so that if the output exceeds
-        the OS pipe buffer limit, we don't block forever. Remember to not release
-	memory just allocated for $value. */
+        the OS pipe buffer limit, we don't block forever. Remember to not
+	release memory just allocated for $value, as we used the main pool
+	not the search pool. */
 
 	resetok = FALSE;
         f = fdopen(fd_out, "rb");
@@ -6392,7 +6406,8 @@ while (*s)	/* known to be untainted */
         }
 
       /* Extract either the numbered or the keyed substring into $value. If
-      skipping, just pretend the extraction failed. */
+      skipping, just pretend the extraction failed.  Copy to the search pool
+      so we don't lose the data to store_reset(). */
 
       if (flags & ESI_SKIPPING)
 	lookup_value = NULL;
@@ -6400,8 +6415,8 @@ while (*s)	/* known to be untainted */
 	{
 	case extract_basic:
 	  lookup_value = field_number_set
-	    ? expand_gettokened(field_number, sub[1], sub[2])
-	    : expand_getkeyed(sub[0], sub[1]);
+			? expand_gettokened(field_number, sub[1], sub[2])
+			: expand_getkeyed(sub[0], sub[1]);
 	  break;
 
 	case extract_json:
@@ -6483,6 +6498,9 @@ while (*s)	/* known to be untainted */
 	    }
 	  break;	/* json/s */
 	}
+
+      if (lookup_value)
+	lookup_value = string_copy_pool(lookup_value, FALSE, POOL_SEARCH);
 
       /* If no string follows, $value gets substituted; otherwise there can
       be yes/no strings, as for lookup or if. */
@@ -6584,8 +6602,13 @@ while (*s)	/* known to be untainted */
       /* Extract the numbered element into $value. If
       skipping, just pretend the extraction failed. */
 
-      lookup_value = flags & ESI_SKIPPING
-	? NULL : expand_getlistele(field_number, sub[1], sep);
+	{
+	int old_pool = store_pool;
+	store_pool = POOL_SEARCH;
+	lookup_value = flags & ESI_SKIPPING
+	  ? NULL : expand_getlistele(field_number, sub[1], sep);
+	store_pool = old_pool;
+	}
 
       /* If no string follows, $value gets substituted; otherwise there can
       be yes/no strings, as for lookup or if. */
@@ -6689,6 +6712,7 @@ while (*s)	/* known to be untainted */
 	lookup_value = NULL;
       else
 	{
+	/* returns in search pool */
 	lookup_value = expand_getcertele(sub[0], sub[1]);
 	if (*expand_string_message) goto EXPAND_FAILED;
 	}
@@ -6731,7 +6755,7 @@ while (*s)	/* known to be untainted */
 	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
-      DEBUG(D_expand) debug_printf_indent("%s: evaluate input list list\n", name);
+      DEBUG(D_expand) debug_printf_indent("%s: evaluate input list\n", name);
       /* Check for a list-sep spec before expansion */
       sep = matchlist_parse_sep(&s);
 
@@ -6758,7 +6782,7 @@ while (*s)	/* known to be untainted */
         t = expand_string_internal(s,
 	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
         if (!t) goto EXPAND_FAILED;
-        lookup_value = t;						/*{{*/
+	if (!(flags & ESI_SKIPPING)) lookup_value = t;						/*{{*/
         if (*s++ != '}')
 	  {
 	  expand_string_message = US"missing '}' closing second arg of reduce";
@@ -6908,10 +6932,7 @@ while (*s)	/* known to be untainted */
       $value. */
 
       if (item_type == EITEM_REDUCE)
-        {
         yield = string_cat(yield, lookup_value);
-        lookup_value = save_lookup_value;  /* Restore $value */
-        }
 
       /* FILTER and MAP generate lists: if they have generated anything, remove
       the redundant final separator. Even though an empty item at the end of a
@@ -6919,9 +6940,10 @@ while (*s)	/* known to be untainted */
 
       else if (yield && yield->ptr != save_ptr) yield->ptr--;
 
-      /* Restore preserved $item */
+      /* Restore preserved $item and $value */
 
       iterate_item = save_iterate_item;
+      lookup_value = save_lookup_value;
       if (flags & ESI_SKIPPING) continue; else break;
       }
 
@@ -7210,7 +7232,8 @@ while (*s)	/* known to be untainted */
 	goto EXPAND_FAILED_CURLY;
 	}
 
-      lookup_value = US getenv(CS key);
+      if ((lookup_value = US getenv(CS key)))
+	lookup_value = string_copy_pool(lookup_value, FALSE, POOL_SEARCH);
 
       switch(process_yesno(
                flags,				/* were previously skipping */
@@ -8611,8 +8634,8 @@ if (flags & ESI_BRACE_ENDS && !*s)
   }
 
 /* Expansion succeeded; yield may still be NULL here if nothing was actually
-added to the string. If so, set up an empty string. Add a terminating zero. If
-left != NULL, return a pointer to the terminator. */
+added to the string. If so, set up an empty string. Add a terminating NUL. If
+left != NULL, return a pointer to the endpoint in the source string. */
 
  {
   uschar * res;
