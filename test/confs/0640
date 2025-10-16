@@ -1,0 +1,50 @@
+# Exim test configuration 0640
+
+SERVER =
+
+.include DIR/aux-var/std_conf_prefix
+
+rfc1413_query_timeout = 0s
+log_selector = +sender_on_delivery +millisec
+
+# ----- Main settings -----
+
+queue_only = yes
+remote_max_parallel = 1
+
+acl_smtp_rcpt = accept
+
+# ----- Routers -----
+
+begin routers
+
+drain_q:
+  driver =	manualroute
+  route_list =	* 127.0.0.1
+  self =	send
+  transport =	send_to_server
+
+targetsys:
+  driver =	redirect
+  data =	:blackhole:
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver =	smtp
+  allow_localhost
+  port =	PORT_D
+  hosts_try_fastopen = :
+  max_rcpt =	1
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+# End
+

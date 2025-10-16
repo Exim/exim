@@ -40,7 +40,8 @@ The following different types of store are recognized:
 
 - There is another pool (POOL_MESSAGE) used for medium-lifetime objects; within
   a single message transaction but needed for longer than the use of the main
-  pool permits.  Currently this means only receive-time DKIM information.
+  pool permits.  Currently this means only receive-time DKIM information,
+  and continued-transport tree_unusable information.
 
 - There is a dedicated pool for configuration data read from the config file(s).
   Once complete, it is made readonly.

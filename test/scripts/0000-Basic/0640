@@ -1,0 +1,53 @@
+# Continued-transport
+# - Bug 3162
+#
+# Queue up two messages, 1st with 2 rcpts
+exim msg1@test.ex msg1b@test.ex
+****
+exim msg2@test.ex
+****
+#
+# Get a retry record for the target host set up (lacking a daemon to talk to)
+# so that the tpt finds a continue message
+exim -M $msg2
+****
+#
+# The tpt for the 1st rcpt of the 1st msg gets a conn-fail, causing the delivery
+# process to write tree_unusable. The delivery proc knows there is a 2nd rcpt
+# for the message so forks another transport. The 2nd rcpt succeeds, and suggests
+# a continued-message-id - and then in the deliver proc store gets
+# freed before the 3rd; if the tree was in the main pool, UAF at some point.
+# Maybe a boom in the reset from assert_no_variables if debug_store is set.
+server PORT_D 2
+>*eof
+220 Yo dude
+EHLO
+250- hearing you
+250 ok
+MAIL FROM:
+250
+RCPT TO:
+250
+DATA
+354
+.
+250 got message 1
+MAIL FROM:
+250
+RCPT TO:
+250
+DATA
+354
+.
+250 got message 2
+QUIT
+220 bye
+****
+#
+# Trigger one and see what happens
+#  The second should have been dealt with by continue- processing,
+#  so log an error when we give it on the commandline.
+exim -M $msg1 $msg2
+****
+#
+no_msglog_check

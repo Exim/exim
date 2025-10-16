@@ -3868,6 +3868,42 @@ return TRUE;
 
 
 /*************************************************
+*    Add entry to unusable addresses tree        *
+*************************************************/
+
+/* Duplicates are simply discarded.
+The tree is searched by retry_check_address(), from the smtp transport.
+
+We need storage not discarded by the main pool, which is tidied up
+while looping for continued-transport work.  But we want to clean
+our working memory when we spot a duplicate, so cannot use the perm pool.
+Use the message pool.
+
+Argument:    the host item
+Returns:     nothing
+*/
+
+static void
+tree_add_unusable(const host_item * h)
+{
+int saved_pool = store_pool;
+
+store_pool = POOL_MESSAGE;
+  {
+  rmark rpoint = store_mark();
+  const uschar * s = retry_host_key_build(h, TRUE, NULL);
+  tree_node * node = store_get(sizeof(tree_node) + Ustrlen(s), s);
+  Ustrcpy(node->name, s);
+  node->data.val = h->why;
+  if (h->status == hstatus_unusable_expired) node->data.val += 256;
+  if (!tree_insertnode(&tree_unusable, node))
+    store_reset(rpoint);
+  }
+store_pool = saved_pool;
+}
+
+
+/*************************************************
 *   Post-process a set of remote addresses       *
 *************************************************/
 

@@ -665,7 +665,6 @@ extern gstring * transport_show_supported(gstring *);
 extern BOOL    transport_write_message(transport_ctx *, int);
 extern void    tree_add_duplicate(const uschar *, address_item *);
 extern void    tree_add_nonrecipient(const uschar *);
-extern void    tree_add_unusable(const host_item *);
 extern void    tree_dup(tree_node **, tree_node *);
 extern int     tree_insertnode(tree_node **, tree_node *);
 extern tree_node *tree_search(tree_node *, const uschar *);

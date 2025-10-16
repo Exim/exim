@@ -65,34 +65,6 @@ if (!tree_insertnode(&tree_duplicates, node)) store_reset(rpoint);
 
 
 
-#ifndef COMPILE_UTILITY
-/*************************************************
-*    Add entry to unusable addresses tree        *
-*************************************************/
-
-/* Duplicates are simply discarded.
-
-Argument:    the host item
-Returns:     nothing
-*/
-
-void
-tree_add_unusable(const host_item * h)
-{
-rmark rpoint = store_mark();
-tree_node * node;
-const uschar * s = retry_host_key_build(h, TRUE, NULL);
-node = store_get(sizeof(tree_node) + Ustrlen(s),
-	    is_tainted(h->name) || is_tainted(h->address)
-	    ? GET_TAINTED : GET_UNTAINTED);
-Ustrcpy(node->name, s);
-node->data.val = h->why;
-if (h->status == hstatus_unusable_expired) node->data.val += 256;
-if (!tree_insertnode(&tree_unusable, node)) store_reset(rpoint);
-}
-#endif
-
-
 /*************************************************
 *        Write a tree in re-readable form        *
 *************************************************/

@@ -1,0 +1,47 @@
+
+******** SERVER ********
+Listening on port PORT_D ... 
+Connection request from [127.0.0.1]
+>*eof
+Listening on port PORT_D ... 
+Connection request from [127.0.0.1]
+220 Yo dude
+EHLO the.local.host.name
+250- hearing you
+250 ok
+MAIL FROM:<CALLER@the.local.host.name>
+250
+RCPT TO:<msg1b@test.ex>
+250
+DATA
+354
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaX-000000005vi-0000;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-000000005vi-0000@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 got message 1
+MAIL FROM:<CALLER@the.local.host.name>
+250
+RCPT TO:<msg2@test.ex>
+250
+DATA
+354
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaY-000000005vi-0000
+	for msg2@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 got message 2
+QUIT
+220 bye
+End of script
