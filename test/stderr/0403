@@ -196,7 +196,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling TESTSUITE/test-mail/junk:userx@test.ex
 t1 transport returned OK for TESTSUITE/test-mail/junk
-post-process TESTSUITE/test-mail/junk (0)
+post-process TESTSUITE/test-mail/junk (OK)
 TESTSUITE/test-mail/junk delivered
 userx@test.ex: children all complete
 LOG: MAIN
@@ -405,7 +405,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1239 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling TESTSUITE/test-mail/junk:charlie@dom1.ain
 t1 transport returned OK for TESTSUITE/test-mail/junk
-post-process TESTSUITE/test-mail/junk (0)
+post-process TESTSUITE/test-mail/junk (OK)
 TESTSUITE/test-mail/junk delivered
 charlie@dom1.ain: children all complete
 LOG: MAIN

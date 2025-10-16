@@ -926,7 +926,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling ph10@myhost.test.ex
 t1 transport returned OK for ph10@myhost.test.ex
-post-process ph10@myhost.test.ex (0)
+post-process ph10@myhost.test.ex (OK)
 ph10@myhost.test.ex delivered
 LOG: MAIN
   => ph10 <ph10@myhost.test.ex> R=r1 T=t1

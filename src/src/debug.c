@@ -46,6 +46,13 @@ const uschar * dns_rc_names[] = {
   [DNS_FAIL] =		US"DNS_FAIL",
 };
 
+const uschar * dsn_aware_names[] = {
+  [dsn_support_unknown] = US"UNKNOWN",
+  [dsn_support_yes] =	  US"YES",
+  [dsn_support_no] =	  US"NO",
+};
+
+
 
 /*************************************************
 *               Print tree                       *

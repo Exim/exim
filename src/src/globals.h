@@ -583,6 +583,7 @@ extern int     driver_srcline;	       /* For debug & errors */
 extern unsigned int dtrigger_selector; /* when to start debug */
 
 extern uschar *dsn_from;               /* From: string for DSNs */
+extern const uschar * dsn_aware_names[]; /* Mostly for debug output */
 
 extern BOOL    envelope_to_remove;     /* Remove envelope_to_headers */
 extern int     errno_quota;            /* Quota errno in this OS */

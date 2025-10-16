@@ -379,7 +379,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling 2@b
 t1 transport returned OK for 2@b
-post-process 2@b (0)
+post-process 2@b (OK)
 2@b delivered
 LOG: MAIN
   => 2 <2@b> R=r1 T=t1
@@ -570,7 +570,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1239 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling 2@b
 t1 transport returned OK for 2@b
-post-process 2@b (0)
+post-process 2@b (OK)
 2@b delivered
 LOG: MAIN
   => 2 <2@b> R=r1 T=t1

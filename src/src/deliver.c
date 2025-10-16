@@ -1476,7 +1476,8 @@ uschar * now = tod_stamp(tod_log);
 uschar * driver_kind = NULL;
 uschar * driver_name = NULL;
 
-DEBUG(D_deliver) debug_printf("post-process %s (%d)\n", addr->address, result);
+DEBUG(D_deliver)
+  debug_printf("post-process %s (%s)\n", addr->address, rc_names[result]);
 
 /* Set up driver kind and name for logging. Disable logging if the router or
 transport has disabled it. */
@@ -3601,7 +3602,8 @@ while (!done)
       if (!addr) goto ADDR_MISMATCH;
       memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
       ptr += sizeof(addr->dsn_aware);
-      DEBUG(D_deliver) debug_printf("DSN read: addr->dsn_aware = %d\n", addr->dsn_aware);
+      DEBUG(D_deliver) debug_printf("DSN: addr->dsn_aware = %d (%s)\n",
+			addr->dsn_aware, dsn_aware_names[addr->dsn_aware]);
       break;
 
     case 'A':		/* Per-address info */
@@ -3656,7 +3658,8 @@ while (!done)
 #endif
 
 	case '0':	/* results of trying to send to this address */
-	  DEBUG(D_deliver) debug_printf("A0 %s tret %d\n", addr->address, *ptr);
+	  DEBUG(D_deliver) debug_printf("A0 %s tret %d (%s)\n",
+					  addr->address, *ptr, rc_names[*ptr]);
 	  addr->transport_return = *ptr++;
 	  addr->special_action = *ptr++;
 	  memcpy(&addr->basic_errno, ptr, sizeof(addr->basic_errno));

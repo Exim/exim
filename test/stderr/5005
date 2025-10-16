@@ -155,7 +155,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling nofile@test.ex
 t1 transport returned OK for nofile@test.ex
-post-process nofile@test.ex (0)
+post-process nofile@test.ex (OK)
 nofile@test.ex delivered
 LOG: MAIN
   => nofile <nofile@test.ex> R=r1 T=t1
@@ -343,7 +343,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1239 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling userx@test.ex
 t1 transport returned OK for userx@test.ex
-post-process userx@test.ex (0)
+post-process userx@test.ex (OK)
 userx@test.ex delivered
 LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1
@@ -526,7 +526,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1242 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 t1 transport returned DEFER for userx@test.ex
 added retry item for T:userx@test.ex: errno=-22 more_errno=dd flags=0
-post-process userx@test.ex (1)
+post-process userx@test.ex (DEFER)
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
@@ -714,7 +714,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1245 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 t1 transport returned DEFER for userx@test.ex
 added retry item for T:userx@test.ex: errno=-22 more_errno=dd flags=0
-post-process userx@test.ex (1)
+post-process userx@test.ex (DEFER)
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>

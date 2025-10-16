@@ -859,7 +859,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling TESTSUITE/test-mail/junk:rd+usery@test.ex
 ft1 transport returned OK for TESTSUITE/test-mail/junk
-post-process TESTSUITE/test-mail/junk (0)
+post-process TESTSUITE/test-mail/junk (OK)
 TESTSUITE/test-mail/junk delivered
 rd+usery@test.ex: children all complete
 LOG: MAIN
@@ -948,7 +948,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling TESTSUITE/test-mail/junk:rd+CALLER@test.ex
 ft1 transport returned OK for TESTSUITE/test-mail/junk
-post-process TESTSUITE/test-mail/junk (0)
+post-process TESTSUITE/test-mail/junk (OK)
 TESTSUITE/test-mail/junk delivered
 rd+CALLER@test.ex: children all complete
 LOG: MAIN
@@ -981,7 +981,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling CALLER@test.ex
 t1 transport returned OK for CALLER@test.ex
-post-process CALLER@test.ex (0)
+post-process CALLER@test.ex (OK)
 CALLER@test.ex delivered
 LOG: MAIN
   => CALLER <CALLER@test.ex> R=r1 T=t1
@@ -1021,7 +1021,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1239 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling usery@test.ex
 t1 transport returned OK for usery@test.ex
-post-process usery@test.ex (0)
+post-process usery@test.ex (OK)
 usery@test.ex delivered
 LOG: MAIN
   => usery <usery@test.ex> R=r2 T=t1
@@ -1061,7 +1061,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1240 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling userz@test.ex
 t2 transport returned OK for userz@test.ex
-post-process userz@test.ex (0)
+post-process userz@test.ex (OK)
 userz@test.ex delivered
 LOG: MAIN
   => userz <userz@test.ex> R=r3 T=t2

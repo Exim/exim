@@ -1574,7 +1574,8 @@ if (!is_new_message_id(message_id))
   return;
   }
 
-DEBUG(D_transport) debug_printf("updating wait-%s database\n", tpname);
+DEBUG(D_transport)
+  { debug_printf("updating wait-%s database\n", tpname); acl_level++; }
 
 /* Open the database (or transaction) for this transport */
 
@@ -1583,7 +1584,7 @@ if ( continue_wait_db
    : !(dbp = dbfn_open(string_sprintf("wait-%.200s", tpname),
 		      O_RDWR|O_CREAT, &dbblock, TRUE, TRUE))
    )
-  return;
+  goto out;
 
 /* Scan the list of hosts for which this message is waiting, and ensure
 that the message id is in each host record. */
@@ -1712,6 +1713,10 @@ if (continue_wait_db)
   dbfn_transaction_commit(dbp);
 else
   dbfn_close(dbp);
+
+out:
+  DEBUG(D_transport) acl_level--;
+  return;
 }
 
 

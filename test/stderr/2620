@@ -832,7 +832,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1239 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling CALLER@myhost.test.ex
 t1 transport returned OK for CALLER@myhost.test.ex
-post-process CALLER@myhost.test.ex (0)
+post-process CALLER@myhost.test.ex (OK)
 CALLER@myhost.test.ex delivered
 LOG: MAIN
   => CALLER <CALLER@myhost.test.ex> R=r1 T=t1

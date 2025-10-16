@@ -72,7 +72,7 @@ extract item: :defer: not just now
 r_remain router: defer for rz.b@outside
   message: not just now
 added retry item for R:outside: errno=-1 more_errno=dd flags=0
-post-process rz.b@outside (1)
+post-process rz.b@outside (DEFER)
 LOG: MAIN
   == rz.b@outside R=r_remain defer (-1): not just now
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

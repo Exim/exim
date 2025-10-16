@@ -245,7 +245,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling kilos@recurse.test.ex.test.ex/t2
 t2 transport returned OK for kilos@recurse.test.ex.test.ex
-post-process kilos@recurse.test.ex.test.ex (0)
+post-process kilos@recurse.test.ex.test.ex (OK)
 kilos@recurse.test.ex.test.ex delivered
 kilos@recurse.test.ex.test.ex: children all complete
 kilos@recurse.test.ex: children all complete
