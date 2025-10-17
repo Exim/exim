@@ -1229,7 +1229,7 @@ const pcre2_code *regex_whitelisted_macro = NULL;
 uschar *regex_match_string     = NULL;
 #endif
 int     remote_delivery_count  = 0;
-int     remote_max_parallel    = 4;
+int     remote_max_parallel    = 6;
 uschar *remote_sort_domains    = NULL;
 int     retry_data_expire      = 7*24*60*60;
 int     retry_interval_max     = 24*60*60;

@@ -21,6 +21,9 @@ JH/03 The -bV option now only reports dynamic-load lookups for which the driver
 JH/04 Add taint-tracking for certain certextract expansions. For now we define
       both endpoint certs as tainted.
 
+JH/05 The default for the main option "remote_max_parallel" increases from
+      4 to 6.
+
 Exim version 4.99
 -----------------
 

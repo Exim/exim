@@ -17800,7 +17800,7 @@ initial set of recipients. The remote server should then re-send the message
 for the remaining recipients at a later time.
 
 
-.option remote_max_parallel main integer 4
+.option remote_max_parallel main integer 6
 .cindex "delivery" "parallelism for remote"
 This option controls parallel delivery of one message to a number of remote
 hosts. If the value is less than 2, parallel delivery is disabled, and Exim

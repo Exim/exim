@@ -480,7 +480,7 @@ recipient_unqualified_hosts          host list       unset         main         
 recipients_max                       integer*        50000         main              1.60 default changed in 4.95 (was 0)
 recipients_max_reject                boolean         false         main              1.70
 redirect_router                      string          unset         routers           4.00
-remote_max_parallel                  integer         1             main
+remote_max_parallel                  integer         6             main
 remote_sort_domains                  domain list     unset         main              4.00 replacing remote_sort
 repeat_use                           boolean         true          redirect          4.00
 reply_to                             string*         unset         autoreply         2.05
