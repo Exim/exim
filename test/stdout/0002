@@ -964,8 +964,6 @@ xyz
 > 
 > 
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro '_HAVE_PIPE_CONNECT' -> 'y'
-macro '_HAVE_DMARC' -> 'y'
 macro 'PTBC' -> ''
 macro 'LENCHECK' -> ''
 > primary_hostname: myhost.test.ex
@@ -979,8 +977,6 @@ macro 'LENCHECK' -> ''
 > Failed: attempt to use tainted string 'sndr@dom' for hash
 > 
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro '_HAVE_PIPE_CONNECT' -> 'y'
-macro '_HAVE_DMARC' -> 'y'
 macro 'PTBC' -> ''
 macro 'LENCHECK' -> ''
 > primary_hostname: myhost.test.ex
@@ -991,8 +987,6 @@ macro 'LENCHECK' -> ''
 > protected:  
 > 
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro '_HAVE_PIPE_CONNECT' -> 'y'
-macro '_HAVE_DMARC' -> 'y'
 macro 'PTBC' -> 'print_topbitchars'
 macro 'LENCHECK' -> ''
 > escape: B7·F2ò
@@ -1010,8 +1004,6 @@ macro 'LENCHECK' -> ''
 > -oMt  sender_ident = CALLER
 > 
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro '_HAVE_PIPE_CONNECT' -> 'y'
-macro '_HAVE_DMARC' -> 'y'
 macro 'PTBC' -> ''
 macro 'LENCHECK' -> ''
 > -be Sender host name and address etc, all set except host name.
@@ -1039,8 +1031,6 @@ macro 'LENCHECK' -> ''
 > -p  sender_host_name = host.name
 > 
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro '_HAVE_PIPE_CONNECT' -> 'y'
-macro '_HAVE_DMARC' -> 'y'
 macro 'PTBC' -> ''
 macro 'LENCHECK' -> ''
 > -be Sender host name and address etc, all set except host name
@@ -1116,8 +1106,6 @@ macro 'LENCHECK' -> ''
 550 reply_address=<>
 221 myhost.test.ex closing connection
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro '_HAVE_PIPE_CONNECT' -> 'y'
-macro '_HAVE_DMARC' -> 'y'
 macro 'PTBC' -> ''
 macro 'LENCHECK' -> ''
 > match_ip:        15 
@@ -1128,8 +1116,6 @@ macro 'LENCHECK' -> ''
 > in list
 > 
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro '_HAVE_PIPE_CONNECT' -> 'y'
-macro '_HAVE_DMARC' -> 'y'
 macro 'PTBC' -> ''
 macro 'LENCHECK' -> ''
 > variable m0 set
