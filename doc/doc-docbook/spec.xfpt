@@ -42605,7 +42605,7 @@ certtool --generate-privkey --key-type=ed25519 --outfile=dkim_ed25519.private
 To produce the required public key value for a DNS record:
 .code
 openssl pkey -outform DER -pubout -in dkim_ed25519.private | tail -c +13 | base64
-certtool --load_privkey=dkim_ed25519.private --pubkey-info --outder | tail -c +13 | base64
+certtool --load-privkey=dkim_ed25519.private --pubkey-info --outder | tail -c +13 | base64
 .endd
 
 Exim also supports an alternate format
