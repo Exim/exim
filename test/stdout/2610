@@ -1,6 +1,15 @@
 ### start a db server
 ### wait for db startup, set password on the root user
 ### create testdb and extra users
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro 'PARTIAL' -> '127.0.0.1::1223'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'PARTIAL' -> '127.0.0.1::1223'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'PARTIAL' -> '127.0.0.1::1223'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
 > Philip Hazel
 > Philip Hazel
 > 

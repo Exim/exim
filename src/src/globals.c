@@ -261,6 +261,7 @@ struct global_flags f =
 
 	.enable_dollar_recipients = FALSE,
 	.expand_string_forcedfail = FALSE,
+	.expansion_test		= FALSE,
 
 	.filter_running         = FALSE,
 

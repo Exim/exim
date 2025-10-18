@@ -230,6 +230,7 @@ extern struct global_flags {
 
  BOOL   enable_dollar_recipients	:1; /* Make $recipients available */
  BOOL   expand_string_forcedfail	:1; /* TRUE if failure was "expected" */
+ BOOL   expansion_test			:1; /* TRUE for -be test mode */
 
  BOOL   filter_running			:1; /* TRUE while running a filter */
 

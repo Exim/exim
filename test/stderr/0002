@@ -367,6 +367,28 @@ dropping to exim gid; retaining priv uid
 try option 'gecos_pattern'
 try option 'gecos_name'
 try option 'unknown_login'
+ ╭considering: escape:░${escape:B7␷F2��}
+ ├───────text: escape:░
+ ├considering: ${escape:B7␷F2��}
+  ╭considering: B7␷F2��}
+  ├───────text: B7␷F2��
+  ├considering: }
+  ├───expanded: B7␷F2��
+  ╰─────result: B7␷F2��
+ ├─────op-res: B7�F2�
+ ├───expanded: escape:░${escape:B7␷F2��}
+ ╰─────result: escape:░B7␷F2��
+>>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+Hints DB:
+environment after trimming:
+ USER=CALLER
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+try option 'gecos_pattern'
+try option 'gecos_name'
+try option 'unknown_login'
  ╭considering: -oMa░░sender_host_address░=░$sender_host_address
  ├───────text: -oMa░░sender_host_address░=░
  ├considering: $sender_host_address
@@ -435,7 +457,7 @@ try option 'unknown_login'
  ├───expanded: -oMt░░sender_ident░=░$sender_ident
  ╰─────result: -oMt░░sender_ident░=░me
             ╰──(tainted)
->>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
 Exim version x.yz ....
 Hints DB:
@@ -562,15 +584,15 @@ try option 'unknown_login'
  ├───expanded: -oMt░░sender_ident░=░$sender_ident
  ╰─────result: -oMt░░sender_ident░=░me
             ╰──(tainted)
->>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=p1238
+  uid=uuuu gid=CALLER_GID pid=p1239
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=p1238
+  uid=EXIM_UID gid=EXIM_GID pid=p1239
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 sender_fullhost = [V4NET.0.0.1]
@@ -634,15 +656,15 @@ LOG: connection_reject MAIN REJECT
   H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
 SMTP>- ◀flush▶
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=p1239
+  uid=uuuu gid=CALLER_GID pid=p1240
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=p1239
+  uid=EXIM_UID gid=EXIM_GID pid=p1240
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 sender_fullhost = [V4NET.0.0.2]
@@ -684,7 +706,7 @@ LOG: connection_reject MAIN REJECT
   H=[V4NET.0.0.2] rejected connection in "connect" ACL
 SMTP>- ◀flush▶
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -849,7 +871,7 @@ LOG: 10HmbD-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: re
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: -C, -D, -be or -bf forces real uid
-  uid=CALLER_UID gid=CALLER_GID pid=p1240
+  uid=CALLER_UID gid=CALLER_GID pid=p1241
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -866,7 +888,7 @@ set_process_info: pppp expansion-test
    ╎ list element: aaaa:bbbb
    ╎ ::1 in "<; aaaa:bbbb"? no (malformed IPv6 address or address mask: aaaa:bbbb)
    search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
 environment after trimming:
@@ -912,4 +934,4 @@ try option 'unknown_login'
  ├───expanded: '\${listextract░{2}░{$acl_m0}}'░░=>░░░'${listextract░{2}░{$acl_m0}}'
  ╰─────result: '${listextract░{2}░{my:target:string:list}}'░░=>░░░'target'
             ╰──(tainted)
->>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1242 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

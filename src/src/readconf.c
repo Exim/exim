@@ -975,8 +975,13 @@ if (*s) for (macro_item * m = *s == '_' ? macros : macros_user; m; m = m->next)
     {
     int moveby;
 
-    EARLY_DEBUG(D_any, "%s: matched '%s' in '%.*s'\n", __FUNCTION__,
-      m->name, (int) Ustrlen(ss)-1, ss);
+    DEBUG(D_any)
+      if (f.expansion_test)
+	printf("macro '%s' -> '%s'\n", m->name, m->replacement);
+      else
+	EARLY_DEBUG(D_any, "%s: matched '%s' in '%.*s'\n", __FUNCTION__,
+	  m->name, (int) Ustrlen(ss)-1, ss);
+
     /* Expand the buffer if necessary */
 
     while (*newlen - m->namelen + m->replen + 1 > big_buffer_size)

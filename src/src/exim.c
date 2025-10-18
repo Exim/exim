@@ -1821,7 +1821,6 @@ BOOL arg_queue_only = FALSE;
 BOOL bi_option = FALSE;
 BOOL checking = FALSE;
 BOOL count_queue = FALSE;
-BOOL expansion_test = FALSE;
 BOOL extract_recipients = FALSE;
 BOOL flag_G = FALSE;
 BOOL flag_n = FALSE;
@@ -2339,7 +2338,7 @@ on the second character (the one after '-'), to save some effort. */
 	   -bem: Ditto, but read a message from a file first
 	*/
 	case 'e':
-	  expansion_test = checking = TRUE;
+	  f.expansion_test = checking = TRUE;
 	  if (*argrest == 'm')
 	    {
 	    if (++i >= argc) { badarg = TRUE; break; }
@@ -3921,9 +3920,9 @@ if (	 (smtp_input || extract_recipients || recipients_arg < argc)
    ||	 smtp_input
       && (sender_address || filter_test != FTEST_NONE || extract_recipients)
    || deliver_selectstring && !qrunners
-   || msg_action == MSG_LOAD && (!expansion_test || expansion_test_message)
+   || msg_action == MSG_LOAD && (!f.expansion_test || expansion_test_message)
    ||	 atrn_mode
-      && (  f.daemon_listen || expansion_test || filter_test != FTEST_NONE
+      && (  f.daemon_listen || f.expansion_test || filter_test != FTEST_NONE
 	 || checking /* || bi_option || info_stdout || receiving_message
 	 || malware_test_file || list_queue || list_config || list_options
 	 || version_printed || msg_action_arg > 0 || qrunners
@@ -4081,7 +4080,7 @@ if ((                                            /* EITHER */
     real_uid != root_uid &&                      /* Not root, and */
     !f.running_in_test_harness                     /* Not fudged */
     ) ||                                         /*   OR   */
-    expansion_test                               /* expansion testing */
+    f.expansion_test                             /* expansion testing */
     ||                                           /*   OR   */
     filter_test != FTEST_NONE)                   /* Filter testing */
   {
@@ -4811,7 +4810,7 @@ needed in transports so we lost the optimisation. */
   /* -be can add macro definitions, needing to link to the macro structure
   chain.  Otherwise, make the memory used for config data readonly. */
 
-  if (!expansion_test)
+  if (!f.expansion_test)
     store_writeprotect(POOL_CONFIG);
 
 #ifdef MEASURE_TIMING
@@ -5349,7 +5348,7 @@ from stdin if there aren't any. If -Mset was specified, load the message so
 that its variables can be used, but restrict this facility to admin users.
 Otherwise, if -bem was used, read a message from stdin. */
 
-if (expansion_test)
+if (f.expansion_test)
   {
   set_process_info("expansion-test");
   dns_init(FALSE, FALSE, FALSE);

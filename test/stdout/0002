@@ -963,8 +963,11 @@ xyz
 > yes
 > 
 > 
-> escape: B7·F2ò
-> 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro '_HAVE_PIPE_CONNECT' -> 'y'
+macro '_HAVE_DMARC' -> 'y'
+macro 'PTBC' -> ''
+macro 'LENCHECK' -> ''
 > primary_hostname: myhost.test.ex
 > sender_address: sndr@dom
 > match:  cdab
@@ -975,12 +978,24 @@ xyz
 > Failed: internal expansion of "sndr@dom" failed: attempt to expand tainted string 'sndr@dom'
 > Failed: attempt to use tainted string 'sndr@dom' for hash
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro '_HAVE_PIPE_CONNECT' -> 'y'
+macro '_HAVE_DMARC' -> 'y'
+macro 'PTBC' -> ''
+macro 'LENCHECK' -> ''
 > primary_hostname: myhost.test.ex
 > match:  cdab
 > Failed: "if" failed and "fail" requested
 > yes
 > match_address:   no
 > protected:  
+> 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro '_HAVE_PIPE_CONNECT' -> 'y'
+macro '_HAVE_DMARC' -> 'y'
+macro 'PTBC' -> 'print_topbitchars'
+macro 'LENCHECK' -> ''
+> escape: B7·F2ò
 > 
 > -be Sender host name and address etc, all unset
 > -oMa  sender_host_address = 
@@ -994,6 +1009,11 @@ xyz
 > -oMs  sender_host_name = 
 > -oMt  sender_ident = CALLER
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro '_HAVE_PIPE_CONNECT' -> 'y'
+macro '_HAVE_DMARC' -> 'y'
+macro 'PTBC' -> ''
+macro 'LENCHECK' -> ''
 > -be Sender host name and address etc, all set except host name.
 > -oMa  sender_host_address = V4NET.0.0.1
 >       sender_host_port = 1234
@@ -1018,6 +1038,11 @@ xyz
 > -p  received_protocol = special
 > -p  sender_host_name = host.name
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro '_HAVE_PIPE_CONNECT' -> 'y'
+macro '_HAVE_DMARC' -> 'y'
+macro 'PTBC' -> ''
+macro 'LENCHECK' -> ''
 > -be Sender host name and address etc, all set except host name
 > -oMa  sender_host_address = V4NET.0.0.1
 >       sender_host_port = 1234
@@ -1090,6 +1115,11 @@ xyz
 354 Enter message, ending with "." on a line by itself
 550 reply_address=<>
 221 myhost.test.ex closing connection
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro '_HAVE_PIPE_CONNECT' -> 'y'
+macro '_HAVE_DMARC' -> 'y'
+macro 'PTBC' -> ''
+macro 'LENCHECK' -> ''
 > match_ip:        15 
 > match_ip:        16 
 > match_ip:        17 
@@ -1097,6 +1127,11 @@ xyz
 > in list
 > in list
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro '_HAVE_PIPE_CONNECT' -> 'y'
+macro '_HAVE_DMARC' -> 'y'
+macro 'PTBC' -> ''
+macro 'LENCHECK' -> ''
 > variable m0 set
 > '${listextract {2} {my:target:string:list}}'  =>   'target'
 > 

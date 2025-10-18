@@ -61,6 +61,7 @@ ten-2.test.ex
 > 
 > delay1500                  ip4.ip4.ip4.ip4
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
 > a=localhost.test.ex        127.0.0.1
 > a=localhost.test.ex        127.0.0.1
 > 

@@ -24,6 +24,8 @@ JH/04 Add taint-tracking for certain certextract expansions. For now we define
 JH/05 The default for the main option "remote_max_parallel" increases from
       4 to 6.
 
+JH/06 Expansion-test mode with debug (exim -d -be) now shows macro expansions.
+
 Exim version 4.99
 -----------------
 
