@@ -12154,6 +12154,7 @@ to test which IP version an incoming SMTP connection is using.
 .cindex "LDAP" "use for authentication"
 .cindex "expansion" "LDAP authentication test"
 .cindex "&%ldapauth%& expansion condition"
+.cindex AUTH "using LDAP"
 This condition supports user authentication using LDAP. See section
 &<<SECTldap>>& for details of how to use LDAP in lookups and the syntax of
 queries. For this use, the query must contain a user name and password. The
@@ -28586,6 +28587,7 @@ example, Outlook Express is reported to recognize only &"Username:"& and
 &"Password:"&. Here is an example of a LOGIN authenticator that uses those
 strings. It uses the &%ldapauth%& expansion condition to check the user
 name and password by binding to an LDAP server:
+.cindex AUTH "using LDAP"
 .code
 login:
   driver = plaintext
