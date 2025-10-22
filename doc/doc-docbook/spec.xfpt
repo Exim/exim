@@ -7124,6 +7124,9 @@ For example, to make the entire pattern case-sensitive:
 ^(?-i)\d+\.a\.b        data for <digits>.a.b
 .endd
 
+The circumflex remains part of the regular expression
+and has the usual anchor effect.
+
 If the regular expression contains white space or colon characters, you must
 either quote it (see &(lsearch)& above), or represent these characters in other
 ways. For example, &`\s`& can be used for white space and &`\x3A`& for a
