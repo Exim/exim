@@ -774,13 +774,13 @@ host in auth_advertise_hosts?
   end sublist auth_relay_hosts
  list element: 10.0.0.5
   host in auth_advertise_hosts? yes (matched "10.0.0.5")
-Evaluating advertise_condition for mylogin mylogin athenticator
-Evaluating advertise_condition for plain PLAIN athenticator
-Evaluating advertise_condition for extended_plain EXPLAIN athenticator
-Evaluating advertise_condition for expanded_prompt_plain EXPANDED athenticator
-Evaluating advertise_condition for expanded_prompt_plain_fail EXPANDFAIL athenticator
-Evaluating advertise_condition for defer DEFER athenticator
-Evaluating advertise_condition for login LOGIN athenticator
+Evaluating advertise_condition for mylogin mylogin authenticator
+Evaluating advertise_condition for plain PLAIN authenticator
+Evaluating advertise_condition for extended_plain EXPLAIN authenticator
+Evaluating advertise_condition for expanded_prompt_plain EXPANDED authenticator
+Evaluating advertise_condition for expanded_prompt_plain_fail EXPANDFAIL authenticator
+Evaluating advertise_condition for defer DEFER authenticator
+Evaluating advertise_condition for login LOGIN authenticator
 host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
 SMTP>| 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]

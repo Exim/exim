@@ -4400,7 +4400,7 @@ while (done <= 0)
 	    if (au->server)
 	      {
 	      DEBUG(D_auth+D_expand) debug_printf_indent(
-		"Evaluating advertise_condition for %s %s athenticator\n",
+		"Evaluating advertise_condition for %s %s authenticator\n",
 		au->drinst.name, au->public_name);
 	      if (  !au->advertise_condition
 		 || expand_check_condition(au->advertise_condition,
