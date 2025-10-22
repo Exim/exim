@@ -12092,9 +12092,9 @@ SRS decode.  See SECT &<<SECTSRS>>& for details.
 The <&'subject'&> string is expanded.
 .new
 The <&'list'&> first has any change-of-list-separator
-+(see &<<SECTlistsepchange>>&) retained verbatim,
-+then the remainder is expanded.
-+.wen
+(see &<<SECTlistsepchange>>&) retained verbatim,
+then the remainder is expanded.
+.wen
 The whole is treated as a list of simple strings;
 if the subject string is a member of that list, then the condition is true.
 For the case-independent &%inlisti%& condition, case is defined per the system C locale.
