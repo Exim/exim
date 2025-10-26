@@ -88,7 +88,7 @@ bin/mtpscript:  $(SRC)/mtpscript.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript $(SRC)/mtpscript.c
 
 bin/server:     $(SRC)/server.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server $(SRC)/server.c $(LIBS) $(TLS_LIBS)
+		$(CC) -D_GNU_SOURCE $(CFLAGS) $(LDFLAGS) -o bin/server $(SRC)/server.c $(LIBS) $(TLS_LIBS)
 
 bin/showids:    $(SRC)/showids.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids $(SRC)/showids.c
