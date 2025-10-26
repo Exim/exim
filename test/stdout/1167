@@ -1,0 +1,73 @@
+
+******** SERVER ********
+Creating IPv6 socket
+Creating IPv4 socket
+Listening on port PORT_D ... 
+Connection request from [127.0.0.1]
+220 banner
+EHLO testhost.test.ex
+250-yo mate
+250-STARTTLS
+250 ok
+STARTTLS
+250 ready for TLS startup
+SSL connection using ke-RSA-AES256-SHAnnn
+EHLO testhost.test.ex
+250-yo mate, encrypted
+250 ok
+MAIL FROM:<>
+250
+RCPT TO:<a@test.ex>
+250
+DATA
+352 go ahead
+Received: from CALLER by testhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@testhost.test.ex>)
+	id 10HmaX-000000005vi-0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test1
+Message-Id: <E10HmaX-000000005vi-0000@testhost.test.ex>
+From: CALLER_NAME <CALLER@testhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 accepted data
+QUIT
+220 saw your quit
+>*eof
+Creating IPv6 socket
+Creating IPv4 socket
+Listening on port PORT_D ... 
+Connection request from [127.0.0.1]
+220 banner
+EHLO testhost.test.ex
+250-yo mate
+250-STARTTLS
+250 ok
+STARTTLS
+250 ready for TLS startup
+SSL connection using ke-RSA-AES256-SHAnnn
+EHLO testhost.test.ex
+250-yo mate, encrypted
+250 ok
+MAIL FROM:<>
+250
+RCPT TO:<b@test.ex>
+250
+DATA
+352 go ahead
+Received: from CALLER by testhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@testhost.test.ex>)
+	id 10HmaY-000000005vi-0000
+	for b@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test2
+Message-Id: <E10HmaY-000000005vi-0000@testhost.test.ex>
+From: CALLER_NAME <CALLER@testhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 accepted data
+QUIT
+>*eof

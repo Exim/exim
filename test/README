@@ -1174,10 +1174,12 @@ are of the following kinds:
 (4) A line containing "*eof" specifies that the client is expected to close
     the connection at this point.
 
-(5) A line containing just '.' specifies that the client is expected to send
+(5) A line containing "*starttls" causes a TLS server-side startup attempt.
+
+(6) A line containing just '.' specifies that the client is expected to send
     many lines, terminated by one that contains just a dot.
 
-(6) Otherwise, the line defines the start of an input line that the client
+(7) Otherwise, the line defines the start of an input line that the client
     is expected to send. To allow for lines that start with digits, the line
     may start with '<', which is not taken as part of the input data. If the
     lines starts with '<<' then only the characters are expected; no return-

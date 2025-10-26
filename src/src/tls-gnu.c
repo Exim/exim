@@ -3523,7 +3523,7 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
       debug_printf(" extract session data: %s\n", US gnutls_strerror(rc));
       }
   else DEBUG(D_tls)
-      debug_printf(" host not resmable; not saving ticket\n");
+      debug_printf(" host not resumable; not saving ticket\n");
   }
 }
 

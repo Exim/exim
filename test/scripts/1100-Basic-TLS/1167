@@ -1,0 +1,67 @@
+# TLS client, server drops TCP after QUIT
+#
+# 1: server drops TCP after sending ack-of-QUIT
+server -d -tls DIR/aux-fixed/cert1 DIR/aux-fixed/cert1 PORT_D
+220 banner
+EHLO
+250-yo mate
+250-STARTTLS
+250 ok
+STARTTLS
+250 ready for TLS startup
+*starttls
+EHLO
+250-yo mate, encrypted
+250 ok
+MAIL
+250
+RCPT
+250
+DATA
+352 go ahead
+.
+250 accepted data
+QUIT
+220 saw your quit
+>*eof
+*eof
+****
+#
+exim -odf a@test.ex
+Subject: test1
+****
+#
+#
+#
+#
+#
+# 2: server drops TCP after receiving QUIT
+server -d -tls DIR/aux-fixed/cert1 DIR/aux-fixed/cert1 PORT_D
+220 banner
+EHLO
+250-yo mate
+250-STARTTLS
+250 ok
+STARTTLS
+250 ready for TLS startup
+*starttls
+EHLO
+250-yo mate, encrypted
+250 ok
+MAIL
+250
+RCPT
+250
+DATA
+352 go ahead
+.
+250 accepted data
+QUIT
+>*eof
+*eof
+****
+exim -odf b@test.ex
+Subject: test2
+****
+#
+no_msglog_check

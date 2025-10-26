@@ -21,6 +21,13 @@ BINARIES =	bin/cf bin/client $(CLIENT_OPENSSL) $(CLIENT_GNUTLS) $(CLIENT_ANYTLS)
                 bin/checkaccess bin/fakens bin/fd bin/iefbr14 $(LOADED) \
                 bin/mtpscript bin/server bin/showids bin/locate \
 
+ifdef CLIENT_OPENSSL
+TLS_LIBS = -lssl -lcrypto
+else ifdef CLIENT_GNUTLS
+TLS_LIBS = -lgnutls
+endif
+
+##############################################################################
 # List of targets
 
 all:            binaries sysbinaries
@@ -81,7 +88,7 @@ bin/mtpscript:  $(SRC)/mtpscript.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript $(SRC)/mtpscript.c
 
 bin/server:     $(SRC)/server.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server $(SRC)/server.c $(LIBS)
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server $(SRC)/server.c $(LIBS) $(TLS_LIBS)
 
 bin/showids:    $(SRC)/showids.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids $(SRC)/showids.c
