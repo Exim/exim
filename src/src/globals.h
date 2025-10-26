@@ -119,6 +119,7 @@ typedef struct {
   BOOL	  channelbind_exporter:1; /* channelbinding is EXPORTER not UNIQUE */
   BOOL    on_connect:1;         /* For older MTAs that don't STARTTLS */
   BOOL	  verify_override:1;	/* certificate_verified only due to tls_try_verify_hosts */
+  BOOL	  smtp_quit:1;		/* QUIT has been sent or received */
 } tls_support;
 extern tls_support tls_in;
 extern tls_support tls_out;
