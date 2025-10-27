@@ -10,7 +10,7 @@ set_process_info: pppp running queue: 10HmaX-000000005vi-0000
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 (queue run pid p1234)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
-set_process_info: pppp delivering 10HmaX-000000005vi-0000 using t1
+set_process_info: pppp delivering 10HmaX-000000005vi-0000 (1 addr) using t1
 t1 transport entered
   userx@test.ex
 hostlist:
@@ -58,7 +58,7 @@ Leaving t1 transport
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 (just run t1 for userx@test.ex in subprocess)
 >>>>>>>>>>>>>>>> Exim pid=p1235 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for 10HmaX-000000005vi-0000 (pppp)
-set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish (delivery wait-all-complete)
 set_process_info: pppp delivering 10HmaX-000000005vi-0000
 LOG: MAIN
   ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 550 NO
@@ -83,7 +83,7 @@ set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> CALLER@the.local.host.name <--------
-set_process_info: pppp delivering 10HmaZ-000000005vi-0000 using t1
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000 (1 addr) using t1
 t1 transport entered
   CALLER@the.local.host.name
 hostlist:
@@ -105,7 +105,7 @@ added 10HmaZ-000000005vi-0000 to queue for 127.0.0.1
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000 (just run t1 for CALLER@the.local.host.name in subprocess)
 >>>>>>>>>>>>>>>> Exim pid=p1238 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
-set_process_info: pppp delivering 10HmaZ-000000005vi-0000: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000: waiting for a remote delivery subprocess to finish (delivery wait-all-complete)
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000
 LOG: MAIN
   == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
@@ -121,7 +121,7 @@ set_process_info: pppp running queue: 10HmaY-000000005vi-0000
 set_process_info: pppp delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> usery@test.ex <--------
-set_process_info: pppp delivering 10HmaY-000000005vi-0000 using t1
+set_process_info: pppp delivering 10HmaY-000000005vi-0000 (1 addr) using t1
 t1 transport entered
   usery@test.ex
 hostlist:
@@ -136,7 +136,7 @@ Leaving t1 transport
 set_process_info: pppp delivering 10HmaY-000000005vi-0000 (just run t1 for usery@test.ex in subprocess)
 >>>>>>>>>>>>>>>> Exim pid=p1240 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for 10HmaY-000000005vi-0000 (pppp)
-set_process_info: pppp delivering 10HmaY-000000005vi-0000: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaY-000000005vi-0000: waiting for a remote delivery subprocess to finish (delivery wait-all-complete)
 set_process_info: pppp delivering 10HmaY-000000005vi-0000
 LOG: retry_defer MAIN
   == usery@test.ex R=r1 T=t1 defer (-54): retry time not reached for any host for 'test.ex'

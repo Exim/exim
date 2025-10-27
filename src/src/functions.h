@@ -218,7 +218,7 @@ extern void    dscp_list_to_stream(FILE *);
 extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
 
 extern void    enq_end(uschar *);
-extern BOOL    enq_start(uschar *, unsigned);
+extern unsigned enq_start(uschar *, unsigned);
 #ifndef DISABLE_EVENT
 extern uschar *event_raise(const uschar *, const uschar *, const uschar *, int *);
 extern void    msg_event_raise(const uschar *, const address_item *);

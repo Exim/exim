@@ -2637,10 +2637,12 @@ if (addr->special_action == SPECIAL_WARN)
 
 /* Check transport for the given concurrency limit.  Return TRUE if over
 the limit (or an expansion failure), else FALSE and if there was a limit,
-the key for the hints database used for the concurrency count. */
+the key for the hints database used for the concurrency count
+and a string for observability. */
 
 static BOOL
-tpt_parallel_check(transport_instance * tp, address_item * addr, uschar ** key)
+tpt_parallel_check(const transport_instance * tp, address_item * addr,
+  uschar ** key, uschar ** state)
 {
 const uschar * trname = tp->drinst.name;
 unsigned max_parallel;
@@ -2660,22 +2662,22 @@ if (expand_string_message)
 if (max_parallel > 0)
   {
   uschar * serialize_key = string_sprintf("tpt-serialize-%s", trname);
-  if (!enq_start(serialize_key, max_parallel))
+  unsigned running;
+  if (!(running = enq_start(serialize_key, max_parallel)))
     {
-    address_item * next;
     DEBUG(D_transport)
       debug_printf("skipping tpt %s because concurrency limit %u reached\n",
 		  trname, max_parallel);
     do
       {
-      next = addr->next;
       addr->message = US"concurrency limit reached for transport";
       addr->basic_errno = ERRNO_TRETRY;
       post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_TRANSPORT, 0);
-      } while ((addr = next));
+      } while ((addr = addr->next));
     return TRUE;
     }
   *key = serialize_key;
+  *state = string_sprintf(" (%u/max_parallel:%u)", running, max_parallel);
   }
 return FALSE;
 }
@@ -2712,7 +2714,7 @@ while (addr_local)
   int logflags = LOG_MAIN;
   int logchar = f.dont_deliver? '*' : '=';
   transport_instance * tp;
-  uschar * serialize_key = NULL;
+  uschar * serialize_key = NULL, * tpt_dummy;
   const uschar * trname;
 
   /* Pick the first undelivered address off the chain */
@@ -2999,7 +3001,7 @@ while (addr_local)
   We use a hints DB entry, incremented here and decremented after
   the transport (and any shadow transport) completes. */
 
-  if (tpt_parallel_check(tp, addr, &serialize_key))
+  if (tpt_parallel_check(tp, addr, &serialize_key, &tpt_dummy))
     {
     if (expand_string_message)
       {
@@ -3939,20 +3941,22 @@ can be created, or when waiting for the last ones to complete. It must wait for
 the completion of one subprocess, empty the control block slot, and return a
 pointer to the address chain.
 
-Arguments:    none
-Returns:      pointer to the chain of addresses handled by the process;
-              NULL if no subprocess found - this is an unexpected error
+Arguments:
+  reason:	observability: reason for call
+
+Returns:	pointer to the chain of addresses handled by the process;
+		NULL if no subprocess found - this is an unexpected error
 */
 
 static address_item *
-par_wait(void)
+par_wait(const uschar * reason)
 {
 int poffset, status;
 address_item * addrlist;
 pid_t pid;
 
 set_process_info("delivering %s: waiting for a remote delivery subprocess "
-  "to finish", message_id);
+  "to finish (%s)", message_id, reason);
 
 /* Loop until either a subprocess completes, or there are no subprocesses in
 existence - in which case give an error return. We cannot proceed just by
@@ -4199,16 +4203,17 @@ log and proceed as if all done.
 Arguments:
   max         maximum number of subprocesses to leave running
   fallback    TRUE if processing fallback hosts
+  reason      observability: reason for call
 
 Returns:      nothing
 */
 
 static void
-par_reduce(int max, BOOL fallback)
+par_reduce(int max, BOOL fallback, const uschar * reason)
 {
 while (parcount > max)
   {
-  address_item * doneaddr = par_wait();
+  address_item * doneaddr = par_wait(reason);
   if (!doneaddr)
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
@@ -4300,6 +4305,7 @@ static BOOL
 do_remote_deliveries(BOOL fallback)
 {
 int parmax, poffset;
+const uschar * plimit_reason = US"remote_max_parallel";
 
 parcount = 0;    /* Number of executing subprocesses */
 
@@ -4307,7 +4313,8 @@ parcount = 0;    /* Number of executing subprocesses */
 We use a local variable (parmax) to hold the maximum number of processes;
 this gets reduced from remote_max_parallel if we can't create enough pipes. */
 
-if (continue_transport) remote_max_parallel = 1;
+if (continue_transport)
+  { remote_max_parallel = 1; plimit_reason = US"continue_transport"; }
 parmax = remote_max_parallel;
 
 /* If the data for keeping a list of processes hasn't yet been
@@ -4331,12 +4338,12 @@ for (int delivery_count = 0; addr_remote; delivery_count++)
   uid_t uid;
   gid_t gid;
   int pfd[2];
-  int address_count = 1, address_count_max;
+  unsigned address_count = 1, address_count_max;
   BOOL pipe_done = FALSE, multi_domain, use_initgroups;
   transport_instance * tp;
   address_item ** anchor = &addr_remote;
   address_item * addr = addr_remote, * last = addr, * next;
-  uschar * serialize_key = NULL, * panicmsg;
+  uschar * serialize_key = NULL, * tpt_parallel_level, * panicmsg;
 
   /* Pull the first address right off the list. */
 
@@ -4400,7 +4407,7 @@ So look out for the place it gets used.
   unlimited, which is forced for the MUA wrapper case and if the
   value could vary depending on the messages.
   For those, we only split (below) by (tpt,dest,erraddr,hdrs) and rely on the
-  transport splitting further by max_rcp.  So we potentially lose some
+  transport splitting further by max_rcpt.  So we potentially lose some
   parallellism. */
 
   GET_OPTION("max_rcpt");
@@ -4516,7 +4523,8 @@ Does that also apply to address_data?
       last = next;
       address_count++;
       }
-    else anchor = &(next->next);
+    else
+      anchor = &next->next;
     deliver_set_expansions(NULL);
     }
 
@@ -4534,7 +4542,8 @@ Does that also apply to address_data?
   The hints DB entry is decremented in par_reduce(), when we reap the
   transport process. */
 
-  if (tpt_parallel_check(tp, addr, &serialize_key))
+  tpt_parallel_level = US"";
+  if (tpt_parallel_check(tp, addr, &serialize_key, &tpt_parallel_level))
     if ((panicmsg = expand_string_message))
       goto panic_continue;
     else
@@ -4731,9 +4740,12 @@ parmax * tpt-max is exceeded? */
 
   while (!pipe_done)
     {
-    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) == 0) pipe_done = TRUE;
-    else if (parcount > 0) parmax = parcount;
-    else break;
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) == 0)
+      pipe_done = TRUE;
+    else if (parcount > 0)
+      { parmax = parcount; plimit_reason = US"fildesc limit"; }
+    else
+      break;
 
     /* We need to make the reading end of the pipe non-blocking. There are
     two different options for this. Exim is cunningly (I hope!) coded so
@@ -4754,7 +4766,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
     to finish. If we ran out of file descriptors, parmax will have been reduced
     from its initial value of remote_max_parallel. */
 
-    par_reduce(parmax - 1, fallback);
+    par_reduce(parmax - 1, fallback, plimit_reason);
     }
 
   /* If we failed to create a pipe and there were no processes to wait
@@ -4899,7 +4911,9 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
     of bytes written. */
 
     (void)close(pfd[pipe_read]);
-    set_process_info("delivering %s using %s", message_id, tp->drinst.name);
+    set_process_info("delivering %s (%u addr%s) using %s%s",
+		    message_id, address_count, address_count>1?"s":"",
+		    tp->drinst.name, tpt_parallel_level);
     debug_print_string(tp->debug_string);
 
       {
@@ -5307,7 +5321,7 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
 
   if (continue_transport)
     {
-    par_reduce(0, fallback);
+    par_reduce(0, fallback, US"continue_transport wait-complete");
     if (!*continue_next_id && continue_wait_db)
 	{ dbfn_close_multi(continue_wait_db); continue_wait_db = NULL; }
 
@@ -5336,7 +5350,7 @@ panic_continue:
 /* Reached the end of the list of addresses. Wait for all the subprocesses that
 are still running and post-process their addresses. */
 
-par_reduce(0, fallback);
+par_reduce(0, fallback, US"delivery wait-all-complete");
 return TRUE;
 }
 

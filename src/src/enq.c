@@ -23,24 +23,24 @@
 connections. It is also called when ETRN is listed for serialization. We open
 the misc database and look for a record, which implies an existing connection
 or ETRN run. If increasing the count would take us past the given limit
-value return FALSE.  If not, bump it and return TRUE.  If not found, create
+value return FALSE.  If not, bump it and return the new count.  If not found, create
 one with value 1 and return TRUE.
 
 Arguments:
   key            string on which to serialize
   lim            parallelism limit
 
-Returns:         TRUE if OK to proceed; FALSE otherwise
+Returns:         >0 if OK to proceed; 0 otherwise
 */
 
 
-BOOL
-enq_start(uschar *key, unsigned lim)
+unsigned
+enq_start(uschar * key, unsigned lim)
 {
 const dbdata_serialize * serial_record;
 dbdata_serialize new_record;
 open_db dbblock;
-open_db *dbm_file;
+open_db * dbm_file;
 
 DEBUG(D_transport) debug_printf("check serialized: %s\n", key);
 
@@ -60,7 +60,7 @@ if (serial_record && time(NULL) - serial_record->time_stamp < 6*60*60)
     dbfn_close(dbm_file);
     DEBUG(D_transport) debug_printf("outstanding serialization record for %s\n",
       key);
-    return FALSE;
+    return 0;
     }
   new_record.count = serial_record->count + 1;
   }
@@ -73,7 +73,7 @@ DEBUG(D_transport) debug_printf("write serialization record for %s val %d\n",
       key, new_record.count);
 dbfn_write(dbm_file, key, &new_record, (int)sizeof(dbdata_serialize));
 dbfn_close(dbm_file);
-return TRUE;
+return new_record.count;
 }
 
 
