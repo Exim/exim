@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.98"
+.set previousversion "4.99"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -1774,11 +1774,9 @@ distributors have chosen to bundle different libraries with their packaged
 versions. However, the more recent releases seem to have standardized on the
 Berkeley DB library.
 
-.new
 Ownership of the Berkeley DB library has moved to a major corporation;
 development seems to have stalled and documentation is not freely available.
 This is probably not tenable for the long term use by Exim.
-.wen
 
 Different DBM libraries have different conventions for naming the files they
 use. When a program opens a file called &_dbmfile_&, there are several
@@ -1868,7 +1866,6 @@ DBMLIB=/usr/local/lib/db-4.1/libdb.a
 There is further detailed discussion about the various DBM libraries in the
 file &_doc/dbm.discuss.txt_& in the Exim distribution.
 
-.new
 When moving from one DBM library to another,
 for the hints databases it suffices to just remove all the files in the
 directory named &"db/"& under the spool directory.
@@ -1877,7 +1874,6 @@ during normal operations.
 Non-hints DBM databases (used by &"dbm"& lookups in the configuration)
 will need individual rebuilds for the new DBM library.
 This is not done automatically
-.wen
 
 
 
@@ -2055,7 +2051,6 @@ withdrawn.
 .cindex "filter modules"
 .cindex "dynamic modules"
 .cindex ".so building"
-.new
 On some platforms, Exim supports not compiling all feature support directly into
 the main binary, instead putting some into external modules which can be loaded
 on demand.
@@ -2073,7 +2068,6 @@ authentication drivers,
 all the transport drivers except smtp,
 both filter types (exim and sieve),
 SPF, DKIM, DMARC, ARC and perl.
-.wen
 
 For building
 set &`LOOKUP_MODULE_DIR`& to the directory into which the modules will be
@@ -2096,7 +2090,6 @@ Set also &`LOOKUP_`&<&'lookup_type'&>&` INCLUDE`& and
 &`LOOKUP_`&<&'lookup_type'&>`_LIBS if needed for each lookup type,
 ensuring that duplicates are not present in more global values.
 
-.new
 Similarly, authenticator, router and transport drivers can be built
 as external modules.
 Modules will be searched for as demanded by the runtime configuration,
@@ -2106,7 +2099,6 @@ For building, as above but using
 &`AUTH_*`&, &`ROUTER_*`& and &`TRANSPORT_*`& instead of &`LOOKUP_*`&,
 
 Detail for each module type is given in the EDITME file.
-.wen
 
 
 .section "The building process" "SECID29"
@@ -2825,11 +2817,9 @@ displayed.
 These options are used by Sendmail for selecting configuration files and are
 ignored by Exim.
 
-.new
 .cmdopt -atrn <&'host'&> <&'domainlist'&>
 This option requests an ODMR customer connection.
 See &<<SECTODMRCUST>>& for details.
-.wen
 
 .cmdopt -B <&'type'&>
 .oindex "&%-B%&"
@@ -6782,7 +6772,6 @@ and a comma-separated list of options.
 Each option is a &"name=value"& pair.
 Whether an option is meaningful depends on the lookup type.
 
-.new
 All lookups support the option &"cache="&, with values &"no_rd"&, &"no_wr"&
 or &"no"&.
 If this is given with &"no"& or &"no_rd"&
@@ -6790,7 +6779,6 @@ then the cache that Exim manages for lookup results
 is not checked before doing the lookup.
 If this is given with &"no"& or &"no_wr"&
 then the result of the lookup is not written to the cache.
-.wen
 
 The rest of this chapter describes the different lookup types that are
 available. Any of them can be used in any part of the configuration where a
@@ -8287,11 +8275,9 @@ The full syntax of each item in &%mysql_servers%& is:
 Any of the four sub-parts of the first field can be omitted. For normal use on
 the local host it can be left blank or set to just &"localhost"&.
 
-.new
 A &'hostspec'& can be a hostname, an IPv4 address or an IPv6 address.
 For the latter, a &'portspec'& is a dot followed by a port number;
 for the other two a &'portspec'& is a colon followed by a port number.
-.wen
 
 Note that the default list-separator for the list of servers is a colon so
 (unless that is changed) all colons in list items must be doubled.
@@ -8311,9 +8297,7 @@ parameters for the connection.
 
 
 .subsection "Special PostgreSQL features" SECID74
-.new
 The &'hostspec'& for PostgreSQL follows the same rules as for MySQL above.
-.wen
 
 PostgreSQL lookups can also use Unix domain socket connections to the database.
 This is usually faster and costs less CPU time than a TCP/IP connection.
@@ -8461,7 +8445,6 @@ type of match and is given below as the &*value*& information.
 
 .section "Expansion of lists" "SECTlistexpand"
 .cindex "expansion" "of lists"
-.new
 Each list, after any leading change-of-separator specification
 (see &<<SECTlistsepchange>>&) is expanded as a single string,
 .cindex "tainted data" tracking
@@ -8472,7 +8455,6 @@ Splitting out a leading explicit change-of-separator permits
 one being safely used on a list that has tainted components
 while still detecting the use of a tainted setting.
 The latter is not permitted.
-.wen
 
 &'Exception: the router headers_remove option, where list-item
 splitting is done before string-expansion.'&
@@ -8655,10 +8637,8 @@ domainlist  dom2 = !a.b : *.b
 where &'x.y'& does not match. It's best to avoid negation altogether in
 referenced lists if you can.
 
-.new
 The list item which references a named list (&"+<listname>"&)
 may not be tainted.
-.wen
 
 .cindex "hiding named list values"
 .cindex "named lists" "hiding value of"
@@ -8764,9 +8744,7 @@ possible to use the same configuration file on several different hosts that
 differ only in their names.
 
 The value for a match will be the primary host name.
-.new
 The pattern may not be tainted.
-.wen
 
 
 .next
@@ -8782,9 +8760,7 @@ In today's Internet, the use of domain literals is controversial;
 see the &%allow_domain_literals%& main option.
 
 The value for a match will be the string &`@[]`&.
-.new
 The pattern may not be tainted.
-.wen
 
 
 .next
@@ -8801,9 +8777,7 @@ local host, and the second only when no primary MX target is the local host,
 but a secondary MX target is. &"Primary"& means an MX record with the lowest
 preference value &-- there may of course be more than one of them.
 
-.new
 The pattern may not be tainted.
-.wen
 
 The MX lookup that takes place when matching a pattern of this type is
 performed with the resolver options for widening names turned off. Thus, for
@@ -9643,11 +9617,9 @@ performed caselessly, regular expressions that match against an entire address
 become case-sensitive after &"+caseful"& has been seen.
 The effects of &"+caseful"& propagate into any referenced named lists.
 
-.new
 This string may not be tainted.
 To do caseful matching on list elements whic are tainted,
 place them in a named list.
-.wen
 
 
 
@@ -9666,11 +9638,9 @@ matching in the local part list, but not elsewhere in the router. If
 &%caseful_local_part%& is set true in a router, matching in the &%local_parts%&
 option is case-sensitive from the start.
 
-.new
 This string may not be tainted.
 To do caseful matching on list elements whic are tainted,
 place them in a named list.
-.wen
 
 If a local part list is indirected to a file (see section &<<SECTfilnamlis>>&),
 comments are handled in the same way as address lists &-- they are recognized
@@ -10154,11 +10124,9 @@ leading and trailing quotes are removed from the returned value.
 .cindex "list" "selecting by condition"
 .cindex "expansion" "selecting from list by condition"
 .vindex "&$item$&"
-.new
 <&'string1'&> first has the part after any change-of-list-separator
 (see &<<SECTlistsepchange>>&) expanded,
 then the whole is taken as a list.
-.wen
 The default separator for the list is a colon.
 
 For each item in this list,
@@ -10426,11 +10394,9 @@ The <&'number'&> argument must consist entirely of decimal digits,
 apart from an optional leading minus,
 and leading and trailing white space (which is ignored).
 
-.new
 The <&'string1'&> argument, after any leading change-of-separator
 (see &<<SECTlistsepchange>>&),
 is expanded and the whole forms the list.
-.wen
 By default, the list separator is a colon.
 
 The first field of the list is numbered one.
@@ -10531,11 +10497,9 @@ ${lookup nisplus {[name=$local_part],passwd.org_dir:gcos} \
 .vitem &*${map{*&<&'string1'&>&*}{*&<&'string2'&>&*}}*&
 .cindex "expansion" "list creation"
 .vindex "&$item$&"
-.new
 <&'string1'&> first has the part after any change-of-list-separator
 (see &<<SECTlistsepchange>>&) expanded,
 then the whole is taken as a list.
-.wen
 The default separator for the list is a colon.
 
 For each item in this list,
@@ -10761,11 +10725,9 @@ locks out the use of this expansion item in filter files.
 .vindex "&$item$&"
 This operation reduces a list to a single, scalar string.
 
-.new
 <&'string1'&> first has the part after any change-of-list-separator
 (see &<<SECTlistsepchange>>&) expanded,
 then the whole is taken as a list.
-.wen
 The default separator for the list is a colon.
 
 Then <&'string2'&> is expanded and
@@ -10924,11 +10886,9 @@ rather than any Unicode-aware character handling.
 .cindex sorting "a list"
 .cindex list sorting
 .cindex expansion "list sorting"
-.new
 <&'string'&> first has the part after any change-of-list-separator
 (see &<<SECTlistsepchange>>&) expanded,
 then the whole is taken as a list.
-.wen
 The default separator for the list is a colon.
 
 The <&'comparator'&> argument is interpreted as the operator
@@ -12009,11 +11969,9 @@ attempt. It is false during any subsequent delivery attempts.
 .cindex "expansion" "&*forany*& condition"
 .vindex "&$item$&"
 These conditions iterate over a list.
-.new
 The first argument, after any leading change-of-separator
 (see &<<SECTlistsepchange>>&),
 is expanded and the whole forms the list.
-.wen
 By default, the list separator is a colon.
 
 The second argument is interpreted as a condition that is to
@@ -12093,11 +12051,9 @@ SRS decode.  See SECT &<<SECTSRS>>& for details.
 .cindex "string" "comparison"
 .cindex "list" "iterative conditions"
 The <&'subject'&> string is expanded.
-.new
 The <&'list'&> first has any change-of-list-separator
 (see &<<SECTlistsepchange>>&) retained verbatim,
 then the remainder is expanded.
-.wen
 The whole is treated as a list of simple strings;
 if the subject string is a member of that list, then the condition is true.
 For the case-independent &%inlisti%& condition, case is defined per the system C locale.
@@ -12293,10 +12249,8 @@ just as easy to use the fact that a lookup is itself a condition, and write:
 
 Note that <&'string2'&> is not itself subject to string expansion, unless
 Exim was built with the EXPAND_LISTMATCH_RHS option.
-.new
 For the latter case, only the part after any leading
 change-of-separator specification is expanded.
-.wen
 
 Consult section &<<SECThoslispatip>>& for further details of these patterns.
 
@@ -12343,10 +12297,8 @@ Any previous &$value$& is restored after the if.
 
 Note that <&'string2'&> is not itself subject to string expansion, unless
 Exim was built with the EXPAND_LISTMATCH_RHS option.
-.new
 For the latter case, only the part after any leading
 change-of-separator specification is expanded.
-.wen
 
 &*Note*&: Host lists are &'not'& supported in this way. This is because
 hosts have two identities: a name and an IP address, and it is not clear
@@ -12656,7 +12608,6 @@ to the relevant file.
 When, as a result of aliasing or forwarding, a message is directed to a pipe,
 this variable holds the pipe command when the transport is running.
 
-.new
 .vitem &$atrn_host$&
 .vindex ATRN "data for routing"
 When an ATRN command is accepted, this variable is filled in with the client
@@ -12668,7 +12619,6 @@ IP and port, for use in a manualroute router.
 When in provider mode this variable will contain &"P"&.
 When in customer mode it will contain &"C"&.
 Otherwise, it will be empty.
-.wen
 
 .vitem "&$auth1$& &-- &$auth4$&"
 .vindex "&$auth1$&, &$auth2$&, etc"
@@ -13618,7 +13568,6 @@ by RFCs 821, 2821, and 3848. They start with &"smtp"& (the client used HELO) or
 is set to &"esmtpsa"&, the message was received over an encrypted SMTP
 connection and the client was successfully authenticated.
 
-.new
 Exim uses the protocol name &"smtps"& for the unusual case when
 the client initially uses EHLO, sets up an encrypted connection using
 STARTTLS, and then uses HELO afterwards.
@@ -13634,7 +13583,6 @@ If the log selector &"tls_on_connect"& is used then the possible
 values for tls-on-connect sessions are
 &"ssmtp"&, &"essmtp"& and &"essmtpa"&
 for (respectively) HELO, EHLO and EHLO with authentication.
-.wen
 
 The &%-oMr%& option provides a way of specifying a custom protocol name for
 messages that are injected locally by trusted callers. This is commonly used to
@@ -14107,12 +14055,10 @@ condition = ${if > {$spool_space}{50000}}
 .endd
 See also the &%check_spool_space%& option.
 
-.new
 .tvar &$srs_recipient$&
 If an &*inbound_srs{}*& expansion condition succeeds
 this variable is set to the decoded (original) recipient.
 See section &<<SECTSRS>>& for more information on SRS.
-.wen
 
 
 .vitem &$thisaddress$&
@@ -15390,7 +15336,6 @@ SMTP messages.
 This option defines the ACL that is run before Exim starts reading a
 non-SMTP message. See section &<<SECnonSMTP>>& for further details.
 
-.new
 .option acl_smtp_atrn main string&!! unset
 .cindex ATRN "ACL for"
 .cindex ATRN advertisement
@@ -15402,7 +15347,6 @@ If no value is set, or the result after expansion is an empty string,
 then the ATRN facility is not advertised.
 See chapter &<<CHAPACL>>& for general information on ACLs,
 and section &<<SECTODMRPRDVR>>& for description of ATRN.
-.wen
 
 .option acl_smtp_auth main string&!! unset
 .cindex "&ACL;" "setting up for SMTP commands"
@@ -17017,7 +16961,6 @@ configuration file, but instead supply the path using LOG_FILE_PATH in
 early on &-- in particular, failure to read the configuration file.
 
 
-.new
 .option log_ports main "integer list" *
 If set, this option must be a list of integers.
 When enabled by logging selectors &%outgoing_port%& or &%incoming_interface%&,
@@ -17026,7 +16969,6 @@ For example:
 .code
 log_ports = !25 : !587
 .endd
-.wen
 
 
 .option log_selector main string unset
@@ -18929,7 +18871,6 @@ prior to the 4.80 release, as Debian used to patch Exim to raise the minimum
 acceptable bound from 1024 to 2048.
 
 
-.new
 .option tls_early_banner_hosts main host list&!! unset
 .cindex banner "for TLS-on-connect"
 .cindex TLS "early banner"
@@ -18942,7 +18883,6 @@ and when verification of the client certificate is not needed.
 
 When it is possible it saves one whole roundtrip time.
 The feature may usefully be combined with TCP Fast Open.
-.wen
 
 .option tls_eccurve main string list&!! &`auto`&
 .cindex TLS "EC cryptography"
@@ -19685,9 +19625,7 @@ verifying a sender, verification fails.
 .option fallback_hosts routers "string list&!!" unset
 .cindex "router" "fallback hosts"
 .cindex "fallback" "hosts specified on router"
-.new
 The argument must, after expansion, be a
-.wen
 colon-separated list of host names or IP addresses. The list separator can be
 changed (see section &<<SECTlistsepchange>>&), and a port can be specified with
 each name or address. In fact, the format of each item is exactly the same as
@@ -20656,10 +20594,8 @@ normal way.
 
 When the expansion succeeds, the router searches first for SRV records for
 the given service (it assumes TCP protocol).
-.new
 If the list contains more than one service name, searches are made in
 the given order until one succeeds.
-.wen
 A single SRV record with a
 host name that consists of just a single dot indicates &"no such service for
 this domain"&; if this is encountered, the router declines. If other kinds of
@@ -22553,10 +22489,8 @@ and are rewritten according to the global rewriting rules.
 
 
 .option sieve_inbox redirect string&!! inbox
-.new
 The value of this option is passed to a Sieve filter to specify the
 name of the mailbox used for "keep" operations (explicit or implicit).
-.wen
 
 .option sieve_subaddress redirect string&!! unset
 The value of this option is passed to a Sieve filter to specify the
@@ -23604,9 +23538,7 @@ fileinto "folder23";
 In this situation, the expansion of &%file%& or &%directory%& in the transport
 must transform the relative path into an appropriate absolute filename. In the
 case of Sieve filters, the name &'inbox'& must be handled. It is the
-.new
 default
-.wen
 name that
 is used as a result of a &"keep"& action in the filter. This example shows one
 way of handling this requirement:
@@ -23623,11 +23555,9 @@ With this setting of &%file%&, &'inbox'& refers to the standard mailbox
 location, absolute paths are used without change, and other folders are in the
 &_mail_& directory within the home directory.
 
-.new
 An alternative for the &"keep"& aspect is to use the &%sieve_inbox%& option
 on the redirect router that calls the Sieve filter,
 to explicitly set the filename used.
-.wen
 
 &*Note 1*&: While processing an Exim filter, a relative path such as
 &_folder23_& is turned into an absolute path if a home directory is known to
@@ -23639,10 +23569,8 @@ path to the transport.
 &*Note 2*&: An absolute path in &$address_file$& is not treated specially;
 the &%file%& or &%directory%& option is still used if it is set.
 
-.new
 &*Note 3*&: Permitting a user to enable writes to an absolute path
 may be a security issue.
-.wen
 
 
 
@@ -25937,9 +25865,7 @@ Engineer and those of all network operators between the source and destination.
 
 .option fallback_hosts smtp "string list&!!" unset
 .cindex "fallback" "hosts specified on transport"
-.new
 The argument must, after expansion, be a
-.wen
 colon-separated list of host names or IP addresses, optionally also including
 port numbers, though the separator can be changed, as described in section
 &<<SECTlistconstruct>>&. Each individual item in the list is the same as an
@@ -26308,19 +26234,15 @@ This option provides a list of servers to which, provided
 the facility is supported by this system, Exim will attempt to
 perform a TCP Fast Open (&url(https://www.rfc-editor.org/rfc/rfc7413,RFC 7413).
 No data is sent on the SYN segment
-.new
 (except for TLS-on-connect connections)
-.wen
 but, if the remote server also
 supports the facility, it can send its SMTP banner immediately after
 the SYN,ACK segment.  This can save up to one round-trip time.
 
-.new
 For TLS-on-connect, if supported by the remote server
 the TLS Client Hello is sent on the TCP SYN segment
 and the entire server-provided TLS startup can be sent immediately
 after the SYN,ACK.
-.wen
 
 The facility is only active for previously-contacted servers,
 as the initiator must present a cookie in the SYN segment.
@@ -26456,11 +26378,9 @@ variable that contains an outgoing port.
 
 If the value of this option begins with a digit it is taken as a port number;
 otherwise it is looked up using &[getservbyname()]&. The default value is
-.new
 normally &"25"&,
 but if &%protocol%& is set to one of &"lmtp"&, &"smtp"&, &"smtps"&
 or &"submissions"& then the default becomes that value.
-.wen
 If the expansion fails, or if a port number cannot be found, delivery
 is deferred.
 
@@ -26475,11 +26395,9 @@ resulting is such deferrals.
 .cindex "ssmtp protocol" "outbound"
 .cindex "TLS" "SSL-on-connect outbound"
 .vindex "&$port$&"
-.new
 If the option is not set (the default), or is set to &"smtp"&,
 then the transport operates using the SMTP protocol
 and the default for the &%port%& option becomes &"25"&.
-.wen
 
 If this option is set to &"lmtp"&, the default value for
 the &%port%& option changes to &"lmtp"&, and the transport operates the LMTP
@@ -26492,10 +26410,8 @@ over a pipe to a local process &-- see chapter &<<CHAPLMTP>>&.
 &*Note*&: When using LMTP it should be considered whether the default values
 for some other features, such as DANE, are appropriate.
 
-.new
 If this option is set to either &"smtps"& or &"submissions"&,
 the default value for the &%port%& option changes to the same value,
-.wen
 and the transport initiates TLS immediately after
 connecting, as an outbound SSL-on-connect, instead of using STARTTLS to upgrade.
 The Internet standards bodies used to strongly discourage use of this mode,
@@ -31549,9 +31465,7 @@ For &%acl_not_smtp%&, &%acl_smtp_auth%&, &%acl_smtp_connect%&,
 &%acl_smtp_mime%&, &%acl_smtp_predata%&, and &%acl_smtp_starttls%&, the action
 when the ACL is not defined is &"accept"&.
 
-.new
 For the others (&%acl_smtp_atrn%&,
-.wen
 &%acl_smtp_etrn%&, &%acl_smtp_expn%&, &%acl_smtp_rcpt%&,
 &%acl_smtp_vrfy%& and &%acl_smtp_wellknown%&),
 the action when the ACL
@@ -32375,7 +32289,6 @@ Delivery in this mode avoids the generation of a bounce mail to a
 (possibly faked)
 sender when the destination system is doing content-scan based rejection.
 
-.new
 Options for this control may be appended, separated by slash (&"/"&)
 characters.
 There are two possible options,
@@ -32397,7 +32310,6 @@ A value of &"transport"& permits the transport used for the outbound
 connection to modify the envelope-from, via its &*return_path*& option.
 If the control is used on combination with a verify (as described above)
 then the envelope-from options must match for the same connection to be used.
-.wen
 
 
 .vitem &*control&~=&~debug/*&<&'options'&>
@@ -32950,7 +32862,6 @@ loops. This condition allows you to use different ACLs in different
 circumstances. For example, different ACLs can be used to handle RCPT commands
 for different local users or different local domains.
 
-.new
 .vitem &*atrn_domains&~=&~*&<&'domain&~list'&>
 .cindex ATRN "checking for queued messages"
 This condition is only usable in the ATRN ACL.
@@ -32960,7 +32871,6 @@ The list supplied must not be tainted
 .cindex "tainted data" "de-tainting"
 and should contain only domains relevant for the authenticated user
 (to avoid leaking information about other users).
-.wen
 
 .vitem &*authenticated&~=&~*&<&'string&~list'&>
 .cindex "&%authenticated%& ACL condition"
@@ -34360,9 +34270,7 @@ the sender address when verifying a recipient. Using the same address means
 that a single cache entry can be used for each recipient. Some sites, however,
 do make use of the sender address when verifying. These are catered for by the
 &%use_sender%&,
-.new
 &%use_tptsender%&
-.wen
 and &%use_postmaster%& options, described in the next section.
 
 If the response to the RCPT command is a 2&'xx'& code, the verification
@@ -38230,7 +38138,6 @@ under its own uid and gid when receiving incoming SMTP, so it is not possible
 for it to change them before running the command.
 
 
-.new
 .subsection "The ATRN command, and ODMR" SECTODMR
 .cindex ATRN processing
 .cindex "ESMTP extensions" ATRN
@@ -38382,7 +38289,6 @@ command, to allow for scanning of queued messages.
 
 Configuration should also include client-side authentication
 and processing for receiving messages.
-.wen
 
 
 
@@ -40163,10 +40069,8 @@ The local port is also added if &%incoming_interface%& and
 This option is not included in the default setting, because for most ordinary
 configurations, the remote port number is always 25 (the SMTP port), and the
 local port is a random ephemeral port.
-.new
 In both cases, if the &%log_ports%& option is defined then that list
 controls what port numbers are (or are not) added
-.wen
 .next
 .cindex "log" "process ids in"
 .cindex "pid (process id)" "in log lines"
@@ -40397,9 +40301,7 @@ unchanged, or whether they should be rendered as escape sequences.
 .cindex DANE logging
 &%tls_certificate_verified%&: An extra item is added to <= and => log lines
 when TLS is in use
-.new
 and the peer presented a certificate (servers must, but clients need not).
-.wen
 The item is &`CV=yes`& if the peer's certificate was
 verified
 using a CA trust anchor,
@@ -40420,13 +40322,11 @@ added to the log line, preceded by DN=.
 .next
 .cindex "TLS" "logging tls-on-connect"
 .cindex tls-on-connect logging
-.new
 &%tls_on_connect%&: When a message is received over an encrypted connection
 started at connect time rather than by STARTTLS,
 use one of an alternate set of protocol names for both the &"P="& log
 element and the &$received_protocol$& variable.
 For details see the entry for that variable.
-.wen
 
 .next
 .cindex "log" "TLS resumption"
@@ -43005,11 +42905,9 @@ This includes retransmissions done by traditional forwarders.
 SPF verification support is built into Exim if SUPPORT_SPF=yes is set in
 &_Local/Makefile_&.  The support uses the &_libspf2_& library
 &url(https://www.libspf2.org/).
-.new
 .cindex "dynamic modules"
 The support can be built as a dynamic-load module if desired;
 see the comments in that Makefile.
-.wen
 
 There is no Exim involvement in the transmission of messages;
 publishing certain DNS records is all that is required.
@@ -43338,10 +43236,8 @@ the most current version can be downloaded
 from a link at &url(https://publicsuffix.org/list/public_suffix_list.dat).
 See also the util/renew-opendmarc-tlds.sh script.
 The default for the option is unset.
-.new
 It is expanded before use.
 If not set (or empty after expansion), DMARC processing is disabled.
-.wen
 
 
 The &%dmarc_history_file%& option
@@ -43354,10 +43250,8 @@ reports, and expire the data. Make sure the
 directory of this file is writable by the user
 exim runs as.
 The default for the option is unset.
-.new
 It is expanded before use.
 If not set (or empty after expansion), no history is written.
-.wen
 
 The &%dmarc_forensic_sender%& option
 .oindex &%dmarc_forensic_sender%&
@@ -43473,7 +43367,6 @@ The policy declared in the DMARC record.  Valid values
 are "none", "reject" and "quarantine".  It is blank when there
 is any error, including no DMARC record.
 
-.new
 .vitem &$dmarc_alignment_spf$&
 .vindex &$dmarc_alignment_spf$&
 The result of the SPF alignment portion of the test status;
@@ -43483,7 +43376,6 @@ The result of the SPF alignment portion of the test status;
 .vindex &$dmarc_alignment_dkim$&
 The result of the DKIM alignment portion of the test status;
 "yes" or "no".
-.wen
 .endlist
 
 .subsection Logging SSECDMARCLOGGING
@@ -43655,9 +43547,7 @@ Local/Makefile.
 
 Use of a proxy is enabled by setting the &%socks_proxy%& option
 on an smtp transport.
-.new
 If unset (or empty after expansion) then proxying is not done.
-.wen
 Otherwise, expansion should result in a list
 (colon-separated by default) of proxy specifiers.
 Each proxy specifier is a list
@@ -43900,7 +43790,6 @@ Events have names which correspond to the point in process at which they fire.
 The name is placed in the variable &$event_name$& and the event action
 expansion must check this, as it will be called for every possible event type.
 
-.new
 The current list of events is:
 .itable all 0 0 4 25* left 10* center 15* center 50* left
 .row auth:fail		    after    both	"per driver per authentication attempt"
@@ -43923,7 +43812,6 @@ The current list of events is:
 .row smtp:fail:protocol     after    main       "per connection"
 .row smtp:fail:syntax       after    main       "per connection"
 .endtable
-.wen
 New event types may be added in future.
 
 The event name is a colon-separated list, defining the type of
@@ -43939,7 +43827,6 @@ should define the event action.
 
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
-.new
 .itable all 0 0 2 20* left 80* left
 .row auth:fail		  "smtp response"
 .row dane:fail            "failure reason"
@@ -43958,7 +43845,6 @@ with the event type:
 .row smtp:fail:protocol   "error string"
 .row smtp:fail:syntax     "error string"
 .endtable
-.wen
 
 The :defer events populate one extra variable: &$event_defer_errno$&.
 
