@@ -1729,7 +1729,7 @@ architecture and operating system for itself, but the defaults can be
 overridden if necessary.
 .cindex compiler requirements
 .cindex compiler version
-A C99-capable compiler will be required for the build.
+A C11-capable compiler will be required for the build.
 
 
 .section "PCRE2 library" "SECTpcre"
