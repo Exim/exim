@@ -102,7 +102,6 @@ Do not put spaces between # and the 'define'.
 #define LOOKUP_DBM
 #define LOOKUP_DNSDB
 #define LOOKUP_DSEARCH
-#define LOOKUP_IBASE
 #define LOOKUP_JSON
 #define LOOKUP_LDAP
 #define LOOKUP_LMDB
@@ -113,6 +112,7 @@ Do not put spaces between # and the 'define'.
 #define LOOKUP_ORACLE
 #define LOOKUP_PASSWD
 #define LOOKUP_PGSQL
+#define LOOKUP_PSL
 #define LOOKUP_REDIS
 #define LOOKUP_SQLITE
 #define LOOKUP_TESTDB
@@ -217,7 +217,6 @@ Do not put spaces between # and the 'define'.
 
 /* EXPERIMENTAL features */
 #define EXPERIMENTAL_ARC
-#define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_NMH

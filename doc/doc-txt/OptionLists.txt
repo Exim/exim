@@ -210,7 +210,6 @@ domains                              domain list     unset         routers      
 driver                               string          unset         authenticators
                                                      unset         routers           4.00
                                                      unset         transports
-drop_cr                              boolean         false         main              4.00 became a no-op in 4.21
 dscp                                 string          unset         smtp              4.82
 dsn_from                             string*         +             main              4.67
 envelope_to_add                      boolean         false         transports
@@ -331,7 +330,6 @@ hosts_try_auth                       host list       unset         smtp         
 hosts_try_dane                       host list       unset         smtp              4.91 (4.85 experimental)
 hosts_try_fastopen                   host list       unset         smtp              4.88
 hosts_try_prdr                       host list       unset         smtp              4.82 if experimental_prdr
-ibase_servers                        string          unset         main              4.23
 ignore_bounce_errors_after           time            0s            main              4.00
 ignore_eacces                        boolean         false         redirect          4.00
 ignore_enotdir                       boolean         false         redirect          4.00
@@ -482,7 +480,7 @@ recipient_unqualified_hosts          host list       unset         main         
 recipients_max                       integer*        50000         main              1.60 default changed in 4.95 (was 0)
 recipients_max_reject                boolean         false         main              1.70
 redirect_router                      string          unset         routers           4.00
-remote_max_parallel                  integer         1             main
+remote_max_parallel                  integer         6             main
 remote_sort_domains                  domain list     unset         main              4.00 replacing remote_sort
 repeat_use                           boolean         true          redirect          4.00
 reply_to                             string*         unset         autoreply         2.05
@@ -505,8 +503,6 @@ return_path_remove                   boolean         true          main
 return_size_limit                    integer         100K          main                   renamed bounce_return_size_limit in 4.23
 rewrite                              boolean         true          redirect          4.00
 rewrite_headers                      boolean         true          dnslookup         4.00
-rfc1413_hosts                        host list       *             main
-rfc1413_query_timeout                time            5s            main
 router_home_directory                string*         unset         routers           4.11
 route_data                           string*         unset         manualroute       4.00
 route_list                           string list     unset         manualroute       4.00

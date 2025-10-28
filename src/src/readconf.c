@@ -79,9 +79,6 @@ static optionlist optionlist_config[] = {
   { "av_scanner",               opt_stringptr,   {&av_scanner} },
 #endif
   { "bi_command",               opt_stringptr,   {&bi_command} },
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  { "bmi_config_file",          opt_stringptr,   {&bmi_config_file} },
-#endif
   { "bounce_message_file",      opt_stringptr,   {&bounce_message_file} },
   { "bounce_message_text",      opt_stringptr,   {&bounce_message_text} },
   { "bounce_return_body",       opt_bool,        {&bounce_return_body} },
@@ -143,9 +140,6 @@ static optionlist optionlist_config[] = {
   { "dns_retry",                opt_int,         {&dns_retry} },
   { "dns_trust_aa",             opt_stringptr,   {&dns_trust_aa} },
   { "dns_use_edns0",            opt_int,         {&dns_use_edns0} },
- /* This option is now a no-op, retained for compatibility */
-  { "drop_cr",                  opt_bool,        {&drop_cr} },
-/*********************************************************/
   { "dsn_advertise_hosts",      opt_stringptr,   {&dsn_advertise_hosts} },
   { "dsn_from",                 opt_stringptr,   {&dsn_from} },
   { "envelope_to_remove",       opt_bool,        {&envelope_to_remove} },
@@ -191,9 +185,6 @@ static optionlist optionlist_config[] = {
   { "hosts_treat_as_local",     opt_stringptr,   {&hosts_treat_as_local} },
 #ifdef EXPERIMENTAL_XCLIENT
   { "hosts_xclient",		opt_stringptr,	 {&hosts_xclient} },
-#endif
-#ifdef LOOKUP_IBASE
-  { "ibase_servers",            opt_stringptr,   {&ibase_servers} },
 #endif
   { "ignore_bounce_errors_after", opt_time,      {&ignore_bounce_errors_after} },
   { "ignore_fromline_hosts",    opt_stringptr,   {&ignore_fromline_hosts} },
@@ -307,9 +298,6 @@ static optionlist optionlist_config[] = {
   { "retry_interval_max",       opt_time,        {&retry_interval_max} },
   { "return_path_remove",       opt_bool,        {&return_path_remove} },
   { "return_size_limit",        opt_mkint|opt_hidden, {&bounce_return_size_limit} },
-  { "rfc1413_hosts",            opt_stringptr,   {&rfc1413_hosts} },
-  { "rfc1413_port",		opt_int|opt_hidden, {&test_harness_identd_port} },
-  { "rfc1413_query_timeout",    opt_time,        {&rfc1413_query_timeout} },
   { "sender_unqualified_hosts", opt_stringptr,   {&sender_unqualified_hosts} },
   { "slow_lookup_log",          opt_int,         {&slow_lookup_log} },
   { "smtp_accept_keepalive",    opt_bool,        {&smtp_accept_keepalive} },
@@ -987,8 +975,13 @@ if (*s) for (macro_item * m = *s == '_' ? macros : macros_user; m; m = m->next)
     {
     int moveby;
 
-    EARLY_DEBUG(D_any, "%s: matched '%s' in '%.*s'\n", __FUNCTION__,
-      m->name, (int) Ustrlen(ss)-1, ss);
+    DEBUG(D_any)
+      if (f.expansion_test)
+	printf("macro '%s' -> '%s'\n", m->name, m->replacement);
+      else
+	EARLY_DEBUG(D_any, "%s: matched '%s' in '%.*s'\n", __FUNCTION__,
+	  m->name, (int) Ustrlen(ss)-1, ss);
+
     /* Expand the buffer if necessary */
 
     while (*newlen - m->namelen + m->replen + 1 > big_buffer_size)
@@ -3824,13 +3817,12 @@ for (di = *info_anchor; di; di = di->next)
 /* Potentially a loadable module. Look for a file with the right name. */
 
 if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
-  {
   log_write(0, LOG_MAIN|LOG_PANIC,
-	    "Couldn't open %s: not loading driver modules\n", LOOKUP_MODULE_DIR);
-  }
+	  "Couldn't open %s: not loading driver modules\n", LOOKUP_MODULE_DIR);
 else
   {
-  uschar * fname = string_sprintf("%s_%s." DYNLIB_FN_EXT, d->driver_name, class), * sname;
+  uschar * fname = string_sprintf("%s_%s." DYNLIB_FN_EXT,
+				  d->driver_name, class);
   const char * errormsg;
 
   DEBUG(D_any) debug_printf("Loading %s %s driver from %s\n",

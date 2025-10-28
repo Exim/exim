@@ -1142,7 +1142,7 @@ transport_info pipe_transport_info = {
   .options_block =	&pipe_transport_option_defaults,
   .options_len =	sizeof(pipe_transport_options_block),
   .init =		pipe_transport_init,
-# ifdef DYNLOOKUP
+# if TRANSPORT_PIPE==2
   .dyn_magic =		TRANSPORT_MAGIC,
 # endif
   },

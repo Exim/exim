@@ -6,6 +6,11 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the Git before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Since Version 4.99
+------------
+ 1. Lookups "psl" and "regdom" for, respectively, the public suffix or the
+    registered domain, given a domain and a Public Suffix List file.
+
 Version 4.99
 ------------
  1. A sieve_inbox option for redirect routers

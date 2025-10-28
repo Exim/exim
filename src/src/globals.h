@@ -40,10 +40,6 @@ extern BOOL    opt_perl_taintmode;     /* Enable taint mode in Perl */
 extern tree_node *dlobj_anchor;        /* Tree of dynamically-loaded objects */
 #endif
 
-#ifdef LOOKUP_IBASE
-extern uschar *ibase_servers;
-#endif
-
 #ifdef LOOKUP_LDAP
 extern uschar *eldap_ca_cert_dir;      /* Directory with CA certificates */
 extern uschar *eldap_ca_cert_file;     /* CA certificate file */
@@ -123,6 +119,7 @@ typedef struct {
   BOOL	  channelbind_exporter:1; /* channelbinding is EXPORTER not UNIQUE */
   BOOL    on_connect:1;         /* For older MTAs that don't STARTTLS */
   BOOL	  verify_override:1;	/* certificate_verified only due to tls_try_verify_hosts */
+  BOOL	  smtp_quit:1;		/* QUIT has been sent or received */
 } tls_support;
 extern tls_support tls_in;
 extern tls_support tls_out;
@@ -234,6 +231,7 @@ extern struct global_flags {
 
  BOOL   enable_dollar_recipients	:1; /* Make $recipients available */
  BOOL   expand_string_forcedfail	:1; /* TRUE if failure was "expected" */
+ BOOL   expansion_test			:1; /* TRUE for -be test mode */
 
  BOOL   filter_running			:1; /* TRUE while running a filter */
 
@@ -392,19 +390,19 @@ extern int     av_failed;              /* TRUE if the AV process failed */
 extern uschar *av_scanner;             /* AntiVirus scanner to use for the malware condition */
 #endif
 
+extern lookup_module_info * avail_static_lookups[];/* List of built-in lookup drivers */
+
+extern const uschar * avail_static_auths[];	/* List of built-in driver names */
+extern const uschar * avail_dynamic_auths[];	/* List of dynamic-load driver names */
+extern const uschar * avail_static_routers[];
+extern const uschar * avail_dynamic_routers[];
+extern const uschar * avail_static_transports[];
+extern const uschar * avail_dynamic_transports[];
+
 extern uschar *base62_chars;           /* Table of base-62 characters */
 extern uschar *bi_command;             /* Command for -bi option */
 extern uschar *big_buffer;             /* Used for various temp things */
 extern int     big_buffer_size;        /* Current size (can expand) */
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-extern uschar *bmi_alt_location;       /* expansion variable that contains the alternate location for the rcpt (available during routing) */
-extern uschar *bmi_base64_tracker_verdict; /* expansion variable with base-64 encoded OLD verdict string (available during routing) */
-extern uschar *bmi_base64_verdict;     /* expansion variable with base-64 encoded verdict string (available during routing) */
-extern uschar *bmi_config_file;        /* Brightmail config file */
-extern int     bmi_deliver;            /* Flag that determines if the message should be delivered to the rcpt (available during routing) */
-extern int     bmi_run;                /* Flag that determines if message should be run through Brightmail server */
-extern uschar *bmi_verdicts;           /* BASE64-encoded verdicts with recipient lists */
-#endif
 extern int     bsmtp_transaction_linecount; /* Start of last transaction */
 extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern uschar *bounce_message_file;    /* Template file */
@@ -575,8 +573,6 @@ extern uschar *dnslist_value;          /* DNS (black) list IP address */
 extern tree_node *domainlist_anchor;   /* Tree of defined domain lists */
 extern int     domainlist_count;       /* Number defined */
 
-/* This option is now a no-opt, retained for compatibility */
-extern BOOL    drop_cr;                /* For broken local MUAs */
 extern const uschar *driver_srcfile;   /* For debug & errors */
 extern int     driver_srcline;	       /* For debug & errors */
 
@@ -923,8 +919,6 @@ extern int     retry_maximum_timeout;  /* The maximum timeout */
 extern const uschar *return_path;            /* Return path for a message */
 extern BOOL    return_path_remove;     /* Remove return-path headers */
 extern int     rewrite_existflags;     /* Indicate which headers have rewrites */
-extern uschar *rfc1413_hosts;          /* RFC hosts */
-extern int     rfc1413_query_timeout;  /* Timeout on RFC 1413 calls */
 /* extern BOOL    rfc821_domains;  */       /* If set, syntax is 821, not 822 => being abolished */
 extern uid_t   root_gid;               /* The gid for root */
 extern uid_t   root_uid;               /* The uid for root */
@@ -1065,7 +1059,6 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 extern blob    tcp_fastopen_nodata;    /* for zero-data TFO connect requests */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
 extern tfo_state_t tcp_out_fastopen;   /* TCP fast open */
-extern int     test_harness_identd_port; /* For use when testing */
 extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */

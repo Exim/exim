@@ -1,71 +1,12 @@
-> test.ex                    A TXT record for test.ex.
-> s/lash.test.ex             A TXT record for s/lash.test.ex.
-> txt=test.ex                A TXT record for test.ex.
-> >X txt=test.ex             A TXT record for test.ex.
-> >X; txt=test.ex            A TXT record for test.ex.
-> >X, txt=test.ex            A TXT record for test.ex.
-> >X, txt=test.ex            A TXT record for test.ex.
-> txt=long.test.ex           This is a max-length chunk 789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234
-Second RR
-> >X   txt=long.test.ex      This is a max-length chunk 789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234XSecond RR
-> >X;  txt=long.test.ex      This is a max-length chunk 789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234A short chunkA final chunkXSecond RR
-> >X,  txt=long.test.ex      This is a max-length chunk 789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234 A short chunk A final chunkXSecond RR
-> >X,Z txt=long.test.ex      This is a max-length chunk 789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234ZA short chunkZA final chunkXSecond RR
-> a=black-1.test.ex          V4NET.11.12.13
-> Failed: lookup of "xxx=test.ex" gave DEFER: "unsupported DNS record type"
-> a=localhost.test.ex        127.0.0.1
-> cname=alias-eximtesthost.test.ex eximtesthost.test.ex
-> ns=test.ex                 exim.test.ex
-> zns=x.y.z.test.ex          exim.test.ex
-> mx=mxt1.test.ex            5 eximtesthost.test.ex
-> mx=mxt3.test.ex            5 not-exist.test.ex
-6 eximtesthost.test.ex
-> mxh=mxt1.test.ex           eximtesthost.test.ex
-> ptr=V4NET.0.0.1            ten-1.test.ex
-> ptr=ptr.test.ex            data.for.ptr.test.ex
-> srv=_smtp._tcp.srv01.test.ex     0 0 25 ten-1.test.ex
-> srv=_smtp._tcp.nosmtp.test.ex    0 0 0 
+> match_ip:        12 true
+> match_ip:        13 
+> > variable m0 set
+> variable m1 set
+> variable m2 set
+> variable m3 set
+> missing quoter:  expected_fail
+> proper quoter:   barbaz
+> missing (but cached): barbaz
+> shared quoter:   foo_2
+> quoter notreq:   foo_3
 > 
-> csa=csa1.test.ex           Y csa1.test.ex
-> csa=csa2.test.ex           N csa2.test.ex
-> 
-> soa=test.ex                exim.test.ex
-> soa=a.test.ex              exim.test.ex hostmaster.exim.test.ex 1430683638 1200 120 604800 3000
-> 
-> # DNS lookups with multiple items
-> 
-> ten-1:ten2                 V4NET.0.0.1
-V4NET.0.0.2
-> ten-1:defer:ten2           V4NET.0.0.1
-V4NET.0.0.2
-> ten-1|ten2                 V4NET.0.0.1
-V4NET.0.0.2
-> mxt1;mxt2 | output         5 eximtesthost.test.ex|5 not-exist.test.ex
-> mxt1;mxt2 | output+field   5:eximtesthost.test.ex|5:not-exist.test.ex
-> mxt1;mxt2 | output         eximtesthost.test.ex|not-exist.test.ex
-> 13/14 rbl                  This is a test blacklisting message This is a test blacklisting message
-> double ptr                 ten-1.test.ex
-ten-2.test.ex
-> ten-1:bad                  V4NET.0.0.1
-> bad:bad                    FAILED
-> 
-> Failed: lookup of "a=test.again.dns:test.again.dns" gave DEFER: ""
-> defer_lax:ten-1            V4NET.0.0.1
-> defer_lax:ten-1            V4NET.0.0.1
-> defer_never:ten-1          V4NET.0.0.1
-> defer_never:defer          
-> Failed: lookup of "defer_strict,a=test.again.dns:ten-1.test.ex" gave DEFER: ""
-> 
-> # Retry timeout and count.  This only tests the syntax; we do not
-> # have any good way of testing the function.
-> 
-> delay1500                  ip4.ip4.ip4.ip4
-> 
-> a=localhost.test.ex        127.0.0.1
-> a=localhost.test.ex        127.0.0.1
-> 
-220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250 myhost.test.ex Hello CALLER at test
-250 OK
-451 Temporary local problem - please try later
-221 myhost.test.ex closing connection

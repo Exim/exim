@@ -1,3 +1,4 @@
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
 > Ayen Other
 > Ayen Other
 > Ayen Other
@@ -14,7 +15,6 @@ after" id=newline
 > 
 
 **** SMTP testing session as if from host 10.0.0.0
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -25,7 +25,6 @@ after" id=newline
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 10.0.0.0
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -36,7 +35,6 @@ after" id=newline
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 10.10.10.10
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -45,11 +43,21 @@ after" id=newline
 250 Accepted
 250 Accepted
 221 myhost.test.ex closing connection
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
 > Ayen Other
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro 'DATA' -> 'TESTSUITE/aux-fixed/sqlitedb'
+macro 'DATA' -> 'TESTSUITE/aux-fixed/sqlitedb'
 > Ayen Other
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro 'DATA' -> 'nonabsolute_filename'
+macro 'DATA' -> 'nonabsolute_filename'
 > Failed: absolute file name expected for "sqlite" lookup
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro 'DATA' -> 'TESTSUITE/missingfile'
+macro 'DATA' -> 'TESTSUITE/missingfile'
 > 
 > 

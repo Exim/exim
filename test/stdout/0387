@@ -21,6 +21,7 @@
 250 OK
 550 Administrative prohibition
 221 myhost.test.ex closing connection
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
 >  1 [*.b.c]
 >  2 
 >  3 [*]

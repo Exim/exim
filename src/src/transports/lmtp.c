@@ -825,7 +825,7 @@ transport_info lmtp_transport_info = {
   .options_block =	&lmtp_transport_option_defaults,
   .options_len =	sizeof(lmtp_transport_options_block),
   .init =		lmtp_transport_init,
-# ifdef DYNLOOKUP
+# if TRANSPORT_LMTP==2
   .dyn_magic =		TRANSPORT_MAGIC,
 # endif
   },

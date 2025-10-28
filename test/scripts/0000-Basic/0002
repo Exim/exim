@@ -1000,10 +1000,6 @@ ${if forany_json {[1, 2, 3]}{={$item}{1}}{yes}{no}}
 ${if forany_jsons{["A", "B", "C"]}{eq{$item}{B}}{yes}{no}}
 
 ****
-# Test "escape" with print_topbitchars
-exim -be -DPTBC=print_topbitchars
-escape: ${escape:B7·F2ò}
-****
 # Checkout expansion debugging
 exim -d-all+expand -f sndr@dom -be
 primary_hostname: $primary_hostname
@@ -1023,6 +1019,10 @@ match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
 match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
 protected: ${expand:\N \N}
+****
+# Test "escape" with print_topbitchars
+exim -d-all+expand -be -DPTBC=print_topbitchars
+escape: ${escape:B7·F2ò}
 ****
 # Sender host name and address etc, all unset
 exim -be

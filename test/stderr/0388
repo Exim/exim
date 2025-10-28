@@ -72,7 +72,7 @@ search_tidyup called
 search_tidyup called
 changed uid/gid: remote delivery to x@y with transport=smtp
   uid=EXIM_UID gid=EXIM_GID pid=p1235
-set_process_info: pppp delivering 10HmaX-000000005vi-0000 using smtp
+set_process_info: pppp delivering 10HmaX-000000005vi-0000 (1 addr) using smtp
 checking retry status of 127.0.0.1
  no retry data available
 127.0.0.1 in serialize_hosts? no (option unset)
@@ -121,7 +121,7 @@ LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: just tried V4NET.0.0.0 [V4NET.0.0.0]:PORT_S for x@y: result DEFER
 added retry item for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S: errno=dd more_errno=dd,A flags=2
-set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish (delivery wait-all-complete)
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 (just run smtp for x@y in subprocess)
 search_tidyup called
 search_tidyup called
@@ -178,7 +178,7 @@ Processing retry items
 LOG: MAIN
   ** x@y: retry timeout exceeded
 end of retry processing
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd bounce-message -odi -odi -t -oem -oi -f <> -E10HmaX-000000005vi-0000
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xebb8aced -MCd bounce-message -odi -odi -t -oem -oi -f <> -E10HmaX-000000005vi-0000
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
@@ -239,7 +239,7 @@ LOG: MAIN
   <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 receive_msg: tidyup
 search_tidyup called
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd local-accept-delivery -odi -Mc 10HmaY-000000005vi-0000
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xebb8aced -MCd local-accept-delivery -odi -Mc 10HmaY-000000005vi-0000
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective

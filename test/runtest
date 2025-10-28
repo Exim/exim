@@ -1160,6 +1160,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^dmarc_tld_file =/;
     # timestamp in dmarc history file
     s/received \K\d{10}$/1692480217/;
+    # -be debug
+    next if /^macro \'_HAVE_DMARC\'/;
 
     # ARC is not always supported by the build
     next if /^arc_sign =/;
@@ -1177,6 +1179,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # gsasl library version may not support some methods
     s/250-AUTH ANONYMOUS PLAIN SCRAM-SHA-1\K SCRAM-SHA-256//;
+    #
+    # pipe-connect
+    next if /^macro \'_HAVE_PIPE_CONNECT\'/;
 
     # mailq times change with when the run is done, vs. static-source spoolfiles
     s/\s*\d*[hd](?=   317 (?:[-0-9A-Za-z]{23}|[-0-9A-Za-z]{16}) <nobody\@test.ex>)/DDd/;

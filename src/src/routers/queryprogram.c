@@ -549,7 +549,7 @@ router_info queryprogram_router_info =
   .options_block =    &queryprogram_router_option_defaults,
   .options_len =      sizeof(queryprogram_router_options_block),
   .init =             queryprogram_router_init,
-# ifdef DYNLOOKUP
+# if ROUTER_QUERYPROGRAM==2
   .dyn_magic =	      ROUTER_MAGIC,
 # endif
   },

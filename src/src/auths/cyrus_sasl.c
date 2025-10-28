@@ -521,7 +521,7 @@ auth_info cyrus_sasl_auth_info = {
   .options_block =	&auth_cyrus_sasl_option_defaults,
   .options_len =	sizeof(auth_cyrus_sasl_options_block),
   .init =		auth_cyrus_sasl_init,
-# ifdef DYNLOOKUP
+# if AUTH_CYRUS_SASL==2
   .dyn_magic =		AUTH_MAGIC,
 # endif
   },

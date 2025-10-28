@@ -389,7 +389,7 @@ auth_info spa_auth_info = {
   .options_block =	&auth_spa_option_defaults,
   .options_len =	sizeof(auth_spa_options_block),
   .init =		auth_spa_init,
-# ifdef DYNLOOKUP
+# if AUTH_SPA==2
   .dyn_magic =		AUTH_MAGIC,
 # endif
   },

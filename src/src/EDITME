@@ -436,7 +436,6 @@ LOOKUP_DNSDB=yes
 
 # LOOKUP_CDB=yes
 # LOOKUP_DSEARCH=yes
-# LOOKUP_IBASE=yes
 # LOOKUP_JSON=yes
 # LOOKUP_LDAP=yes
 # LOOKUP_LMDB=yes
@@ -448,6 +447,7 @@ LOOKUP_DNSDB=yes
 # LOOKUP_ORACLE=yes
 # LOOKUP_PASSWD=yes
 # LOOKUP_PGSQL=yes
+# LOOKUP_PSL=yes
 # LOOKUP_REDIS=yes
 # LOOKUP_SQLITE=yes
 # LOOKUP_SQLITE_PC=sqlite3
@@ -460,9 +460,6 @@ LOOKUP_DNSDB=yes
 # LOOKUP_WILDLSEARCH=yes
 # LOOKUP_NWILDLSEARCH=yes
 
-
-# For IBASE you may need:
-#LIBS += -lfbclient
 
 #------------------------------------------------------------------------------
 # If you have set LOOKUP_LDAP, you should set LDAP_LIB_TYPE to indicate
@@ -512,7 +509,7 @@ SUPPORT_DANE=yes
 # the command for linking Exim itself, not on any auxiliary programs. You
 # don't need to set LOOKUP_INCLUDE if the relevant directories are already
 # specified in INCLUDE. The settings below are just examples; -lpq is for
-# PostgreSQL, -lgds is for Interbase, -lsqlite3 is for SQLite, -lhiredis
+# PostgreSQL, -lsqlite3 is for SQLite, -lhiredis
 # is for Redis, -ljansson for JSON.
 #
 # You do not need to use this for any lookup information added via pkg-config.
@@ -526,15 +523,16 @@ SUPPORT_DANE=yes
 
 # LOOKUP_INCLUDE=-I /usr/local/ldap/include -I /usr/local/mysql/include -I /usr/local/pgsql/include
 # LOOKUP_INCLUDE +=-I /usr/local/include
-# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3 -llmdb
+# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lsqlite3 -llmdb
 
 # LOOKUP_LIBS=-L/usr/local/lib -lldap -llber
 # Some platforms may need this for LOOKUP_NIS:
 #LOOKUP_LIBS += -lnsl
+
+# These lookup types need appropriate libraries
 #LOOKUP_LIBS += -ljansson
 #LOOKUP_LIBS += -lhiredis
 
-#------------------------------------------------------------------------------
 # If you included LOOKUP_LMDB above you will need the library. Depending
 # on where installed you may also need an include directory
 #
@@ -542,6 +540,7 @@ SUPPORT_DANE=yes
 # LOOKUP_LIBS += -llmdb
 # For dynamic-modules builds, use instead LOOKUP_LMDB_INCLUDE & LOOKUP_LMDB_LIBS
 
+# LOOKUP_PSL will require that SUPPORT_I18N is defined (but needs no libraries)
 
 #------------------------------------------------------------------------------
 # Compiling the Exim monitor: If you want to compile the Exim monitor, a
@@ -693,15 +692,6 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following line to add ARC (Authenticated Received Chain)
 # support.  You must have SPF and DKIM support enabled also.
 # EXPERIMENTAL_ARC=yes
-
-# Uncomment the following lines to add Brightmail AntiSpam support. You need
-# to have the Brightmail client SDK installed. Please check the experimental
-# documentation for implementation details. You need to edit the CFLAGS and
-# LDFLAGS lines.
-
-# EXPERIMENTAL_BRIGHTMAIL=yes
-# CFLAGS  += -I/opt/brightmail/bsdk-6.0/include
-# LDFLAGS += -lxml2_single -lbmiclient_single -L/opt/brightmail/bsdk-6.0/lib
 
 # Uncomment the following to include extra information in fail DSN message (bounces)
 # EXPERIMENTAL_DSN_INFO=yes

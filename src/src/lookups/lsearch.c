@@ -474,7 +474,7 @@ static lookup_info wildlsearch_lookup_info = {
 };
 
 #ifdef DYNLOOKUP
-#define lsearch_lookup_module_info _lookup_module_info
+# define lsearch_lookup_module_info _lookup_module_info
 #endif
 
 static lookup_info *_lookup_list[] = { &iplsearch_lookup_info,

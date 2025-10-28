@@ -1,0 +1,89 @@
+# Exim test configuration 2201
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+trusted_users = CALLER
+disable_ipv6
+
+acl_smtp_rcpt = check_rcpt
+acl_not_smtp = check_sndr
+queue_only
+
+# - ACL --
+begin acl
+
+check_rcpt:
+	# Do not care about result, looking at debug output
+	# expect an original lookup, a cached lookup avoidance
+	# then a TTL-required repeat lookup
+  warn	dnslists =	rbl.test.ex/V4NET.11.12.14
+	dnslists =	rbl.test.ex/V4NET.11.12.14
+	delay =		4s
+	dnslists =	rbl.test.ex/V4NET.11.12.14
+  accept
+
+check_sndr:
+	# Do not care about result, looking at debug output
+	# expect an original lookup, a cached lookup avoidance
+	# then a TTL-required repeat lookup
+  warn	sender_domains = dnsdb;a=$sender_address_domain
+	sender_domains = dnsdb;a=$sender_address_domain
+	delay =		4s
+	sender_domains = dnsdb;a=$sender_address_domain
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+  driver = accept
+  senders = a@shorthost.test.ex
+  transport = remote_delivery
+
+r1:
+  driver = accept
+  domains = dnsdb;$domain
+  local_parts = dnsdb;$local_part
+  retry_use_local_part
+  transport = local_delivery
+
+r2:
+  driver = accept
+  domains = dnsdb;$domain
+  retry_use_local_part
+  senders = dnsdb;A=${domain:$sender_address}
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  user = CALLER
+
+remote_delivery:
+  driver = smtp
+  hosts = 127.0.0.1
+  allow_localhost
+  port = PORT_D
+  hosts_try_fastopen =	:
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

@@ -101,7 +101,8 @@ want_dynamic() {
 
 want_at_all() {
   local want_name="$1"
-  local re="(LOOKUP|EXPERIMENTAL)_${want_name}[ $tab]*=[ $tab]*."
+  # SUPPORT is here purely for the spf lookup
+  local re="(LOOKUP|EXPERIMENTAL|SUPPORT)_${want_name}[ $tab]*=[ $tab]*."
   env | ${egrep} -q "^$re"
   if [ $? -eq 0 ]; then return 0; fi
   ${egrep} -q "^[ $tab]*$re" "$defs_source"
@@ -156,23 +157,18 @@ exec > "$target"
 sed -n "1,/$tag_marker/p" < "$input"
 
 for name_mod in \
-    CDB DBM:dbmdb DNSDB DSEARCH IBASE JSON LMDB LDAP LSEARCH MYSQL NIS NISPLUS \
-    NMH ORACLE PASSWD PGSQL REDIS SQLITE TESTDB WHOSON
+    CDB DBM:dbmdb DNSDB DSEARCH JSON LMDB LDAP LSEARCH MYSQL NIS NISPLUS \
+    NMH ORACLE PASSWD PGSQL PSL REDIS SQLITE SPF TESTDB WHOSON
 do
   emit_module_rule $name_mod
 done
 
-# Because the variable is SUPPORT_SPF and not LOOKUP_SPF we
-# always include spf.o and compile a dummy if SUPPORT_SPF is not
-# defined.
-
-OBJ="${OBJ} spf.o"
-
 # readsock is always wanted as it implements the ${readsock } expansion
-OBJ="${OBJ} readsock.o"
+OBJ_ALWAYS="${OBJ_ALWAYS} readsock.o"
 
 echo "MODS = $MODS"
 echo "OBJ = $OBJ"
+echo "OBJ_ALWAYS = $OBJ_ALWAYS"
 
 sed -n "/$tag_marker/,\$p" < "$input"
 

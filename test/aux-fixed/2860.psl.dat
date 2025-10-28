@@ -1,0 +1,34 @@
+// A real PSL can be pulled from https://publicsuffix.org/list/public_suffix_list.dat,
+
+// VERSION: YYYY-MM-DD_hh-mm-ss_UTC
+// COMMIT: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+// More random comments
+
+// ===BEGIN STUFF
+
+// ac : http://nic.ac/rules.htm
+ac
+com.ac
+edu.ac
+
+// aero : https://information.aero/registration/policies/dmp
+aero
+// 2LDs
+airline.aero
+aerobatic.aero
+
+// ck : https://www.iana.org/domains/root/db/ck.html
+*.ck
+!www.ck
+
+// ZoneABC : https://zoneabc.net
+// Submitted by ZoneABC Team <support@zoneabc.net>
+zabc.net
+*.wildcard.zabc.net
+
+// Internationalised domain name handling
+jp
+三重.jp
+
+// ===END MORE STUFF

@@ -1074,153 +1074,12 @@ lookup_show_supported(gstring * g)
 {
 gstring * b = NULL, * d = NULL;
 
-#ifdef LOOKUP_LSEARCH
-# if LOOKUP_LSEARCH!=2
-  b = string_cat(b, US" lsearch wildlsearch nwildlsearch iplsearch");
-# else
-  d = string_cat(d, US" lsearch wildlsearch nwildlsearch iplsearch");
-# endif
-#endif
-#ifdef LOOKUP_CDB
-# if LOOKUP_CDB!=2
-  b = string_cat(b, US" cdb");
-# else
-  d = string_cat(d, US" cdb");
-# endif
-#endif
-#ifdef LOOKUP_DBM
-# if LOOKUP_DBM!=2
-  b = string_cat(b, US" dbm dbmjz dbmnz");
-# else
-  d = string_cat(d, US" dbm dbmjz dbmnz");
-# endif
-#endif
-#ifdef LOOKUP_DNSDB
-# if LOOKUP_DNSDB!=2
-  b = string_cat(b, US" dnsdb");
-# else
-  d = string_cat(d, US" dnsdb");
-# endif
-#endif
-#ifdef LOOKUP_DSEARCH
-# if LOOKUP_DSEARCH!=2
-  b = string_cat(b, US" dsearch");
-# else
-  d = string_cat(d, US" dsearch");
-# endif
-#endif
-#ifdef LOOKUP_IBASE
-# if LOOKUP_IBASE!=2
-  b = string_cat(b, US" ibase");
-# else
-  d = string_cat(d, US" ibase");
-# endif
-#endif
-#ifdef LOOKUP_JSON
-# if LOOKUP_JSON!=2
-  b = string_cat(b, US" json");
-# else
-  d = string_cat(d, US" json");
-# endif
-#endif
-#ifdef LOOKUP_LDAP
-# if LOOKUP_LDAP!=2
-  b = string_cat(b, US" ldap ldapdn ldapm");
-# else
-  d = string_cat(d, US" ldap ldapdn ldapm");
-# endif
-#endif
-#ifdef LOOKUP_LMDB
-# if LOOKUP_LMDB!=2
-  b = string_cat(b, US" lmdb");
-# else
-  d = string_cat(d, US" lmdb");
-# endif
-#endif
-#ifdef LOOKUP_MYSQL
-# if LOOKUP_MYSQL!=2
-  b = string_cat(b, US" mysql");
-# else
-  d = string_cat(d, US" mysql");
-# endif
-#endif
-#ifdef LOOKUP_NIS
-# if LOOKUP_NIS!=2
-  b = string_cat(b, US" nis nis0");
-# else
-  d = string_cat(d, US" nis nis0");
-# endif
-#endif
-#ifdef LOOKUP_NISPLUS
-# if LOOKUP_NISPLUS!=2
-  b = string_cat(b, US" nisplus");
-# else
-  d = string_cat(d, US" nisplus");
-# endif
-#endif
-#ifdef EXPERIMENTAL_NMH
-# if EXPERIMENTAL_NMH!=2
-  b = string_cat(b, US" nmh");
-# else
-  d = string_cat(d, US" nmh");
-# endif
-#endif
-#ifdef LOOKUP_ORACLE
-# if LOOKUP_ORACLE!=2
-  b = string_cat(b, US" oracle");
-# else
-  d = string_cat(d, US" oracle");
-# endif
-#endif
-#ifdef LOOKUP_PASSWD
-# if LOOKUP_PASSWD!=2
-  b = string_cat(b, US" passwd");
-# else
-  d = string_cat(d, US" passwd");
-# endif
-#endif
-#ifdef LOOKUP_PGSQL
-# if LOOKUP_PGSQL!=2
-  b = string_cat(b, US" pgsql");
-# else
-  d = string_cat(d, US" pgsql");
-# endif
-#endif
-#ifdef LOOKUP_REDIS
-# if LOOKUP_REDIS!=2
-  b = string_cat(b, US" redis");
-# else
-  d = string_cat(d, US" redis");
-# endif
-#endif
-#ifdef EXIM_HAVE_SPF
-# if EXIM_HAVE_SPF !=2
-  b = string_cat(b, US" spf");
-# else
-  d = string_cat(d, US" spf");
-# endif
-#endif
-#ifdef LOOKUP_SQLITE
-# if LOOKUP_SQLITE!=2
-  b = string_cat(b, US" sqlite");
-# else
-  d = string_cat(d, US" sqlite");
-# endif
-#endif
-#ifdef LOOKUP_TESTDB
-# if LOOKUP_TESTDB!=2
-  b = string_cat(b, US" testdb");
-# else
-  d = string_cat(d, US" testdb");
-# endif
-#endif
-#ifdef LOOKUP_WHOSON
-# if LOOKUP_WHOSON!=2
-  b = string_cat(b, US" whoson");
-# else
-  d = string_cat(d, US" whoson");
-# endif
-#endif
+for (lookup_module_info ** lmip = avail_static_lookups; *lmip; lmip++)
+  for (lookup_info ** lip = (*lmip)->lookups;
+      lip < (*lmip)->lookups + (*lmip)->lookupcount; lip++)
+    b = string_fmt_append(b, " %s", (*lip)->name);
+
+d = lookup_dynamic_supported(d);
 
 if (b) g = string_fmt_append(g, "Lookups (built-in):%Y\n", b);
 if (d) g = string_fmt_append(g, "Lookups (dynamic): %Y\n", d);
@@ -1368,9 +1227,6 @@ g = string_cat(g, US"Support for:");
 #endif
 #ifdef EXPERIMENTAL_ARC
   g = string_cat(g, US" Experimental_ARC");
-#endif
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  g = string_cat(g, US" Experimental_Brightmail");
 #endif
 #ifdef EXPERIMENTAL_DCC
   g = string_cat(g, US" Experimental_DCC");
@@ -1965,7 +1821,6 @@ BOOL arg_queue_only = FALSE;
 BOOL bi_option = FALSE;
 BOOL checking = FALSE;
 BOOL count_queue = FALSE;
-BOOL expansion_test = FALSE;
 BOOL extract_recipients = FALSE;
 BOOL flag_G = FALSE;
 BOOL flag_n = FALSE;
@@ -2483,7 +2338,7 @@ on the second character (the one after '-'), to save some effort. */
 	   -bem: Ditto, but read a message from a file first
 	*/
 	case 'e':
-	  expansion_test = checking = TRUE;
+	  f.expansion_test = checking = TRUE;
 	  if (*argrest == 'm')
 	    {
 	    if (++i >= argc) { badarg = TRUE; break; }
@@ -2914,14 +2769,9 @@ on the second character (the one after '-'), to save some effort. */
 
     case 'd':
 
-    /* -dropcr: Set this option.  Now a no-op, retained for compatibility only. */
-
-    if (Ustrcmp(argrest, "ropcr") == 0)
-      /* drop_cr = TRUE */ ;
-
     /* -dp: Set up a debug pretrigger buffer with given size. */
 
-    else if (Ustrcmp(argrest, "p") == 0)
+    if (Ustrcmp(argrest, "p") == 0)
       if (++i >= argc)
 	badarg = TRUE;
       else
@@ -4070,9 +3920,9 @@ if (	 (smtp_input || extract_recipients || recipients_arg < argc)
    ||	 smtp_input
       && (sender_address || filter_test != FTEST_NONE || extract_recipients)
    || deliver_selectstring && !qrunners
-   || msg_action == MSG_LOAD && (!expansion_test || expansion_test_message)
+   || msg_action == MSG_LOAD && (!f.expansion_test || expansion_test_message)
    ||	 atrn_mode
-      && (  f.daemon_listen || expansion_test || filter_test != FTEST_NONE
+      && (  f.daemon_listen || f.expansion_test || filter_test != FTEST_NONE
 	 || checking /* || bi_option || info_stdout || receiving_message
 	 || malware_test_file || list_queue || list_config || list_options
 	 || version_printed || msg_action_arg > 0 || qrunners
@@ -4230,7 +4080,7 @@ if ((                                            /* EITHER */
     real_uid != root_uid &&                      /* Not root, and */
     !f.running_in_test_harness                     /* Not fudged */
     ) ||                                         /*   OR   */
-    expansion_test                               /* expansion testing */
+    f.expansion_test                             /* expansion testing */
     ||                                           /*   OR   */
     filter_test != FTEST_NONE)                   /* Filter testing */
   {
@@ -4960,7 +4810,7 @@ needed in transports so we lost the optimisation. */
   /* -be can add macro definitions, needing to link to the macro structure
   chain.  Otherwise, make the memory used for config data readonly. */
 
-  if (!expansion_test)
+  if (!f.expansion_test)
     store_writeprotect(POOL_CONFIG);
 
 #ifdef MEASURE_TIMING
@@ -5498,7 +5348,7 @@ from stdin if there aren't any. If -Mset was specified, load the message so
 that its variables can be used, but restrict this facility to admin users.
 Otherwise, if -bem was used, read a message from stdin. */
 
-if (expansion_test)
+if (f.expansion_test)
   {
   set_process_info("expansion-test");
   dns_init(FALSE, FALSE, FALSE);
@@ -5615,9 +5465,7 @@ if (raw_active_hostname)
 /* Handle host checking: this facility mocks up an incoming SMTP call from a
 given IP address so that the blocking and relay configuration can be tested.
 Unless a sender_ident was set by -oMt, we discard it (the default is the
-caller's login name). An RFC 1413 call is made only if we are running in the
-test harness and an incoming interface and both ports are specified, because
-there is no TCP/IP call to find the ident for. */
+caller's login name). */
 
 if (host_checking)
   {
@@ -5625,12 +5473,7 @@ if (host_checking)
   int size;
 
   if (!sender_ident_set)
-    {
     sender_ident = NULL;
-    if (f.running_in_test_harness && sender_host_port
-       && interface_address && interface_port)
-      verify_get_ident(test_harness_identd_port);
-    }
 
   /* In case the given address is a non-canonical IPv6 address, canonicalize
   it. Use the compressed form for IPv6. */
@@ -5653,7 +5496,6 @@ if (host_checking)
   debug_file = stderr;
   debug_fd = fileno(debug_file);
   dprintf(smtp_out_fd, "\n**** SMTP testing session as if from host %s\n"
-    "**** but without any ident (RFC 1413) callback.\n"
     "**** This is not for real!\n\n",
       sender_host_address);
 
@@ -5765,14 +5607,12 @@ sendmail error modes other than -oem ever actually used? Later: yes.) */
 if (!smtp_input) error_handling = arg_error_handling;
 
 /* If this is an inetd call, ensure that stderr is closed to prevent panic
-logging being sent down the socket and make an identd call to get the
-sender_ident. */
+logging being sent down the socket. */
 
 else if (f.is_inetd && !atrn_mode)
   {
   (void)fclose(stderr);
   exim_nullstd();                       /* Re-open to /dev/null */
-  verify_get_ident(IDENT_PORT);
   host_build_sender_fullhost();
   set_process_info("handling incoming connection from %s via inetd",
     sender_fullhost);

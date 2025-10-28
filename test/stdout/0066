@@ -1,6 +1,5 @@
 
 **** SMTP testing session as if from host 1.2.3.4
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -16,7 +15,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 1.2.3.5
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -32,7 +30,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 1.2.4.5
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -48,7 +45,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 1.3.2.4
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -64,7 +60,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 131.111.8.2
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -80,7 +75,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 192.152.98.3
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -96,7 +90,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host V4NET.0.0.1
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -112,7 +105,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host V4NET.11.12.13
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -128,7 +120,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host V4NET.0.0.3
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

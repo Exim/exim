@@ -58,10 +58,6 @@ BOOL    opt_perl_taintmode     = FALSE;
 tree_node *dlobj_anchor        = NULL;
 #endif
 
-#ifdef LOOKUP_IBASE
-uschar *ibase_servers          = NULL;
-#endif
-
 #ifdef LOOKUP_LDAP
 uschar *eldap_ca_cert_dir      = NULL;
 uschar *eldap_ca_cert_file     = NULL;
@@ -265,6 +261,7 @@ struct global_flags f =
 
 	.enable_dollar_recipients = FALSE,
 	.expand_string_forcedfail = FALSE,
+	.expansion_test		= FALSE,
 
 	.filter_running         = FALSE,
 
@@ -366,7 +363,6 @@ BOOL    disable_fsync          = FALSE;
 #endif
 BOOL    disable_ipv6           = FALSE;
 BOOL    dns_csa_use_reverse    = TRUE;
-BOOL    drop_cr                = FALSE;         /* No longer used */
 
 BOOL    envelope_to_remove     = TRUE;
 BOOL    exim_gid_set           = TRUE;          /* This gid is always set */
@@ -585,15 +581,6 @@ uschar *base62_chars= US"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 uschar *bi_command             = NULL;
 uschar *big_buffer             = NULL;
 int     big_buffer_size        = BIG_BUFFER_SIZE;
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-uschar *bmi_alt_location       = NULL;
-uschar *bmi_base64_tracker_verdict = NULL;
-uschar *bmi_base64_verdict     = NULL;
-uschar *bmi_config_file        = US"/opt/brightmail/etc/brightmail.cfg";
-int     bmi_deliver            = 1;
-int     bmi_run                = 0;
-uschar *bmi_verdicts           = NULL;
-#endif
 int     bsmtp_transaction_linecount = 0;
 int     body_8bitmime          = 0;
 int     body_linecount         = 0;
@@ -720,7 +707,6 @@ bit_table debug_options[]      = { /* must be in alphabetical order and use
   BIT_TABLE(D, filter),
   BIT_TABLE(D, hints_lookup),
   BIT_TABLE(D, host_lookup),
-  BIT_TABLE(D, ident),
   BIT_TABLE(D, interface),
   BIT_TABLE(D, lists),
   BIT_TABLE(D, load),
@@ -1003,7 +989,6 @@ bit_table log_options[]        = { /* must be in alphabetical order,
   BIT_TABLE(L, dnssec),
   BIT_TABLE(L, etrn),
   BIT_TABLE(L, host_lookup_failed),
-  BIT_TABLE(L, ident_timeout),
   BIT_TABLE(L, incoming_interface),
   BIT_TABLE(L, incoming_port),
   BIT_TABLE(L, lost_incoming_connection),
@@ -1245,7 +1230,7 @@ const pcre2_code *regex_whitelisted_macro = NULL;
 uschar *regex_match_string     = NULL;
 #endif
 int     remote_delivery_count  = 0;
-int     remote_max_parallel    = 4;
+int     remote_max_parallel    = 6;
 uschar *remote_sort_domains    = NULL;
 int     retry_data_expire      = 7*24*60*60;
 int     retry_interval_max     = 24*60*60;
@@ -1253,8 +1238,6 @@ int     retry_maximum_timeout  = 0;        /* set from retry config */
 retry_config  *retries         = NULL;
 const uschar *return_path            = NULL;
 int     rewrite_existflags     = 0;
-uschar *rfc1413_hosts          = US"@[]";
-int     rfc1413_query_timeout  = 0;
 uid_t   root_gid               = ROOT_GID;
 uid_t   root_uid               = ROOT_UID;
 
@@ -1416,7 +1399,6 @@ uid_t   system_filter_uid      = (uid_t)-1;
 
 blob	tcp_fastopen_nodata    = { .data = NULL, .len = 0 };
 tfo_state_t tcp_out_fastopen   = TFO_NOT_USED;
-int	test_harness_identd_port  = IDENT_PORT;
 int     test_harness_load_avg  = 0;
 int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;

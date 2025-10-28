@@ -1,97 +1,67 @@
-# TLS server: -tls-on-connect with Early Banner
-gnutls
+# TLS client, server drops TCP after QUIT
 #
-# You can packet-capture to see the Early-data packet (TLSv1.3),
-# but we check for expected EHLO input from the client and log that.
-exim -DSERVER=server -tls-on-connect -bd -oX PORT_D
-****
-client-anytls -tls-on-connect 127.0.0.1 PORT_D
-??? 220
-ehlo rhu.barb
-??? 250-
-??? 250-
-??? 250-
-??? 250-
-??? 250-
-??? 250
-mail from:<userx1_3@test.ex>
-??? 250
-rcpt to:<userx@test.ex>
-??? 250
+# 1: server drops TCP after sending ack-of-QUIT
+server -d -tls DIR/aux-fixed/cert1 DIR/aux-fixed/cert1 PORT_D
+220 banner
+EHLO
+250-yo mate
+250-STARTTLS
+250 ok
+STARTTLS
+250 ready for TLS startup
+*starttls
+EHLO
+250-yo mate, encrypted
+250 ok
+MAIL
+250
+RCPT
+250
 DATA
-??? 3
-This is a test encrypted message.
+352 go ahead
 .
-??? 250
-quit
-??? 221
+250 accepted data
+QUIT
+220 saw your quit
+>*eof
+*eof
 ****
-killdaemon
-exim -Mrm $msg1
+#
+exim -odf a@test.ex
+Subject: test1
 ****
 #
 #
 #
-# Check that early-banner does not get done before TLSv1.3
-exim -DSERVER=server -DOPTION=+no_tlsv1_3 -tls-on-connect -bd -oX PORT_D
-****
-client-anytls -tls-on-connect 127.0.0.1 PORT_D
-??? 220
-ehlo rhu.barb
-??? 250-
-??? 250-
-??? 250-
-??? 250-
-??? 250-
-??? 250
-mail from:<userx1_2@test.ex>
-??? 250
-rcpt to:<userx@test.ex>
-??? 250
+#
+#
+# 2: server drops TCP after receiving QUIT
+server -d -tls DIR/aux-fixed/cert1 DIR/aux-fixed/cert1 PORT_D
+220 banner
+EHLO
+250-yo mate
+250-STARTTLS
+250 ok
+STARTTLS
+250 ready for TLS startup
+*starttls
+EHLO
+250-yo mate, encrypted
+250 ok
+MAIL
+250
+RCPT
+250
 DATA
-??? 3
-This is a test encrypted message.
+352 go ahead
 .
-??? 250
-quit
-??? 221
+250 accepted data
+QUIT
+>*eof
+*eof
 ****
-killdaemon
-exim -Mrm $msg1
-****
-#
-#
-#
-#
-#
-# What happens when the server wants to verify a client-cert?
-# This should *not* log "appears to have seen our banner".
-exim -DSERVER=server -tls-on-connect -bd -oX PORT_D
-****
-client-anytls -tls-on-connect HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem DIR/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
-??? 220
-ehlo rhu.barb
-??? 250-
-??? 250-
-??? 250-
-??? 250-
-??? 250-
-??? 250
-mail from:<userx_clientcert@test.ex>
-??? 250
-rcpt to:<userx@test.ex>
-??? 250
-DATA
-??? 3
-This is a test encrypted message.
-.
-??? 250
-quit
-??? 221
-****
-killdaemon
-exim -Mrm $msg1
+exim -odf b@test.ex
+Subject: test2
 ****
 #
-#
-#
+no_msglog_check

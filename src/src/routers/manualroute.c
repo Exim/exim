@@ -517,7 +517,7 @@ router_info manualroute_router_info =
   .options_block =	&manualroute_router_option_defaults,
   .options_len =	sizeof(manualroute_router_options_block),
   .init =		manualroute_router_init,
-# ifdef DYNLOOKUP
+# if ROUTER_MANUALROUTE==2
   .dyn_magic =		ROUTER_MAGIC,
 # endif
   },

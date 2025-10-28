@@ -1,4 +1,4 @@
-# Exim test configuration 2202
+# Exim test configuration 3202
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -6,33 +6,21 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_vrfy = vrfy
-acl_smtp_rcpt = rcpt
-disable_ipv6
+# Use first three components of address to select ACL
+acl_smtp_rcpt = acl_${sg{${tr{$sender_host_address}{.}{_}}}{^(.*)_.*\$}{\$1}}
 
-# need to use this sublist due to taint
-hostlist goodhosts = *.$sender_address_domain : $sender_address_domain : \
-		      ${lookup dnsdb{>:defer_never,mxh=$sender_address_domain}}
-
-.ifdef DNS_RECURSE
-hosts_treat_as_local =		test.again.dns
-domainlist try_again_dns_list =	@mx_any
-dns_again_means_nonexist =	!+try_again_dns_list
-# that last line tries to set up a recursion
-.else
-dns_again_means_nonexist =	*
-.endif
-
-# ----- ACL -----
+# ----- ACLs -----
 
 begin acl
 
-vrfy:
-.ifdef DNS_RECURSE
-  warn	domains = +try_again_dns_list
-.endif
+acl_1_1_1:
+  accept  hosts = net-testdb;defer
 
-rcpt:
-  accept hosts = +ignore_unknown : +goodhosts
+acl_1_1_2:
+  deny    domains = testdb;defer
+
+acl_1_1_3:
+  require local_parts = testdb;defer
+
 
 # End

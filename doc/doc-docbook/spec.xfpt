@@ -295,7 +295,6 @@
 .see     concept fallover	fallback
 .see     concept filter 	"Sieve filter"			Sieve
 .see     concept headers	"header lines"
-.see     concept ident		"RFC 1413"
 .see     concept "LF character"	"linefeed"
 .seealso concept maximum	limit
 .see     concept monitor	"Exim monitor"
@@ -3043,15 +3042,7 @@ This facility is provided for testing configuration options for incoming
 messages, to make sure they implement the required policy. For example, you can
 test your relay controls using &%-bh%&.
 
-&*Warning 1*&:
-.cindex "RFC 1413"
-You can test features of the configuration that rely on ident
-(&url(https://www.rfc-editor.org/rfc/rfc2487,RFC 1413))
-information by using the &%-oMt%& option. However, Exim cannot actually perform
-an ident callout when testing using &%-bh%& because there is no incoming SMTP
-connection.
-
-&*Warning 2*&: Address verification callouts (see section &<<SECTcallver>>&)
+&*Warning*&: Address verification callouts (see section &<<SECTcallver>>&)
 are also skipped when testing using &%-bh%&. If you want these callouts to
 occur, use &%-bhc%& instead.
 
@@ -3705,7 +3696,6 @@ are:
 .irow filter         "filter handling"
 .irow hints_lookup   "hints data lookups"
 .irow host_lookup    "all types of name-to-IP address handling"
-.irow ident          "ident lookup"
 .irow interface      "lists of local interfaces"
 .irow lists          "matching things in lists"
 .irow load           "system load checks"
@@ -3783,11 +3773,6 @@ triggers.
 A value with bit 0 set will trigger on a write to the panic log.
 If a pretrigger buffer had been set up (cf. the &%-dp%& option above)
 the debug trail leading up to this write will be available.
-
-.cmdopt -dropcr
-This is an obsolete option that is now a no-op. It used to affect the way Exim
-handled CR and LF characters in incoming messages. What happens now is
-described in section &<<SECTlineendings>>&.
 
 .cmdopt -dS
 This option enables debug during the startup of Exim, before the completion
@@ -4433,6 +4418,8 @@ option sets the sender host name in &$sender_host_name$&. When this option is
 present, Exim does not attempt to look up a host name from an IP address; it
 uses the name it is given.
 
+. Is this obsolete now we've retired identd support?
+. If so, more code could go (eg. in host_build_sender_fullhost()
 .cmdopt -oMt <&'ident&~string'&>
 .cindex "sender" "ident string, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMt%&
@@ -5856,20 +5843,6 @@ Note that it is not always possible to find a host name from an IP address,
 because not all DNS reverse zones are maintained, and sometimes DNS servers are
 unreachable.
 
-The next two lines are concerned with &'ident'& callbacks, as defined by
-&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
-(hence their names):
-.code
-rfc1413_hosts = *
-rfc1413_query_timeout = 0s
-.endd
-These settings cause Exim to avoid ident callbacks for all incoming SMTP calls.
-Few hosts offer RFC1413 service these days; calls have to be
-terminated by a timeout and this needlessly delays the startup
-of an incoming SMTP connection.
-If you have hosts for which you trust RFC1413 and need this
-information, you can change this.
-
 This line enables an efficiency SMTP option.  It is negotiated by clients
 and not expected to cause problems but can be disabled if needed.
 .code
@@ -7146,9 +7119,32 @@ be followed by optional colons.
 &((n)wildlsearch)& can &'not'& be turned into a DBM or cdb file, because those
 lookup types support only literal keys.
 
+.new
+.subsection "Public Suffix List"
+.cindex "psl lookup type"
+.cindex lookup psl
+.cindex "regdom lookup type"
+.cindex lookup regdom
+&(psl)& or &(regdom)&: These search a Public Suffix List file.
+For both, the key is a candidate domain.
+The &(psl)& lookup returns the public suffix for the domain;
+the &(regdom)& lookup returns the registered domain.
+
+It is the operator's responsibility to provide an up-to-date PSL file.
+Many OS distributions provide one
+(Eg. package &"publicsuffix-list"& from Fedora;
+&"publicsuffix"& from Debian),
+or one could be regularly fetched from
+&url(https://publicsuffix.org/,publicsuffix.org).
+
+The result will have the same A-label/U-label state as the key,
+and will be untainted.
+.wen
+
+
 .subsection spf
 .cindex "spf lookup type"
-.cindex "lookup" "spf"
+.cindex lookup spf
 If Exim is built with SPF support, manual lookups can be done
 (as opposed to the standard ACL condition method).
 For details see section &<<SECSPF>>&.
@@ -7166,11 +7162,6 @@ many of them are given in later sections.
 This does a DNS search for one or more records whose domain names
 are given in the supplied query. The resulting data is the contents of the
 records. See section &<<SECTdnsdb>>&.
-
-.subsection ibase
-.cindex "InterBase lookup type"
-.cindex "lookup" "InterBase"
-This does a lookup in an InterBase database.
 
 .subsection ldap
 .cindex "LDAP" "lookup type"
@@ -8104,11 +8095,9 @@ operator is to double any quote characters within the text.
 .cindex "lookup" "PostgreSQL"
 .cindex "Oracle" "lookup type"
 .cindex "lookup" "Oracle"
-.cindex "InterBase lookup type"
-.cindex "lookup" "InterBase"
 .cindex "Redis lookup type"
 .cindex lookup Redis
-Exim can support lookups in InterBase, MySQL, Oracle, PostgreSQL, Redis,
+Exim can support lookups in MySQL, Oracle, PostgreSQL, Redis,
 and SQLite
 databases. Queries for these databases contain SQL statements, so an example
 might be
@@ -8136,26 +8125,23 @@ If the result of the query yields more than one row, it is all concatenated,
 with a newline between the data for each row.
 
 
-.subsection "More about MySQL, PostgreSQL, Oracle, InterBase, and Redis" SECID72
+.subsection "More about MySQL, PostgreSQL, Oracle, and Redis" SECID72
 .cindex "MySQL" "lookup type"
 .cindex "PostgreSQL lookup type"
 .cindex "lookup" "MySQL"
 .cindex "lookup" "PostgreSQL"
 .cindex "Oracle" "lookup type"
 .cindex "lookup" "Oracle"
-.cindex "InterBase lookup type"
-.cindex "lookup" "InterBase"
 .cindex "Redis lookup type"
 .cindex lookup Redis
-If any MySQL, PostgreSQL, Oracle, InterBase or Redis lookups are used, the
-&%mysql_servers%&, &%pgsql_servers%&, &%oracle_servers%&, &%ibase_servers%&,
+If any MySQL, PostgreSQL, Oracle, or Redis lookups are used, the
+&%mysql_servers%&, &%pgsql_servers%&, &%oracle_servers%&,
 or &%redis_servers%&
 option (as appropriate) must be set to a colon-separated list of server
 information.
 .oindex &%mysql_servers%&
 .oindex &%pgsql_servers%&
 .oindex &%oracle_servers%&
-.oindex &%ibase_servers%&
 .oindex &%redis_servers%&
 (For MySQL and PostgreSQL, the global option need not be set if all
 queries contain their own server information &-- see section
@@ -8207,7 +8193,7 @@ The &%quote_redis%& expansion operator
 escapes whitespace and backslash characters with a backslash.
 
 .subsection "Specifying the server in the query" SECTspeserque
-For MySQL, PostgreSQL and Redis lookups (but not currently for Oracle and InterBase),
+For MySQL, PostgreSQL and Redis lookups (but not currently for Oracle),
 it is possible to specify a list of servers with an individual query. This is
 done by appending a comma-separated option to the query type:
 .display
@@ -13907,8 +13893,7 @@ number that was used on the remote host.
 
 .vitem &$sender_ident$&
 .vindex "&$sender_ident$&"
-When a message is received from a remote host, this variable contains the
-identification received in response to an RFC 1413 request. When a message has
+When a message has
 been received locally, this variable contains the login name of the user that
 called Exim.
 
@@ -13930,11 +13915,14 @@ followed by a colon and a port number if port logging is enabled. When the
 first item is an IP address, the port is recorded as &"port=&'xxxx'&"& inside
 the parentheses.
 
-There may also be items of the form &"helo=&'xxxx'&"& if HELO or EHLO
+There may also an item of the form &"helo=&'xxxx'&"& if HELO or EHLO
 was used and its argument was not identical to the real host name or IP
-address, and &"ident=&'xxxx'&"& if an RFC 1413 ident string is available. If
-all three items are present in the parentheses, a newline and tab are inserted
-into the string, to improve the formatting of the &'Received:'& header.
+address.
+
+. not seeing coding for this...
+. If
+. all three items are present in the parentheses, a newline and tab are inserted
+. into the string, to improve the formatting of the &'Received:'& header.
 
 .vitem &$sender_verify_failure$&
 .vindex "&$sender_verify_failure$&"
@@ -14088,7 +14076,7 @@ on an outbound SMTP connection; the meaning of
 this depends upon the TLS implementation used.
 If TLS has not been negotiated, the value will be 0.
 
-.vitem &$tls_in_ourcert$&
+.tvar &$tls_in_ourcert$&
 .vindex "&$tls_in_ourcert$&"
 .cindex certificate variables
 This variable refers to the certificate presented to the peer of an
@@ -14102,7 +14090,7 @@ when a list of more than one
 file is used for &%tls_certificate%&, this variable is not reliable.
 The macro "_TLS_BAD_MULTICERT_IN_OURCERT" will be defined for those versions.
 
-.vitem &$tls_in_peercert$&
+.tvar &$tls_in_peercert$&
 .vindex "&$tls_in_peercert$&"
 This variable refers to the certificate presented by the peer of an
 inbound connection when the message was received.
@@ -14112,14 +14100,14 @@ or a &%def%& condition.
 If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
 
-.vitem &$tls_out_ourcert$&
+.tvar &$tls_out_ourcert$&
 .vindex "&$tls_out_ourcert$&"
 This variable refers to the certificate presented to the peer of an
 outbound connection.  It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
 or a &%def%& condition.
 
-.vitem &$tls_out_peercert$&
+.tvar &$tls_out_peercert$&
 .vindex "&$tls_out_peercert$&"
 This variable refers to the certificate presented by the peer of an
 outbound connection.  It is only useful as the argument of a
@@ -14927,7 +14915,6 @@ listed in more than one group.
 
 .section "Data lookups" "SECID101"
 .table2
-.row &%ibase_servers%&               "InterBase servers"
 .row &%ldap_ca_cert_dir%&            "dir of CA certs to verify LDAP server's"
 .row &%ldap_ca_cert_file%&           "file of CA certs to verify LDAP server's"
 .row &%ldap_cert_file%&              "client cert file for LDAP"
@@ -15151,8 +15138,6 @@ See also the &'Policy controls'& section above.
 .row &%host_lookup%&                 "host name looked up for these hosts"
 .row &%host_lookup_order%&           "order of DNS and local name lookups"
 .row &%recipient_unqualified_hosts%& "may send unqualified recipients"
-.row &%rfc1413_hosts%&               "make ident calls to these hosts"
-.row &%rfc1413_query_timeout%&       "zero disables ident calls"
 .row &%sender_unqualified_hosts%&    "may send unqualified senders"
 .row &%smtp_accept_keepalive%&       "some TCP/IP magic"
 .row &%smtp_accept_max%&             "simultaneous incoming connections"
@@ -16141,11 +16126,6 @@ means that DNSSEC will not work with Exim on that platform either, unless Exim
 is linked against an alternative DNS client library.
 
 
-.option drop_cr main boolean false
-This is an obsolete option that is now a no-op. It used to affect the way Exim
-handled CR and LF characters in incoming messages. What happens now is
-described in section &<<SECTlineendings>>&.
-
 .option dsn_advertise_hosts main "host list&!!" unset
 .cindex "bounce messages" "success"
 .cindex "DSN" "success"
@@ -16646,14 +16626,6 @@ section &<<SECTdomainlist>>&), and when checking the &%hosts%& option in the
 that transport). See also &%local_interfaces%&, &%extra_local_interfaces%&, and
 chapter &<<CHAPinterfaces>>&, which contains a discussion about local network
 interfaces and recognizing the local host.
-
-
-.option ibase_servers main "string list" unset
-.cindex "InterBase" "server list"
-This option provides a list of InterBase servers and associated connection data,
-to be used in conjunction with &(ibase)& lookups (see section &<<SECID72>>&).
-The option is available only if Exim has been built with InterBase support.
-
 
 
 .option ignore_bounce_errors_after main time 10w
@@ -17776,7 +17748,7 @@ initial set of recipients. The remote server should then re-send the message
 for the remaining recipients at a later time.
 
 
-.option remote_max_parallel main integer 4
+.option remote_max_parallel main integer 6
 .cindex "delivery" "parallelism for remote"
 This option controls parallel delivery of one message to a number of remote
 hosts. If the value is less than 2, parallel delivery is disabled, and Exim
@@ -17863,24 +17835,6 @@ the time of delivery. They are normally used only for final local deliveries.
 
 .option return_size_limit main integer 100K
 This option is an obsolete synonym for &%bounce_return_size_limit%&.
-
-
-.option rfc1413_hosts main "host list&!!" @[]
-.cindex "RFC 1413"
-.cindex "host" "for RFC 1413 calls"
-&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
-identification calls are made to any client host which matches
-an item in the list.
-The default value specifies just this host, being any local interface
-for the system.
-
-.option rfc1413_query_timeout main time 0s
-.cindex "RFC 1413" "query timeout"
-.cindex "timeout" "for RFC 1413 call"
-This sets the timeout on
-&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
-identification calls. If it is set to zero,
-no RFC 1413 calls are ever made.
 
 
 .option sender_unqualified_hosts main "host list&!!" unset
@@ -39520,9 +39474,11 @@ which is a reference to the message that caused the bounce to be sent.
 
 .cindex "HELO"
 .cindex "EHLO"
-For messages from other hosts, the H and U fields identify the remote host and
-record the RFC 1413 identity of the user that sent the message, if one was
-received. The number given in square brackets is the IP address of the sending
+.new
+For messages from other hosts, the H field identifies the remote host
+that sent the message.
+.wen
+The number given in square brackets is the IP address of the sending
 host. If there is a single, unparenthesized  host name in the H field, as
 above, it has been verified to correspond to the IP address (see the
 &%host_lookup%& option). If the name is in parentheses, it was the name quoted
@@ -39752,7 +39708,7 @@ the following table:
 &`T   `&        on &`<=`& lines: message subject (topic)
 &`TFO `&        connection took advantage of TCP Fast Open
 &`    `&        on &`=>`& &`**`& and &`==`& lines: transport name
-&`U   `&        local user or RFC 1413 identity
+&`U   `&        local user
 &`X   `&        TLS cipher suite
 .endd
 
@@ -39835,7 +39791,6 @@ selection marked by asterisks:
 .irow &`dnssec`&			&nbsp; "DNSSEC secured lookups"
 .irow &`etrn`&				*	"ETRN commands"
 .irow &`host_lookup_failed`&		*	"as it says"
-.irow &`ident_timeout`&			&nbsp; "timeout for ident connection"
 .irow &`incoming_interface`&		&nbsp; "local interface &amp; port on <= and => lines"
 .irow &`incoming_port`&			&nbsp; "remote port on <= lines"
 .irow &`lost_incoming_connection`&	*	"as it says (includes timeouts)"
@@ -39989,11 +39944,6 @@ selector (see &%smtp_syntax_error%& and &%smtp_protocol_error%&).
 any addresses, or when a lookup of an IP address fails to find a host name, a
 log line is written. This logging does not apply to direct DNS lookups when
 routing email addresses, but it does apply to &"byname"& lookups.
-.next
-.cindex "log" "ident timeout"
-.cindex "RFC 1413" "logging timeout"
-&%ident_timeout%&: A log line is written whenever an attempt to connect to a
-client's ident port times out.
 .next
 .cindex "log" "incoming interface"
 .cindex "log" "outgoing interface"
@@ -42174,8 +42124,7 @@ received. It is not present if no reverse lookup was done.
 .vitem "&%-ident%&&~<&'text'&>"
 For locally submitted messages, this records the login of the originating user,
 unless it was a trusted user and the &%-oMt%& option was used to specify an
-ident value. For messages received over TCP/IP, this records the ident string
-supplied by the remote host, if any.
+ident value.
 
 .vitem "&%-interface_address%&&~<&'address'&>.<&'port'&>"
 This records the IP address of the local interface and the port number through

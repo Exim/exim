@@ -539,8 +539,7 @@ transport-filter.pl: config ../src/transport-filter.src
 # are thrown away by the linker.
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
-OBJ_EXPERIMENTAL =	bmi_spam.o \
-			dane.o \
+OBJ_EXPERIMENTAL =	dane.o \
 			dcc.o \
 			imap_utf7.o \
 			utf8.o \
@@ -938,7 +937,6 @@ spool_mbox.o:    $(HDRS) spool_mbox.c
 
 # Dependencies for EXPERIMENTAL_* modules
 
-bmi_spam.o:	$(HDRS) bmi_spam.c
 dane.o:		$(HDRS) dane.c dane-openssl.c
 dcc.o:		$(HDRS) dcc.h dcc.c
 imap_utf7.o:	$(HDRS) imap_utf7.c

@@ -22,6 +22,7 @@ on all interfaces, unless the option -noipv6 is given. */
 #include <errno.h>
 #include <dirent.h>
 #include <sys/types.h>
+#include <sys/param.h>
 
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
@@ -47,6 +48,54 @@ on all interfaces, unless the option -noipv6 is given. */
 # define HAVE_IPV6 1
 #endif
 
+#if !defined(__SunOS_5_10) && !defined(__SunOS_5_11) && !defined(OpenBSD)
+# define HAVE_FOPENCOOKIE
+
+/* TLS support can be optionally included, either for OpenSSL or GnuTLS. The
+latter needs a whole pile of tables.  However, due to the existing use of
+stdio-buffering on the socket, the easiest way to add TLS support was
+to use fopencookie() to layer stdio on top of the TLS library interface.
+This API does not appear to be available in Solaris or OpenSBD. */
+
+# ifdef HAVE_OPENSSL_CRYPTO_H		/* from "configure" */
+#  define HAVE_OPENSSL
+#  include <openssl/crypto.h>
+#  include <openssl/x509.h>
+#  include <openssl/pem.h>
+#  include <openssl/ssl.h>
+#  include <openssl/err.h>
+#  include <openssl/rand.h>
+
+#  if OPENSSL_VERSION_NUMBER < 0x0090806fL && !defined(DISABLE_OCSP) && !defined(OPENSSL_NO_TLSEXT)
+#   warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
+#   define DISABLE_OCSP
+#  endif
+#  ifndef DISABLE_OCSP
+#   include <openssl/ocsp.h>
+#  endif
+
+# else					/* use only one of them */
+
+#  ifdef HAVE_GNUTLS_GNUTLS_H		/* from "configure" */
+#   define HAVE_GNUTLS
+#   include <gnutls/gnutls.h>
+#   include <gnutls/x509.h>
+#   if GNUTLS_VERSION_NUMBER >= 0x030103
+#    define HAVE_GNUTLS_OCSP
+#    include <gnutls/ocsp.h>
+#   endif
+#   ifndef GNUTLS_NO_EXTENSIONS
+#    define GNUTLS_NO_EXTENSIONS 0
+#   endif
+
+#   define DH_BITS      768
+
+#  endif	/*HAVE_GNUTLS*/
+# endif		/*HAVE_OPENSSL*/
+#endif		/*HAVE_FOPENCOOKIE*/
+
+
+
 #ifndef S_ADDR_TYPE
 # define S_ADDR_TYPE u_long
 #endif
@@ -66,6 +115,10 @@ typedef struct line {
 typedef unsigned BOOL;
 #define FALSE 0
 #define TRUE  1
+
+int debug = 0;
+int accept_socket, dup_accept_socket;
+FILE *in, *out;
 
 
 /*************************************************
@@ -150,6 +203,228 @@ putchar('\n');
 
 
 
+#ifdef HAVE_FOPENCOOKIE
+/*************************************************
+*                 TLS startup                    *
+*************************************************/
+
+# ifdef HAVE_OPENSSL
+ssize_t
+tls_read(void * ssl, char * buf, size_t size)
+{
+int rc, error;
+
+ERR_clear_error();
+if ((rc = SSL_read(ssl, buf, (int)size)) > 0)
+  return (ssize_t)rc;				/* data return */
+
+error = SSL_get_error(ssl, rc);
+if (error == SSL_ERROR_ZERO_RETURN		/* clean TLS close */
+   || error == SSL_ERROR_SYSCALL && errno != 0)	/* err from syscall */
+  return 0;					/* EOF return */
+
+return -1;					/* error return */
+}
+
+ssize_t
+tls_write(void * ssl, const char * buf, size_t size)
+{
+int rc = SSL_write(ssl, buf, (int)size);
+return rc >= 0 ? rc : 0;
+}
+
+int
+tls_close(void * cookie)
+{
+return shutdown(accept_socket, SHUT_WR) < 0 ? EOF : 0;
+}
+
+int
+tls_start(int sock, char * certfile, char * keyfile)
+{
+int rc;
+static const unsigned char *sid_ctx = "exim";
+SSL_CTX * ctx;
+SSL * ssl;
+cookie_io_functions_t iofuncs = {
+  .read = tls_read,
+  .write = tls_write,
+  .close = tls_close
+  };
+
+SSL_library_init();
+SSL_load_error_strings();
+
+if (!(ctx = SSL_CTX_new(SSLv23_method())))
+  {
+  printf("SSL_CTX_new failed\n");
+  exit(84);
+  }
+if (!SSL_CTX_use_certificate_file(ctx, certfile, SSL_FILETYPE_PEM))
+  {
+  printf("SSL_CTX_use_certificate_file failed\n");
+  exit(83);
+  }
+if (!SSL_CTX_use_PrivateKey_file(ctx, keyfile, SSL_FILETYPE_PEM))
+  {
+  printf("SSL_CTX_use_PrivateKey_file failed\n");
+  exit(82);
+  }
+SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_BOTH);
+SSL_CTX_set_timeout(ctx, 200);
+
+RAND_load_file("server.c", -1);   /* Not *very* random! */
+
+ssl = SSL_new(ctx);
+SSL_set_session_id_context(ssl, sid_ctx, strlen(CS sid_ctx));
+SSL_set_fd(ssl, sock);
+SSL_set_accept_state(ssl);
+
+rc = SSL_accept(ssl);		/* we are already running an alarm timer */
+if (rc <= 0)
+  {
+  ERR_print_errors_fp(stdout);
+  return 0;
+  }
+
+if (debug) printf("SSL connection using %s\n", SSL_get_cipher (ssl));
+
+out = fopencookie(ssl, "w", iofuncs);	/* Replace stream */
+iofuncs.close = NULL;
+in =  fopencookie(ssl, "r", iofuncs);	/* Replace stream */
+return 1;
+}
+# endif /*HAVE_OPENSSL*/
+
+# ifdef HAVE_GNUTLS
+/* For the test suite, the parameters should always be available in the spool
+directory. */
+
+static void
+init_dh(gnutls_dh_params_t * dhp)
+{
+int fd;
+int ret;
+gnutls_datum_t m;
+uschar filename[200];
+struct stat statbuf;
+
+/* Initialize the data structures for holding the parameters */
+
+ret = gnutls_dh_params_init(dhp);
+if (ret < 0) gnutls_error(US"init dh_params", ret);
+
+/* Open the cache file for reading and if successful, read it and set up the
+parameters. */
+
+fd = open("aux-fixed/gnutls-params", O_RDONLY, 0);
+if (fd < 0)
+  {
+  fprintf(stderr, "Failed to open spool/gnutls-params: %s\n", strerror(errno));
+  exit(97);
+  }
+
+if (fstat(fd, &statbuf) < 0)
+  {
+  (void)close(fd);
+  return gnutls_error(US"TLS cache stat failed", 0);
+  }
+
+m.size = statbuf.st_size;
+m.data = malloc(m.size);
+if (m.data == NULL)
+  return gnutls_error(US"memory allocation failed", 0);
+if (read(fd, m.data, m.size) != m.size)
+  return gnutls_error(US"TLS cache read failed", 0);
+(void)close(fd);
+
+ret = gnutls_dh_params_import_pkcs3(*dhp, &m, GNUTLS_X509_FMT_PEM);
+if (ret < 0) return gnutls_error(US"DH params import", ret);
+free(m.data);
+}
+
+
+ssize_t
+tls_read(void * cookie, char * buf, size_t size)
+{
+gnutls_session_t tls_session = cookie;
+int rc = gnutls_record_recv(tls_session, buf, size);
+return rc >= 0 ? rc : -1;
+}
+
+ssize_t
+tls_write(void * cookie, const char * buf, size_t size)
+{
+gnutls_session_t tls_session = cookie;
+int rc = gnutls_record_send(tls_session, buf, (int)size);
+return rc >= 0 ? rc : 0;
+}
+
+int
+tls_close(void * cookie)
+{
+return shutdown(accept_socket, SHUT_WR) < 0 ? EOF : 0;
+}
+
+int
+tls_start(int sock, char * certfile, char * keyfile)
+{
+static gnutls_dh_params_t dh_params = NULL;
+gnutls_certificate_credentials_t x509_cred = NULL;
+gnutls_session_t tls_session = NULL;
+cookie_io_functions_t iofuncs = {
+  .read = tls_read,
+  .write = tls_write,
+  .close = tls_close
+  };
+int rc;
+
+rc = gnutls_global_init();
+if (rc < 0) gnutls_error(US"gnutls_global_init", rc);
+
+/* Read D-H parameters from the cache file. */
+init_dh(&dh_params);
+
+/* Create the credentials structure */
+
+rc = gnutls_certificate_allocate_credentials(&x509_cred);
+if (rc < 0) gnutls_error(US"certificate_allocate_credentials", rc);
+
+/* Set the certificate and private keys */
+rc = gnutls_certificate_set_x509_key_file(x509_cred, CS certificate,
+  CS privatekey, GNUTLS_X509_FMT_PEM);
+if (rc < 0) gnutls_error(US"gnutls_certificate", rc);
+
+/* Associate the parameters with the x509 credentials structure. */
+gnutls_certificate_set_dh_params(x509_cred, dh_params);
+
+tls_session = tls_session_init();
+gnutls_transport_set_ptr(tls_session, (gnutls_transport_ptr_t)(intptr_t)sock);
+
+do {
+  rc = gnutls_handshake(tls_session);
+} while (rc < 0 && gnutls_error_is_fatal(rc) == 0);
+
+if (rc >= 0)
+  {
+  out = fopencookie(tls_session, "w", iofuncs);	/* Replace stream */
+  iofuncs.close = NULL;
+  in =  fopencookie(tls_session, "r", iofuncs);	/* Replace stream */
+  return 1;
+  }
+return 0;
+}
+# endif /*HAVE_GNUTLS*/
+
+
+/******************************************************************************/
+# ifdef HAVE_OPENSSL
+# endif
+int tls_active = 0;
+
+#endif	/*HAVE_FOPENCOOKIE*/
+
+
 /*************************************************
 *                 Main Program                   *
 *************************************************/
@@ -165,8 +440,6 @@ main(int argc, char **argv)
 int i;
 int port = 0;
 int listen_socket[3] = { -1, -1, -1 };
-int accept_socket;
-int dup_accept_socket;
 int connection_count = 1;
 int count;
 int on = 1;
@@ -174,14 +447,13 @@ int timeout = 5;
 int initial_pause = 0, tfo = 0;
 int use_ipv4 = 1;
 int use_ipv6 = 1;
-int debug = 0;
 int na = 1;
 line *script = NULL;
 line *last = NULL;
 line *s;
-FILE *in, *out;
 int linebuf = 1;
 char *pidfile = NULL;
+char *certfile = NULL, *keyfile = NULL;
 
 char *sockname = NULL;
 unsigned char buffer[10240];
@@ -217,14 +489,25 @@ if (argc > 1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")))
        "\n\t-oP file write PID to file"
        "\n\t-t n     n seconds timeout"
        "\n\t-tfo     enable TCP Fast Open"
-  );
+#ifdef HAVE_FOPENCOOKIE
+       "\n\t-tls certfile keyfile	files for TLS"
+#endif
+      );
+#ifndef HAVE_FOPENCOOKIE
+  puts("The -tls option is not supported on this platform\n");
+#endif
   exit(0);
   }
 
 while (na < argc && argv[na][0] == '-')
   {
-  if (strcmp(argv[na], "-d") == 0) debug = 1;
+  if (strcmp(argv[na], "-d") == 0)
+    { debug = 1; setvbuf(stdout, NULL, _IONBF, 0); }
   else if (strcmp(argv[na], "-tfo") == 0) tfo = 1;
+#ifdef HAVE_FOPENCOOKIE
+  else if (strcmp(argv[na], "-tls") == 0)
+    { certfile = argv[++na]; keyfile = argv[++na]; }
+#endif
   else if (strcmp(argv[na], "-t") == 0)
     {
     if ((tmo_noerror = ((timeout = atoi(argv[++na])) < 0))) timeout = -timeout;
@@ -702,6 +985,21 @@ for (count = 0; count < connection_count; count++)
 	    goto END_OFF;
 	    }
       }
+
+#ifdef HAVE_FOPENCOOKIE
+    /* If the script line starts with "*starttls" (presumably we either did
+    a STARTTLS, 220 sequence or are doing tls-on-connect) we start TLS in
+    accept mode, waiting for a TLS Client Hello.  */
+
+    else if (strncmp(ss, "*starttls", 9) == 0)
+      {
+      fflush(out);
+      alarm(timeout);
+      tls_active = tls_start(accept_socket, certfile, keyfile);
+      alarm(0);
+      }
+#endif
+
 
     /* Otherwise the script line is the start of an input line we are expecting
     from the client, or "*eof" indicating we expect the client to close the

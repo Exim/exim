@@ -17,5 +17,4 @@ Add to the list as we think of them
 - older OpenSSL versions
 - older GnuTLS versions
 - some of the malware scanners and/or variants
-- identd support
 - ldap "LDAP_DEPRECATED" feature use (cf. bug 2948)

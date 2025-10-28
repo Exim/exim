@@ -484,7 +484,7 @@ router_info dnslookup_router_info =
   .options_block =	&dnslookup_router_option_defaults,
   .options_len =	sizeof(dnslookup_router_options_block),
   .init =		dnslookup_router_init,
-# ifdef DYNLOOKUP
+# if ROUTER_DNSLOOKUP==2
   .dyn_magic =		ROUTER_MAGIC,
 # endif
   },

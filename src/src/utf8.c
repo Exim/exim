@@ -47,37 +47,40 @@ The *err string pointer should be null before the call
 Return NULL for error, with optional errstr pointer filled in
 */
 
-uschar *
+const uschar *
 string_domain_utf8_to_alabel(const uschar * utf8, uschar ** err)
 {
-uschar * s1, * s;
+const uschar * cs;
+uschar * t, * s;
 int rc;
 
 #ifdef SUPPORT_I18N_2008
 /* Avoid lowercasing plain-ascii domains */
 if (!string_is_utf8(utf8))
-  return string_copy(utf8);
+  return utf8;
 
 /* Only lowercase is accepted by the library call.  A pity since we lose
 any mixed-case annotation.  This does not really matter for a domain. */
   {
+  const uschar * cs1;
   uschar c;
-  for (s1 = s = US utf8; (c = *s1); s1++) if (!(c & 0x80) && isupper(c))
+  for (cs1 = cs = utf8; (c = *cs1); cs1++) if (!(c & 0x80) && isupper(c))
     {
     s = string_copy(utf8);
-    for (s1 = s + (s1 - utf8); (c = *s1); s1++) if (!(c & 0x80) && isupper(c))
-      *s1 = tolower(c);
+    for (t = s + (cs1 - utf8); (c = *t); t++) if (!(c & 0x80) && isupper(c))
+      *t = tolower(c);
+    cs = s;
     break;
     }
   }
-if ((rc = idn2_lookup_u8((const uint8_t *) s, &s1, IDN2_NFC_INPUT)) != IDN2_OK)
+if ((rc = idn2_lookup_u8((const uint8_t *) cs, &t, IDN2_NFC_INPUT)) != IDN2_OK)
   {
   if (err) *err = US idn2_strerror(rc);
   return NULL;
   }
 #else
 s = US stringprep_utf8_nfkc_normalize(CCS utf8, -1);
-if (  (rc = idna_to_ascii_8z(CCS s, CSS &s1, IDNA_ALLOW_UNASSIGNED))
+if (  (rc = idna_to_ascii_8z(CCS s, CSS &t, IDNA_ALLOW_UNASSIGNED))
    != IDNA_SUCCESS)
   {
   free(s);
@@ -86,9 +89,9 @@ if (  (rc = idna_to_ascii_8z(CCS s, CSS &s1, IDNA_ALLOW_UNASSIGNED))
   }
 free(s);
 #endif
-s = string_copy(s1);
-free(s1);
-return s;
+cs = string_copy(t);
+free(t);
+return cs;
 }
 
 
@@ -132,7 +135,7 @@ return s;
 /* the *err string pointer should be null before the call */
 
 
-uschar *
+const uschar *
 string_localpart_utf8_to_alabel(const uschar * utf8, uschar ** err)
 {
 size_t ucs4_len = 0;
@@ -141,7 +144,7 @@ size_t p_len;
 uschar * res;
 int rc;
 
-if (!string_is_utf8(utf8)) return string_copy(utf8);
+if (!string_is_utf8(utf8)) return utf8;
 
 p = (punycode_uint *) stringprep_utf8_to_ucs4(CCS utf8, -1, &ucs4_len);
 if (!p || !ucs4_len)
@@ -212,10 +215,10 @@ The *err string pointer should be null before the call.
 Return NULL on error, with (optional) errstring pointer filled in
 */
 
-uschar *
+const uschar *
 string_address_utf8_to_alabel(const uschar * utf8, uschar ** err)
 {
-uschar * l, * d;
+const uschar * l, * d;
 
 if (!*utf8) return string_copy(utf8);
 

@@ -22,6 +22,7 @@
 > this change-locale fails in earlier systems.  Works on Fedora 29.
 > Tue, 2 Mar 1999 09:44:33 +0000 // Changed locale // dim., 10 févr 2019 20:05:49 +0000
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
 > Subroutine foo called with args: arg1
 > Failed: Perl subroutine "foo_undef" returned undef to force failure
 > Wrote debug
@@ -39,7 +40,6 @@
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 10.0.0.1
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

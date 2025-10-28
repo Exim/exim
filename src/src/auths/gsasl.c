@@ -1073,7 +1073,7 @@ auth_info gsasl_auth_info = {
   .options_block =	&auth_gsasl_option_defaults,
   .options_len =	sizeof(auth_gsasl_options_block),
   .init =		auth_gsasl_init,
-# ifdef DYNLOOKUP
+# if AUTH_GSASL==2
   .dyn_magic =		AUTH_MAGIC,
 # endif
   },

@@ -2381,6 +2381,7 @@ if (continue_hostname && continue_proxy_cipher)
     if (write(0, "QUIT\r\n", 6) < 0)
       DEBUG(D_any) debug_printf("stupid compiler\n");
     close(0);
+    tls_out.active.sock = -1;
     continue_hostname = continue_proxy_cipher = NULL;
     f.continue_more = FALSE;
     continue_sequence = 1;	/* Ensure proper logging of non-cont-conn */
@@ -2882,6 +2883,7 @@ else
       if (write(0, "QUIT\r\n", 6) < 0)
 	DEBUG(D_any) debug_printf("stupid compiler\n");
       close(0);
+      tls_out.active.sock = -1;
       continue_hostname = continue_proxy_cipher = NULL;
       f.continue_more = FALSE;
       continue_sequence = 1;	/* Ensure proper logging of non-cont-conn */
@@ -3027,6 +3029,7 @@ if (  smtp_peer_options & OPTION_TLS
       sx->send_quit = FALSE;
       goto TLS_FAILED;
       }
+    tls_out.smtp_quit = FALSE;
     sx->send_tlsclose = TRUE;
 
 # ifdef TCP_FASTOPEN
@@ -3484,7 +3487,10 @@ FAILED:
 SEND_QUIT:
 
 if (sx->send_quit)
+  {
   (void)smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n");
+  tls_out.smtp_quit = TRUE;
+  }
 
 #ifndef DISABLE_TLS
 if (sx->cctx.tls_ctx)
@@ -4476,6 +4482,7 @@ else
       HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(shutdown)>>\n");
       shutdown(sx->cctx.sock, SHUT_WR);	/* flush output buffer, with TCP FIN */
       }
+    tls_out.smtp_quit = TRUE;
     }
 
   if (smtp_peer_options & OPTION_CHUNKING && sx->cmd_count > 1)
@@ -5170,6 +5177,10 @@ if (sx->send_quit)
   {			/* Use _MORE to get QUIT in FIN segment */
   (void)smtp_write_command(sx, SCMD_MORE, "QUIT\r\n");
 #ifndef DISABLE_TLS
+  /* This flag is a custom hack to avoid logging, under GnuTLS, Google's
+  habit of just dropping the TCP conn (which violates TLS spec) */
+  tls_out.smtp_quit = TRUE;
+
   if (sx->cctx.tls_ctx && sx->send_tlsclose)
     {
 # ifdef EXIM_TCP_CORK	/* Use _CORK to get TLS Close Notify in FIN segment */
@@ -5357,6 +5368,7 @@ sx.outblock.cmd_count = 0;
 sx.outblock.authenticating = FALSE;
 
 (void)smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n");
+tls_out.smtp_quit = TRUE;
 (void)smtp_read_response(&sx, buffer, sizeof(buffer), '2', ob->command_timeout);
 (void)close(cctx.sock);
 }
@@ -6545,7 +6557,7 @@ transport_info smtp_transport_info = {
   .options_block =	&smtp_transport_option_defaults,
   .options_len =	sizeof(smtp_transport_options_block),
   .init =		smtp_transport_init,
-# ifdef DYNLOOKUP
+# if TRANSPORT_SMTP==2
   .dyn_magic =		TRANSPORT_MAGIC,
 # endif
   },

@@ -1,7 +1,6 @@
 ### non-prox plain receive
 
 **** SMTP testing session as if from host 127.0.0.2
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -17,7 +16,6 @@
 ### protocol v1 receive
 
 **** SMTP testing session as if from host ip4.ip4.ip4.ip4
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -33,7 +31,6 @@
 ### protocol v2 receive
 
 **** SMTP testing session as if from host ip4.ip4.ip4.ip4
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -49,7 +46,6 @@
 ### proxy timeout
 
 **** SMTP testing session as if from host ip4.ip4.ip4.ip4
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

@@ -1,6 +1,15 @@
 ### start a db server
 ### wait for db startup, set password on the root user
 ### create testdb and extra users
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro 'PARTIAL' -> '127.0.0.1::1223'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'PARTIAL' -> '127.0.0.1::1223'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'PARTIAL' -> '127.0.0.1::1223'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
 > Philip Hazel
 > Philip Hazel
 > 
@@ -27,7 +36,6 @@ name=Aristotle id=aaaa
 > 
 
 **** SMTP testing session as if from host 10.0.0.0
-**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

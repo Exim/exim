@@ -1580,7 +1580,7 @@ static lookup_info ldap_lookup_info = {
   .close = NULL,			/* no close function */
   .tidy = eldap_tidy,			/* tidy function */
   .quote = eldap_quote,			/* quoting function */
-  .version_report = ldap_version_report            /* version reporting */
+  .version_report = ldap_version_report	/* version reporting */
 };
 
 static lookup_info ldapdn_lookup_info = {
@@ -1592,7 +1592,7 @@ static lookup_info ldapdn_lookup_info = {
   .close = NULL,			/* no close function */
   .tidy = eldap_tidy,			/* sic */    /* tidy function */
   .quote = eldap_quote,			/* sic */    /* quoting function */
-  .version_report = NULL                           /* no version reporting (redundant) */
+  .version_report = NULL		/* no version reporting (redundant) */
 };
 
 static lookup_info ldapm_lookup_info = {
@@ -1604,7 +1604,7 @@ static lookup_info ldapm_lookup_info = {
   .close = NULL,			/* no close function */
   .tidy = eldap_tidy,			/* sic */    /* tidy function */
   .quote = eldap_quote,			/* sic */    /* quoting function */
-  .version_report = NULL                           /* no version reporting (redundant) */
+  .version_report = NULL		/* no version reporting (redundant) */
 };
 
 static lookup_info ldapauth_lookup_info = {
@@ -1616,7 +1616,7 @@ static lookup_info ldapauth_lookup_info = {
   .close = NULL,			/* no close function */
   .tidy = eldap_tidy,			/* sic */    /* tidy function */
   .quote = NULL,			/* NO quoting function */
-  .version_report = NULL                           /* no version reporting (redundant) */
+  .version_report = NULL		/* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

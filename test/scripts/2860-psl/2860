@@ -1,0 +1,39 @@
+# psl lookups
+#
+#exim -d-all+lookup+expand -be
+exim -be
+builtin macros:
+_HAVE_LOOKUP_PSL _HAVE_LOOKUP_REGDOM
+
+PSLFILE=DIR/aux-fixed/TESTNUM.psl.dat
+
+psl:
+not found	(${lookup {spammer.k12.edu}	psl {PSLFILE}})
+sole direct	(${lookup {aero}		psl {PSLFILE}})
+subdom direct	(${lookup {aerobatic.aero}	psl {PSLFILE}})
+sub sub dom	(${lookup {bill.aerobatic.aero}	psl {PSLFILE}})
+subdom UC	(${lookup {aerobatic.AERO}	psl {PSLFILE}})
+prefix on match	(${lookup {aero.prefixaero}	psl {PSLFILE}})
+wildcard direct	(${lookup {foo.wildcard.zabc.net} psl {PSLFILE}})
+wildcard sub	(${lookup {baz.foo.wildcard.zabc.net} psl {PSLFILE}})
+nonexception	(${lookup {w3.ck}		psl {PSLFILE}})
+exception	(${lookup {www.ck}		psl {PSLFILE}})
+exception sub	(${lookup {foo.www.ck}		psl {PSLFILE}})
+i18n		(${lookup {sub1.三重.jp}	psl {PSLFILE}})
+i18n sub	(${lookup {sub2.sub1.三重.jp}	psl {PSLFILE}})
+i18n isub	(${lookup {三重.三重.jp}	psl {PSLFILE}})
+i18n punycode	(${lookup {sub1.xn--ehqz56n.jp}	psl {PSLFILE}})
+
+regdom:
+subdom direct	(${lookup {aerobatic.aero}	regdom {PSLFILE}})
+subdom proper	(${lookup {bill.aerobatic.aero}	regdom {PSLFILE}})
+wildcard direct	(${lookup {foo.wildcard.zabc.net} regdom {PSLFILE}})
+wildcard sub	(${lookup {baz.foo.wildcard.zabc.net} regdom {PSLFILE}})
+nonexception	(${lookup {w3.ck}		regdom {PSLFILE}})
+exception	(${lookup {www.ck}		regdom {PSLFILE}})
+exception sub	(${lookup {foo.www.ck}		regdom {PSLFILE}})
+i18n		(${lookup {sub1.三重.jp}	regdom {PSLFILE}})
+i18n sub	(${lookup {sub2.sub1.三重.jp}	regdom {PSLFILE}})
+i18n isub	(${lookup {三重.三重.jp}	regdom {PSLFILE}})
+i18n punycode	(${lookup {sub1.xn--ehqz56n.jp}	regdom {PSLFILE}})
+****

@@ -1,78 +1,49 @@
-# Exim test configuration 1190
+# Exim test configuration 1166
+SERVER=
 
-.include DIR/aux-var/tls_conf_prefix
-
-primary_hostname = myhost.test.ex
+.include aux-var/tls_conf_prefix
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = check_recipient
+primary_hostname = testhost.test.ex
+domainlist local_domains = @ : test.ex
 
-log_selector = +connection_id +tls_on_connect
-queue_only
-queue_run_in_order
+acl_smtp_rcpt = accept
+acl_smtp_quit = drop
 
-tls_advertise_hosts = *
-
-tls_certificate = DIR/aux-fixed/cert1
-tls_privatekey = DIR/aux-fixed/cert1
-
-tls_verify_hosts = HOSTIPV4
-tls_verify_certificates = DIR/aux-fixed/exim-ca/example.org/server2.example.org/ca_chain.pem
-
-tls_early_banner_hosts = *
-
-.ifdef OPTION
-
-.ifdef _HAVE_OPENSSL
-.ifdef _OPT_OPENSSL_NO_TLSV1_3_X
-openssl_options = +no_sslv2 +no_sslv3 +single_dh_use +no_tlsv1_3
-.else
-openssl_options = +no_sslv2 +no_sslv3 +single_dh_use
-.endif
-.endif
-
-.ifdef _HAVE_GNUTLS
-tls_require_ciphers = NORMAL:!VERS-ALL:+VERS-TLS1.2
-.endif
-
-.endif
-
-# ------ ACL ------
-
-begin acl
-
-check_recipient:
-  accept  hosts = :
-  deny    hosts = HOSTIPV4
-         !encrypted = *
-  accept
-
+log_selector = +received_recipients +millisec
 
 # ----- Routers -----
 
 begin routers
 
-abc:
-  driver = accept
-  retry_use_local_part
-  transport = local_delivery
+server_dump:
+  driver = redirect
+  condition =	${if eq {SERVER}{server}}
+  data =	* :blackhole:
 
+to_server:
+  driver = accept
+  condition =	${if !eq {SERVER}{server}}
+  transport =	remote_smtp
+  errors_to =	""
 
 # ----- Transports -----
 
 begin transports
 
-local_delivery:
-  driver = appendfile
-  file = DIR/test-mail/$local_part
-  create_file = DIR/test-mail
-.ifdef _HAVE_GNUTLS
-  headers_add = TLS: cipher=$tls_cipher peerdn/cn '${listextract {-1} {<, $tls_in_peerdn}}'
-.endif
-.ifdef _HAVE_OPENSSL
-  headers_add = TLS: cipher=$tls_cipher peerdn/cn '${listextract {-1} {</ $tls_in_peerdn}}'
-.endif
-  user = CALLER
+remote_smtp:
+  driver = smtp
+  hosts =	127.0.0.1 : HOSTIPV4
+  port =	PORT_D
+  hosts_try_fastopen =	:
+  hosts_require_tls =	*
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =
+  allow_localhost
 
+# ----- Retry -----
+
+begin retry
+* * F,30m,5m;
 # End

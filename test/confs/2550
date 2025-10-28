@@ -1,0 +1,30 @@
+# Exim test configuration 2200
+# Check for dnsdb cache TTL handling
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+acl_not_smtp = check_not_smtp
+queue_only
+
+begin acl
+
+check_rcpt:
+  accept
+	local_parts =	defer_strict
+	set acl_m1 =	${lookup dnsdb{defer_strict,a=$domain}}
+
+check_not_smtp:
+  warn
+	set acl_m1 =    ${map {<,$recipients} \
+				{${lookup dnsdb{a=${domain:$item}}{$value}fail}}}
+	delay =		4s
+	set acl_m1 =    ${map {<,$recipients} \
+				{${lookup dnsdb{a=${domain:$item}}{$value}fail}}}
+  accept
+
+# End

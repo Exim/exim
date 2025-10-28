@@ -31,198 +31,50 @@ transport_info * transports_available = NULL;
 
 #ifndef MACRO_PREDEF
 
+static gstring *
+dr_show_list(gstring * g, const uschar ** list, const uschar * label,
+  const uschar * class)
+{
+if (*list)
+  {
+  const uschar ** ele = list;
+  g = string_fmt_append(g, "%s (%s): ", class, label);
+  while (*ele) ele++;
+  while (--ele >= list) g = string_fmt_append(g, " %s", *ele);
+  g = string_catn(g, US"\n", 1);
+  }
+return g;
+}
+
+static gstring *
+dr_show_supported(gstring * g,
+  const uschar ** statics, const uschar ** dynamics, const uschar * class)
+{
+g = dr_show_list(g, statics, US"built-in", class);
+g = dr_show_list(g, dynamics, US"dynamic", class);
+return g;
+}
+
 gstring *
 auth_show_supported(gstring * g)
 {
-uschar * b = US""               /* static-build authenticatornames */
-#if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5!=2
-  " cram_md5"
-#endif
-#if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL!=2
-  " cyrus_sasl"
-#endif
-#if defined(AUTH_DOVECOT) && AUTH_DOVECOT!=2
-  " dovecot"
-#endif
-#if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL!=2
-  " external"
-#endif
-#if defined(AUTH_GSASL) && AUTH_GSASL!=2
-  " gsasl"
-#endif
-#if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI!=2
-  " heimdal_gssapi"
-#endif
-#if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT!=2
-  " plaintext"
-#endif
-#if defined(AUTH_SPA) && AUTH_SPA!=2
-  " spa"
-#endif
-#if defined(AUTH_TLS) && AUTH_TLS!=2
-  " tls"
-#endif
-  ;
-
-uschar * d = US""		/* dynamic-module authenticator names */
-#if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5==2
-  " cram_md5"
-#endif
-#if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL==2
-  " cyrus_sasl"
-#endif
-#if defined(AUTH_DOVECOT) && AUTH_DOVECOT==2
-  " dovecot"
-#endif
-#if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL==2
-  " external"
-#endif
-#if defined(AUTH_GSASL) && AUTH_GSASL==2
-  " gsasl"
-#endif
-#if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI==2
-  " heimdal_gssapi"
-#endif
-#if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT==2
-  " plaintext"
-#endif
-#if defined(AUTH_SPA) && AUTH_SPA==2
-  " spa"
-#endif
-#if defined(AUTH_TLS) && AUTH_TLS==2
-  " tls"
-#endif
-  ;
-
-if (*b) g = string_fmt_append(g, "Authenticators (built-in):%s\n", b);
-if (*d) g = string_fmt_append(g, "Authenticators (dynamic): %s\n", d);
-return g;
+return dr_show_supported(g, avail_static_auths, avail_dynamic_auths,
+  US"Authenticators");
 }
 
 gstring *
 route_show_supported(gstring * g)
 {
-uschar * b = US""		/* static-build router names */
-#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
-  " accept"
-#endif
-#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP!=2
-  " dnslookup"
-#endif
-# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL!=2
-  " ipliteral"
-#endif
-#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP!=2
-  " iplookup"
-#endif
-#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE!=2
-  " manualroute"
-#endif
-#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT!=2
-  " redirect"
-#endif
-#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM!=2
-  " queryprogram"
-#endif
-  ;
-
-uschar * d = US""		/* dynamic-module router names */
-#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT==2
-  " accept"
-#endif
-#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP==2
-  " dnslookup"
-#endif
-# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL==2
-  " ipliteral"
-#endif
-#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP==2
-  " iplookup"
-#endif
-#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE==2
-  " manualroute"
-#endif
-#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT==2
-  " redirect"
-#endif
-#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM==2
-  " queryprogram"
-#endif
-  ;
-
-if (*b) g = string_fmt_append(g, "Routers (built-in):%s\n", b);
-if (*d) g = string_fmt_append(g, "Routers (dynamic): %s\n", d);
-return g;
+return dr_show_supported(g, avail_static_routers, avail_dynamic_routers,
+  US"Routers");
 }
 
 gstring *
 transport_show_supported(gstring * g)
 {
-uschar * b = US""		/* static-build transportnames */
-#if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE!=2
-  " appendfile"
-# ifdef SUPPORT_MAILDIR
-    "/maildir"
-# endif
-# ifdef SUPPORT_MAILSTORE
-    "/mailstore"
-# endif
-# ifdef SUPPORT_MBX
-    "/mbx"
-# endif
-#endif
-#if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY!=2
-  " autoreply"
-#endif
-#if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP!=2
-  " lmtp"
-#endif
-#if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE!=2
-  " pipe"
-#endif
-#if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE!=2
-  " queuefile"
-#endif
-#if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP!=2
-  " smtp"
-#endif
-  ;
-
-uschar * d = US""		/* dynamic-module transportnames */
-#if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE==2
-  " appendfile"
-# ifdef SUPPORT_MAILDIR
-    "/maildir"
-# endif
-# ifdef SUPPORT_MAILSTORE
-    "/mailstore"
-# endif
-# ifdef SUPPORT_MBX
-    "/mbx"
-# endif
-#endif
-#if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY==2
-  " autoreply"
-#endif
-#if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP==2
-  " lmtp"
-#endif
-#if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE==2
-  " pipe"
-#endif
-#if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE==2
-  " queuefile"
-#endif
-#if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP==2
-  " smtp"
-#endif
-  ;
-
-if (*b) g = string_fmt_append(g, "Transports (built-in):%s\n", b);
-if (*d) g = string_fmt_append(g, "Transports (dynamic): %s\n", d);
-return g;
+return dr_show_supported(g, avail_static_transports, avail_dynamic_transports,
+  US"Transports");
 }
-
 
 
 static void
@@ -271,77 +123,6 @@ return li;
 
 
 
-/* These need to be at file level for old versions of gcc (2.95.2 reported),
-which give parse errors on an extern in function scope.  Each entry needs
-to also be invoked in init_lookup_list() below  */
-
-#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-extern lookup_module_info cdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-extern lookup_module_info dbmdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-extern lookup_module_info dnsdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-extern lookup_module_info dsearch_lookup_module_info;
-#endif
-#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-extern lookup_module_info ibase_lookup_module_info;
-#endif
-#if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
-extern lookup_module_info json_lookup_module_info;
-#endif
-#if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
-extern lookup_module_info ldap_lookup_module_info;
-#endif
-#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-extern lookup_module_info lsearch_lookup_module_info;
-#endif
-#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-extern lookup_module_info mysql_lookup_module_info;
-#endif
-#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-extern lookup_module_info nis_lookup_module_info;
-#endif
-#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-extern lookup_module_info nisplus_lookup_module_info;
-#endif
-#if defined(EXPERIMENTAL_NMH) && EXPERIMENTAL_NMH!=2
-extern lookup_module_info nmh_lookup_module_info;
-#endif
-#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-extern lookup_module_info oracle_lookup_module_info;
-#endif
-#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-extern lookup_module_info passwd_lookup_module_info;
-#endif
-#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-extern lookup_module_info pgsql_lookup_module_info;
-#endif
-#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-extern lookup_module_info redis_lookup_module_info;
-#endif
-#if defined(LOOKUP_LMDB) && LOOKUP_LMDB!=2
-extern lookup_module_info lmdb_lookup_module_info;
-#endif
-#if defined(EXIM_HAVE_SPF)
-extern lookup_module_info spf_lookup_module_info;	/* see below */
-#endif
-#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-extern lookup_module_info sqlite_lookup_module_info;
-#endif
-#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-extern lookup_module_info testdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-extern lookup_module_info whoson_lookup_module_info;
-#endif
-
-extern lookup_module_info readsock_lookup_module_info;
-
-
 #ifdef LOOKUP_MODULE_DIR
 static void *
 mod_open(const uschar * name, const uschar * class, uschar ** errstr)
@@ -381,13 +162,13 @@ static BOOL
 lookup_mod_load(const uschar * name, uschar ** errstr)
 {
 void * dl;
-struct lookup_module_info * info;
+lookup_module_info * info;
 const char * errormsg;
 
 if (!(dl = mod_open(name, US"lookup", errstr)))
   return FALSE;
 
-info = (struct lookup_module_info *) dlsym(dl, "_lookup_module_info");
+info = (lookup_module_info *) dlsym(dl, "_lookup_module_info");
 if ((errormsg = dlerror()))
   {
   EARLY_DEBUG(D_any, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
@@ -425,6 +206,45 @@ return TRUE;
 }
 
 #endif	/*LOOKUP_MODULE_DIR*/
+
+/* Look at all the lookup module files and add a name from each lookup type */
+
+gstring *
+lookup_dynamic_supported(gstring * g)
+{
+#ifdef LOOKUP_MODULE_DIR
+DIR * dd;
+const pcre2_code * regex_islookupmod = regex_must_compile(
+  US"^([a-z0-9]+)_lookup\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
+
+if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
+  g = string_cat(g, US"FAIL exim_opendir");
+else
+  for (struct dirent * ent; ent = readdir(dd); )
+    {
+    void * dl;
+    uschar * errstr;
+
+    if (  regex_match_and_setup(regex_islookupmod, US ent->d_name, 0, 0)
+       && (dl = mod_open(expand_nstring[1], US"lookup", &errstr))
+       )
+      {
+      lookup_module_info * lmi=
+	(lookup_module_info *) dlsym(dl, "_lookup_module_info");
+
+      if (  ! dlerror()
+	 && lmi->magic == LOOKUP_MODULE_INFO_MAGIC
+         )
+	for (lookup_info ** lip = lmi->lookups;
+	    lip < lmi->lookups + lmi->lookupcount; lip++)
+	  g = string_fmt_append(g, " %s", (*lip)->name);
+
+      dlclose(dl);
+      }
+    }
+#endif	/*!LOOKUP_MODULE_DIR*/
+return g;
+}
 
 
 
@@ -612,99 +432,8 @@ if (lookup_list_init_done)
   return;
 lookup_list_init_done = TRUE;
 
-#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-addlookupmodule(&cdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-addlookupmodule(&dbmdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-addlookupmodule(&dnsdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-addlookupmodule(&dsearch_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-addlookupmodule(&ibase_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
-addlookupmodule(&ldap_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
-addlookupmodule(&json_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-addlookupmodule(&lsearch_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-addlookupmodule(&mysql_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-addlookupmodule(&nis_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-addlookupmodule(&nisplus_lookup_module_info);
-#endif
-
-#if defined(EXPERIMENTAL_NMH) && EXPERIMENTAL_NMH!=2
-addlookupmodule(&nmh_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-addlookupmodule(&oracle_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-addlookupmodule(&passwd_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-addlookupmodule(&pgsql_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-addlookupmodule(&redis_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_LMDB) && LOOKUP_LMDB!=2
-addlookupmodule(&lmdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-addlookupmodule(&sqlite_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-addlookupmodule(&testdb_lookup_module_info);
-#endif
-
-#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-addlookupmodule(&whoson_lookup_module_info);
-#endif
-
-/* This is provided by the spf "misc" module, and the lookup aspect is always
-linked statically whether or not the "misc" module (and hence libspf2) is
-dynamic-load. */
-
-#ifdef EXIM_HAVE_SPF
-addlookupmodule(&spf_lookup_module_info);
-#endif
-
-/* This is a custom expansion, and not available as either
-a list-syntax lookup or a lookup expansion. However, it is
-implemented by a lookup module. */
-
-addlookupmodule(&readsock_lookup_module_info);
+for (lookup_module_info ** avi = avail_static_lookups; *avi; avi++)
+  addlookupmodule(*avi);
 
 DEBUG(D_lookup) debug_printf_indent("Total %d built-in lookups\n", lookup_list_count);
 
@@ -727,10 +456,7 @@ else
 
   EARLY_DEBUG(D_lookup, "Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
   while ((ent = readdir(dd)))
-    {
-    char * name = ent->d_name;
-    int len = (int)strlen(name);
-    if (regex_match_and_setup(regex_islookupmod, US name, 0, 0))
+    if (regex_match_and_setup(regex_islookupmod, US ent->d_name, 0, 0))
       {
       uschar * errstr;
       if (lookup_mod_load(expand_nstring[1], &errstr))
@@ -741,7 +467,6 @@ else
 	log_write(0, LOG_MAIN|LOG_PANIC, "%s", errstr);
 	}
       }
-    }
   closedir(dd);
   }
 

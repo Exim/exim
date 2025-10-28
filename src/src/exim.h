@@ -156,8 +156,6 @@ configuration file.  We also use this for some other short strings, such
 as queue names.
 Also TLS ciphersuite name (no real known limit since the protocols use
 integers, but max seen in reality is 45 octets).
-
-RFC 1413 gives us the 512 limit on IDENT protocol userids.
 */
 
 #define EXIM_EMAILADDR_MAX     256
@@ -541,9 +539,6 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #endif
 #include "osfunctions.h"
 
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-# include "bmi_spam.h"
-#endif
 #if defined(SUPPORT_SPF) || defined(EXPERIMENTAL_SPF_PERL)
 # include "miscmods/spf.h"
 # include "miscmods/spf_api.h"

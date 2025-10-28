@@ -941,8 +941,6 @@ sub _parse_header {
     } elsif ($tag eq '-spam_score_int') {
       $self->{_vars}{spam_score_int} = $arg;
       $self->{_vars}{spam_score}     = $arg / 10;
-    } elsif ($tag eq '-bmi_verdicts') {
-      $self->{_vars}{bmi_verdicts} = $arg;
     } elsif ($tag eq '-host_lookup_deferred') {
       $self->{_vars}{host_lookup_deferred} = 1;
     } elsif ($tag eq '-host_lookup_failed') {
@@ -1568,10 +1566,6 @@ The value of AUTH= param for smtp messages, or a generated value from the callin
 =item S . B<$bheader_*>, B<$bh_*>
 
 Value of the header(s) with the same name with any RFC2047 words decoded if present.  See section 11.5 of Exim's spec.txt for full details.
-
-=item S + B<$bmi_verdicts>
-
-The verdict string provided by a Brightmail content scan
 
 =item N . B<$body_linecount>
 

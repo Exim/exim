@@ -643,6 +643,7 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 LOADED_OPT
 LOADED
+STL
 B64_GNUTLS
 CLIENT_ANYTLS
 CLIENT_GNUTLS
@@ -3363,26 +3364,6 @@ then :
 
 fi
 
-       for ac_header in openssl/crypto.h
-do :
-  ac_fn_c_check_header_compile "$LINENO" "openssl/crypto.h" "ac_cv_header_openssl_crypto_h" "$ac_includes_default"
-if test "x$ac_cv_header_openssl_crypto_h" = xyes
-then :
-  printf "%s\n" "#define HAVE_OPENSSL_CRYPTO_H 1" >>confdefs.h
- CLIENT_OPENSSL=bin/client-ssl
-fi
-
-done
-       for ac_header in openssl/crypto.h
-do :
-  ac_fn_c_check_header_compile "$LINENO" "openssl/crypto.h" "ac_cv_header_openssl_crypto_h" "$ac_includes_default"
-if test "x$ac_cv_header_openssl_crypto_h" = xyes
-then :
-  printf "%s\n" "#define HAVE_OPENSSL_CRYPTO_H 1" >>confdefs.h
- CLIENT_ANYTLS=bin/client-anytls
-fi
-
-done
        for ac_header in gnutls/gnutls.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "gnutls/gnutls.h" "ac_cv_header_gnutls_gnutls_h" "$ac_includes_default"
@@ -3410,6 +3391,46 @@ if test "x$ac_cv_header_gnutls_gnutls_h" = xyes
 then :
   printf "%s\n" "#define HAVE_GNUTLS_GNUTLS_H 1" >>confdefs.h
  B64_GNUTLS=bin/ed25519_privkey_pem_to_pubkey_raw_b64
+fi
+
+done
+       for ac_header in gnutls/gnutls.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "gnutls/gnutls.h" "ac_cv_header_gnutls_gnutls_h" "$ac_includes_default"
+if test "x$ac_cv_header_gnutls_gnutls_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_GNUTLS_GNUTLS_H 1" >>confdefs.h
+ STL=-lgnutls
+fi
+
+done
+       for ac_header in openssl/crypto.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "openssl/crypto.h" "ac_cv_header_openssl_crypto_h" "$ac_includes_default"
+if test "x$ac_cv_header_openssl_crypto_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_OPENSSL_CRYPTO_H 1" >>confdefs.h
+ CLIENT_OPENSSL=bin/client-ssl
+fi
+
+done
+       for ac_header in openssl/crypto.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "openssl/crypto.h" "ac_cv_header_openssl_crypto_h" "$ac_includes_default"
+if test "x$ac_cv_header_openssl_crypto_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_OPENSSL_CRYPTO_H 1" >>confdefs.h
+ CLIENT_ANYTLS=bin/client-anytls
+fi
+
+done
+       for ac_header in openssl/crypto.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "openssl/crypto.h" "ac_cv_header_openssl_crypto_h" "$ac_includes_default"
+if test "x$ac_cv_header_openssl_crypto_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_OPENSSL_CRYPTO_H 1" >>confdefs.h
+ STL="-lssl -lcrypto"
 fi
 
 done
@@ -3720,6 +3741,7 @@ do
     ac_func=$ac_item
   fi
 done
+
 
 
 

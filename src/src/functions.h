@@ -218,7 +218,7 @@ extern void    dscp_list_to_stream(FILE *);
 extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
 
 extern void    enq_end(uschar *);
-extern BOOL    enq_start(uschar *, unsigned);
+extern unsigned enq_start(uschar *, unsigned);
 #ifndef DISABLE_EVENT
 extern uschar *event_raise(const uschar *, const uschar *, const uschar *, int *);
 extern void    msg_event_raise(const uschar *, const address_item *);
@@ -319,6 +319,7 @@ extern void    log_write_die(unsigned, int, const char * format, ...)
 		PRINTF_FUNCTION(3,4) NORETURN;
 
 extern const lookup_info * lookup_with_acq_num(unsigned);
+extern gstring *lookup_dynamic_supported(gstring *);
 #ifdef LOOKUP_MODULE_DIR
 extern BOOL    lookup_one_mod_load(const uschar *, uschar **);
 #endif
@@ -601,11 +602,11 @@ extern const uschar *string_printing2(const uschar *, int);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_unprinting(uschar *);
 #ifdef SUPPORT_I18N
-extern uschar *string_address_utf8_to_alabel(const uschar *, uschar **);
+extern const uschar *string_address_utf8_to_alabel(const uschar *, uschar **);
 extern uschar *string_domain_alabel_to_utf8(const uschar *, uschar **);
-extern uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
+extern const uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
 extern uschar *string_localpart_alabel_to_utf8(const uschar *, uschar **);
-extern uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
+extern const uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
 #endif
 
 #define string_format(buf, siz, fmt, ...) \
@@ -695,7 +696,6 @@ extern int     verify_check_given_host(const uschar **, const host_item *);
 extern int     verify_check_this_host(const uschar **, unsigned int *,
 	         const uschar*, const uschar *, const uschar **);
 extern address_item *verify_checked_sender(const uschar *);
-extern void    verify_get_ident(int);
 extern void    verify_quota(uschar *);
 extern int     verify_quota_call(const uschar *, int, int, uschar **);
 extern BOOL    verify_sender(int *, uschar **);

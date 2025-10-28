@@ -841,15 +841,14 @@ if ((rc = dns_fail_cache_hit(name, type)) > 0)
 #ifdef SUPPORT_I18N
 /* Convert all names to a-label form before doing lookup */
   {
-  uschar * alabel;
+  const uschar * alabel;
   uschar * errstr = NULL;
   DEBUG(D_dns) if (string_is_utf8(name))
     debug_printf_indent("convert utf8 '%s' to alabel for for lookup\n", name);
   if ((alabel = string_domain_utf8_to_alabel(name, &errstr)), errstr)
     {
-    DEBUG(D_dns)
-      debug_printf_indent("DNS name '%s' utf8 conversion to alabel failed: %s\n", name,
-        errstr);
+    DEBUG(D_dns) debug_printf_indent(
+      "DNS name '%s' utf8 conversion to alabel failed: %s\n", name, errstr);
     f.host_find_failed_syntax = TRUE;
     return DNS_NOMATCH;
     }

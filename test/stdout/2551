@@ -1,0 +1,7 @@
+test.ex@test.ex
+  router = r1, transport = local_delivery
+unknown@test.ex
+  router = r2, transport = local_delivery
+test.ex@test.ex
+  router = r1, transport = local_delivery
+unknown@test.ex is undeliverable: Unrouteable address

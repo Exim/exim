@@ -160,9 +160,6 @@ typedef struct recipient_item {
   const uschar *errors_to;      /* the errors_to address or NULL */
   uschar *orcpt;                /* DSN orcpt */
   int     dsn_flags;            /* DSN flags */
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  uschar *bmi_optin;
-#endif
 } recipient_item;
 
 

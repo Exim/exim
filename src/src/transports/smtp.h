@@ -202,7 +202,7 @@ typedef struct {
 
   unsigned	avoid_option;
   uschar *	igquotstr;
-  uschar *	helo_data;
+  const uschar * helo_data;
 #ifdef EXPERIMENTAL_DSN_INFO
   uschar *	smtp_greeting;
   uschar *	helo_response;

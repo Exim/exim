@@ -194,7 +194,7 @@ auth_info plaintext_auth_info = {
   .options_block =	&auth_plaintext_option_defaults,
   .options_len =	sizeof(auth_plaintext_options_block),
   .init =		auth_plaintext_init,
-# ifdef DYNLOOKUP
+# if AUTH_PLAINTEXT==2
   .dyn_magic =		AUTH_MAGIC,
 # endif
   },
@@ -204,5 +204,5 @@ auth_info plaintext_auth_info = {
 .macros_create =	NULL,
 };
 
-#endif	/*AUTH_PLAINTEST*/
+#endif	/*AUTH_PLAINTEXT*/
 /* End of plaintext.c */

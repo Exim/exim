@@ -564,7 +564,7 @@ auth_info dovecot_auth_info = {
   .options_block =	&auth_dovecot_option_defaults,
   .options_len =	sizeof(auth_dovecot_options_block),
   .init =		auth_dovecot_init,
-# ifdef DYNLOOKUP
+# if AUTH_DOVECOT==2
   .dyn_magic =		AUTH_MAGIC,
 # endif
   },

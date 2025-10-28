@@ -351,7 +351,8 @@ Returns:     nothing
 */
 
 void
-queue_run(qrunner * q, const uschar * start_id, const uschar * stop_id, BOOL recurse)
+queue_run(qrunner * q, const uschar * start_id, const uschar * stop_id,
+  BOOL recurse)
 {
 BOOL force_delivery = q->queue_run_force
   || deliver_selectstring || deliver_selectstring_sender;
@@ -519,6 +520,10 @@ for (int i = queue_run_in_order ? -1 : 0;
 #endif
 	      nelem(qpid) - 1])
 	{		/* The child table is maxed out; wait for the oldest */
+			/*XXX It might be nicer to wait for the first one
+			that happens to complete. */
+	set_process_info("running queue (ph 1): parallel limit %u",
+			nelem(qpid));
 	DEBUG(D_queue_run)
 	  debug_printf("q2stage waiting for child %d\n", (int)qpid[0]);
 	waitpid(qpid[0], NULL, 0);
@@ -799,15 +804,20 @@ turned off. */
 
 if (q->queue_2stage)
   {
+  unsigned active;
+  for (active = 0; active < nelem(qpid); active++)
+    if (!qpid[active]) { --active; break; }
 
-  /* wait for last children */
-  for (int i = 0; i < nelem(qpid); i++)
+  /* wait for all first-stage children */
+  for (unsigned i = 0; i < nelem(qpid); i++)
     if (qpid[i])
       {
-      DEBUG(D_queue_run) debug_printf("q2stage reaped child %d\n", (int)qpid[i]);
+      set_process_info("running queue (ph 1): wait-all, child %u/%u",
+		      i+1, active);
       waitpid(qpid[i], NULL, 0);
+      DEBUG(D_queue_run) debug_printf("q2stage reaped child %d\n", (int)qpid[i]);
       }
-    else break;
+    else break;		/* should be no holes in table, so we're done */
 
 #ifdef MEASURE_TIMING
   report_time_since(&timestamp_startup, US"queue_run phase 1 done");

@@ -817,7 +817,7 @@ transport_info autoreply_transport_info = {
   .options_block =	&autoreply_transport_option_defaults,
   .options_len =	sizeof(autoreply_transport_options_block),
   .init =		autoreply_transport_init,
-# ifdef DYNLOOKUP
+# if TRANSPORT_AUTOREPLY==2
   .dyn_magic =		TRANSPORT_MAGIC,
 # endif
   },

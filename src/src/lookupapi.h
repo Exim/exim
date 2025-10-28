@@ -18,9 +18,10 @@
 */
 
 typedef struct lookup_info {
-  uschar *name;                   /* e.g. "lsearch" */
-  int type;                       /* query/singlekey/abs-file */
-  unsigned acq_num;		  /* acquisition number */
+  uschar *	name;			/* e.g. "lsearch" */
+  int		type;			/* query/singlekey/abs-file */
+  unsigned	acq_num;		/* acquisition number */
+
   void *(*open)(                  /* open function */
     const uschar *,               /* file name for those that have one */
     uschar **);                   /* for error message */
@@ -60,9 +61,9 @@ typedef struct lookup_info {
 /* Version 5 change: version report now adds to a gstring */
 
 typedef struct lookup_module_info {
-  uint magic;
+  uint		magic;
   lookup_info **lookups;
-  uint lookupcount;
+  uint		lookupcount;
 } lookup_module_info;
 
 /* End of lookupapi.h */

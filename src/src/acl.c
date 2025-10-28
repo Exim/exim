@@ -63,9 +63,6 @@ enum { ACLC_ACL,
        ACLC_ADD_HEADER,
        ACLC_ATRN_DOMAINS,
        ACLC_AUTHENTICATED,
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-       ACLC_BMI_OPTIN,
-#endif
        ACLC_CONDITION,
        ACLC_CONTINUE,
        ACLC_CONTROL,
@@ -168,19 +165,6 @@ static condition_def conditions[] = {
 				    ACL_BIT_NOTSMTP_START |
 				    ACL_BIT_CONNECT | ACL_BIT_HELO),
   },
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  [ACLC_BMI_OPTIN] =		{ US"bmi_optin",	ACD_EXP | ACD_MOD,
-				  FORBIDDEN(ACL_BIT_AUTH |
-				    ACL_BIT_CONNECT | ACL_BIT_HELO |
-				    ACL_BIT_DATA | ACL_BIT_MIME |
-				    ACL_BIT_PRDR |
-				    ACL_BIT_ETRN | ACL_BIT_EXPN |
-				    ACL_BIT_MAILAUTH |
-				    ACL_BIT_MAIL | ACL_BIT_STARTTLS |
-				    ACL_BIT_VRFY | ACL_BIT_PREDATA |
-				    ACL_BIT_NOTSMTP_START),
-  },
-#endif
   [ACLC_CONDITION] =		{ US"condition",	ACD_EXP,
 				  FORBIDDEN(0) },
   [ACLC_CONTINUE] =		{ US"continue",		ACD_EXP | ACD_MOD,
@@ -433,9 +417,6 @@ static condition_module condition_modules[] = {
 
 enum {
   CONTROL_AUTH_UNADVERTISED,
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  CONTROL_BMI_RUN,
-#endif
   CONTROL_CASEFUL_LOCAL_PART,
   CONTROL_CASELOWER_LOCAL_PART,
   CONTROL_CUTTHROUGH_DELIVERY,
@@ -493,10 +474,6 @@ static control_def controls_list[] = {
 				  (unsigned)
 				  ~(ACL_BIT_CONNECT | ACL_BIT_HELO)
   },
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-[CONTROL_BMI_RUN] =
-  { US"bmi_run",                 FALSE,		0 },
-#endif
 [CONTROL_CASEFUL_LOCAL_PART] =
   { US"caseful_local_part",      FALSE, (unsigned) ~ACL_BIT_RCPT },
 [CONTROL_CASELOWER_LOCAL_PART] =
@@ -3460,17 +3437,6 @@ for (; cb; cb = cb->next)
 	      &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL) : FAIL;
       break;
 
-    #ifdef EXPERIMENTAL_BRIGHTMAIL
-    case ACLC_BMI_OPTIN:
-      {
-      int old_pool = store_pool;
-      store_pool = POOL_PERM;
-      bmi_current_optin = string_copy(arg);
-      store_pool = old_pool;
-      }
-    break;
-    #endif
-
     case ACLC_CONDITION:
     /* The true/false parsing here should be kept in sync with that used in
     expand.c when dealing with ECOND_BOOL so that we don't have too many
@@ -3511,12 +3477,6 @@ for (; cb; cb = cb->next)
 	case CONTROL_AUTH_UNADVERTISED:
 	  f.allow_auth_unadvertised = TRUE;
 	  break;
-
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-	case CONTROL_BMI_RUN:
-	  bmi_run = 1;
-	  break;
-#endif
 
 #ifndef DISABLE_DKIM
 	case CONTROL_DKIM_VERIFY:

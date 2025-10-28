@@ -1,110 +1,73 @@
-Connecting to 127.0.0.1 port PORT_D ... connected
-Attempting to start TLS
-Succeeded in starting TLS
-??? 220
-<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
->>> ehlo rhu.barb
-??? 250-
-<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
-??? 250-
-<<< 250-SIZE 52428800
-??? 250-
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
-??? 250-
-<<< 250-8BITMIME
-??? 250-
-<<< 250-PIPELINING
-??? 250
-<<< 250 HELP
->>> mail from:<userx1_3@test.ex>
-??? 250
-<<< 250 OK
->>> rcpt to:<userx@test.ex>
-??? 250
-<<< 250 Accepted
->>> DATA
-??? 3
-<<< 354 Enter message, ending with "." on a line by itself
->>> This is a test encrypted message.
->>> .
-??? 250
-<<< 250 OK id=10HmaX-000000005vi-0000
->>> quit
-??? 221
-<<< 221 myhost.test.ex closing connection
-End of script
-Message 10HmaX-000000005vi-0000 has been removed
-Connecting to 127.0.0.1 port PORT_D ... connected
-Attempting to start TLS
-Succeeded in starting TLS
-??? 220
-<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
->>> ehlo rhu.barb
-??? 250-
-<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
-??? 250-
-<<< 250-SIZE 52428800
-??? 250-
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
-??? 250-
-<<< 250-8BITMIME
-??? 250-
-<<< 250-PIPELINING
-??? 250
-<<< 250 HELP
->>> mail from:<userx1_2@test.ex>
-??? 250
-<<< 250 OK
->>> rcpt to:<userx@test.ex>
-??? 250
-<<< 250 Accepted
->>> DATA
-??? 3
-<<< 354 Enter message, ending with "." on a line by itself
->>> This is a test encrypted message.
->>> .
-??? 250
-<<< 250 OK id=10HmaY-000000005vi-0000
->>> quit
-??? 221
-<<< 221 myhost.test.ex closing connection
-End of script
-Message 10HmaY-000000005vi-0000 has been removed
-Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
-Certificate file = TESTSUITE/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem
-Key file = TESTSUITE/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
-Attempting to start TLS
-Succeeded in starting TLS
-??? 220
-<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
->>> ehlo rhu.barb
-??? 250-
-<<< 250-myhost.test.ex Hello rhu.barb [ip4.ip4.ip4.ip4]
-??? 250-
-<<< 250-SIZE 52428800
-??? 250-
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
-??? 250-
-<<< 250-8BITMIME
-??? 250-
-<<< 250-PIPELINING
-??? 250
-<<< 250 HELP
->>> mail from:<userx_clientcert@test.ex>
-??? 250
-<<< 250 OK
->>> rcpt to:<userx@test.ex>
-??? 250
-<<< 250 Accepted
->>> DATA
-??? 3
-<<< 354 Enter message, ending with "." on a line by itself
->>> This is a test encrypted message.
->>> .
-??? 250
-<<< 250 OK id=10HmaZ-000000005vi-0000
->>> quit
-??? 221
-<<< 221 myhost.test.ex closing connection
-End of script
-Message 10HmaZ-000000005vi-0000 has been removed
+
+******** SERVER ********
+Creating IPv6 socket
+Creating IPv4 socket
+Listening on port PORT_D ... 
+Connection request from [127.0.0.1]
+220 banner
+EHLO testhost.test.ex
+250-yo mate
+250-STARTTLS
+250 ok
+STARTTLS
+250 ready for TLS startup
+SSL connection using ke-RSA-AES256-SHAnnn
+EHLO testhost.test.ex
+250-yo mate, encrypted
+250 ok
+MAIL FROM:<>
+250
+RCPT TO:<a@test.ex>
+250
+DATA
+352 go ahead
+Received: from CALLER by testhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@testhost.test.ex>)
+	id 10HmaX-000000005vi-0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test1
+Message-Id: <E10HmaX-000000005vi-0000@testhost.test.ex>
+From: CALLER_NAME <CALLER@testhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 accepted data
+QUIT
+220 saw your quit
+>*eof
+Creating IPv6 socket
+Creating IPv4 socket
+Listening on port PORT_D ... 
+Connection request from [127.0.0.1]
+220 banner
+EHLO testhost.test.ex
+250-yo mate
+250-STARTTLS
+250 ok
+STARTTLS
+250 ready for TLS startup
+SSL connection using ke-RSA-AES256-SHAnnn
+EHLO testhost.test.ex
+250-yo mate, encrypted
+250 ok
+MAIL FROM:<>
+250
+RCPT TO:<b@test.ex>
+250
+DATA
+352 go ahead
+Received: from CALLER by testhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@testhost.test.ex>)
+	id 10HmaY-000000005vi-0000
+	for b@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test2
+Message-Id: <E10HmaY-000000005vi-0000@testhost.test.ex>
+From: CALLER_NAME <CALLER@testhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 accepted data
+QUIT
+>*eof

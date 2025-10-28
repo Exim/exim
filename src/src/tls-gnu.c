@@ -578,16 +578,23 @@ msg = rc == GNUTLS_E_FATAL_ALERT_RECEIVED
 
 (void) tls_error(when, msg, state->host, &errstr);
 
-if (state->host)
-  log_write(0, LOG_MAIN, "H=%s [%s] TLS error on connection %s",
-    state->host->name, state->host->address, errstr);
-else
+if (!state->host)
   {
   uschar * conn_info = smtp_get_connection_info();
   if (Ustrncmp(conn_info, US"SMTP ", 5) == 0) conn_info += 5;
   /* I'd like to get separated H= here, but too hard for now */
   log_write(0, LOG_MAIN, "TLS error on %s %s", conn_info, errstr);
   }
+else if (  !tls_out.smtp_quit
+#ifdef GNUTLS_E_PREMATURE_TERMINATION
+	|| rc != GNUTLS_E_PREMATURE_TERMINATION
+#endif
+	)
+  log_write(0, LOG_MAIN, "H=%s [%s] TLS error on connection %s",
+    state->host->name, state->host->address, errstr);
+else DEBUG(D_tls)
+  debug_printf("H=%s [%s] TLS error on connection %s\n",
+    state->host->name, state->host->address, errstr);
 }
 
 
@@ -3523,7 +3530,7 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
       debug_printf(" extract session data: %s\n", US gnutls_strerror(rc));
       }
   else DEBUG(D_tls)
-      debug_printf(" host not resmable; not saving ticket\n");
+      debug_printf(" host not resumable; not saving ticket\n");
   }
 }
 
