@@ -159,8 +159,9 @@ Returns:         TRUE if message successfully sent
 */
 
 BOOL
-moan_send_message(const uschar * recipient, int ident, error_block * eblock,
-  header_line * headers, FILE * message_file, const uschar * firstline)
+moan_send_message(const uschar * recipient, int ident,
+  const error_block * eblock, const header_line * headers,
+  FILE * message_file, const uschar * firstline)
 {
 int written = 0, fd, status, count = 0, size_limit = bounce_return_size_limit;
 FILE * fp;
@@ -389,7 +390,7 @@ if (bounce_return_message)
 
   while (headers)
     {
-    if (headers->text != NULL) fprintf(fp, "%s", CS headers->text);
+    if (headers->text) fprintf(fp, "%s", CS headers->text);
     headers = headers->next;
     }
 
@@ -494,8 +495,8 @@ Returns:        FALSE if there is no sender_address to send to;
 */
 
 BOOL
-moan_to_sender(int ident, error_block *eblock, header_line *headers,
-  FILE *message_file, BOOL check_sender)
+moan_to_sender(int ident, const error_block * eblock,
+  const header_line * headers, FILE * message_file, BOOL check_sender)
 {
 uschar *firstline = NULL;
 uschar *msg = US"Error while reading message with no usable sender address";
@@ -601,7 +602,7 @@ Returns:        nothing
 */
 
 void
-moan_tell_someone(const uschar * who, address_item * addr,
+moan_tell_someone(const uschar * who, const address_item * addr,
   const uschar * subject, const char * format, ...)
 {
 FILE * f;
@@ -814,14 +815,14 @@ Returns:            FALSE if string expansion failed; TRUE otherwise
 */
 
 BOOL
-moan_skipped_syntax_errors(uschar *rname, error_block *eblock,
-  uschar *syntax_errors_to, BOOL some, uschar *custom)
+moan_skipped_syntax_errors(const uschar * rname, const error_block * eblock,
+  const uschar * syntax_errors_to, BOOL some, const uschar * custom)
 {
 int pid, fd;
 const uschar * s;
 FILE * f;
 
-for (error_block * e = eblock; e; e = e->next)
+for (const error_block * e = eblock; e; e = e->next)
   if (e->text2)
     log_write(0, LOG_MAIN, "%s router: skipped error: %s in %q",
       rname, e->text1, e->text2);
@@ -870,11 +871,10 @@ if (custom)
 fprintf(f, "The %s router encountered the following error(s):\n\n",
   rname);
 
-for (error_block * e = eblock; e; e = e->next)
+for (const error_block * e = eblock; e; e = e->next)
   {
   fprintf(f, "  %s", e->text1);
-  if (e->text2 != NULL)
-    fprintf(f, " in the address\n  \"%s\"", e->text2);
+  if (e->text2) fprintf(f, " in the address\n  \"%s\"", e->text2);
   fprintf(f, "\n\n");
   }
 

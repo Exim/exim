@@ -374,15 +374,17 @@ extern int     misc_mod_msg_init(void);
 extern void    misc_mod_smtp_reset(void);
 
 extern uschar *moan_check_errorcopy(const uschar *);
-extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,
-                 BOOL, uschar *);
+extern BOOL    moan_skipped_syntax_errors(const uschar *, const error_block *,
+		const uschar *, BOOL, const uschar *);
 extern void    moan_smtp_batch(const uschar *, const char *, ...)
 		  PRINTF_FUNCTION(2,3);
-extern BOOL    moan_send_message(const uschar *, int, error_block *eblock,
-		 header_line *, FILE *, const uschar *);
-extern void    moan_tell_someone(const uschar *, address_item *,
-                 const uschar *, const char *, ...) PRINTF_FUNCTION(4,5);
-extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
+extern BOOL    moan_send_message(const uschar *, int,
+		const error_block * eblock, const header_line *,
+		FILE *, const uschar *);
+extern void    moan_tell_someone(const uschar *, const address_item *,
+                const uschar *, const char *, ...) PRINTF_FUNCTION(4,5);
+extern BOOL    moan_to_sender(int, const error_block *, const header_line *,
+		FILE *, BOOL);
 extern void    moan_write_from(FILE *);
 extern void    moan_write_references(FILE *, uschar *);
 #ifdef LOOKUP_MODULE_DIR

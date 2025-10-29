@@ -3939,7 +3939,7 @@ for (; cb; cb = cb->next)
       /* See comment on ACLC_SPF wrt. coding issues */
       {
       misc_module_info * mi = misc_mod_find(US"dmarc", &log_message);
-      typedef uschar * (*efn_t)(int);
+      typedef const uschar * (*efn_t)(void);
       const uschar * expanded_query;
 
       if (!mi)
@@ -3956,8 +3956,7 @@ for (; cb; cb = cb->next)
       view into the process in the future. */
 
       /*XXX is this call used with any other arg? */
-      expanded_query = (((efn_t *) mi->functions)[DMARC_EXPAND_QUERY])
-						      (DMARC_VERIFY_STATUS);
+      expanded_query = (((efn_t *) mi->functions)[DMARC_EXPAND_QUERY]) ();
       rc = match_isinlist(expanded_query,
 			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
       }

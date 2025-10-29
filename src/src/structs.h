@@ -680,8 +680,8 @@ typedef struct {
 
 typedef struct error_block {
   struct error_block *next;
-  const uschar *text1;
-  uschar *text2;
+  const uschar * text1;
+  const uschar * text2;
 } error_block;
 
 /* Chain of file names when processing the queue */

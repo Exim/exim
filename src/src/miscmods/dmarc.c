@@ -60,10 +60,10 @@ static dmarc_exim_p dmarc_policy_description[] = {
 /* $variables */
 BOOL	 dmarc_alignment_dkim	 = FALSE; /* Subtest result */
 BOOL	 dmarc_alignment_spf	 = FALSE; /* Subtest result */
-uschar * dmarc_domain_policy     = NULL; /* Declared policy of used domain */
-uschar * dmarc_status            = NULL; /* One word value */
-uschar * dmarc_status_text       = NULL; /* Human readable value */
-uschar * dmarc_used_domain       = NULL; /* Domain libopendmarc chose for DMARC policy lookup */
+const uschar * dmarc_domain_policy = NULL; /* Declared policy of used domain */
+const uschar * dmarc_status;		/* One word value */
+const uschar * dmarc_status_text   = NULL; /* Human readable value */
+uschar * dmarc_used_domain;		/* Domain libopendmarc chose for DMARC policy lookup */
 
 /* options */
 uschar * dmarc_forensic_sender   = NULL; /* Set sender address for forensic reports */
@@ -108,9 +108,9 @@ end, and append the two strings passed to it.  Used for adding
 variable amounts of value:pair data to the forensic emails. */
 
 static error_block *
-add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
+add_to_eblock(error_block * eblock, const uschar * t1, const uschar * t2)
 {
-error_block *eb = store_malloc(sizeof(error_block));
+error_block * eb = store_malloc(sizeof(error_block));
 if (!eblock)
   eblock = eb;
 else
@@ -645,10 +645,7 @@ The EDITME provides a DMARC_API variable */
   libdm_status = opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
   for (c = 0; dmarc_policy_description[c].name; c++)
     if (tmp_ans == dmarc_policy_description[c].value)
-      {
-      dmarc_domain_policy = string_sprintf("%s",dmarc_policy_description[c].name);
-      break;
-      }
+      { dmarc_domain_policy = dmarc_policy_description[c].name; break; }
 
   /* Can't use exim's string manipulation functions so allocate memory
   for libopendmarc using its max hostname length definition. */
@@ -743,23 +740,19 @@ if (!f.dmarc_disable_verify)
 return OK;
 }
 
-static uschar *
-dmarc_exim_expand_defaults(int what)
+static const uschar *
+dmarc_exim_expand_defaults(void)
 {
-if (what == DMARC_VERIFY_STATUS)
-  return f.dmarc_disable_verify ?  US"off" : US"none";
-return US"";
+return f.dmarc_disable_verify ?  US"off" : US"none";
 }
 
-static uschar *
-dmarc_exim_expand_query(int what)
+static const uschar *
+dmarc_exim_expand_query(void)
 {
 if (f.dmarc_disable_verify || !dmarc_pctx)
-  return dmarc_exim_expand_defaults(what);
+  return dmarc_exim_expand_defaults();
 
-if (what == DMARC_VERIFY_STATUS)
-  return dmarc_status;
-return US"";
+return dmarc_status;
 }
 
 
