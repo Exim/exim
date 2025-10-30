@@ -1,0 +1,25 @@
+Exim version x.yz ....
+Hints DB:
+environment after trimming:
+ PATH=<munged>
+adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+try option 'gecos_pattern'
+try option 'gecos_name'
+try option 'unknown_login'
+ ╭considering: ${lookup{abc}dbm{TESTSUITE/test-dbm-file}}
+  ╭considering: abc}dbm{TESTSUITE/test-dbm-file}}
+  ├───────text: abc
+  ├considering: }dbm{TESTSUITE/test-dbm-file}}
+  ├───expanded: abc
+  ╰─────result: abc
+  ╭considering: TESTSUITE/test-dbm-file}}
+  ├───────text: TESTSUITE/test-dbm-file
+  ├considering: }}
+  ├───expanded: TESTSUITE/test-dbm-file
+  ╰─────result: TESTSUITE/test-dbm-file
+ ├───expanded: ${lookup{abc}dbm{TESTSUITE/test-dbm-file}}
+ ╰─────result: [abc]
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

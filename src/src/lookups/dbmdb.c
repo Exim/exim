@@ -91,7 +91,8 @@ dbmdb_find(void * handle, const uschar * filename, const uschar * keystring,
   const uschar * opts)
 {
 open_db * d = (open_db *)handle;
-return (*result = dbfn_read_klen(d, keystring, length+1, NULL)) ? OK : FAIL;
+return (*result = dbfn_read_klen(d, keystring, length+1, NULL, FALSE))
+	? OK : FAIL;
 }
 
 

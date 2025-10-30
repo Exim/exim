@@ -16,3 +16,5 @@ exim_dbmbuild exit code = 0
 > [#xyz:]
 > [a "b" c]
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+[abc]

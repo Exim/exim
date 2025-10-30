@@ -32,3 +32,5 @@ ${lookup{abc:}dbm{DIR/test-dbm-file}}
 ${lookup{#xyz:}dbm{DIR/test-dbm-file}}
 ${lookup{a "b" c}dbm{DIR/test-dbm-file}}
 ****
+exim -d-all+expand -be '${lookup{abc}dbm{DIR/test-dbm-file}}'
+****

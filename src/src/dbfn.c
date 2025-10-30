@@ -386,13 +386,15 @@ Arguments:
   key       the key of the record to be read
   klen	    length of key including a terminating NUL (if present)
   length    a pointer to an int into which to return the length, if not NULL
+  hintsdb   TRUE for hints DB use, FALSE for lookup dbm use
 
 Returns: a pointer to the retrieved record, or
          NULL if the record is not found
 */
 
 void *
-dbfn_read_klen(open_db * dbblock, const uschar * key, int klen, int * length)
+dbfn_read_klen(open_db * dbblock, const uschar * key, int klen, int * length,
+  BOOL hintsdb)
 {
 void * yield;
 EXIM_DATUM key_datum, result_datum;
@@ -423,7 +425,7 @@ store the taint status with the data. */
 dlen = exim_datum_size_get(&result_datum);
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
 
-yield = store_get(dlen+1, GET_TAINTED);
+yield = store_get(dlen+1, hintsdb ? GET_TAINTED : GET_UNTAINTED);
 memcpy(yield, exim_datum_data_get(&result_datum), dlen);
 ((uschar *)yield)[dlen] = '\0';
 if (length) *length = dlen;
@@ -451,7 +453,7 @@ Returns: a pointer to the retrieved record, or
 void *
 dbfn_read_with_length(open_db * dbblock, const uschar * key, int * lenp)
 {
-return dbfn_read_klen(dbblock, key, Ustrlen(key)+1, lenp);
+return dbfn_read_klen(dbblock, key, Ustrlen(key)+1, lenp, TRUE);
 }
 
 

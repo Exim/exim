@@ -2,8 +2,8 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
-Since Exim version 4.99
------------------
+Exim version 4.100
+------------------
 
 JH/01 The obsolete (since 4.21) main config option "drop_cr" and the command
       line option "-dropcr" are no longer supported; using either will result in
@@ -25,6 +25,11 @@ JH/05 The default for the main option "remote_max_parallel" increases from
       4 to 6.
 
 JH/06 Expansion-test mode with debug (exim -d -be) now shows macro expansions.
+
+JH/07 Bug 3169: Fix dbm lookups. Release 4.99 had them returning tainted data,
+      due to code-sharing with hintsdb use (which has always done so). Track
+      the different uses and return non-tainted for the lookup case, since we
+      have no provenance for the DB file content.
 
 Exim version 4.99
 -----------------
