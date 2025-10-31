@@ -705,10 +705,10 @@ Returns:    FALSE if writing failed
 */
 
 static BOOL
-write_env_to(address_item *p, struct aci **pplist, struct aci **pdlist,
-  BOOL *first, transport_ctx * tctx)
+write_env_to(address_item * p, struct aci ** pplist, struct aci ** pdlist,
+  BOOL * first, transport_ctx * tctx)
 {
-address_item *pp;
+address_item * pp;
 struct aci *ppp;
 
 /* Do nothing if we have already handled this address. If not, remember it
@@ -725,8 +725,7 @@ ppp->ptr = p;
 
 for (pp = p;; pp = pp->parent)
   {
-  address_item *dup;
-  for (dup = addr_duplicate; dup; dup = dup->next)
+  for (address_item * dup = addr_duplicate; dup; dup = dup->next)
     if (dup->dupof == pp)   /* a dup of our address */
       if (!write_env_to(dup, pplist, pdlist, first, tctx))
 	return FALSE;

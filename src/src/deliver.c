@@ -9088,6 +9088,38 @@ fail:
 #endif
 }
 
+
+/* When running with debug_store this is called on every store_reset(). Walk all
+the address lists we maintain checking that none of the pointers are in the region
+being freed. */
+/*XXX what about all the pointers contained in the addr?
+If implemented, beware unbounded recursion. */
+
+static void
+check_addr_list(const uschar * name, const address_item * a,
+  void (*f)(const uschar*, const uschar*, void*), void * ctx)
+{
+while (a)
+  {
+  f(name, CUS a, ctx);	/* We lie about the data type */
+  a = a->next;
+  }
+}
+
+void
+check_deliver_addrs_not_freed(void (*f)(const uschar*, const uschar*, void*), void * ctx)
+{
+check_addr_list(US"(addr_defer)",	addr_defer,	f, ctx);
+check_addr_list(US"(addr_failed)",	addr_failed,	f, ctx);
+check_addr_list(US"(addr_fallback)",	addr_fallback,	f, ctx);
+check_addr_list(US"(addr_local)",	addr_local,	f, ctx);
+check_addr_list(US"(addr_new)",		addr_new,	f, ctx);
+check_addr_list(US"(addr_remote)",	addr_remote,	f, ctx);
+check_addr_list(US"(addr_route)",	addr_route,	f, ctx);
+check_addr_list(US"(addr_succeed)",	addr_succeed,	f, ctx);
+check_addr_list(US"(addr_duplicate)",	addr_duplicate, f, ctx);
+}
+
 /* vi: aw ai sw=2
 */
 /* End of deliver.c */

@@ -9017,15 +9017,18 @@ typedef struct {
   const uschar *var_data;
 } err_ctx;
 
-/* Called via tree_walk, which allows nonconst name/data.  Our usage is const. */
+/* Called via tree_walk, which allows nonconst name/data. Our usage is const. */
+typedef void (*twalk_compat)(uschar *, uschar *, void *);
+
 static void
-assert_variable_notin(uschar * var_name, uschar * var_data, void * ctx)
+assert_variable_notin(const uschar * var_name, const uschar * var_data,
+  void * ctx)
 {
 err_ctx * e = ctx;
 if (var_data >= e->region_start  &&  var_data < e->region_end)
   {
-  e->var_name = CUS var_name;
-  e->var_data = CUS var_data;
+  e->var_name = var_name;
+  e->var_data = var_data;
   }
 }
 
@@ -9036,8 +9039,8 @@ err_ctx e = { .region_start = ptr, .region_end = US ptr + len,
 	      .var_name = NULL, .var_data = NULL };
 
 /* check acl_ variables */
-tree_walk(acl_var_c, assert_variable_notin, &e);
-tree_walk(acl_var_m, assert_variable_notin, &e);
+tree_walk(acl_var_c, (twalk_compat) assert_variable_notin, &e);
+tree_walk(acl_var_m, (twalk_compat) assert_variable_notin, &e);
 
 /* check auth<n> variables.
 assert_variable_notin() treats as const, so deconst is safe. */
@@ -9056,10 +9059,13 @@ for (var_entry * v = var_table; v < var_table + nelem(var_table); v++)
     assert_variable_notin(US v->name, *(USS v->value), &e);
 
 /* check dns and address trees */
-tree_walk(tree_dns_fails,     assert_variable_notin, &e);
-tree_walk(tree_duplicates,    assert_variable_notin, &e);
-tree_walk(tree_nonrecipients, assert_variable_notin, &e);
-tree_walk(tree_unusable,      assert_variable_notin, &e);
+tree_walk(tree_dns_fails,     (twalk_compat) assert_variable_notin, &e);
+tree_walk(tree_duplicates,    (twalk_compat) assert_variable_notin, &e);
+tree_walk(tree_nonrecipients, (twalk_compat) assert_variable_notin, &e);
+tree_walk(tree_unusable,      (twalk_compat) assert_variable_notin, &e);
+
+/* check address-lists */
+check_deliver_addrs_not_freed(assert_variable_notin, &e);
 
 if (e.var_name)
   log_write_die(0, LOG_MAIN,
