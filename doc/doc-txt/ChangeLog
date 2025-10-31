@@ -31,6 +31,9 @@ JH/07 Bug 3169: Fix dbm lookups. Release 4.99 had them returning tainted data,
       the different uses and return non-tainted for the lookup case, since we
       have no provenance for the DB file content.
 
+JH/08 Fix use-after-free in duplicate processing combined with continued
+      transport.
+
 Exim version 4.99
 -----------------
 

@@ -8980,7 +8980,9 @@ report_time_since(&timestamp_startup, US"delivery end"); /* testcase 0005 */
 if (final_yield == DELIVER_ATTEMPTED_NORMAL && *continue_next_id)
   {
   addr_defer = addr_failed = addr_succeed = NULL;
+
   tree_duplicates = NULL;	/* discard dups info from old message */
+  addr_duplicate = NULL;
 
   spool_clear_header_globals();
   deliver_set_expansions(NULL);

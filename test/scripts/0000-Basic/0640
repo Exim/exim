@@ -1,8 +1,8 @@
 # Continued-transport
 # - Bug 3162
 #
-# Queue up two messages, 1st with 2 rcpts
-exim msg1@test.ex msg1b@test.ex
+# Queue up two messages, 1st with 2 rcpts and a duplicate addr
+exim msg1@test.ex msg1b@test.ex msg1@test.ex
 ****
 exim msg2@test.ex
 ****
@@ -18,6 +18,9 @@ exim -M $msg2
 # a continued-message-id - and then in the deliver proc store gets
 # freed before the 3rd; if the tree was in the main pool, UAF at some point.
 # Maybe a boom in the reset from assert_no_variables if debug_store is set.
+#
+# The duplicate addr ends up on a list which should be, but was not, wiped before
+# that store free. UAF.
 server PORT_D 2
 >*eof
 220 Yo dude
