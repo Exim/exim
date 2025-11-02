@@ -74,8 +74,8 @@ extern void    debug_printf_indent(const char *, ...) PRINTF_FUNCTION(1,2);
 #  error USE_SQLITE conflict with alternate definition
 # endif
 # include "hintsdb/hints_sqlite.h"
-#elif defined(USE_TDB)
 
+#elif defined(USE_TDB)
 # if defined(USE_DB) || defined(USE_GDBM) || defined(USE_SQLITE)
 #  error USE_TDB conflict with alternate definition
 # endif
