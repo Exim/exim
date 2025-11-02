@@ -57,11 +57,6 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030000
 # define SUPPORT_SELFSIGN	/* Uncertain what version is first usable but 2.12.23 is not */
 #endif
-#if GNUTLS_VERSION_NUMBER >= 0x030306
-# define SUPPORT_CA_DIR
-#else
-# undef  SUPPORT_CA_DIR
-#endif
 #if GNUTLS_VERSION_NUMBER >= 0x030014
 # define SUPPORT_SYSDEFAULT_CABUNDLE
 #endif
@@ -78,6 +73,11 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # define GNUTLS_AUTO_GLOBAL_INIT
 # define GNUTLS_AUTO_PKCS11_MANUAL
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030306
+# define SUPPORT_CA_DIR
+#else
+# undef  SUPPORT_CA_DIR
+#endif
 #if (GNUTLS_VERSION_NUMBER >= 0x030404) \
   || (GNUTLS_VERSION_NUMBER >= 0x030311) && (GNUTLS_VERSION_NUMBER & 0xffff00 == 0x030300)
 # ifndef DISABLE_OCSP
@@ -89,6 +89,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030506 && !defined(DISABLE_OCSP)
 # define SUPPORT_SRV_OCSP_STACK
+#endif
+#if GNUTLS_VERSION_NUMBER >= 0x030600
+# define EXIM_TLS_KEX_GROUP
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030603
 # define EXIM_HAVE_TLS1_3
@@ -2385,11 +2388,15 @@ kx =
 old_pool = store_pool;
   {
   tls_support * tlsp = state->tlsp;
+  gstring * g = NULL;
+#ifdef EXIM_TLS_KEX_GROUP
+  const char * kex_gp = gnutls_group_get_name(gnutls_group_get(session));
+#endif
+
   store_pool = POOL_PERM;
 
 #ifdef SUPPORT_GNUTLS_SESS_DESC
     {
-    gstring * g = NULL;
     uschar * s = US gnutls_session_get_desc(session), c;
 
     if (!s)
@@ -2424,15 +2431,25 @@ old_pool = store_pool;
       if ((c = *s) && *++s == '-') g = string_catn(g, US"__", 2);
       /* now on _ between groups */
       }
-    g = string_catn(g, US":", 1);
-    g = string_cat(g, string_sprintf("%d", (int) gnutls_cipher_get_key_size(cipher) * 8));
+    g = string_fmt_append(g, ":%d", 
+		      (int) gnutls_cipher_get_key_size(cipher) * 8);
+
+# ifdef EXIM_TLS_KEX_GROUP
+    if (kex_gp)
+      g = string_fmt_append(g, ":%s", kex_gp);
+# endif
     state->ciphersuite = string_from_gstring(g);
     }
 #else
-  state->ciphersuite = string_sprintf("%s:%s:%d",
-      gnutls_protocol_get_name(protocol),
-      gnutls_cipher_suite_get_name(kx, cipher, mac),
-      (int) gnutls_cipher_get_key_size(cipher) * 8);
+  g = string_fmt_append(NULL, "%s:%s:%d",
+			gnutls_protocol_get_name(protocol),
+			gnutls_cipher_suite_get_name(kx, cipher, mac),
+			(int) gnutls_cipher_get_key_size(cipher) * 8);
+# ifdef EXIM_TLS_KEX_GROUP
+  if (kex_gp)
+    g = string_fmt_append(g, ":%s", kex_gp);
+# endif
+  state->ciphersuite = string_from_gstring(g);
 
   /* I don't see a way that spaces could occur, in the current GnuTLS
   code base, but it was a concern in the old code and perhaps older GnuTLS
@@ -2441,7 +2458,7 @@ old_pool = store_pool;
   for (uschar * p = state->ciphersuite; *p; p++) if (isspace(*p)) *p = '-';
   tlsp->ver = string_copyn(state->ciphersuite,
 			Ustrchr(state->ciphersuite, ':') - state->ciphersuite);
-#endif
+#endif /*SUPPORT_GNUTLS_SESS_DESC*/
 
 /* debug_printf("peer_status: ciphersuite %s\n", state->ciphersuite); */
 

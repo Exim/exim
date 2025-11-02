@@ -86,6 +86,9 @@ change this guard and punt the issue for a while longer. */
 # if OPENSSL_VERSION_NUMBER >= 0x010101000L
 #  define EXIM_TLS_EARLY_BANNER
 # endif
+# if OPENSSL_VERSION_NUMBER >= 0x030200000L
+#  define EXIM_TLS_KEX_GROUP
+# endif
 # if OPENSSL_VERSION_NUMBER <  0x030200020L
 #  define EXIM_OPENSSL_BOGUS_SERVER_ALPN	/*XXX when was this fixed? */
 # endif
@@ -3070,8 +3073,11 @@ return OK;
 *************************************************/
 
 /*
-Argument:   pointer to an SSL structure for the connection
-	    pointer to number of bits for cipher
+Arguments:
+  ssl	pointer to an SSL structure for the connection
+  ver	TLS version string
+  bits	pointer for return of number of bits for cipher
+
 Returns:    pointer to allocated string in perm-pool
 */
 
@@ -3089,7 +3095,15 @@ uschar * s;
 SSL_CIPHER_get_bits(c, bits);
 
 store_pool = POOL_PERM;
-s = string_sprintf("%s:%s:%u", ver, SSL_CIPHER_get_name(c), *bits);
+  {
+#ifdef EXIM_TLS_KEX_GROUP
+  const char * cs = SSL_get0_group_name(ssl);
+  if (cs)
+    s = string_sprintf("%s:%s:%u:%s", ver, SSL_CIPHER_get_name(c), *bits, cs);
+  else
+#endif
+    s = string_sprintf("%s:%s:%u", ver, SSL_CIPHER_get_name(c), *bits);
+  }
 store_pool = pool;
 DEBUG(D_tls) debug_printf("Cipher: %s\n", s);
 return s;

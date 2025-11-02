@@ -28,6 +28,10 @@ JH/06 Bug 3169: Fix dbm lookups. Release 4.99 had them returning tainted data,
 JH/07 Fix use-after-free in duplicate processing combined with continued
       transport.
 
+JH/09 TLS logging: with OpenSSL 3.2, or GnuTLS 3.6, or later - when one is
+      used on a TLS connection, add an element to the log X= field giving
+      the key-exchange group.
+
 Exim version 4.99
 -----------------
 

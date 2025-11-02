@@ -621,7 +621,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # different protocols; can't rely upon TLS 1.2's AES256-GCM-SHA384, so we
   # treat the standard algorithms the same.
   #
-  # TLSversion : KeyExchange? - Authentication/Signature - C_iph_er - MAC : bits
+  # TLSversion : KeyExchange? - Authentication/Signature - C_iph_er - MAC : bits : KExGrp?
   #
   # So far, have seen:
   #   TLSv1:AES128-GCM-SHA256:128
@@ -637,11 +637,20 @@ RESET_AFTER_EXTRA_LINE_READ:
   # Mail headers (...), log-lines X=..., client-ssl output ...
   # (and \b doesn't match between ' ' and '(' )
   #
-  # Retain the authentication algorith field as we want to test that.
+  # Retain the authentication algorithm field as we want to test that.
+  # Drop the key-exchange group, at least for now
 
-  s/( (?: (?:\b|\s) [\(=] ) | \s )TLS1(\.[123])?:/$1TLS1.x:/xg;
+  s/( (?: (?:\b|\s) [\(=] )
+      | \s
+      )
+  	TLS1(\.[123])?:
+    /$1TLS1.x:/gx;
   s/(?<!ke-)((EC)?DHE-)?(RSA|ECDSA)-AES(128|256)-(GCM-SHA(256|384)|SHA)(?!:)/ke-$3-AES256-SHAnnn/g;
-  s/(?<!ke-)((EC)?DHE-)?(RSA|ECDSA)-AES(128|256)-(GCM-SHA(256|384)|SHA):(128|256)/ke-$3-AES256-SHAnnn:xxx/g;
+  s/(?<!ke-)
+  	((EC)?DHE-)?(RSA|ECDSA)-AES(128|256)-(GCM-SHA(256|384)|SHA)
+	:(128|256)
+	(:[^\s*]*)?
+      /ke-$3-AES256-SHAnnn:xxx/gx;
 
   # OpenSSL TLSv1.3 - unsure what to do about the authentication-variant testcases now,
   # as it seems the protocol no longer supports a user choice.  Replace the "TLS" field with "RSA".
@@ -650,7 +659,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # TLSversion : "TLS" - C_iph_er - MAC : ???
   #
   s/TLS_AES(_256)?_GCM_SHA384(?!:)/ke-RSA-AES256-SHAnnn/g;
-  s/:TLS_AES(_256)?_GCM_SHA384:256/:ke-RSA-AES256-SHAnnn:xxx/g;
+  s/:TLS_AES(?:_256)?_GCM_SHA384:256(?::[^\s*]*)?/:ke-RSA-AES256-SHAnnn:xxx/g;
 
   # LibreSSL
   # TLSv1:AES256-GCM-SHA384:256
@@ -663,7 +672,11 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/(?<!-)(AES256-GCM-SHA384)/RSA-$1/;
   s/AEAD-(AES256-GCM-SHA384)/RSA-$1/g;
   s/(?<!ke-)((EC)?DHE-)?(RSA|ECDSA)-(AES256|CHACHA20)-(GCM-SHA384|POLY1305)(?!:)/ke-$3-AES256-SHAnnn/g;
-  s/(?<!ke-)((EC)?DHE-)?(RSA|ECDSA)-(AES256|CHACHA20)-(GCM-SHA384|POLY1305):256/ke-$3-AES256-SHAnnn:xxx/g;
+  s/(?<!ke-)
+	((EC)?DHE-)?(RSA|ECDSA)-(AES256|CHACHA20)-(GCM-SHA384|POLY1305)
+	:256
+	(:[^\s*]*)?
+      /ke-$3-AES256-SHAnnn:xxx/gx;
 
   # GnuTLS have seen:
   #   TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256
@@ -705,11 +718,14 @@ RESET_AFTER_EXTRA_LINE_READ:
     (__?AEAD)?								# pseudo-MAC
     (__?SHA(1|256|384))?						# PRF
     :(256|128)								# cipher strength
-    /"TLS1.x:ke-"
+    (:[^\s*]*)?								# kex group
+    /
+    "TLS1.x:ke-"
 	. (defined($+{psk}) ? $+{psk} : "")
 	. (defined($+{auth}) ? $+{auth} : "")
 	. (defined($+{with}) ? $+{with} : "")
-	. "-AES256-SHAnnn:xxx"/gex;
+	. "-AES256-SHAnnn:xxx"
+    /gex;
   s/TLS1.2:RSA__CAMELLIA_256_GCM(_SHA384)?:256/TLS1.2:RSA_CAMELLIA_256_GCM-SHAnnn:256/g;
   s/\b(ECDHE-(RSA|ECDSA)-AES256-SHA|DHE-RSA-AES256-SHA256)\b/ke-$2-AES256-SHAnnn/g;
 

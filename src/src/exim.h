@@ -155,7 +155,8 @@ The driver name is a name of a router/transport/authenticator etc in the
 configuration file.  We also use this for some other short strings, such
 as queue names.
 Also TLS ciphersuite name (no real known limit since the protocols use
-integers, but max seen in reality is 45 octets).
+integers, but max seen so far is 70 octets.  Likely to increase further with
+postquantum methods).
 
 RFC 1413 gives us the 512 limit on IDENT protocol userids.
 */
@@ -168,7 +169,7 @@ RFC 1413 gives us the 512 limit on IDENT protocol userids.
 #define EXIM_HUMANNAME_MAX     256
 #define EXIM_DISPLAYMAIL_MAX  1024
 #define EXIM_DRIVERNAME_MAX     64
-#define EXIM_CIPHERNAME_MAX     64
+#define EXIM_CIPHERNAME_MAX    128
 #define EXIM_IDENTUSER_MAX     512
 
 
