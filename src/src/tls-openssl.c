@@ -2231,7 +2231,6 @@ tls_servername_cb(SSL * s, int * ad ARG_UNUSED, void * arg)
 const char * servername = SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
 exim_openssl_state_st * state = (exim_openssl_state_st *) arg;
 int rc;
-int old_pool = store_pool;
 uschar * errstr;
 
 if (!servername)
@@ -2241,9 +2240,7 @@ DEBUG(D_tls) debug_printf("Received TLS SNI %q%s\n", servername,
     reexpand_tls_files_for_sni ? "" : " (unused for certificate selection)");
 
 /* Make the extension value available for expansion */
-store_pool = POOL_PERM;
-tls_in.sni = string_copy_taint(US servername, GET_TAINTED);
-store_pool = old_pool;
+tls_in.sni = string_copy_perm(US servername, TRUE);
 
 if (!reexpand_tls_files_for_sni)
   return SSL_TLSEXT_ERR_OK;
@@ -3119,13 +3116,8 @@ return cipher_stdname(id >> 8, id & 0xff);
 static const uschar *
 tlsver_name(const SSL * ssl)
 {
-const uschar * s;
-uschar * p;
-int pool = store_pool;
+uschar * s = string_copy_perm(US SSL_get_version(ssl), FALSE), * p;
 
-store_pool = POOL_PERM;
-s = string_copy(US SSL_get_version(ssl));
-store_pool = pool;
 if ((p = Ustrchr(s, 'v')))	/* TLSv1.2 -> TLS1.2 */
   for (;; p++) if (!(*p = p[1])) break;
 return CUS s;
@@ -3151,12 +3143,8 @@ if (tlsp->peercert)
     { DEBUG(D_tls) debug_printf("X509_NAME_oneline() error\n"); }
   else
     {
-    int oldpool = store_pool;
-
     peerdn[siz-1] = '\0';		/* paranoia */
-    store_pool = POOL_PERM;
-    tlsp->peerdn = string_copy(peerdn);
-    store_pool = oldpool;
+    tlsp->peerdn = string_copy_perm(peerdn, TRUE);
 
     /* We used to set CV in the cert-verify callbacks (either plain or dane)
     but they don't get called on session-resumption.  So use the official
@@ -4237,11 +4225,9 @@ BOOL request_ocsp = FALSE;
 BOOL require_ocsp = FALSE;
 #endif
 
-rc = store_pool;
-store_pool = POOL_PERM;
-exim_client_ctx = store_get(sizeof(exim_openssl_client_tls_ctx), GET_UNTAINTED);
+exim_client_ctx = store_get_perm(sizeof(exim_openssl_client_tls_ctx),
+				GET_UNTAINTED);
 exim_client_ctx->corked = NULL;
-store_pool = rc;
 
 #ifdef SUPPORT_DANE
 tlsp->tlsa_usage = 0;
@@ -5268,18 +5254,16 @@ void
 tls_state_in_to_out(int newfd, const uschar * ipaddr, int port)
 {
 exim_openssl_client_tls_ctx * exim_client_ctx;
-int old_pool = store_pool;
 
 state_server.is_server = FALSE;
 state_server.tlsp = &tls_out;
 client_static_state = &state_server;
 
-store_pool = POOL_PERM;
-exim_client_ctx = store_get(sizeof(exim_openssl_client_tls_ctx), GET_UNTAINTED);
+exim_client_ctx = store_get_perm(sizeof(exim_openssl_client_tls_ctx),
+				GET_UNTAINTED);
 exim_client_ctx->ctx = client_static_state->lib_state.lib_ctx;
 exim_client_ctx->ssl = client_static_state->lib_state.lib_ssl;
 exim_client_ctx->corked = NULL;
-store_pool = old_pool;
 
 SSL_set_fd(exim_client_ctx->ssl, newfd);
 

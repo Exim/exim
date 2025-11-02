@@ -2163,10 +2163,7 @@ if (host)
   /* For client-side sessions we allocate a context. This lets us run
   several in parallel. */
 
-  int old_pool = store_pool;
-  store_pool = POOL_PERM;
-  state = store_get(sizeof(exim_gnutls_state_st), GET_UNTAINTED);
-  store_pool = old_pool;
+  state = store_get_perm(sizeof(exim_gnutls_state_st), GET_UNTAINTED);
 
   memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
   state->lib_state = ob->tls_preload;
@@ -2806,7 +2803,7 @@ char sni_name[MAX_HOST_LEN];
 size_t data_len = MAX_HOST_LEN;
 exim_gnutls_state_st *state = &state_server;
 unsigned int sni_type;
-int rc, old_pool;
+int rc;
 uschar * dummy_errstr;
 
 rc = gnutls_server_name_get(session, sni_name, &data_len, &sni_type, 0);
@@ -2828,10 +2825,7 @@ if (sni_type != GNUTLS_NAME_DNS)
   }
 
 /* We now have a UTF-8 string in sni_name */
-old_pool = store_pool;
-store_pool = POOL_PERM;
-state->received_sni = string_copy_taint(US sni_name, GET_TAINTED);
-store_pool = old_pool;
+state->received_sni = string_copy_perm(US sni_name, TRUE);
 
 /* We set this one now so that variable expansions below will work */
 state->tlsp->sni = state->received_sni;
@@ -4386,8 +4380,9 @@ host_item * h;
 int old_pool = store_pool;
 
 store_pool = POOL_PERM;
-state = store_get(sizeof(exim_gnutls_state_st), GET_UNTAINTED);
-h = store_get(sizeof(host_item), GET_UNTAINTED);
+state = store_get(sizeof(exim_gnutls_state_st) + sizeof(host_item),
+		  GET_UNTAINTED);
+h = ((host_item *)state) + 1;
 
 memset(h, 0, sizeof(host_item));
 h->name = h->address = string_copy(ipaddr);
@@ -4419,12 +4414,8 @@ store_pool = old_pool;
 void
 tls_state_out_to_in(int newfd, const uschar * ipaddr, int port)
 {
-host_item * h;
-int old_pool = store_pool;
+host_item * h = store_get_perm(sizeof(host_item), GET_UNTAINTED);
 
-store_pool = POOL_PERM;
-h = store_get(sizeof(host_item), GET_UNTAINTED);
-store_pool = old_pool;
 memset(h, 0, sizeof(host_item));
 h->name = h->address = string_copy(ipaddr);
 h->port = port;
