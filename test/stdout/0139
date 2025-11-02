@@ -1,5 +1,6 @@
 
 **** SMTP testing session as if from host V4NET.11.12.14
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -14,6 +15,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.11.12.15
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -33,6 +35,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.11.12.20
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -40,6 +43,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.11.12.21
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -53,6 +57,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.11.12.15
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -60,6 +65,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.13.13.2
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -67,6 +73,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.13.13.100
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -74,6 +81,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.13.13.101
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -81,6 +89,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.13.13.102
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -88,6 +97,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.13.13.103
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -95,6 +105,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.13.13.104
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -102,6 +113,7 @@
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host V4NET.13.13.105
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

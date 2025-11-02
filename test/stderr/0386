@@ -288,7 +288,7 @@ LOG: MAIN
 receive_msg: tidyup
 SMTP>| 250 OK id=10HmaX-000000005vi-0000
 search_tidyup called
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb8acfd -MCd local-accept-delivery -odi -Mc 10HmaX-000000005vi-0000
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-000000005vi-0000
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
@@ -479,7 +479,7 @@ LOG: MAIN
 receive_msg: tidyup
 SMTP>| 250 OK id=10HmaY-000000005vi-0000
 search_tidyup called
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb8acfd -MCd local-accept-delivery -odi -Mc 10HmaY-000000005vi-0000
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-000000005vi-0000
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective

@@ -1,15 +1,18 @@
 
 **** SMTP testing session as if from host 2001:ab8:37f:20::1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 550 Administrative prohibition
 
 **** SMTP testing session as if from host V6NET:1234:5:6:7:8:abc:d
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 550 Administrative prohibition
 
 **** SMTP testing session as if from host V6NET:ffff:836f:a00:a:800:200a:c032
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 550 Administrative prohibition

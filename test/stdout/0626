@@ -1,5 +1,6 @@
 
 **** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -11,6 +12,7 @@
 127.0.0.1	07-Mar-2000 12:21:52
 
 **** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -20,6 +22,7 @@
 221 test.ex closing connection
 
 **** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -29,6 +32,7 @@
 221 test.ex closing connection
 
 **** SMTP testing session as if from host ip4.ip4.ip4.ip4
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -41,6 +45,7 @@
 ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 
 **** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -54,6 +59,7 @@ ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 
 **** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -63,6 +69,7 @@ ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 221 test.ex closing connection
 
 **** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -72,6 +79,7 @@ ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 221 test.ex closing connection
 
 **** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -81,6 +89,7 @@ ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 221 test.ex closing connection
 
 **** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
 **** This is not for real!
 
 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

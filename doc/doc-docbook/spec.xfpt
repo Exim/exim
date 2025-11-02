@@ -295,6 +295,7 @@
 .see     concept fallover	fallback
 .see     concept filter 	"Sieve filter"			Sieve
 .see     concept headers	"header lines"
+.see     concept ident		"RFC 1413"
 .see     concept "LF character"	"linefeed"
 .seealso concept maximum	limit
 .see     concept monitor	"Exim monitor"
@@ -3042,7 +3043,15 @@ This facility is provided for testing configuration options for incoming
 messages, to make sure they implement the required policy. For example, you can
 test your relay controls using &%-bh%&.
 
-&*Warning*&: Address verification callouts (see section &<<SECTcallver>>&)
+&*Warning 1*&:
+.cindex "RFC 1413"
+You can test features of the configuration that rely on ident
+(&url(https://www.rfc-editor.org/rfc/rfc2487,RFC 1413))
+information by using the &%-oMt%& option. However, Exim cannot actually perform
+an ident callout when testing using &%-bh%& because there is no incoming SMTP
+connection.
+
+&*Warning 2*&: Address verification callouts (see section &<<SECTcallver>>&)
 are also skipped when testing using &%-bh%&. If you want these callouts to
 occur, use &%-bhc%& instead.
 
@@ -3696,6 +3705,7 @@ are:
 .irow filter         "filter handling"
 .irow hints_lookup   "hints data lookups"
 .irow host_lookup    "all types of name-to-IP address handling"
+.irow ident          "ident lookup"
 .irow interface      "lists of local interfaces"
 .irow lists          "matching things in lists"
 .irow load           "system load checks"
@@ -4418,8 +4428,6 @@ option sets the sender host name in &$sender_host_name$&. When this option is
 present, Exim does not attempt to look up a host name from an IP address; it
 uses the name it is given.
 
-. Is this obsolete now we've retired identd support?
-. If so, more code could go (eg. in host_build_sender_fullhost()
 .cmdopt -oMt <&'ident&~string'&>
 .cindex "sender" "ident string, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMt%&
@@ -5842,6 +5850,20 @@ or restrict the lookup to hosts on &"nearby"& networks.
 Note that it is not always possible to find a host name from an IP address,
 because not all DNS reverse zones are maintained, and sometimes DNS servers are
 unreachable.
+
+The next two lines are concerned with &'ident'& callbacks, as defined by
+&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
+(hence their names):
+.code
+rfc1413_hosts = *
+rfc1413_query_timeout = 0s
+.endd
+These settings cause Exim to avoid ident callbacks for all incoming SMTP calls.
+Few hosts offer RFC1413 service these days; calls have to be
+terminated by a timeout and this needlessly delays the startup
+of an incoming SMTP connection.
+If you have hosts for which you trust RFC1413 and need this
+information, you can change this.
 
 This line enables an efficiency SMTP option.  It is negotiated by clients
 and not expected to cause problems but can be disabled if needed.
@@ -13893,7 +13915,8 @@ number that was used on the remote host.
 
 .vitem &$sender_ident$&
 .vindex "&$sender_ident$&"
-When a message has
+When a message is received from a remote host, this variable contains the
+identification received in response to an RFC 1413 request. When a message has
 been received locally, this variable contains the login name of the user that
 called Exim.
 
@@ -13915,14 +13938,11 @@ followed by a colon and a port number if port logging is enabled. When the
 first item is an IP address, the port is recorded as &"port=&'xxxx'&"& inside
 the parentheses.
 
-There may also an item of the form &"helo=&'xxxx'&"& if HELO or EHLO
+There may also be items of the form &"helo=&'xxxx'&"& if HELO or EHLO
 was used and its argument was not identical to the real host name or IP
-address.
-
-. not seeing coding for this...
-. If
-. all three items are present in the parentheses, a newline and tab are inserted
-. into the string, to improve the formatting of the &'Received:'& header.
+address, and &"ident=&'xxxx'&"& if an RFC 1413 ident string is available. If
+all three items are present in the parentheses, a newline and tab are inserted
+into the string, to improve the formatting of the &'Received:'& header.
 
 .vitem &$sender_verify_failure$&
 .vindex "&$sender_verify_failure$&"
@@ -15138,6 +15158,8 @@ See also the &'Policy controls'& section above.
 .row &%host_lookup%&                 "host name looked up for these hosts"
 .row &%host_lookup_order%&           "order of DNS and local name lookups"
 .row &%recipient_unqualified_hosts%& "may send unqualified recipients"
+.row &%rfc1413_hosts%&               "make ident calls to these hosts"
+.row &%rfc1413_query_timeout%&       "zero disables ident calls"
 .row &%sender_unqualified_hosts%&    "may send unqualified senders"
 .row &%smtp_accept_keepalive%&       "some TCP/IP magic"
 .row &%smtp_accept_max%&             "simultaneous incoming connections"
@@ -17835,6 +17857,24 @@ the time of delivery. They are normally used only for final local deliveries.
 
 .option return_size_limit main integer 100K
 This option is an obsolete synonym for &%bounce_return_size_limit%&.
+
+
+.option rfc1413_hosts main "host list&!!" @[]
+.cindex "RFC 1413"
+.cindex "host" "for RFC 1413 calls"
+&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
+identification calls are made to any client host which matches
+an item in the list.
+The default value specifies just this host, being any local interface
+for the system.
+
+.option rfc1413_query_timeout main time 0s
+.cindex "RFC 1413" "query timeout"
+.cindex "timeout" "for RFC 1413 call"
+This sets the timeout on
+&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
+identification calls. If it is set to zero,
+no RFC 1413 calls are ever made.
 
 
 .option sender_unqualified_hosts main "host list&!!" unset
@@ -39474,11 +39514,9 @@ which is a reference to the message that caused the bounce to be sent.
 
 .cindex "HELO"
 .cindex "EHLO"
-.new
-For messages from other hosts, the H field identifies the remote host
-that sent the message.
-.wen
-The number given in square brackets is the IP address of the sending
+For messages from other hosts, the H and U fields identify the remote host and
+record the RFC 1413 identity of the user that sent the message, if one was
+received. The number given in square brackets is the IP address of the sending
 host. If there is a single, unparenthesized  host name in the H field, as
 above, it has been verified to correspond to the IP address (see the
 &%host_lookup%& option). If the name is in parentheses, it was the name quoted
@@ -39708,7 +39746,7 @@ the following table:
 &`T   `&        on &`<=`& lines: message subject (topic)
 &`TFO `&        connection took advantage of TCP Fast Open
 &`    `&        on &`=>`& &`**`& and &`==`& lines: transport name
-&`U   `&        local user
+&`U   `&        local user or RFC 1413 identity
 &`X   `&        TLS cipher suite
 .endd
 
@@ -39791,6 +39829,7 @@ selection marked by asterisks:
 .irow &`dnssec`&			&nbsp; "DNSSEC secured lookups"
 .irow &`etrn`&				*	"ETRN commands"
 .irow &`host_lookup_failed`&		*	"as it says"
+.irow &`ident_timeout`&			&nbsp; "timeout for ident connection"
 .irow &`incoming_interface`&		&nbsp; "local interface &amp; port on <= and => lines"
 .irow &`incoming_port`&			&nbsp; "remote port on <= lines"
 .irow &`lost_incoming_connection`&	*	"as it says (includes timeouts)"
@@ -39944,6 +39983,11 @@ selector (see &%smtp_syntax_error%& and &%smtp_protocol_error%&).
 any addresses, or when a lookup of an IP address fails to find a host name, a
 log line is written. This logging does not apply to direct DNS lookups when
 routing email addresses, but it does apply to &"byname"& lookups.
+.next
+.cindex "log" "ident timeout"
+.cindex "RFC 1413" "logging timeout"
+&%ident_timeout%&: A log line is written whenever an attempt to connect to a
+client's ident port times out.
 .next
 .cindex "log" "incoming interface"
 .cindex "log" "outgoing interface"
@@ -42124,7 +42168,8 @@ received. It is not present if no reverse lookup was done.
 .vitem "&%-ident%&&~<&'text'&>"
 For locally submitted messages, this records the login of the originating user,
 unless it was a trusted user and the &%-oMt%& option was used to specify an
-ident value.
+ident value. For messages received over TCP/IP, this records the ident string
+supplied by the remote host, if any.
 
 .vitem "&%-interface_address%&&~<&'address'&>.<&'port'&>"
 This records the IP address of the local interface and the port number through

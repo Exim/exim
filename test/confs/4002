@@ -3,6 +3,7 @@
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
 
 
 # ----- Main settings -----

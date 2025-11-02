@@ -253,7 +253,7 @@ search_tidyup called
  close MYSQL connection: ::1.PORT_N/test/root
  close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
-01:01:01 p1235  Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=p1235 D=fffcffff
+01:01:01 p1235  Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=p1235 D=fff9ffff
 01:01:01 p1235  Hints DB:
 01:01:01 p1235  macros_trusted overridden to true by whitelisting
 01:01:01 p1235  changed uid/gid: forcing real = effective
@@ -791,7 +791,7 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 receive_msg: tidyup
 search_tidyup called
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb8acfd -MCd local-accept-delivery -odi -Mc 10HmaX-000000005vi-0000
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-000000005vi-0000
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective

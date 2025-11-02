@@ -2780,6 +2780,162 @@ return yield;
 
 
 /*************************************************
+*            Get RFC 1413 identification         *
+*************************************************/
+
+/* Attempt to get an id from the sending machine via the RFC 1413 protocol. If
+the timeout is set to zero, then the query is not done. There may also be lists
+of hosts and nets which are exempt. To guard against malefactors sending
+non-printing characters which could, for example, disrupt a message's headers,
+make sure the string consists of printing characters only.
+
+Argument:
+  port    the port to connect to; usually this is IDENT_PORT (113), but when
+          running in the test harness with -bh a different value is used.
+
+Returns:  nothing
+
+Side effect: any received ident value is put in sender_ident (NULL otherwise)
+*/
+
+void
+verify_get_ident(int port)
+{
+client_conn_ctx ident_conn_ctx = {0};
+int host_af, qlen;
+int received_sender_port, received_interface_port, n;
+uschar *p;
+blob early_data;
+uschar buffer[2048];
+
+/* Default is no ident. Check whether we want to do an ident check for this
+host. */
+
+sender_ident = NULL;
+if (rfc1413_query_timeout <= 0 || verify_check_host(&rfc1413_hosts) != OK)
+  return;
+
+DEBUG(D_ident) debug_printf("doing ident callback\n");
+
+/* Set up a connection to the ident port of the remote host. Bind the local end
+to the incoming interface address. If the sender host address is an IPv6
+address, the incoming interface address will also be IPv6. */
+
+host_af = Ustrchr(sender_host_address, ':') == NULL ? AF_INET : AF_INET6;
+if ((ident_conn_ctx.sock = ip_socket(SOCK_STREAM, host_af)) < 0) return;
+
+if (ip_bind(ident_conn_ctx.sock, host_af, interface_address, 0) < 0)
+  {
+  DEBUG(D_ident) debug_printf("bind socket for ident failed: %s\n",
+    strerror(errno));
+  goto END_OFF;
+  }
+
+/* Construct and send the query. */
+
+qlen = snprintf(CS buffer, sizeof(buffer), "%d , %d\r\n",
+  sender_host_port, interface_port);
+early_data.data = buffer;
+early_data.len = qlen;
+
+/*XXX we trust that the query is idempotent */
+if (ip_connect(ident_conn_ctx.sock, host_af, sender_host_address, port,
+		rfc1413_query_timeout, &early_data) < 0)
+  {
+  if (errno == ETIMEDOUT && LOGGING(ident_timeout))
+    log_write(0, LOG_MAIN, "ident connection to %s timed out",
+      sender_host_address);
+  else
+    DEBUG(D_ident) debug_printf("ident connection to %s failed: %s\n",
+      sender_host_address, strerror(errno));
+  goto END_OFF;
+  }
+
+/* Read a response line. We put it into the rest of the buffer, using several
+recv() calls if necessary. */
+
+p = buffer + qlen;
+
+for (;;)
+  {
+  uschar *pp;
+  int count;
+  int size = sizeof(buffer) - (p - buffer);
+
+  if (size <= 0) goto END_OFF;   /* Buffer filled without seeing \n. */
+  count = ip_recv(&ident_conn_ctx, p, size, time(NULL) + rfc1413_query_timeout);
+  if (count <= 0) goto END_OFF;  /* Read error or EOF */
+
+  /* Scan what we just read, to see if we have reached the terminating \r\n. Be
+  generous, and accept a plain \n terminator as well. The only illegal
+  character is 0. */
+
+  for (pp = p; pp < p + count; pp++)
+    {
+    if (*pp == 0) goto END_OFF;   /* Zero octet not allowed */
+    if (*pp == '\n')
+      {
+      if (pp[-1] == '\r') pp--;
+      *pp = 0;
+      goto GOT_DATA;             /* Break out of both loops */
+      }
+    }
+
+  /* Reached the end of the data without finding \n. Let the loop continue to
+  read some more, if there is room. */
+
+  p = pp;
+  }
+
+GOT_DATA:
+
+/* We have received a line of data. Check it carefully. It must start with the
+same two port numbers that we sent, followed by data as defined by the RFC. For
+example,
+
+  12345 , 25 : USERID : UNIX :root
+
+However, the amount of white space may be different to what we sent. In the
+"osname" field there may be several sub-fields, comma separated. The data we
+actually want to save follows the third colon. Some systems put leading spaces
+in it - we discard those. */
+
+if (sscanf(CS buffer + qlen, "%d , %d%n", &received_sender_port,
+      &received_interface_port, &n) != 2 ||
+    received_sender_port != sender_host_port ||
+    received_interface_port != interface_port)
+  goto END_OFF;
+
+p = buffer + qlen + n;
+Uskip_whitespace(&p);
+if (*p++ != ':') goto END_OFF;
+Uskip_whitespace(&p);
+if (Ustrncmp(p, "USERID", 6) != 0) goto END_OFF;
+p += 6;
+Uskip_whitespace(&p);
+if (*p++ != ':') goto END_OFF;
+while (*p && *p != ':') p++;
+if (!*p++) goto END_OFF;
+Uskip_whitespace(&p);
+if (!*p) goto END_OFF;
+
+/* The rest of the line is the data we want. We turn it into printing
+characters when we save it, so that it cannot mess up the format of any logging
+or Received: lines into which it gets inserted. We keep a maximum of 127
+characters. The deconst cast is ok as we fed a nonconst to string_printing() */
+
+sender_ident = US string_printing(string_copyn(p, 127));
+DEBUG(D_ident) debug_printf("sender_ident = %s\n", sender_ident);
+
+END_OFF:
+(void)close(ident_conn_ctx.sock);
+return;
+}
+
+
+
+
+/*************************************************
 *      Match host to a single host-list item     *
 *************************************************/
 

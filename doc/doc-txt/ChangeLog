@@ -9,29 +9,23 @@ JH/01 The obsolete (since 4.21) main config option "drop_cr" and the command
       line option "-dropcr" are no longer supported; using either will result in
       an error.
 
-JH/02 Support for identd (RFC 1413) lookups on received connections is removed.
-      This includes the main options "rfc1413_query_timeout" and
-      "rfc1413_hosts", the debug option "ident" and the log_selector name
-      "ident_timeout"; using any will result in an error.
-      The default options had the lookup disabled since 4.86.
-
-JH/03 The -bV option now only reports dynamic-load lookups for which the driver
+JH/02 The -bV option now only reports dynamic-load lookups for which the driver
       library is present.
 
-JH/04 Add taint-tracking for certain certextract expansions. For now we define
+JH/03 Add taint-tracking for certain certextract expansions. For now we define
       both endpoint certs as tainted.
 
-JH/05 The default for the main option "remote_max_parallel" increases from
+JH/04 The default for the main option "remote_max_parallel" increases from
       4 to 6.
 
-JH/06 Expansion-test mode with debug (exim -d -be) now shows macro expansions.
+JH/05 Expansion-test mode with debug (exim -d -be) now shows macro expansions.
 
-JH/07 Bug 3169: Fix dbm lookups. Release 4.99 had them returning tainted data,
+JH/06 Bug 3169: Fix dbm lookups. Release 4.99 had them returning tainted data,
       due to code-sharing with hintsdb use (which has always done so). Track
       the different uses and return non-tainted for the lookup case, since we
       have no provenance for the DB file content.
 
-JH/08 Fix use-after-free in duplicate processing combined with continued
+JH/07 Fix use-after-free in duplicate processing combined with continued
       transport.
 
 Exim version 4.99

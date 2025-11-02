@@ -479,9 +479,20 @@ if (pid == 0)
   signal(SIGTERM, SIG_DFL);
   signal(SIGINT, SIG_DFL);
 
-  /* Set up the fullhost information in case there is no HELO/EHLO. */
+  /* Attempt to get an id from the sending machine via the RFC 1413
+  protocol. We do this in the sub-process in order not to hold up the
+  main process if there is any delay. Then set up the fullhost information
+  in case there is no HELO/EHLO.
 
+  If debugging is enabled only for the daemon, we must turn if off while
+  finding the id, but turn it on again afterwards so that information about the
+  incoming connection is output. */
+
+  if (f.debug_daemon) debug_selector = 0;
+  verify_get_ident(IDENT_PORT);
   host_build_sender_fullhost();
+  debug_selector = save_debug_selector;
+
   DEBUG(D_any)
     debug_printf("Process %d is handling incoming connection from %s\n",
       (int)getpid(), sender_fullhost);

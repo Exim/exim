@@ -90,6 +90,10 @@ don't make the file descriptors two-way. */
 #define pipe_read  0
 #define pipe_write 1
 
+/* The RFC 1413 ident port */
+
+#define IDENT_PORT 113
+
 /* A macro to simplify testing bits in lookup types */
 
 #define mac_islookup(li,b) ((li)->type & (b))
@@ -381,25 +385,26 @@ enum {
   DEBUG_BIT(filter),
   DEBUG_BIT(hints_lookup),
   DEBUG_BIT(host_lookup),
+  DEBUG_BIT(ident),
   DEBUG_BIT(interface),
   DEBUG_BIT(lists),
-  DEBUG_BIT(load),
-  DEBUG_BIT(lookup),		/* 15 */
+  DEBUG_BIT(load),		/* 15 */
+  DEBUG_BIT(lookup),
   DEBUG_BIT(memory),
   DEBUG_BIT(noutf8),
   DEBUG_BIT(pid),
   DEBUG_BIT(process_info),
   DEBUG_BIT(queue_run),
   DEBUG_BIT(receive),
-  DEBUG_BIT(resolver),
-  DEBUG_BIT(retry),		/* 23 */
+  DEBUG_BIT(resolver),		/* 23 */
+  DEBUG_BIT(retry),
   DEBUG_BIT(rewrite),
   DEBUG_BIT(route),
   DEBUG_BIT(timestamp),
   DEBUG_BIT(tls),
   DEBUG_BIT(transport),
   DEBUG_BIT(uid),
-  DEBUG_BIT(verify),		/* 30 - one spare! */
+  DEBUG_BIT(verify),		/* 31 */
 };
 
 /* Multi-bit debug masks */
@@ -469,6 +474,7 @@ enum logbit {
   Li_dkim,
   Li_dkim_verbose,
   Li_dnssec,
+  Li_ident_timeout,
   Li_incoming_interface,
   Li_incoming_port,
   Li_millisec,

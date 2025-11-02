@@ -21,7 +21,7 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 SIGTERM/SIGINT seen
-p1237 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xfbbcacfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1237 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -45,7 +45,7 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 SIGTERM/SIGINT seen
-p1238 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xfbbcacfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.anotherpid -oPX
+p1238 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.anotherpid -oPX
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -69,6 +69,6 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 SIGTERM/SIGINT seen
-p1239 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xfbbcacfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/mypidfile -oPX
+p1239 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/mypidfile -oPX
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
