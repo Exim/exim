@@ -882,13 +882,10 @@ const uschar *
 parse_quote_2047(const uschar * string, int len, const uschar * charset,
   BOOL fold)
 {
-int hlen, line_off;
-BOOL coded = FALSE;
-BOOL first_byte = FALSE;
-gstring * g =
-  string_fmt_append(NULL, "=?%s?Q?%n", charset ? charset : US"iso-8859-1", &hlen);
-
-line_off = hlen;
+int line_off = 0, hlen;
+BOOL coded = FALSE, first_byte = FALSE;
+gstring * g = string_fmt_append(NULL, "=?%s?Q?%n",
+				charset ? charset : US"iso-8859-1", &hlen);
 
 for (const uschar * s = string; len > 0; s++, len--)
   {
@@ -898,7 +895,7 @@ for (const uschar * s = string; len > 0; s++, len--)
     {
     g = fold ? string_catn(g, US"?=\n ", 4) : string_catn(g, US"?= ", 3);
     line_off = g->ptr;
-    g = string_catn(g, g->s, hlen);
+    g = string_catn(g, g->s, hlen);		/* dup the leader */
     }
 
   if (  ch < 33 || ch > 126

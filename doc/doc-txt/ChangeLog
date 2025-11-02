@@ -28,9 +28,13 @@ JH/06 Bug 3169: Fix dbm lookups. Release 4.99 had them returning tainted data,
 JH/07 Fix use-after-free in duplicate processing combined with continued
       transport.
 
-JH/09 TLS logging: with OpenSSL 3.2, or GnuTLS 3.6, or later - when one is
+JH/08 TLS logging: with OpenSSL 3.2, or GnuTLS 3.6, or later - when one is
       used on a TLS connection, add an element to the log X= field giving
       the key-exchange group.
+
+JH/09 Bug 3168: Fix RFC2047-encoding.  The charset (etc) prefix for the first
+      encoded-word was not properly included in the size counting, so the first
+      encoded-word could exceed the RFC size limit.
 
 Exim version 4.99
 -----------------
