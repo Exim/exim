@@ -68,8 +68,8 @@ Returns:   pointer past the end of the address
            (i.e. points to null or comma)
 */
 
-uschar *
-parse_find_address_end(const uschar * s, BOOL nl_ends)
+const uschar *
+parse_find_address_end_gen(const uschar * s, BOOL nl_ends)
 {
 BOOL source_routing = *s == '@';
 int no_term = source_routing ? 1 : 0;
@@ -129,7 +129,7 @@ while (*s && (*s != ',' || no_term > 0) && (*s != '\n' || !nl_ends))
     }
   }
 
-return US s;
+return s;
 }
 
 

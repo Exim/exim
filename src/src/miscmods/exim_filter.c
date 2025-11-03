@@ -2419,15 +2419,14 @@ while (commands)
 	  tt = to;
 	  while (*tt)
 	    {
-	    uschar * ss = parse_find_address_end(tt, FALSE), * errmess;
-	    const uschar * recipient;
+	    const uschar * ss = parse_find_address_end(tt, FALSE);
+	    const uschar * ttt, * recipient;
+	    uschar * errmess;
 	    int start, end, domain;
-	    int temp = *ss;
 
-	    *ss = 0;
-	    recipient = parse_extract_address(tt, &errmess,
+	    ttt = *ss ? string_copyn(tt, ss - tt) : tt;
+	    recipient = parse_extract_address(ttt, &errmess,
 					      &start, &end, &domain, FALSE);
-	    *ss = temp;
 
 	    /* Ignore empty addresses and errors; an error will occur later if
 	    there's something really bad. */

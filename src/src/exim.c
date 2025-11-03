@@ -5320,7 +5320,7 @@ if (verify_address_mode || f.address_test_mode)
       while (*s)
         {
         BOOL finished = FALSE;
-        uschar *ss = parse_find_address_end(s, FALSE);
+        uschar * ss = parse_find_address_end(s, FALSE);
         if (*ss == ',') *ss = 0; else finished = TRUE;
         test_address(s, flags, &exit_value);
         s = ss;
@@ -5875,7 +5875,7 @@ for (BOOL more = TRUE; more; )
       uschar * errmess;
       /* There can be multiple addresses, so EXIM_DISPLAYMAIL_MAX (tuned for 1) is too short.
       We'll still want to cap it to something, just in case. */
-      const uschar * s = string_copy_taint(
+      uschar * s = string_copy_taint(
 	exim_str_fail_toolong(list[i], BIG_BUFFER_SIZE, "address argument"),
 	GET_TAINTED);
 

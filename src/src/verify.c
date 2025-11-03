@@ -2338,9 +2338,9 @@ Returns:     OK
 */
 
 int
-verify_check_headers(uschar **msgptr)
+verify_check_headers(uschar ** msgptr)
 {
-uschar *colon, *s;
+uschar * colon, * s;
 int yield = OK;
 
 for (header_line * h = header_list; h && yield == OK; h = h->next)
@@ -2639,8 +2639,7 @@ int yield = FAIL;
 for (int i = 0; i < 3 && !done; i++)
   for (const header_line * h = header_list; h && !done; h = h->next)
     {
-    const uschar * endname, * s;
-    uschar * ss;
+    const uschar * endname, * s, * ss, * es;
 
     if (h->type != header_types[i]) continue;
     s = endname = Ustrchr(h->text, ':') + 1;
@@ -2652,38 +2651,36 @@ for (int i = 0; i < 3 && !done; i++)
 
     while (*s)
       {
-      int terminator, new_ok;
+      int new_ok;
       address_item * vaddr;
 
       while (isspace(*s) || *s == ',') s++;
       if (!*s) break;			/* End of header */
 
-      ss = parse_find_address_end(s, FALSE);
+      es = parse_find_address_end(s, FALSE);
 
       /* The terminator is a comma or end of header, but there may be white
       space preceding it (including newline for the last address). Move back
       past any white space so we can check against any cached envelope sender
       address verifications. */
 
-      while (isspace(ss[-1])) ss--;
-      terminator = *ss;
-      *ss = '\0';
+      while (isspace(es[-1])) es--;
+      ss = *es ? string_copyn(s, es - s) : s;
 
       HDEBUG(D_verify) debug_printf("verifying %.*s header address %s\n",
-        (int)(endname - h->text), h->text, s);
+        (int)(endname - h->text), h->text, ss);
 
       /* See if we have already verified this address as an envelope sender,
       and if so, use the previous answer. */
 
-      vaddr = verify_checked_sender(s);
+      vaddr = verify_checked_sender(ss);
 
-      if (vaddr != NULL &&                   /* Previously checked */
-           (callout <= 0 ||                  /* No callout needed; OR */
-            vaddr->special_action > 256))    /* Callout was done */
+      if (   vaddr				/* Previously checked */
+          && (  callout <= 0			/* No callout needed; OR */
+	     || vaddr->special_action > 256))	/* Callout was done */
         {
         new_ok = vaddr->special_action & 255;
         HDEBUG(D_verify) debug_printf("previously checked as envelope sender\n");
-        *ss = terminator;  /* Restore shortened string */
         }
 
       /* Otherwise we run the verification now. We must restore the shortened
@@ -2693,9 +2690,8 @@ for (int i = 0; i < 3 && !done; i++)
       else
         {
         int start, end, domain;
-        const uschar * address = parse_extract_address(s, log_msgptr,
+        const uschar * address = parse_extract_address(ss, log_msgptr,
 						  &start, &end, &domain, FALSE);
-        *ss = terminator;
 
         /* If we found an empty address, just carry on with the next one, but
         kill the message. */
@@ -2703,7 +2699,7 @@ for (int i = 0; i < 3 && !done; i++)
         if (!address && Ustrcmp(*log_msgptr, "empty address") == 0)
           {
           *log_msgptr = NULL;
-          s = ss;
+          s = es;
           continue;
           }
 
@@ -2713,10 +2709,10 @@ for (int i = 0; i < 3 && !done; i++)
 
         if (!address)
           {
-          while (ss > s && isspace(ss[-1])) ss--;
+          while (es > s && isspace(es[-1])) es--;
           *log_msgptr = string_sprintf("syntax error in '%.*s' header when "
             "scanning for sender: %s in \"%.*s\"",
-            (int)(endname - h->text), h->text, *log_msgptr, (int)(ss - s), s);
+            (int)(endname - h->text), h->text, *log_msgptr, (int)(es - s), s);
           yield = FAIL;
           done = TRUE;
           break;
@@ -2759,7 +2755,7 @@ for (int i = 0; i < 3 && !done; i++)
 
       /* Move on to any more addresses in the header */
 
-      s = ss;
+      s = es;
       }     /* Next address */
 
     f.parse_allow_group = FALSE;

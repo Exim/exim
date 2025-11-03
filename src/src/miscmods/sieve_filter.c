@@ -2036,7 +2036,7 @@ if (parse_identifier(filter, CUS "address"))
   for (gstring * h = hdr; h->ptr != -1 && !*cond; ++h)
     {
     const uschar * header_value = NULL;
-    uschar * extracted_addr, * end_addr;
+    uschar * extracted_addr;
 
     if (  !eq_asciicase(h, &str_from, FALSE)
        && !eq_asciicase(h, &str_to, FALSE)
@@ -2061,15 +2061,15 @@ if (parse_identifier(filter, CUS "address"))
       f.parse_allow_group = TRUE;
       while (*header_value && !*cond)
         {
-        uschar *error;
+        uschar * part = NULL, * error;
+	const uschar * end_addr, * ss;
         int start, end, domain;
-        int saveend;
-        uschar *part = NULL;
 
         end_addr = parse_find_address_end(header_value, FALSE);
-        saveend = *end_addr;
-        *end_addr = 0;
-        extracted_addr = parse_extract_address(header_value, &error, &start, &end, &domain, FALSE);
+	ss = *end_addr
+	  ? header_value : string_copyn(header_value, end_addr - header_value);
+        extracted_addr = parse_extract_address(ss, &error,
+						&start, &end, &domain, FALSE);
 
         if (extracted_addr) switch (addressPart)
           {
@@ -2084,7 +2084,6 @@ if (parse_identifier(filter, CUS "address"))
 #endif
           }
 
-        *end_addr = saveend;
         if (part && extracted_addr)
 	  {
 	  gstring partStr = {.s = part, .ptr = Ustrlen(part), .size = Ustrlen(part)+1};
@@ -2096,7 +2095,7 @@ if (parse_identifier(filter, CUS "address"))
             }
 	  }
 
-        if (saveend == 0) break;
+        if (*end_addr) break;
         header_value = end_addr + 1;
         }
       f.parse_allow_group = FALSE;

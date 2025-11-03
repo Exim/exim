@@ -398,7 +398,17 @@ extern uschar *parse_extract_address(const uschar *, uschar **, int *, int *, in
                  BOOL);
 extern int     parse_forward_list(const uschar *, int, address_item **, uschar **,
                  const uschar *, const uschar *, error_block **);
-extern uschar *parse_find_address_end(const uschar *, BOOL);
+
+extern const uschar * parse_find_address_end_gen(const uschar *, BOOL);
+static inline uschar * parse_find_address_end_nc(uschar * s, BOOL b)
+{ return US parse_find_address_end_gen(s, b); }
+static inline const uschar * parse_find_address_end_c(const uschar * s, BOOL b)
+{ return    parse_find_address_end_gen(s, b); }
+#define parse_find_address_end(X, B) _Generic((X),     \
+	      uschar *:		parse_find_address_end_nc, \
+	      const uschar *:	parse_find_address_end_c \
+	      )(X, B)
+
 extern const uschar *parse_find_at(const uschar *);
 extern const uschar *parse_fix_phrase(const uschar *, int);
 extern const uschar *parse_message_id(const uschar *, uschar **, uschar **);
