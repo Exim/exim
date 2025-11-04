@@ -2903,65 +2903,57 @@ while (addr_local)
     {
     BOOL ok = TRUE;   /* to deliver this address */
 
-    if (f.queue_2stage)
-      {
-      DEBUG(D_deliver)
-	debug_printf_indent("no router retry check (ph1 qrun)\n");
-      }
-    else
-      {
-      /* Set up the retry key to include the domain or not, and change its
-      leading character from "R" to "T". Must make a copy before doing this,
-      because the old key may be pointed to from a "delete" retry item after
-      a routing delay. */
-      uschar * retry_key = string_copy(tp->retry_use_local_part
-			? addr2->address_retry_key : addr2->domain_retry_key);
-      *retry_key = 'T';
+    /* Set up the retry key to include the domain or not, and change its
+    leading character from "R" to "T". Must make a copy before doing this,
+    because the old key may be pointed to from a "delete" retry item after
+    a routing delay. */
+    uschar * retry_key = string_copy(tp->retry_use_local_part
+		      ? addr2->address_retry_key : addr2->domain_retry_key);
+    *retry_key = 'T';
 
-      /* Inspect the retry data. If there is no hints file, delivery happens. */
+    /* Inspect the retry data. If there is no hints file, delivery happens. */
 
-      if (dbm_file)
+    if (dbm_file)
+      {
+      dbdata_retry * retry_record = dbfn_read(dbm_file, retry_key);
+
+      /* If there is no retry record, delivery happens. If there is,
+      remember it exists so it can be deleted after a successful delivery. */
+
+      if (retry_record)
 	{
-	dbdata_retry * retry_record = dbfn_read(dbm_file, retry_key);
+	setflag(addr2, af_lt_retry_exists);
 
-	/* If there is no retry record, delivery happens. If there is,
-	remember it exists so it can be deleted after a successful delivery. */
+	/* A retry record exists for this address. If queue running and not
+	forcing, inspect its contents. If the record is too old, or if its
+	retry time has come, or if it has passed its cutoff time, delivery
+	will go ahead. */
 
-	if (retry_record)
+	DEBUG(D_retry)
 	  {
-	  setflag(addr2, af_lt_retry_exists);
-
-	  /* A retry record exists for this address. If queue running and not
-	  forcing, inspect its contents. If the record is too old, or if its
-	  retry time has come, or if it has passed its cutoff time, delivery
-	  will go ahead. */
-
-	  DEBUG(D_retry)
-	    {
-	    debug_printf("retry record exists: age=%s ",
-	      readconf_printtime(now - retry_record->time_stamp));
-	    debug_printf("(max %s)\n", readconf_printtime(retry_data_expire));
-	    debug_printf("  time to retry = %s expired = %d\n",
-	      readconf_printtime(retry_record->next_try - now),
-	      retry_record->expired);
-	    }
-
-	  if (f.queue_running && !f.deliver_force)
-	    {
-	    ok = (now - retry_record->time_stamp > retry_data_expire)
-	      || (now >= retry_record->next_try)
-	      || retry_record->expired;
-
-	    /* If we haven't reached the retry time, there is one more check
-	    to do, which is for the ultimate address timeout. */
-
-	    if (!ok)
-	      ok = retry_ultimate_address_timeout(retry_key, addr2->domain,
-		  retry_record, now);
-	    }
+	  debug_printf("retry record exists: age=%s ",
+	    readconf_printtime(now - retry_record->time_stamp));
+	  debug_printf("(max %s)\n", readconf_printtime(retry_data_expire));
+	  debug_printf("  time to retry = %s expired = %d\n",
+	    readconf_printtime(retry_record->next_try - now),
+	    retry_record->expired);
 	  }
-	else DEBUG(D_retry) debug_printf("no retry record exists\n");
+
+	if (f.queue_running && !f.deliver_force)
+	  {
+	  ok = (now - retry_record->time_stamp > retry_data_expire)
+	    || (now >= retry_record->next_try)
+	    || retry_record->expired;
+
+	  /* If we haven't reached the retry time, there is one more check
+	  to do, which is for the ultimate address timeout. */
+
+	  if (!ok)
+	    ok = retry_ultimate_address_timeout(retry_key, addr2->domain,
+		retry_record, now);
+	  }
 	}
+      else DEBUG(D_retry) debug_printf("no retry record exists\n");
       }
 
     /* This address is to be delivered. Leave it on the chain. */
@@ -7821,82 +7813,74 @@ while (addr_new)           /* Loop until all addresses dealt with */
       continue;
       }
 
-    if (f.queue_2stage)
+    /* Get the routing retry status, saving the two retry keys (with and
+    without the local part) for subsequent use. If there is no retry record
+    for the standard address routing retry key, we look for the same key with
+    the sender attached, because this form is used by the smtp transport after
+    a 4xx response to RCPT when address_retry_include_sender is true. */
+
+    DEBUG(D_deliver|D_retry)
       {
-      DEBUG(D_deliver)
-	debug_printf_indent("no router retry check (ph1 qrun)\n");
+      debug_printf_indent("checking router retry status\n");
+      acl_level++;
       }
-    else
+    addr->domain_retry_key = string_sprintf("R:%s", addr->domain);
+    addr->address_retry_key = string_sprintf("R:%s@%s", addr->local_part,
+      addr->domain);
+
+    if (dbm_file)
       {
-      /* Get the routing retry status, saving the two retry keys (with and
-      without the local part) for subsequent use. If there is no retry record
-      for the standard address routing retry key, we look for the same key with
-      the sender attached, because this form is used by the smtp transport after
-      a 4xx response to RCPT when address_retry_include_sender is true. */
-
-      DEBUG(D_deliver|D_retry)
+      domain_retry_record = dbfn_read(dbm_file, addr->domain_retry_key);
+      if (  domain_retry_record
+	 && now - domain_retry_record->time_stamp > retry_data_expire
+	 )
 	{
-	debug_printf_indent("checking router retry status\n");
-	acl_level++;
+	DEBUG(D_deliver|D_retry)
+	  debug_printf_indent("domain retry record present but expired\n");
+	domain_retry_record = NULL;    /* Ignore if too old */
 	}
-      addr->domain_retry_key = string_sprintf("R:%s", addr->domain);
-      addr->address_retry_key = string_sprintf("R:%s@%s", addr->local_part,
-	addr->domain);
 
-      if (dbm_file)
+      address_retry_record = dbfn_read(dbm_file, addr->address_retry_key);
+      if (  address_retry_record
+	 && now - address_retry_record->time_stamp > retry_data_expire
+	 )
 	{
-	domain_retry_record = dbfn_read(dbm_file, addr->domain_retry_key);
-	if (  domain_retry_record
-	   && now - domain_retry_record->time_stamp > retry_data_expire
-	   )
-	  {
-	  DEBUG(D_deliver|D_retry)
-	    debug_printf_indent("domain retry record present but expired\n");
-	  domain_retry_record = NULL;    /* Ignore if too old */
-	  }
+	DEBUG(D_deliver|D_retry)
+	  debug_printf_indent("address retry record present but expired\n");
+	address_retry_record = NULL;   /* Ignore if too old */
+	}
 
-	address_retry_record = dbfn_read(dbm_file, addr->address_retry_key);
+      if (!address_retry_record)
+	{
+	const uschar * altkey = string_sprintf("%s:<%s>",
+				  addr->address_retry_key, sender_address);
+	address_retry_record = dbfn_read(dbm_file, altkey);
 	if (  address_retry_record
-	   && now - address_retry_record->time_stamp > retry_data_expire
-	   )
+	   && now - address_retry_record->time_stamp > retry_data_expire)
 	  {
 	  DEBUG(D_deliver|D_retry)
-	    debug_printf_indent("address retry record present but expired\n");
+	    debug_printf_indent("address<sender> retry record present but expired\n");
 	  address_retry_record = NULL;   /* Ignore if too old */
 	  }
-
-	if (!address_retry_record)
-	  {
-	  const uschar * altkey = string_sprintf("%s:<%s>",
-				    addr->address_retry_key, sender_address);
-	  address_retry_record = dbfn_read(dbm_file, altkey);
-	  if (  address_retry_record
-	     && now - address_retry_record->time_stamp > retry_data_expire)
-	    {
-	    DEBUG(D_deliver|D_retry)
-	      debug_printf_indent("address<sender> retry record present but expired\n");
-	    address_retry_record = NULL;   /* Ignore if too old */
-	    }
-	  }
 	}
+      }
 
-      DEBUG(D_deliver|D_retry)
-	{
-	if (!domain_retry_record)
-	  debug_printf_indent("no   domain  retry record\n");
-	else
-	  debug_printf_indent("have domain  retry record; next_try = now%+d\n",
-			f.running_in_test_harness ? 0 :
-			(int)(domain_retry_record->next_try - now));
+    DEBUG(D_deliver|D_retry)
+      {
+      if (!domain_retry_record)
+	debug_printf_indent("no   domain  retry record\n");
+      else
+	debug_printf_indent("have domain  retry record; next_try = now%+d\n",
+		      f.running_in_test_harness ? 0 :
+		      (int)(domain_retry_record->next_try - now));
 
-	if (!address_retry_record)
-	  debug_printf_indent("no   address retry record\n");
-	else
-	  debug_printf_indent("have address retry record; next_try = now%+d\n",
-			f.running_in_test_harness ? 0 :
-			(int)(address_retry_record->next_try - now));
-	acl_level--;
-	}
+      if (!address_retry_record)
+	debug_printf_indent("no   address retry record\n");
+      else
+	debug_printf_indent("have address retry record; next_try = now%+d\n",
+		      f.running_in_test_harness ? 0 :
+		      (int)(address_retry_record->next_try - now));
+      acl_level--;
       }
 
     /* If we are sending a message down an existing SMTP connection, we must

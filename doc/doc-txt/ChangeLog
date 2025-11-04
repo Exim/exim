@@ -36,6 +36,10 @@ JH/09 Bug 3168: Fix RFC2047-encoding.  The charset (etc) prefix for the first
       encoded-word was not properly included in the size counting, so the first
       encoded-word could exceed the RFC size limit.
 
+JH/10 Fix local deliveries. A mistaken optimisation done for 4.99 caused
+      excessive retries on defers (eg. due to quota) plus crashes after
+      defers (from an uninitialised pointer).
+
 Exim version 4.99
 -----------------
 
