@@ -23,7 +23,7 @@ uschar * syslog_facility_str;
 /* Solaris needs these for the macros expand_string, parse_find_address_end */
 const uschar * expand_string_2(const uschar * string, BOOL * textonly_p)
 {return NULL; }
-const uschar * parse_find_address_end_gen(const uschar *, BOOL)
+const uschar * parse_find_address_end_gen(const uschar * s, BOOL b)
 {return NULL; }
 
 
