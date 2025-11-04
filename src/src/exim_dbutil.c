@@ -77,6 +77,8 @@ BOOL
 string_format_trc(uschar * buf, int len, const uschar * func, unsigned line,
   const char * fmt, ...)
 { return FALSE; }
+const uschar * parse_find_address_end_gen(const uschar * s, BOOL b)
+{return NULL; }
 
 struct global_flags	f;
 unsigned int		log_selector[1];

@@ -71,6 +71,9 @@ string_format_trc(uschar * buf, int len, const uschar * func, unsigned line,
 void
 log_write(unsigned int selector, int flags, const char *format, ...)
 { }
+const uschar * parse_find_address_end_gen(const uschar * s, BOOL b)
+{return NULL; }
+
 
 
 struct global_flags	f;
