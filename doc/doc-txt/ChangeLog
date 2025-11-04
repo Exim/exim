@@ -40,6 +40,10 @@ JH/10 Fix local deliveries. A mistaken optimisation done for 4.99 caused
       excessive retries on defers (eg. due to quota) plus crashes after
       defers (from an uninitialised pointer).
 
+JH/11 Bug 3172: Fix remote deliveries. A mistaken optimisation done for 4.99
+      caused excessive DNS lookups for destinations getting temporary DNS
+      errors.
+
 Exim version 4.99
 -----------------
 

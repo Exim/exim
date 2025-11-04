@@ -1,0 +1,31 @@
+# Exim test configuration 0616
+
+.include DIR/aux-var/std_conf_prefix
+
+# ----- Main settings -----
+
+disable_ipv6 = true
+
+acl_smtp_rcpt = accept
+queue_only
+log_selector = +received_recipients +millisec
+
+begin routers
+
+all:
+  driver = dnslookup
+  transport = smtp
+
+begin transports
+
+smtp:
+  driver =      smtp
+  port =        PORT_D
+  hosts_try_fastopen = :
+
+begin retry
+
+* * F,1h,10m
+
+# End
+

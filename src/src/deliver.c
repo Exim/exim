@@ -7540,42 +7540,37 @@ while (addr_new)           /* Loop until all addresses dealt with */
   address_item * addr, * parent;
 
   /* Failure to open the retry database is treated the same as if it does
-  not exist. In both cases, dbm_file is NULL.  For the first stage of a 2-phase
-  queue run don't bother checking domain- or address-retry info; they will take
-  effect on the second stage. */
+  not exist. In both cases, dbm_file is NULL. */
 
-  if (!f.queue_2stage)
+  /* If we have transaction-capable hintsdbs, open the retry db without
+  locking, and leave open for the transport process and for subsequent
+  deliveries. Use a writeable open as we can keep it open all the way through
+  to writing retry records if needed due to message fails.
+  If the open fails, tag that explicitly for the transport but retry the open
+  next time around, in case it was created in the interim.
+  If non-transaction, we are only reading records at this stage and
+  we close the db before running the transport.
+  Either way we do a non-creating open. */
+
+  if (continue_retry_db == (open_db *)-1)
+    continue_retry_db = NULL;
+
+  if (continue_retry_db)
     {
-    /* If we have transaction-capable hintsdbs, open the retry db without
-    locking, and leave open for the transport process and for subsequent
-    deliveries. Use a writeable open as we can keep it open all the way through
-    to writing retry records if needed due to message fails.
-    If the open fails, tag that explicitly for the transport but retry the open
-    next time around, in case it was created in the interim.
-    If non-transaction, we are only reading records at this stage and
-    we close the db before running the transport.
-    Either way we do a non-creating open. */
-
-    if (continue_retry_db == (open_db *)-1)
-      continue_retry_db = NULL;
-
-    if (continue_retry_db)
-      {
-      DEBUG(D_hints_lookup) debug_printf("using cached retry hintsdb handle\n");
-      dbm_file = continue_retry_db;
-      }
-    else if (!exim_lockfile_needed())
-      {
-      dbm_file = dbfn_open_multi(US"retry", O_RDWR, &dbblock);
-      continue_retry_db = dbm_file ? dbm_file : (open_db *)-1;
-      }
-    else
-      dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE);
-
-    if (!dbm_file)
-      DEBUG(D_deliver|D_retry|D_route|D_hints_lookup)
-	debug_printf("no retry data available\n");
+    DEBUG(D_hints_lookup) debug_printf("using cached retry hintsdb handle\n");
+    dbm_file = continue_retry_db;
     }
+  else if (!exim_lockfile_needed())
+    {
+    dbm_file = dbfn_open_multi(US"retry", O_RDWR, &dbblock);
+    continue_retry_db = dbm_file ? dbm_file : (open_db *)-1;
+    }
+  else
+    dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE);
+
+  if (!dbm_file)
+    DEBUG(D_deliver|D_retry|D_route|D_hints_lookup)
+      debug_printf("no retry data available\n");
 
   /* Scan the current batch of new addresses, to handle pipes, files and
   autoreplies, and determine which others are ready for routing. */

@@ -1,0 +1,11 @@
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for bob@test.again.dns
+2017-07-30 18:51:05.712 Start queue run: pid=p1234
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 == bob@test.again.dns R=all defer (-1): host lookup did not complete
+2017-07-30 18:51:05.712 End queue run: pid=p1234
+2017-07-30 18:51:05.712 Start queue run: pid=p1235
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 == bob@test.again.dns routing defer (-52): retry time not reached
+2017-07-30 18:51:05.712 End queue run: pid=p1235
+2017-07-30 18:51:05.712 Start queue run: pid=p1236 -qq
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 == bob@test.again.dns routing defer (-52): retry time not reached
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 == bob@test.again.dns routing defer (-52): retry time not reached
+2017-07-30 18:51:05.712 End queue run: pid=p1236 -qq

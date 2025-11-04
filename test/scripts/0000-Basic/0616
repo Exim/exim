@@ -1,0 +1,19 @@
+# dns retry from dnslookup
+#
+need_ipv4
+#
+sudo rm -f spool/db/*
+#
+exim bob@test.again.dns
+****
+# This should attempt delivery, and defer
+exim -q
+****
+# This should be "not yet time for retry"
+exim -q
+****
+# and likewise for a 2-phase run
+exim -qq
+****
+#
+no_msglog_check
