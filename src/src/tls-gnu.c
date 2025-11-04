@@ -393,7 +393,7 @@ Returns:    DEFER/FAIL
 */
 
 static int
-tls_error(const uschar *prefix, const uschar *msg, const host_item *host,
+tls_error(const uschar * prefix, const uschar * msg, const host_item * host,
   uschar ** errstr)
 {
 if (errstr)
@@ -404,7 +404,7 @@ return host ? FAIL : DEFER;
 
 /* Returns:    DEFER/FAIL */
 static int
-tls_error_gnu(exim_gnutls_state_st * state, const uschar *prefix, int err,
+tls_error_gnu(exim_gnutls_state_st * state, const uschar * prefix, int err,
   uschar ** errstr)
 {
 return tls_error(prefix,
@@ -461,7 +461,6 @@ return FALSE;
 static int
 tls_g_init(uschar ** errstr)
 {
-int rc;
 DEBUG(D_tls) debug_printf("GnuTLS global init required\n");
 
 #if defined(HAVE_GNUTLS_PKCS11) && !defined(GNUTLS_AUTO_PKCS11_MANUAL)
@@ -472,13 +471,19 @@ environment variables are used and so breaks for users calling mailq.
 To prevent this, we init PKCS11 first, which is the documented approach. */
 
 if (!gnutls_allow_auto_pkcs11)
+  {
+  int rc;
   if ((rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL)))
     return tls_error_gnu(NULL, US"gnutls_pkcs11_init", rc, errstr);
+  }
 #endif
 
 #ifndef GNUTLS_AUTO_GLOBAL_INIT
-if ((rc = gnutls_global_init()))
-  return tls_error_gnu(NULL, US"gnutls_global_init", rc, errstr);
+  {
+  int rc;
+  if ((rc = gnutls_global_init()))
+    return tls_error_gnu(NULL, US"gnutls_global_init", rc, errstr);
+  }
 #endif
 
 #if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
@@ -833,7 +838,6 @@ const uschar * filename = NULL;
 size_t sz;
 uschar * exp_tls_dhparam;
 BOOL use_file_in_spool = FALSE;
-const host_item * host = NULL; /* dummy for macros */
 
 DEBUG(D_tls) debug_printf("Initialising GnuTLS server params\n");
 
@@ -1380,12 +1384,14 @@ creds_load_server_certs(exim_gnutls_state_st * state, const uschar * cert,
   const uschar * pkey, const uschar * ocsp, uschar ** errstr)
 {
 const uschar * clist = cert, * klist = pkey, * kfile, * cfile;
-int csep = 0, ksep = 0, cnt = 0, rc;
+int csep = 0, ksep = 0, rc;
 #ifndef DISABLE_OCSP
 uschar * ofile;
 const uschar * olist;
 # ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
 gnutls_x509_crt_fmt_t ocsp_fmt = GNUTLS_X509_FMT_DER;
+# else
+int ocsp_file_cnt = 0;
 # endif
 
 if (!expand_check(ocsp, US"tls_ocsp_file", &ofile, errstr))
@@ -1460,7 +1466,7 @@ while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
 	else
 #  endif
 	  {
-	  if (cnt++ > 0)
+	  if (ocsp_file_cnt++ > 0)
 	    {
 	    DEBUG(D_tls)
 	      debug_printf("oops; multiple OCSP files not supported\n");

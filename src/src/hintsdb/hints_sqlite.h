@@ -127,7 +127,6 @@ exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
 # define FMT "SELECT dat FROM tbl WHERE ky = '%s';"
 uschar * encoded_key, * qry;
-int i;
 BOOL ret;
 
 # ifdef COMPILE_UTILITY
@@ -140,12 +139,14 @@ encoded_key = xtextencode(key->data, key->len);
 				  (int)key->len, encoded_key); */
 
 # ifdef COMPILE_UTILITY
-i = snprintf(NULL, 0, FMT, encoded_key) + 1;
-if (!(qry = malloc(i)))
-  return FALSE;
-snprintf(CS qry, i, FMT, encoded_key);
-ret = exim_dbget__(dbp, qry, res);
-free(qry);
+  {
+  int i = snprintf(NULL, 0, FMT, encoded_key) + 1;
+  if (!(qry = malloc(i)))
+    return FALSE;
+  snprintf(CS qry, i, FMT, encoded_key);
+  ret = exim_dbget__(dbp, qry, res);
+  free(qry);
+  }
 free(encoded_key);
 # else
 qry = string_sprintf(FMT, encoded_key);
@@ -172,7 +173,7 @@ int hlen = data->len * 2, off = 0, res;
 # define FMT "INSERT OR %s INTO tbl (ky,dat) VALUES ('%s', X'%.*s');"
 uschar * encoded_key, * qry;
 # ifdef COMPILE_UTILITY
-uschar * hex = malloc(hlen+1);
+uschar * hex = malloc(hlen+1), dummy[1];
 if (!hex) return EXIM_DBPUTB_DUP;	/* best we can do */
 # else
 uschar * hex = store_get(hlen+1, data->data);
@@ -186,7 +187,7 @@ for (const uschar * s = data->data, * t = s + data->len; s < t; s++, off += 2)
 # ifdef COMPILE_UTILITY
 if (!(encoded_key = xtextencode(key->data, key->len)))
   return EXIM_DBPUTB_DUP;
-res = snprintf(CS hex, 0, FMT, alt, encoded_key, hlen, hex) +1;
+res = snprintf(CS dummy, 0, FMT, alt, encoded_key, hlen, hex) +1;
 if (!(qry = malloc(res))) return EXIM_DBPUTB_DUP;
 snprintf(CS qry, res, FMT, alt, encoded_key, hlen, hex);
 DEBUG(D_hints_lookup) debug_printf_indent("exim_s_dbp(%s)\n", qry);

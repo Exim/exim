@@ -272,7 +272,6 @@ auth_cram_md5_options_block * ob = ablock->drinst.options_block;
 uschar *secret = expand_string(ob->client_secret);
 uschar *name = expand_string(ob->client_name);
 uschar *challenge, *p;
-int i;
 uschar digest[16];
 
 /* If expansion of either the secret or the user name failed, return CANCELLED
