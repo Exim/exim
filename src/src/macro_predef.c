@@ -20,9 +20,12 @@ unsigned mp_index = 0;
 void fn_smtp_receive_timeout(const uschar * name, const uschar * str) {}
 uschar * syslog_facility_str;
 
-/* Solaris needs this one for the macro expand_string() */
+/* Solaris needs these for the macros expand_string, parse_find_address_end */
 const uschar * expand_string_2(const uschar * string, BOOL * textonly_p)
 {return NULL; }
+const uschar * parse_find_address_end_gen(const uschar *, BOOL)
+{return NULL; }
+
 
 /******************************************************************************/
 
