@@ -121,10 +121,15 @@ cscope.files: FRC
 	echo "-p3" >> $@
 	-bd=build-$(buildname); [ -d $$bd ] && echo -e "$$bd/config.h\n$$bd/Makefile" >> $@
 	find src Local OS exim_monitor -name "*.[cshyl]" -print \
+		    -o -name "*.src" -print \
 		    -o -name "os.[ch]*" -print \
 		    -o -name "*akefile*" -print \
 		    -o -name config.h.defaults -print \
 		    -o -name EDITME -print >> $@
+	echo scripts/* >> $@
+
+cscope:	cscope.files
+	cscope -b -p 3
 
 FRC:
 
