@@ -68,7 +68,7 @@ static int
 pam_converse (int num_msg, PAM_CONVERSE_ARG2_TYPE **msg,
   struct pam_response **resp, void *appdata_ptr)
 {
-int sep = 0;
+int sep = ':';
 struct pam_response *reply;
 
 /* It seems that PAM frees reply[] */
@@ -131,7 +131,7 @@ Returns:   OK if authentication succeeded
 static int
 auth_call_pam(const uschar * s, uschar ** errptr)
 {
-pam_handle_t *pamh = NULL;
+pam_handle_t * pamh = NULL;
 struct pam_conv pamc;
 int pam_error;
 int sep = ':';	/* Do not permit change-of-separator */

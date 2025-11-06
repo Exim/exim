@@ -59,8 +59,8 @@ using its original API. At release 0.4.0 the API changed. */
 more data strings.
 
 Arguments:
-  s        a colon-separated list of strings
-  errptr   where to point an error message
+  radius_args	a colon-separated list of strings
+  errptr	where to point an error message
 
 Returns:   OK if authentication succeeded
            FAIL if authentication failed
@@ -68,12 +68,10 @@ Returns:   OK if authentication succeeded
 */
 
 static int
-auth_call_radius(const uschar *s, uschar **errptr)
+auth_call_radius(const uschar * radius_args, uschar ** errptr)
 {
-uschar *user;
-const uschar *radius_args = s;
-int result;
-int sep = ':';
+uschar * user, * pwd;
+int sep = ':', result;
 
 #ifdef RADIUS_LIB_RADLIB
   struct rad_handle *h;
@@ -89,9 +87,10 @@ int sep = ':';
 
 
 if (!(user = string_nextinlist(&radius_args, &sep, NULL, 0))) user = US"";
+pwd = string_nextinlist(&radius_args, &sep, NULL, 0);
 
 DEBUG(D_auth) debug_printf("Running RADIUS authentication for user %q "
-               "and %q\n", user, radius_args);
+               "and %q\n", user, pwd);
 
 *errptr = NULL;
 
@@ -112,7 +111,7 @@ else if (rc_read_dictionary(rc_conf_str("dictionary")) != 0)
 else if (!rc_avpair_add(&send, PW_USER_NAME, user, 0))
   *errptr = US"RADIUS: add user name failed";
 
-else if (!rc_avpair_add(&send, PW_USER_PASSWORD, CS radius_args, 0))
+else if (!rc_avpair_add(&send, PW_USER_PASSWORD, pwd, 0))
   *errptr = US"RADIUS: add password failed");
 
 else if (!rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0))

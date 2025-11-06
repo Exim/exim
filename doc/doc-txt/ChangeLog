@@ -44,6 +44,10 @@ JH/11 Bug 3172: Fix remote deliveries. A mistaken optimisation done for 4.99
       caused excessive DNS lookups for destinations getting temporary DNS
       errors.
 
+JH/12 Fix radius expansion condition. Previously there was no way to support
+      a password starting with the same character as the list separator. This
+      is now handled via the usual list-quoting expansion.
+
 Exim version 4.99
 -----------------
 

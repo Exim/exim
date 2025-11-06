@@ -12332,7 +12332,9 @@ in &_Local/Makefile_&. You probably need to add &%-lpam%& to EXTRALIBS, and
 in some releases of GNU/Linux &%-ldl%& is also needed.
 
 The argument string is first expanded, and the result must be a
-colon-separated list of strings. Leading and trailing white space is ignored.
+colon-separated list of strings.
+The separator is not changeable.
+Leading and trailing white space is ignored.
 The PAM module is initialized with the service name &"exim"& and the user name
 taken from the first item in the colon-separated data string (<&'string1'&>).
 The remaining items in the data string are passed over in response to requests
@@ -12346,8 +12348,13 @@ The &%listquote%& expansion item can be used for this.
 For example, the configuration
 of a LOGIN authenticator might contain this setting:
 .code
-server_condition = ${if pam{$auth1:${listquote{:}{$auth2}}}}
+server_condition = ${if pam{$auth1 : ${listquote{:}{$auth2}}}}
 .endd
+&*Note*&: To manage the case of a leading colon in the second list element,
+whitespace after the list separator is required.
+This whitespace is removed before the value is handed to the
+authentication function.
+
 In some operating systems, PAM authentication can be done only from a process
 running as root. Since Exim is running as the Exim user when receiving
 messages, this means that PAM cannot be used directly in those systems.
@@ -12425,6 +12432,7 @@ the authentication is successful. For example:
 .code
 server_condition = ${if radius{<arguments>}}
 .endd
+The same caveats for the arguments apply as for PAM.
 
 
 .vitem "&*saslauthd&~{{*&<&'user'&>&*}{*&<&'password'&>&*}&&&
