@@ -48,6 +48,10 @@ JH/12 Fix radius expansion condition. Previously there was no way to support
       a password starting with the same character as the list separator. This
       is now handled via the usual list-quoting expansion.
 
+JH/13 Bug 3175: Fix file open mode flags for Gnu/Hurd. The values differ from
+      Linux, and the bit-checking was incorrect on Hurd. Report and patch
+      from Samuel Thibault.
+
 Exim version 4.99
 -----------------
 

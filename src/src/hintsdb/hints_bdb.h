@@ -115,7 +115,7 @@ if (db_create(&b, dbp, 0) == 0)
   if (b->open(b, NULL, CS name, NULL,
 	      flags & O_CREAT ? DB_HASH : DB_UNKNOWN,
 	      flags & O_CREAT ? DB_CREATE
-	      : flags & (O_WRONLY|O_RDWR) ? 0 : DB_RDONLY,
+	      : (flags & O_ACCMODE) == O_RDONLY ? DB_RDONLY : 0,
 	      mode) == 0
 	  )
     return dbp;
@@ -266,7 +266,7 @@ return db_create(&dbp, NULL, 0) == 0
 	dbp->open(dbp, CS name, NULL,
 	  flags & O_CREAT ? DB_HASH : DB_UNKNOWN,
 	  flags & O_CREAT ? DB_CREATE
-	  : flags & (O_WRONLY|O_RDWR) ? 0 : DB_RDONLY,
+	  : (flags & O_ACCMODE) == O_RDONLY ? DB_RDONLY : 0,
 	  mode)
      ) == 0
   ? dbp : NULL;

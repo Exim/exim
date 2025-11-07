@@ -335,7 +335,7 @@ if (  asprintf(CSS &dirname, "%s/db", spool_directory) < 0
    || asprintf(CSS &filename, "%s/%s.lockfile", dirname, name) < 0)
   return NULL;
 
-dbblock->readonly = (flags & (O_WRONLY|O_RDWR)) == O_RDONLY;
+dbblock->readonly = (flags & O_ACCMODE) == O_RDONLY;
 dbblock->lockfd = -1;
 if (exim_lockfile_needed())
   {

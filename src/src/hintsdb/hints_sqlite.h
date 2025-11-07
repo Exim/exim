@@ -45,7 +45,8 @@ exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
 EXIM_DB * dbp;
-int ret, sflags = flags & O_RDWR ? SQLITE_OPEN_READWRITE : SQLITE_OPEN_READONLY;
+int ret, sflags = (flags & O_ACCMODE) == O_RDONLY
+		  ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
 
 if (flags & O_CREAT) sflags |= SQLITE_OPEN_CREATE;
 if ((ret = sqlite3_open_v2(CCS name, &dbp, sflags, NULL)) == SQLITE_OK)

@@ -58,7 +58,7 @@ if (dbp)
   dbp->lkey.dptr = NULL;
   dbp->gdbm = gdbm_open(CS name, 0,
     flags & O_CREAT ? GDBM_WRCREAT
-    : flags & (O_RDWR|O_WRONLY) ? GDBM_WRITER : GDBM_READER,
+    : (flags & O_ACCMODE) == O_RDONLY ? GDBM_READER : GDBM_WRITER,
     mode, 0);
   if (dbp->gdbm)
     return dbp;
