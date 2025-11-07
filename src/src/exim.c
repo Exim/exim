@@ -1158,9 +1158,6 @@ g = string_cat(g, US"Support for:");
 #ifdef USE_OPENSSL
   g = string_cat(g, US" OpenSSL");
 #endif
-#if defined(CYRUS_PWCHECK_SOCKET)
-  g = string_cat(g, US" pwcheck");
-#endif
 #if defined(RADIUS_CONFIG_FILE)
   g = string_cat(g, US" radius");
 #endif

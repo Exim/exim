@@ -6,8 +6,8 @@
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-/* This file provides support for authentication via the Cyrus SASL pwcheck
-daemon (whence its name) and the newer saslauthd daemon. */
+/* This file originally provided support for authentication via the Cyrus
+SASL pwcheck daemon (whence its name), but now the newer saslauthd daemon. */
 
 /* Error codes used internally within the authentication functions */
 
@@ -21,7 +21,6 @@ daemon (whence its name) and the newer saslauthd daemon. */
 
 /* Cyrus functions for doing the business. */
 
-extern int pwcheck_verify_password(const char *, const char *, const char **);
 extern int saslauthd_verify_password(const uschar *, const uschar *,
            const uschar *, const uschar *, const uschar **);
 

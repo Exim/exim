@@ -59,16 +59,16 @@
  */
 
 /* Originally this module supported only the pwcheck daemon, which is where its
-name comes from. Nowadays it supports saslauthd as well; pwcheck is in fact
-deprecated. The definitions of CYRUS_PWCHECK_SOCKET and CYRUS_SASLAUTHD_SOCKET
-determine whether the facilities are actually supported or not. */
+name comes from. Nowadays it supports saslauthd instead; pwcheck is in fact
+deprecated. The definition of CYRUS_SASLAUTHD_SOCKET
+determines whether the facilities are actually supported or not. */
 
 
 #include "../exim.h"
 #include "pwcheck.h"
 
 
-#if defined(CYRUS_PWCHECK_SOCKET) || defined(CYRUS_SASLAUTHD_SOCKET)
+#if defined(CYRUS_SASLAUTHD_SOCKET)
 
 #include <sys/uio.h>
 
@@ -78,79 +78,6 @@ static int read_string(int, uschar **);
 static int write_string(int, const uschar *, int);
 
 #endif
-
-
-/* A dummy function that always fails if pwcheck support is not
-wanted. */
-
-#ifndef CYRUS_PWCHECK_SOCKET
-int pwcheck_verify_password(const char *userid,
-                            const char *passwd,
-                            const char **reply)
-{
-*reply = "pwcheck support is not included in this Exim binary";
-return PWCHECK_FAIL;
-}
-
-
-/* This is the real function */
-
-#else
-
- /* taken from cyrus-sasl file checkpw.c */
- /* pwcheck daemon-authenticated login */
- int pwcheck_verify_password(const char *userid,
-                                  const char *passwd,
-                                  const char **reply)
- {
-     int s, start, r, n;
-     struct sockaddr_un srvaddr;
-     struct iovec iov[2];
-     static char response[1024];
-
-     *reply = NULL;
-
-     s = socket(AF_UNIX, SOCK_STREAM, 0);
-     if (s == -1) { return PWCHECK_FAIL; }
-
-     memset(CS &srvaddr, 0, sizeof(srvaddr));
-     srvaddr.sun_family = AF_UNIX;
-     strncpy(srvaddr.sun_path, CYRUS_PWCHECK_SOCKET, sizeof(srvaddr.sun_path));
-     r = connect(s, (struct sockaddr *)&srvaddr, sizeof(srvaddr));
-     if (r == -1) {
-        DEBUG(D_auth)
-            debug_printf("Cannot connect to pwcheck daemon (at '%s')\n",CYRUS_PWCHECK_SOCKET);
-       *reply = "cannot connect to pwcheck daemon";
-       return PWCHECK_FAIL;
-     }
-
-     iov[0].iov_base = CS userid;
-     iov[0].iov_len = strlen(userid)+1;
-     iov[1].iov_base = CS passwd;
-     iov[1].iov_len = strlen(passwd)+1;
-
-     retry_writev(s, iov, 2);
-
-     start = 0;
-     while (start < sizeof(response) - 1) {
-       n = read(s, response+start, sizeof(response) - 1 - start);
-       if (n < 1) break;
-       start += n;
-     }
-
-     (void)close(s);
-
-     if (start > 1 && !strncmp(response, "OK", 2)) {
-       return PWCHECK_OK;
-     }
-
-     response[start] = '\0';
-     *reply = response;
-     return PWCHECK_NO;
- }
-
-#endif
-
 
 
  /* A dummy function that always fails if saslauthd support is not
@@ -268,7 +195,7 @@ int saslauthd_verify_password(const uschar *userid,
 
 
 /* helper functions */
-#if defined(CYRUS_PWCHECK_SOCKET) || defined(CYRUS_SASLAUTHD_SOCKET)
+#if defined(CYRUS_SASLAUTHD_SOCKET)
 
 #define MAX_REQ_LEN 1024
 

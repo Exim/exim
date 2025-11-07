@@ -1206,23 +1206,6 @@ ZCAT_COMMAND=/usr/bin/zcat
 
 
 #------------------------------------------------------------------------------
-# Support for authentication via the Cyrus SASL pwcheck daemon is available.
-# Note, however, that pwcheck is now deprecated in favour of saslauthd (see
-# next item). The Exim support for pwcheck, which is intented for use in
-# conjunction with the SMTP AUTH facilities, is included only when requested by
-# setting the following parameter to the location of the pwcheck daemon's
-# socket.
-#
-# There is no need to install all of SASL on your system. You just need to run
-# ./configure --with-pwcheck, cd to the pwcheck directory within the sources,
-# make and make install. You must create the socket directory (default
-# /var/pwcheck) and chown it to Exim's user and group. Once you have installed
-# pwcheck, you should arrange for it to be started by root at boot time.
-
-# CYRUS_PWCHECK_SOCKET=/var/pwcheck/pwcheck
-
-
-#------------------------------------------------------------------------------
 # Support for authentication via the Cyrus SASL saslauthd daemon is available.
 # The Exim support, which is intended for use in conjunction with the SMTP AUTH
 # facilities, is included only when requested by setting the following

@@ -362,7 +362,6 @@ static uschar *cond_table[] = {
   US"match_local_part",
   US"or",
   US"pam",
-  US"pwcheck",
   US"queue_running",
   US"radius",
   US"saslauthd"
@@ -415,7 +414,6 @@ enum {
   ECOND_MATCH_LOCAL_PART,
   ECOND_OR,
   ECOND_PAM,
-  ECOND_PWCHECK,
   ECOND_QUEUE_RUNNING,
   ECOND_RADIUS,
   ECOND_SASLAUTHD
@@ -2740,7 +2738,6 @@ switch(cond_type = identify_operator(&s, &opname))
   case ECOND_PAM:
   case ECOND_RADIUS:
   case ECOND_LDAPAUTH:
-  case ECOND_PWCHECK:
 
   if (Uskip_whitespace(&s) != '{') goto COND_FAILED_CURLY_START; /* }-for-text-editors */
 
@@ -2835,16 +2832,8 @@ switch(cond_type = identify_operator(&s, &opname))
     goto COND_FAILED_NOT_COMPILED;
     #endif  /* LOOKUP_LDAP */
 
-    case ECOND_PWCHECK:
-    #ifdef CYRUS_PWCHECK_SOCKET
-    rc = auth_call_pwcheck(sub[0], &expand_string_message);
-    goto END_AUTH;
-    #else
-    goto COND_FAILED_NOT_COMPILED;
-    #endif  /* CYRUS_PWCHECK_SOCKET */
-
     #if defined(SUPPORT_PAM) || defined(RADIUS_CONFIG_FILE) || \
-        defined(LOOKUP_LDAP) || defined(CYRUS_PWCHECK_SOCKET)
+        defined(LOOKUP_LDAP)
     END_AUTH:
     if (rc == ERROR || rc == DEFER) goto failout;
     *yield = (rc == OK) == testfor;
@@ -3724,7 +3713,7 @@ goto failout;
 /* A condition requires code that is not compiled */
 
 #if !defined(SUPPORT_PAM) || !defined(RADIUS_CONFIG_FILE) || \
-    !defined(LOOKUP_LDAP) || !defined(CYRUS_PWCHECK_SOCKET) || \
+    !defined(LOOKUP_LDAP) || \
     !defined(SUPPORT_CRYPTEQ) || !defined(CYRUS_SASLAUTHD_SOCKET)
 COND_FAILED_NOT_COMPILED:
 expand_string_message = string_sprintf("support for %q not compiled",

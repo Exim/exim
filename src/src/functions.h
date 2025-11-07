@@ -112,7 +112,6 @@ extern void    assert_no_variables(void *, int, const char *, int);
 extern void    atrn_handle_customer(void);
 extern int     atrn_handle_provider(uschar **, uschar **);
 
-extern int     auth_call_pwcheck(uschar *, uschar **);
 extern int     auth_call_saslauthd(const uschar *, const uschar *,
 	         const uschar *, const uschar *, uschar **);
 extern int     auth_check_serv_cond(auth_instance *);

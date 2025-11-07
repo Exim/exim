@@ -40,7 +40,6 @@ Do not put spaces between # and the 'define'.
 #define CONFIGURE_FILE_USE_NODE
 #define CONFIGURE_GROUP
 #define CONFIGURE_OWNER
-#define CYRUS_PWCHECK_SOCKET
 #define CYRUS_SASLAUTHD_SOCKET
 
 #define DEFAULT_CRYPT              crypt

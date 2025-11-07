@@ -52,6 +52,9 @@ JH/13 Bug 3175: Fix file open mode flags for Gnu/Hurd. The values differ from
       Linux, and the bit-checking was incorrect on Hurd. Report and patch
       from Samuel Thibault.
 
+JH/14 Remove support for the (long-deprecated) "pwcheck" expansion condition.
+      Its replacement "saslauthd" has been available equally long.
+
 Exim version 4.99
 -----------------
 

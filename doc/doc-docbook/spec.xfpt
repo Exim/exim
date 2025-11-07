@@ -781,13 +781,15 @@ by code contributed by Marc Prud'hommeaux. Server support was contributed by
 Tom Kistner. This includes code taken from the Samba project, which is released
 under the Gnu GPL.
 .next
+
+.new
 .cindex "Cyrus"
-.cindex "&'pwcheck'& daemon"
-.cindex "&'pwauthd'& daemon"
-Support for calling the Cyrus &'pwcheck'& and &'saslauthd'& daemons is provided
+.cindex "&'saslauthd'& daemon"
+Support for calling the Cyrus &'saslauthd'& daemon is provided
 by code taken from the Cyrus-SASL library and adapted by Alexander S.
 Sabourenkov. The permission notice appears below, in accordance with the
 conditions expressed therein.
+.wen
 
 .blockquote
 Copyright &copy; 2001 Carnegie Mellon University.  All rights reserved.
@@ -12354,6 +12356,7 @@ server_condition = ${if pam{$auth1 : ${listquote{:}{$auth2}}}}
 whitespace after the list separator is required.
 This whitespace is removed before the value is handed to the
 authentication function.
+&*Note 2*&: Neither element may start or end with embedded whitespace.
 
 In some operating systems, PAM authentication can be done only from a process
 running as root. Since Exim is running as the Exim user when receiving
@@ -12361,37 +12364,10 @@ messages, this means that PAM cannot be used directly in those systems.
 . --- 2018-09-07: the pam_exim modified variant has gone, removed claims re using Exim via that
 
 
-.vitem &*pwcheck&~{*&<&'string1'&>&*:*&<&'string2'&>&*}*&
-.cindex "&'pwcheck'& daemon"
-.cindex "Cyrus"
-.cindex "expansion" "&'pwcheck'& authentication test"
-.cindex "&%pwcheck%& expansion condition"
-This condition supports user authentication using the Cyrus &'pwcheck'& daemon.
-This is one way of making it possible for passwords to be checked by a process
-that is not running as root. &*Note*&: The use of &'pwcheck'& is now
-deprecated. Its replacement is &'saslauthd'& (see below).
+. .vitem &*pwcheck&~{*&<&'string1'&>&*:*&<&'string2'&>&*}*&
+. pwcheck removed 2025/11/07
+. - it was documented as deprecated at least 19 years ago
 
-The pwcheck support is not included in Exim by default. You need to specify
-the location of the pwcheck daemon's socket in &_Local/Makefile_& before
-building Exim. For example:
-.code
-CYRUS_PWCHECK_SOCKET=/var/pwcheck/pwcheck
-.endd
-You do not need to install the full Cyrus software suite in order to use
-the pwcheck daemon. You can compile and install just the daemon alone
-from the Cyrus SASL library. Ensure that &'exim'& is the only user that has
-access to the &_/var/pwcheck_& directory.
-
-The &%pwcheck%& condition takes one argument, which must be the user name and
-password, separated by a colon. For example, in a LOGIN authenticator
-configuration, you might have this:
-.code
-server_condition = ${if pwcheck{$auth1:$auth2}}
-.endd
-Again, for a PLAIN authenticator configuration, this would be:
-.code
-server_condition = ${if pwcheck{$auth2:$auth3}}
-.endd
 .vitem &*queue_running*&
 .cindex "queue runner" "detecting when delivering from"
 .cindex "expansion" "queue runner test"
@@ -12442,7 +12418,10 @@ The same caveats for the arguments apply as for PAM.
 .cindex "expansion" "&'saslauthd'& authentication test"
 .cindex "&%saslauthd%& expansion condition"
 This condition supports user authentication using the Cyrus &'saslauthd'&
-daemon. This replaces the older &'pwcheck'& daemon, which is now deprecated.
+daemon.
+.new
+This replaces the older &'pwcheck'& daemon, which is no longer supported.
+.wen
 Using this daemon is one way of making it possible for passwords to be checked
 by a process that is not running as root.
 
@@ -28533,9 +28512,13 @@ uninterpreted string.
 
 .subsection "Support for different kinds of authentication" "SECID174"
 A number of string expansion features are provided for the purpose of
-interfacing to different ways of user authentication. These include checking
+interfacing to different ways of user authentication.
+.new
+These include checking
 traditionally encrypted passwords from &_/etc/passwd_& (or equivalent), PAM,
-Radius, &%ldapauth%&, &'pwcheck'&, and &'saslauthd'&. For details see section
+Radius, &%ldapauth%&, and &'saslauthd'&.
+.wen
+For details see section
 &<<SECTexpcond>>&.
 
 
