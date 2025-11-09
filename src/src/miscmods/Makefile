@@ -14,6 +14,7 @@
 OBJ += dummy.o
 
 all:		miscmods.a $(MODS)
+		$(FE):
 
 miscmods.a:	$(OBJ)
 		@$(RM_COMMAND) -f miscmods.a

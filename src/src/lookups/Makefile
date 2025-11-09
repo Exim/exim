@@ -18,7 +18,8 @@ OBJS = $(OBJ) $(OBJ_ALWAYS)
 # This assumes that the driver and object-file names match
 AVAIL= $(OBJS:.o=)
 
-all:             Makefile lookups.a $(MODS)
+all:	Makefile lookups.a $(MODS)
+	$(FE):
 
 # We assume here that the driver name is used as the prefix for
 # its module_info struct.

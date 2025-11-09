@@ -29,6 +29,9 @@ RM_COMMAND=/bin/rm
 
 buildname=$${build:-`$(SHELL) scripts/os-type`-`$(SHELL) scripts/arch-type`}$${EXIM_BUILD_SUFFIX:+.$$EXIM_BUILD_SUFFIX}
 
+# Quieten gnumake wrt. sub-make directories
+GNUMAKEFLAGS=--no-print-directory
+
 # The default target checks for the existence of Local/Makefile, that the main
 # makefile is built and up-to-date, and then it runs it.
 # If Local/Makefile-<buildname> exists, it is read too.
@@ -63,12 +66,14 @@ build-directory:
 	  (mkdir $$builddir; cd $$builddir; $(SHELL) ../scripts/MakeLinks)";
 
 checks:
-	$(SHELL) scripts/source_checks
+	@$(SHELL) scripts/source_checks
 
 # The "configure" target ensures that the build directory exists, then arranges
 # to build the main makefile from inside the build directory, by calling the
 # Configure-Makefile script. This does its own dependency checking because of
 # the optional files.
+# We always run the script (as there is no actual"configure" file)
+# but it quietly dooes nothing if nothing is needed.
 
 configure: checks build-directory \
 		scripts/lookups-Makefile scripts/drivers-Makefile

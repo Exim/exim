@@ -17,6 +17,7 @@
 OBJ += auth-spa.o
 
 all:		auths.a $(MODS)
+		$(FE):
 
 auths.a:	$(OBJ)
 		@$(RM_COMMAND) -f auths.a

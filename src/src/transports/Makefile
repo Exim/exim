@@ -13,7 +13,8 @@
 
 OBJ += smtp_socks.o tf_maildir.o
 
-all:		transports.a $(MODS)
+all:	transports.a $(MODS)
+	$(FE):
 
 transports.a:    $(OBJ) smtp_socks.o tf_maildir.o
 		 @$(RM_COMMAND) -f transports.a

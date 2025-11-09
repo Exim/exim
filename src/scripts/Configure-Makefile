@@ -38,15 +38,20 @@ rebuild=yes
 
 if [ -f Makefile ] ; then
   rebuild=no
-  if ../scripts/newer $editme Makefile || \
-     ../scripts/newer $editme-$ostype Makefile || \
-     ../scripts/newer $editme-$archtype Makefile || \
-     ../scripts/newer $editme-$ostype-$archtype Makefile || \
-     ../scripts/newer ../scripts/Configure-Makefile Makefile || \
-     ../scripts/newer ../scripts/lookups-Makefile Makefile || \
-     ../scripts/newer ../scripts/drivers-Makefile Makefile || \
-     ../scripts/newer ../OS/Makefile-Base Makefile || \
-     ../scripts/newer ../OS/Makefile-Default Makefile
+  if ../scripts/newer $editme Makefile \
+     || ../scripts/newer $editme-$ostype Makefile \
+     || ../scripts/newer $editme-$archtype Makefile \
+     || ../scripts/newer $editme-$ostype-$archtype Makefile \
+     || ../scripts/newer ../scripts/Configure-Makefile Makefile \
+     || ../scripts/newer ../scripts/lookups-Makefile Makefile \
+     || ../scripts/newer ../scripts/drivers-Makefile Makefile \
+     || ../scripts/newer ../OS/Makefile-Base Makefile \
+     || ../scripts/newer ../OS/Makefile-Default Makefile \
+     || ../scripts/newer ../src/auths/Makefile Makefile \
+     || ../scripts/newer ../src/lookups/Makefile Makefile \
+     || ../scripts/newer ../src/miscmods/Makefile Makefile \
+     || ../scripts/newer ../src/routers/Makefile Makefile \
+     || ../scripts/newer ../src/transports/Makefile Makefile
   then
     rebuild=yes
   fi
@@ -78,8 +83,8 @@ fi
 # If Makefile is up-to-date, no need to rebuild it.
 
 if [ $rebuild = no ] ; then
-  echo "\`Makefile' is up to date."
-  echo " "
+#  echo "\`Makefile' is up to date."
+#  echo " "
   exit
 fi
 

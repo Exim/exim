@@ -12,7 +12,8 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
-all:             routers.a $(MODS)
+all:	routers.a $(MODS)
+	$(FE):
 
 routers.a:       $(OBJ)
 		 @$(RM_COMMAND) -f routers.a

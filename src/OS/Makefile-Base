@@ -36,8 +36,9 @@ FE       = $(FULLECHO)
 # up-to-date. Then the os-specific source files and the C configuration file
 # are set up, and finally it goes to the main Exim target.
 
-all:       utils exim dynmodules
-config:    $(EDITME) checklocalmake Makefile os.c config.h version.h version.sh macro.c
+CONFIG_DEPS = Makefile os.c config.h version.h version.sh macro.c
+
+all:       $(EDITME) checklocalmake $(CONFIG_DEPS) utils exim dynmodules
 
 exim_openssl exim_gnutls: clean exim
 	cp exim $@
@@ -243,9 +244,7 @@ macro.c: macro_predef
 # therefore always be run, even if the files exist. This shouldn't in fact be a
 # problem, but it does no harm. Other make programs will just ignore this.
 
-.PHONY: all config utils \
-	buildauths buildlookups buildrouters \
-        buildtransports buildmisc dynmodules checklocalmake clean
+.PHONY: all config utils dynmodules clean
 
 
 utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
@@ -261,12 +260,12 @@ buildconfig: buildconfig.c
 	$(FE)$(CC) $(CFLAGS) $(INCLUDE) -o buildconfig buildconfig.c $(LIBS)
 
 
-util_deps: config ../src/utils/msgid.frag
+UTIL_DEPS = $(CONFIG_DEPS) ../src/utils/msgid.frag
 
 # Target for the exicyclog utility script
-exicyclog: util_deps ../src/utils/exicyclog.src
-	@rm -f exicyclog
-	@. ./version.sh && sed \
+exicyclog: $(UTIL_DEPS) ../src/utils/exicyclog.src
+	$(FE)rm -f exicyclog
+	$(FE). ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -292,15 +291,15 @@ exicyclog: util_deps ../src/utils/exicyclog.src
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exicyclog.src > exicyclog-t
-	@mv exicyclog-t exicyclog
-	@chmod a+x exicyclog
-	@./exicyclog -v 2>&1 >/dev/null
-	@echo ">>> exicyclog script built"
+	$(FE)mv exicyclog-t exicyclog
+	$(FE)chmod a+x exicyclog
+	$(FE)./exicyclog -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exicyclog script built"
 
 # Target for the exinext utility script
-exinext: util_deps ../src/utils/exinext.src
-	@rm -f exinext
-	@. ./version.sh && sed \
+exinext: $(UTIL_DEPS) ../src/utils/exinext.src
+	$(FE)rm -f exinext
+	$(FE). ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -316,15 +315,15 @@ exinext: util_deps ../src/utils/exinext.src
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exinext.src > exinext-t
-	@mv exinext-t exinext
-	@chmod a+x exinext
-	@./exinext -v 2>&1 >/dev/null
-	@echo ">>> exinext script built"
+	$(FE)mv exinext-t exinext
+	$(FE)chmod a+x exinext
+	$(FE)./exinext -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exinext script built"
 
 # Target for the exiwhat utility script
-exiwhat: config ../src/utils/exiwhat.src
-	@rm -f exiwhat
-	@. ./version.sh && sed \
+exiwhat: $(CONFIG_DEPS) ../src/utils/exiwhat.src
+	$(FE)rm -f exiwhat
+	$(FE). ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -341,15 +340,15 @@ exiwhat: config ../src/utils/exiwhat.src
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "s?RM_COMMAND?$(RM_COMMAND)?" \
 	  ../src/utils/exiwhat.src > exiwhat-t
-	@mv exiwhat-t exiwhat
-	@chmod a+x exiwhat
-	@./exiwhat -v 2>&1 >/dev/null
-	@echo ">>> exiwhat script built"
+	$(FE)mv exiwhat-t exiwhat
+	$(FE)chmod a+x exiwhat
+	$(FE)./exiwhat -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exiwhat script built"
 
 # Target for the exim_checkaccess utility script
-exim_checkaccess: config ../src/utils/exim_checkaccess.src
-	@rm -f exim_checkaccess
-	@. ./version.sh && sed \
+exim_checkaccess: $(CONFIG_DEPS) ../src/utils/exim_checkaccess.src
+	$(FE)rm -f exim_checkaccess
+	$(FE). ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -360,17 +359,17 @@ exim_checkaccess: config ../src/utils/exim_checkaccess.src
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/utils/exim_checkaccess.src > exim_checkaccess-t
-	@mv exim_checkaccess-t exim_checkaccess
-	@chmod a+x exim_checkaccess
-	# @./exim_checkaccess -v 2>&1 >/dev/null
-	@echo ">>> exim_checkaccess script built"; echo ""
+	$(FE)mv exim_checkaccess-t exim_checkaccess
+	$(FE)chmod a+x exim_checkaccess
+#	@./exim_checkaccess -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exim_checkaccess script built"; echo ""
 
 # Target for the Exim monitor start-up script
-eximon: config ../src/utils/eximon.src ../OS/eximon.conf-Default \
+eximon: $(CONFIG_DEPS) ../src/utils/eximon.src ../OS/eximon.conf-Default \
           ../Local/eximon.conf
-	@rm -f eximon
+	$(FE)rm -f eximon
 	$(SHELL) $(SCRIPTS)/Configure-eximon
-	@. ./version.sh && sed \
+	$(FE). ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -383,15 +382,15 @@ eximon: config ../src/utils/eximon.src ../OS/eximon.conf-Default \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/utils/eximon.src >> eximon
-	@./eximon -v 2>&1 >/dev/null
-	@echo ">>> eximon script built"; echo ""
+	$(FE)./eximon -v 2>&1 >/dev/null
+#	$(FE)echo ">>> eximon script built"; echo ""
 
 # Targets for utilities; these are all Perl scripts that have to get the
 # location of Perl put in them. A few need other things as well.
 
-exigrep: util_deps ../src/utils/exigrep.src
-	@rm -f exigrep
-	@. ./version.sh && sed \
+exigrep: $(UTIL_DEPS) ../src/utils/exigrep.src
+	$(FE)rm -f exigrep
+	$(FE). ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -407,14 +406,14 @@ exigrep: util_deps ../src/utils/exigrep.src
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exigrep.src > exigrep-t
-	@mv exigrep-t exigrep
-	@chmod a+x exigrep
-	@./exigrep --version 2>&1 >/dev/null
-	@echo ">>> exigrep script built"
+	$(FE)mv exigrep-t exigrep
+	$(FE)chmod a+x exigrep
+	$(FE)./exigrep --version 2>&1 >/dev/null
+#	$(FE)echo ">>> exigrep script built"
 
-exim_msgdate: util_deps ../src/utils/exim_msgdate.src
-	@rm -f exim_msgdate
-	@. ./version.sh && sed \
+exim_msgdate: $(UTIL_DEPS) ../src/utils/exim_msgdate.src
+	$(FE)rm -f exim_msgdate
+	$(FE). ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^[ \t]*# /p" \
 	  -e "/^[ \t]*# /d" \
@@ -431,26 +430,26 @@ exim_msgdate: util_deps ../src/utils/exim_msgdate.src
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exim_msgdate.src > exim_msgdate-t
-	@mv exim_msgdate-t exim_msgdate
-	@chmod a+x exim_msgdate
-	@./exim_msgdate -v 2>&1 >/dev/null
-	@echo ">>> exim_msgdate script built"
+	$(FE)mv exim_msgdate-t exim_msgdate
+	$(FE)chmod a+x exim_msgdate
+	$(FE)./exim_msgdate -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exim_msgdate script built"
 
-eximstats: config ../src/utils/eximstats.src
-	@rm -f eximstats
-	@. ./version.sh && sed \
+eximstats: $(CONFIG_DEPS) ../src/utils/eximstats.src
+	$(FE)rm -f eximstats
+	$(FE). ./version.sh && sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/utils/eximstats.src > eximstats-t
-	@mv eximstats-t eximstats
-	@chmod a+x eximstats
-	@./eximstats -v 2>&1 >/dev/null
-	@echo ">>> eximstats script built"
+	$(FE)mv eximstats-t eximstats
+	$(FE)chmod a+x eximstats
+	$(FE)./eximstats -v 2>&1 >/dev/null
+#	$(FE)echo ">>> eximstats script built"
 
-exiqgrep: util_deps ../src/utils/exiqgrep.src
-	@rm -f exiqgrep
-	@. ./version.sh && sed \
+exiqgrep: $(UTIL_DEPS) ../src/utils/exiqgrep.src
+	$(FE)rm -f exiqgrep
+	$(FE). ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -465,14 +464,14 @@ exiqgrep: util_deps ../src/utils/exiqgrep.src
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exiqgrep.src > exiqgrep-t
-	@mv exiqgrep-t exiqgrep
-	@chmod a+x exiqgrep
-	@./exiqgrep -v 2>&1 >/dev/null
-	@echo ">>> exiqgrep script built"
+	$(FE)mv exiqgrep-t exiqgrep
+	$(FE)chmod a+x exiqgrep
+	$(FE)./exiqgrep -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exiqgrep script built"
 
-exiqsumm: util_deps ../src/utils/exiqsumm.src
-	@rm -f exiqsumm
-	@. ./version.sh && sed \
+exiqsumm: $(UTIL_DEPS) ../src/utils/exiqsumm.src
+	$(FE)rm -f exiqsumm
+	$(FE). ./version.sh && sed \
 	  -e "/^MSGID_RE/b mi" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
@@ -483,28 +482,28 @@ exiqsumm: util_deps ../src/utils/exiqsumm.src
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exiqsumm.src > exiqsumm-t
-	@mv exiqsumm-t exiqsumm
-	@chmod a+x exiqsumm
-	@./exiqsumm -v 2>&1 >/dev/null
-	@echo ">>> exiqsumm script built"
+	$(FE)mv exiqsumm-t exiqsumm
+	$(FE)chmod a+x exiqsumm
+	$(FE)./exiqsumm -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exiqsumm script built"
 
-exipick: config ../src/utils/exipick.src
-	@rm -f exipick
-	@. ./version.sh && sed \
+exipick: $(CONFIG_DEPS) ../src/utils/exipick.src
+	$(FE)rm -f exipick
+	$(FE). ./version.sh && sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?SPOOL_DIRECTORY?$(SPOOL_DIRECTORY)?" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/utils/exipick.src > exipick-t
-	@mv exipick-t exipick
-	@chmod a+x exipick
-	@./exipick -v 2>&1 >/dev/null
-	@echo ">>> exipick script built"
+	$(FE)mv exipick-t exipick
+	$(FE)chmod a+x exipick
+	$(FE)./exipick -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exipick script built"
 
-exim_id_update: util_deps ../src/utils/exim_id_update.src
-	@rm -f exim_id_update
-	@. ./version.sh && sed \
+exim_id_update: $(UTIL_DEPS) ../src/utils/exim_id_update.src
+	$(FE)rm -f exim_id_update
+	$(FE). ./version.sh && sed \
 	  -e "/^MSGID_RE/b mi" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?SPOOL_DIRECTORY?$(SPOOL_DIRECTORY)?" \
@@ -517,21 +516,21 @@ exim_id_update: util_deps ../src/utils/exim_id_update.src
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exim_id_update.src > exim_id_update-t
-	@mv exim_id_update-t exim_id_update
-	@chmod a+x exim_id_update
-	@./exim_id_update -v 2>&1 >/dev/null
-	@echo ">>> exim_id_update script built"
+	$(FE)mv exim_id_update-t exim_id_update
+	$(FE)chmod a+x exim_id_update
+	$(FE)./exim_id_update -v 2>&1 >/dev/null
+#	$(FE)echo ">>> exim_id_update script built"
 
-transport-filter.pl: config ../src/transport-filter.src
-	@rm -f transport-filter.pl
-	@. ./version.sh && sed \
+transport-filter.pl: $(CONFIG_DEPS) ../src/transport-filter.src
+	$(FE)rm -f transport-filter.pl
+	$(FE). ./version.sh && sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/transport-filter.src > transport-filter.pl-t
-	@mv transport-filter.pl-t transport-filter.pl
-	@chmod a+x transport-filter.pl
-	@echo ">>> transport-filter.pl script built"
+	$(FE)mv transport-filter.pl-t transport-filter.pl
+	$(FE)chmod a+x transport-filter.pl
+#	$(FE)echo ">>> transport-filter.pl script built"
 
 
 # These are objects of optional features. They are always compiled, but
@@ -568,9 +567,8 @@ OBJ_EXIM = acl.o atrn.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o \
         local_scan.o $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_EXPERIMENTAL)
 
-exim:   buildlookups buildauths \
-        buildrouters buildtransports buildmisc \
-        $(OBJ_EXIM) version.o
+exim:   buildlookups buildauths buildrouters buildtransports buildmisc \
+        	$(OBJ_EXIM) version.o
 	@echo "$(LNCC) -o exim"
 	$(FE)$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
 	  routers/routers.a transports/transports.a lookups/lookups.a \
@@ -583,9 +581,9 @@ exim:   buildlookups buildauths \
 	  $(STRIP_COMMAND) exim; \
 	fi
 	$(EXIM_CHMOD)
-	@echo " "
-	@echo ">>> exim binary built"
-	@echo " "
+#	@echo " "
+#	@echo ">>> exim binary built"
+#	@echo " "
 
 # The utility for dumping the contents of an exim database
 
@@ -599,8 +597,8 @@ exim_dumpdb: $(OBJ_DUMPDB)
 	  echo $(STRIP_COMMAND) exim_dumpdb; \
 	  $(STRIP_COMMAND) exim_dumpdb; \
 	fi
-	@echo ">>> exim_dumpdb utility built"
-	@echo " "
+#	@echo ">>> exim_dumpdb utility built"
+#	@echo " "
 
 # The utility for interrogating/fixing the contents of an exim database
 
@@ -614,8 +612,8 @@ exim_fixdb:  $(OBJ_FIXDB)
 	  echo $(STRIP_COMMAND) exim_fixdb; \
 	  $(STRIP_COMMAND) exim_fixdb; \
 	fi
-	@echo ">>> exim_fixdb utility built"
-	@echo " "
+#	@echo ">>> exim_fixdb utility built"
+#	@echo " "
 
 # The utility for tidying the contents of an exim database
 
@@ -630,8 +628,8 @@ exim_tidydb: $(OBJ_TIDYDB)
 	  echo $(STRIP_COMMAND) exim_tidydb; \
 	  $(STRIP_COMMAND) exim_tidydb; \
 	fi
-	@echo ">>> exim_tidydb utility built"
-	@echo " "
+#	@echo ">>> exim_tidydb utility built"
+#	@echo " "
 
 # The utility for building dbm files
 
@@ -646,8 +644,8 @@ exim_dbmbuild: $(OBJ_DBMBUILD)
 	  echo $(STRIP_COMMAND) exim_dbmbuild; \
 	  $(STRIP_COMMAND) exim_dbmbuild; \
 	fi
-	@echo ">>> exim_dbmbuild utility built"
-	@echo " "
+#	@echo ">>> exim_dbmbuild utility built"
+#	@echo " "
 
 # The utility for locking a mailbox while messing around with it
 
@@ -661,8 +659,8 @@ exim_lock: exim_lock.c os.h
 	  echo $(STRIP_COMMAND) exim_lock; \
 	  $(STRIP_COMMAND) exim_lock; \
 	fi
-	@echo ">>> exim_lock utility built"
-	@echo " "
+#	@echo ">>> exim_lock utility built"
+#	@echo " "
 
 # The X-based Exim monitor program's binary part. There's a macro for cutting
 # out the modified TextPop module, because some antique link editors cannot
@@ -701,8 +699,8 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) ../exim_monitor/em_version.c \
 	  echo $(STRIP_COMMAND) eximon.bin; \
 	  $(STRIP_COMMAND) eximon.bin; \
 	fi
-	@echo ">>> exim monitor binary built"
-	@echo " "
+#	@echo ">>> exim monitor binary built"
+#	@echo " "
 
 
 # Compile step for most of the exim modules. HDRS is a list of headers
@@ -861,7 +859,7 @@ util-os.o:       $(HDRS) os.c
 # The local scan module depends only on its own special header, and is compiled
 # from a source whose location is set by configuration.
 
-local_scan.o:    config local_scan.h ../$(LOCAL_SCAN_SOURCE)
+local_scan.o:    $(CONFIG_DEPS) local_scan.h ../$(LOCAL_SCAN_SOURCE)
 	@echo "$(CC) local_scan.c"
 	$(FE)$(CC) -DLOCAL_SCAN -c $(CFLAGS) -I. $(INCLUDE) -o local_scan.o ../$(LOCAL_SCAN_SOURCE)
 
@@ -1047,11 +1045,10 @@ $(MONBIN): $(HDRS)
 
 # Copies of modules built as dynamic-load libraries
 
-dynmodules: buildlookups buildrouters buildtransports buildauths \
-		buildmisc
-	rm -fr dynmodules
-	mkdir dynmodules
-	for d in lookup router transport auth miscmod; do \
+dynmodules: buildlookups buildrouters buildtransports buildauths buildmisc
+	$(FE)rm -fr dynmodules
+	$(FE)mkdir dynmodules
+	$(FE)for d in lookup router transport auth miscmod; do \
 	  for f in $${d}s/*.so; do \
 	    [ -e $$f ] && ln $$f dynmodules/`basename $$f .so`_$$d.so; \
 	  done; \
@@ -1060,42 +1057,46 @@ dynmodules: buildlookups buildrouters buildtransports buildauths \
 
 # The lookups library.
 
-buildlookups: config
-	 @cd lookups && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
+buildlookups: $(CONFIG_DEPS)
+	@cd lookups && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" HDRS="../version.h $(PHDRS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $(LOOKUP_INCLUDE)"
-	 @echo " "
+	$(FE)touch $@
+#	@echo " "
 
 # The routers library.
 
-buildrouters: config
-	 @cd routers && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
+buildrouters: $(CONFIG_DEPS)
+	@cd routers && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
-	 @echo " "
+	$(FE)touch $@
+#	@echo " "
 
 # The transports library.
 
-buildtransports: config
-	 @cd transports && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
+buildtransports: $(CONFIG_DEPS)
+	@cd transports && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
-	 @echo " "
+	$(FE)touch $@
+#	@echo " "
 
 # The library of authorization modules
 
-buildauths: config
-	 @cd auths && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
+buildauths: $(CONFIG_DEPS)
+	@cd auths && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
-	 @echo " "
+	$(FE)touch $@
+#	@echo " "
 
-buildmisc: config
-	 @cd miscmods && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) \
+buildmisc: $(CONFIG_DEPS)
+	@cd miscmods && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) \
 	   CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	     CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	     LDFLAGS_PARTIAL="$(LDFLAGS_PARTIAL)" HDRS="../version.h $(PHDRS)" \
@@ -1103,7 +1104,8 @@ buildmisc: config
 	     PERL_CC="$(PERL_CC)" PERL_CCOPTS="$(PERL_CCOPTS)" \
 	     PERL_CFLAGS="$(PERL_CFLAGS)" PERL_LFLAGS="$(PERL_LFLAGS)" \
 	     INCLUDE="$(INCLUDE) $(IPV6_INCLUDE)" TLS_INCLUDE="$(TLS_INCLUDE)"
-	 @echo " "
+	$(FE)touch $@
+#	@echo " "
 
 # The "clean", "install", and "makefile" targets just pass themselves back to
 # the main Exim makefile. These targets will be obeyed only if "make" is obeyed
