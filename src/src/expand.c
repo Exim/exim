@@ -3712,14 +3712,10 @@ goto failout;
 
 /* A condition requires code that is not compiled */
 
-#if !defined(SUPPORT_PAM) || !defined(RADIUS_CONFIG_FILE) || \
-    !defined(LOOKUP_LDAP) || \
-    !defined(SUPPORT_CRYPTEQ) || !defined(CYRUS_SASLAUTHD_SOCKET)
 COND_FAILED_NOT_COMPILED:
 expand_string_message = string_sprintf("support for %q not compiled",
   opname);
 goto failout;
-#endif
 
 failout:
   next = NULL;
