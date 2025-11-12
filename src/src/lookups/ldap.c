@@ -1584,7 +1584,7 @@ if (ldap_get_option(ld, LDAP_OPT_API_INFO, &info) == LDAP_OPT_SUCCESS)
 return g;
 
 #else
-return string_fmt_append(g, "Library version: LDAP: (unknown)\n");
+return string_cat(g, "Library version: LDAP: (unknown)\n");
 #endif
 }
 
