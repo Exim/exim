@@ -1137,7 +1137,7 @@ expand_bad:
 
 
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
 
 /* Module API */
 
@@ -1331,7 +1331,7 @@ static void * dkim_functions[] = {
   [DKIM_TRANSPORT_INIT] =	(void *) dkim_exim_sign_init,
   [DKIM_TRANSPORT_WRITE] =	(void *) dkim_transport_write_message,
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
   [DKIM_SIGS_LIST] =		(void *) dkim_sigs_list,
 #endif
 #ifdef EXPERIMENTAL_ARC

@@ -124,7 +124,7 @@ static optionlist optionlist_config[] = {
   { "dkim_verify_minimal",      opt_module,	 {US"dkim"} },
   { "dkim_verify_signers",      opt_module,	 {US"dkim"} },
 #endif
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
   { "dmarc_forensic_sender",    opt_module,	 {US"dmarc"} },
   { "dmarc_history_file",       opt_module,	 {US"dmarc"} },
   { "dmarc_tld_file",           opt_module,	 {US"dmarc"} },

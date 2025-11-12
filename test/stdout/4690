@@ -33,7 +33,7 @@ mfrom test.ex
 spf 0
 pdomain test.ex
 policy 15
-rua -
+rua mailto:CALLER@test.ex!5m
 pct 100
 adkim 114
 aspf 114
@@ -53,7 +53,7 @@ mfrom test.ex
 spf 0
 pdomain test.ex
 policy 15
-rua -
+rua mailto:CALLER@test.ex!5m
 pct 100
 adkim 114
 aspf 114
@@ -73,7 +73,7 @@ mfrom test.ex
 spf 0
 pdomain test.ex
 policy 15
-rua -
+rua mailto:CALLER@test.ex!5m
 pct 100
 adkim 114
 aspf 114

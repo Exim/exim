@@ -3,10 +3,10 @@
 # For now just check that what should be working syntax does not cause us to fall over.
 #
 # SPF and DMARC lookups in DNS are diverted into the testsuite fakedns handling.
-# Be careful with envelope-domains used for testcases, as real DNS lookups will be done
-# for names not provided for in fakedns.
+# Be careful with envelope-domains used for testcases, as real DNS lookups will
+# be done for names not provided for in fakedns.
 #
-mkdir DIR/tmp
+mkdir -p DIR/tmp
 sudo chmod 777 DIR/tmp
 #
 exim -bd -DSERVER=server -oX PORT_D

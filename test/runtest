@@ -1485,6 +1485,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^DKIM( <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+|: no signatures)$/;
     next if /try option 'acl_smtp_dkim'$/;
 
+    # DMARC: the native implementation builds a bunch of REs during init
+    next if / compiled RE '\^.+' (?:not found|saved) in local cache$/;
+
     # Some platforms have TIOCOUT, some do not
     next if /\d+ bytes remain in socket output buffer$/;
     # Various other IPv6 lines must be omitted too

@@ -1176,7 +1176,7 @@ g = string_cat(g, US"Support for:");
 #ifndef DISABLE_DKIM
   g = string_cat(g, US" DKIM");
 #endif
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
   g = string_cat(g, US" DMARC");
 #endif
 #ifndef DISABLE_DNSSEC

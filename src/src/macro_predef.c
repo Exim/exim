@@ -158,7 +158,7 @@ due to conflicts with other common macros. */
 #ifndef DISABLE_DKIM
   builtin_macro_create(US"_HAVE_DKIM");
 #endif
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
   builtin_macro_create(US"_HAVE_DMARC");
 #endif
 #ifndef DISABLE_DNSSEC

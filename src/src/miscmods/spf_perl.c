@@ -298,7 +298,7 @@ if (spf_result)
   }
 
 *human_readable_p = s ? string_copy(s) : US"";
-DEBUG(D_acl) debug_printf_indent("SPF: %d '%s'\n", res, s);
+DEBUG(D_acl) debug_printf_indent(" SPF: %d '%s'\n", res, s);
 return res;
 }
 

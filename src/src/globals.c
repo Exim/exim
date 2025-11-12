@@ -251,7 +251,7 @@ struct global_flags f =
 	.dkim_disable_verify      = FALSE,
 	.dkim_init_done           = FALSE,
 #endif
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
 	.dmarc_has_been_checked  = FALSE,
 	.dmarc_disable_verify    = FALSE,
 	.dmarc_enable_forensic   = FALSE,

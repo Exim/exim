@@ -430,6 +430,27 @@ spf lookup string-expansion is done, if not already running.  Use of the
 perl_at_startup option should be considered (but is not required).
 
 
+DMARC native implementation
+---------------------------------------------------------------
+
+If compiled with EXPERIMENTAL_DMARC_NATIVE=yes :-
+
+Instead of the traditional implementation using libopendmarc (which
+appears abandoned, and has open bugs) a freshly developed builtin
+implementation is used.
+*** some facilities of the library-based implementation may not be supported
+- known items:
+	- "fo" tag
+	- "pct" tag
+
+Compilation must not specify SUPPORT_DMARC.
+Building as a loadable module, with EXPERIMENTAL_DMARC_NATIVE=2
+is also supported.
+
+The build must also include SPF and DKIM support, and regdom lookups.
+
+
+
 
 NMH Lookup
 ---------------------------------------------------------------

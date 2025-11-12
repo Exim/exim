@@ -1062,7 +1062,6 @@ buildlookups: $(CONFIG_DEPS)
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" HDRS="../version.h $(PHDRS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $(LOOKUP_INCLUDE)"
-	$(FE)touch $@
 #	@echo " "
 
 # The routers library.
@@ -1072,7 +1071,6 @@ buildrouters: $(CONFIG_DEPS)
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
-	$(FE)touch $@
 #	@echo " "
 
 # The transports library.
@@ -1082,17 +1080,15 @@ buildtransports: $(CONFIG_DEPS)
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
-	$(FE)touch $@
 #	@echo " "
 
-# The library of authorization modules
+# The library of authentication modules
 
 buildauths: $(CONFIG_DEPS)
 	@cd auths && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
-	$(FE)touch $@
 #	@echo " "
 
 buildmisc: $(CONFIG_DEPS)
@@ -1104,7 +1100,6 @@ buildmisc: $(CONFIG_DEPS)
 	     PERL_CC="$(PERL_CC)" PERL_CCOPTS="$(PERL_CCOPTS)" \
 	     PERL_CFLAGS="$(PERL_CFLAGS)" PERL_LFLAGS="$(PERL_LFLAGS)" \
 	     INCLUDE="$(INCLUDE) $(IPV6_INCLUDE)" TLS_INCLUDE="$(TLS_INCLUDE)"
-	$(FE)touch $@
 #	@echo " "
 
 # The "clean", "install", and "makefile" targets just pass themselves back to

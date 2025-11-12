@@ -641,6 +641,6 @@ sedw._domainkey TXT "v=DKIM1; k=ed25519; p=MCowBQYDK2VwAyEAsPs07Vu29FpHT/80UXUcY
 
 ; ------- DMARC ---------
 
-_dmarc TXT v=DMARC1; p=none
+_dmarc TXT "v=DMARC1; p=none; rua=mailto:CALLER@test.ex!5m"
 
 ; End

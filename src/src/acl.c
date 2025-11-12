@@ -77,7 +77,7 @@ enum { ACLC_ACL,
        ACLC_DKIM_SIGNER,
        ACLC_DKIM_STATUS,
 #endif
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
        ACLC_DMARC_STATUS,
 #endif
        ACLC_DNSLISTS,
@@ -206,9 +206,9 @@ static condition_def conditions[] = {
       ),
   },
 #endif
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
   [ACLC_DMARC_STATUS] =		{ US"dmarc_status",
-# if SUPPORT_DMARC==2
+# if EXIM_HAVE_DMARC==2
 				  ACD_LOAD |
 # endif
 				  ACD_EXP,
@@ -390,7 +390,7 @@ static int spf_condx[] = { ACLC_SPF, ACLC_SPF_GUESS, -1 };
 #  if SUPPORT_DKIM==2
 static int dkim_condx[] = { ACLC_DKIM_SIGNER, ACLC_DKIM_STATUS, -1 };
 #  endif
-#  if SUPPORT_DMARC==2
+#  if EXIM_HAVE_DMARC==2
 static int dmarc_condx[] = { ACLC_DMARC_STATUS, -1 };
 #  endif
 
@@ -404,7 +404,7 @@ static condition_module condition_modules[] = {
 #  if SUPPORT_DKIM==2
   {.mod_name = US"dkim", .conditions = dkim_condx},
 #  endif
-#  if SUPPORT_DMARC==2
+#  if EXIM_HAVE_DMARC==2
   {.mod_name = US"dmarc", .conditions = dmarc_condx},
 #  endif
 };
@@ -424,7 +424,7 @@ enum {
 #ifndef DISABLE_DKIM
   CONTROL_DKIM_VERIFY,
 #endif
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
   CONTROL_DMARC_VERIFY,
   CONTROL_DMARC_FORENSIC,
 #endif
@@ -492,7 +492,7 @@ static control_def controls_list[] = {
   },
 #endif
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
 [CONTROL_DMARC_VERIFY] =
   { US"dmarc_disable_verify",    FALSE,
 	  ACL_BIT_DATA | ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
@@ -3481,7 +3481,7 @@ for (; cb; cb = cb->next)
 #ifndef DISABLE_DKIM
 	case CONTROL_DKIM_VERIFY:
 	  f.dkim_disable_verify = TRUE;
-# ifdef SUPPORT_DMARC
+# ifdef EXIM_HAVE_DMARC
 	  /* Since DKIM was blocked, skip DMARC too */
 	  f.dmarc_disable_verify = TRUE;
 	  f.dmarc_enable_forensic = FALSE;
@@ -3489,7 +3489,7 @@ for (; cb; cb = cb->next)
 	break;
 #endif
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
 	case CONTROL_DMARC_VERIFY:
 	  f.dmarc_disable_verify = TRUE;
 	  break;
@@ -3934,7 +3934,7 @@ for (; cb; cb = cb->next)
       }
 #endif
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
     case ACLC_DMARC_STATUS:
       /* See comment on ACLC_SPF wrt. coding issues */
       {
@@ -3945,7 +3945,7 @@ for (; cb; cb = cb->next)
       if (!mi)
 	{ rc = DEFER; break; }			/* shouldn't happen */
 
-      if (!f.dmarc_has_been_checked)
+      if (!f.dmarc_has_been_checked)		/* only once per message */
 	{
 	typedef int (*pfn_t)(void);
 	(void) (((pfn_t *) mi->functions)[DMARC_PROCESS]) ();
@@ -3955,7 +3955,6 @@ for (; cb; cb = cb->next)
       /* used long way of dmarc_exim_expand_query() in case we need more
       view into the process in the future. */
 
-      /*XXX is this call used with any other arg? */
       expanded_query = (((efn_t *) mi->functions)[DMARC_EXPAND_QUERY]) ();
       rc = match_isinlist(expanded_query,
 			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);

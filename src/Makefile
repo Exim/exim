@@ -124,7 +124,7 @@ distclean: clean_doc
 cscope.files: FRC
 	echo "-q" > $@
 	echo "-p3" >> $@
-	-bd=build-$(buildname); [ -d $$bd ] && echo -e "$$bd/config.h\n$$bd/Makefile" >> $@
+	-bd=build-$(buildname); [ -d $$bd ] && echo -e "$$bd/config.h\n$$bd/version.h\n$$bd/Makefile" >> $@
 	find src Local OS exim_monitor -name "*.[cshyl]" -print \
 		    -o -name "*.src" -print \
 		    -o -name "os.[ch]*" -print \

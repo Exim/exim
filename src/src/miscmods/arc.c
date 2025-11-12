@@ -2090,7 +2090,7 @@ return g;
 }
 
 
-#  ifdef SUPPORT_DMARC
+#  ifdef EXIM_HAVE_DMARC
 
 /* Module API: obtain ARC info for DMARC history.
 Arguments:
@@ -2144,7 +2144,7 @@ static void * arc_functions[] = {
   [ARC_STATE_IS_PASS] =	(void *) arc_is_pass,
   [ARC_SIGN_INIT] =	(void *) arc_sign_init,
   [ARC_SIGN] =		(void *) arc_sign,
-# ifdef SUPPORT_DMARC
+# ifdef EXIM_HAVE_DMARC
   [ARC_ARCSET_INFO] =	(void *) arc_arcset_string,
 # endif
 };

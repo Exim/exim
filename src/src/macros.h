@@ -240,10 +240,8 @@ enum {
   ERRMESS_TOOBIG,           /* Message too big */
   ERRMESS_TOOMANYRECIP,     /* Too many recipients */
   ERRMESS_LOCAL_SCAN,       /* Rejected by local scan */
-  ERRMESS_LOCAL_ACL         /* Rejected by non-SMTP ACL */
-#ifdef SUPPORT_DMARC
- ,ERRMESS_DMARC_FORENSIC    /* DMARC Forensic Report */
-#endif
+  ERRMESS_LOCAL_ACL,        /* Rejected by non-SMTP ACL */
+  ERRMESS_DMARC_FORENSIC    /* DMARC Forensic Report */
 };
 
 /* Error handling styles - set by option, and apply only when receiving

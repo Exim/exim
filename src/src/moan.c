@@ -167,7 +167,7 @@ int written = 0, fd, status, count = 0, size_limit = bounce_return_size_limit;
 FILE * fp;
 int pid;
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
 uschar * s, * s2;
 
 /* For DMARC if there is a specific sender set, expand the variable for the
@@ -206,7 +206,7 @@ fp = fdopen(fd, "wb");
 if (errors_reply_to) fprintf(fp, "Reply-To: %s\n", errors_reply_to);
 fprintf(fp, "Auto-Submitted: auto-replied\n");
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
 if (s)
   fprintf(fp, "From: %s\n", s);
 else
@@ -324,23 +324,16 @@ switch(ident)
   fprintf(fp, "\n");
   break;
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
   case ERRMESS_DMARC_FORENSIC:
     bounce_return_message = TRUE;
     bounce_return_body    = FALSE;
-    fprintf(fp, "Subject: DMARC Forensic Report for %s from IP %s\n\n",
-	  eblock ? eblock->text2 : US"Unknown",
-          sender_host_address);
-    fprintf(fp,
-      "A message claiming to be from you has failed the published DMARC\n"
-      "policy for your domain.\n\n");
-    while (eblock)
-      {
-      fprintf(fp, "  %s: %s\n", eblock->text1, eblock->text2);
-      count++;
-      eblock = eblock->next;
-      }
-  break;
+    for (; eblock; eblock = eblock->next)
+      if (eblock->text2)
+	fprintf(fp, "  %s: %s\n", eblock->text1, eblock->text2);
+      else
+	fprintf(fp, "%s", eblock->text1);
+    break;
 #endif
 
   default:
@@ -435,13 +428,13 @@ if (bounce_return_message)
       fputs(CS buf, fp);
       }
     }
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
   /* Overkill, but use exact test in case future code gets inserted */
-  else if (bounce_return_body && message_file == NULL)
+  else if (bounce_return_body && !message_file)
     {
     /*XXX limit line length here? */
     /* This doesn't print newlines, disable until can parse and fix
-     * output to be legible.  */
+    output to be legible.  */
     fprintf(fp, "%s", expand_string(US"$message_body"));
     }
 #endif

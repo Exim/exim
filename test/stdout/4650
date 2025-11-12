@@ -58,7 +58,7 @@ mfrom test.ex
 spf 6
 pdomain test.ex
 policy 18
-rua -
+rua mailto:CALLER@test.ex!5m
 pct 100
 adkim 114
 aspf 114
@@ -79,7 +79,7 @@ spf 6
 dkim test.ex sel 0
 pdomain test.ex
 policy 15
-rua -
+rua mailto:CALLER@test.ex!5m
 pct 100
 adkim 114
 aspf 114

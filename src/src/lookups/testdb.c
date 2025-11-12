@@ -109,7 +109,7 @@ static lookup_info testdb2_lookup_info = {
   .close = NULL,			/* no close function */
   .tidy = NULL,				/* no tidy function */
   .quote = testdb_quote,		/* same quoting function */
-  .version_report = testdb_version_report          /* version reporting */
+  .version_report = NULL          /* version reporting */
 };
 
 static lookup_info testdb3_lookup_info = {
@@ -121,7 +121,7 @@ static lookup_info testdb3_lookup_info = {
   .close = NULL,			/* no close function */
   .tidy = NULL,				/* no tidy function */
   .quote = NULL,			/* NO quoting function */
-  .version_report = testdb_version_report          /* version reporting */
+  .version_report = NULL          /* version reporting */
 };
 
 #ifdef DYNLOOKUP

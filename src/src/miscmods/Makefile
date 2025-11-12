@@ -37,7 +37,10 @@ arc.o	arc.so:			$(HDRS) pdkim.h arc.c
 dkim.o  dkim.so:		$(HDRS) dkim.h dkim.c dkim_transport.c \
 				crypt_ver.h pdkim.h pdkim_hash.h pdkim.c \
 				signing.h signing.c
-dmarc.o dmarc.so:		$(HDRS) spf.h pdkim.h dmarc.h dmarc.c
+dmarc.o dmarc.so:		$(HDRS) spf.h pdkim.h dmarc.h \
+				dmarc.c dmarc_common.c
+dmarc_native.o dmarc_native.so:	$(HDRS) spf.h pdkim.h dmarc.h \
+				dmarc_native.c dmarc_common.c
 dummy.o:			dummy.c
 exim_filter.o exim_filter.so:	$(HDRS) exim_filter.c
 pam.o   pam.so:			$(HDRS) pam.c
@@ -52,10 +55,6 @@ spf_perl.o spf_perl.so:		$(HDRS) spf.h spf_perl.c
 # We need a single .o because that's what scripts/Configure-Makefile
 # understands and fills in to $(OBJ).
 # Try desparately to get the Solaris cc/ld to build one.
-#dkim.o:
-#	@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
-#	$(FE)$(CC) -r $(LDFLAGS_PARTIAL) -o $@ $(CFLAGS) $(INCLUDE) \
-#		dkim.c dkim_transport.c pdkim.c signing.c
 dkim.o:
 	@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) dkim.c
@@ -85,6 +84,22 @@ spf_perl.so:
 	$(FE)$(CC) $(SUPPORT_SPF_PERL_INCLUDE) $(SUPPORT_SPF_PERL_LIBS) \
 			-DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) \
 			$(DLFLAGS) spf_perl.c -o spf.so
+
+# DMARC
+dmarc.o dmarc_native.o:
+	@echo "$(CC) $*.c dmarc_common.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $*.c
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) dmarc_common.c
+	$(FE)mv $@ dmarc_tmp.o
+	$(FE)ld -r -o $@ $(LDFLAGS_PARTIAL) dmarc_tmp.o dmarc_common.o
+
+# dmarc_native is special in the same way as spf_perl
+dmarc.so dmarc_native.so:
+	@echo "$(CC) -shared $*.c dmarc_common.c"
+	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) -o dmarc.so \
+		$(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
+		$(CFLAGS) $(INCLUDE) $(TLS_INCLUDE) $(DLFLAGS) \
+		$*.c dmarc_common.c
 
 # Compile instructions for static perl.o for when EXIM_PERL is set
 # Dynamic is managed all via scripts/Configure-Makefile

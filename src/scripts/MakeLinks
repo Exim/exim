@@ -101,7 +101,7 @@ for f in dummy.c \
 	dkim.c dkim_transport.c dkim.h dkim_api.h \
 	pdkim/crypt_ver.h pdkim/pdkim.c pdkim/pdkim.h \
 	pdkim/pdkim_hash.h pdkim/signing.c pdkim/signing.h \
-	dmarc.c dmarc.h dmarc_api.h \
+	dmarc.c dmarc_common.c dmarc.h dmarc_api.h dmarc_native.c \
 	exim_filter.c exim_filter_api.h \
 	pam.c pam_api.h \
 	perl.c perl_api.h \

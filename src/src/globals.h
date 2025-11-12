@@ -221,7 +221,7 @@ extern struct global_flags {
  BOOL   dkim_disable_verify		:1; /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
  BOOL   dkim_init_done			:1; /* lazy-init status */
 #endif
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
  BOOL   dmarc_has_been_checked		:1; /* Global variable to check if test has been called yet */
  BOOL   dmarc_disable_verify		:1; /* Set via ACL control statement. When set, DMARC verification is disabled for the current message */
  BOOL   dmarc_enable_forensic		:1; /* Set via ACL control statement. When set, DMARC forensic reports are enabled for the current message */

@@ -260,9 +260,6 @@ subprocess when the original process is root.
 Arguments:
   name         the file name
 
-The file name has been build in a working buffer, so it is permissible to
-overwrite it temporarily if it is necessary to create the directory.
-
 Returns:       a file descriptor, or < 0 on failure (errno set)
 */
 
@@ -286,15 +283,14 @@ problem. */
 if (fd < 0 && errno == ENOENT)
   {
   BOOL created;
-  uschar *lastslash = Ustrrchr(name, '/');
-  *lastslash = 0;
-  created = directory_make(NULL, name, LOG_DIRECTORY_MODE, FALSE);
+  const uschar * lastslash = Ustrrchr(name, '/');
+  uschar * dirname = string_copyn(name, lastslash - name);
+  created = directory_make(NULL, dirname, LOG_DIRECTORY_MODE, FALSE);
   DEBUG(D_any)
     if (created)
-      debug_printf("created log directory %s\n", name);
+      debug_printf("created log directory %s\n", dirname);
     else
-      debug_printf("failed to create log directory %s: %s\n", name, strerror(errno));
-  *lastslash = '/';
+      debug_printf("failed to create log directory %s: %s\n", dirname, strerror(errno));
   if (created) fd = Uopen(name, flags, LOG_MODE);
   }
 

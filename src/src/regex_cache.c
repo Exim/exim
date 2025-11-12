@@ -142,7 +142,7 @@ size_t offset;
 const pcre2_code * yield;
 int old_pool = store_pool, err;
 
-/* Optionall, check the cache and return if found */
+/* Optionally, check the cache and return if found */
 
 if (  flags & MCS_CACHEABLE
    && (yield = regex_from_cache(pattern, caseless)))

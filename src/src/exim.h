@@ -535,8 +535,6 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #if !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
 # include "hash.h"
 #endif
-#include "globals.h"
-#include "functions.h"
 #if !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
 # include "dbfunctions.h"
 #endif
@@ -550,10 +548,12 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 # include "miscmods/dkim.h"
 # include "miscmods/dkim_api.h"
 #endif
-#ifdef SUPPORT_DMARC
+#if defined(SUPPORT_DMARC) || defined(EXPERIMENTAL_DMARC_NATIVE)
 # include "miscmods/dmarc.h"
 # include "miscmods/dmarc_api.h"
-# include <opendmarc/dmarc.h>
+# ifdef SUPPORT_DMARC
+#  include <opendmarc/dmarc.h>
+# endif
 #endif
 #ifdef EXPERIMENTAL_ARC
 # include "miscmods/arc_api.h"
@@ -569,6 +569,9 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #endif
 #include "miscmods/exim_filter_api.h"
 #include "miscmods/sieve_filter_api.h"
+
+#include "globals.h"
+#include "functions.h"
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */

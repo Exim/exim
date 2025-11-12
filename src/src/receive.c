@@ -16,7 +16,7 @@
 extern int dcc_ok;
 #endif
 
-#ifdef SUPPORT_DMARC
+#ifdef EXIM_HAVE_DMARC
 # include "miscmods/dmarc.h"
 #endif
 
@@ -1754,9 +1754,6 @@ BOOL date_header_exists = FALSE;
 /* Pointers to receive the addresses of headers whose contents we need. */
 
 header_line * from_header = NULL;
-#ifdef SUPPORT_DMARC
-header_line * dmarc_from_header = NULL;
-#endif
 header_line * subject_header = NULL, * msgid_header = NULL, * received_header;
 BOOL msgid_header_newly_created = FALSE;
 
@@ -2454,8 +2451,16 @@ for (header_line * h = header_list->next; h; h = h->next)
 
     case htype_from:
       h->type = htype_from;
-#ifdef SUPPORT_DMARC
-      if (!is_resent) dmarc_from_header = h;
+#ifdef EXIM_HAVE_DMARC
+      if (!is_resent && !f.dmarc_disable_verify)
+	{
+	misc_module_info * mi = misc_mod_findonly(US"dmarc");
+	if (mi)
+	  {
+	  typedef void (*fn_t)(const uschar *);
+	  (((fn_t *) mi->functions)[DMARC_STORE_FROMHDR]) (h->text);
+	  }
+	}
 #endif
       if (!resents_exist || is_resent)
 	{
@@ -3583,17 +3588,6 @@ else
 	goto TIDYUP;
       }
 #endif /* WITH_CONTENT_SCAN */
-
-#ifdef SUPPORT_DMARC
-    {
-    misc_module_info * mi = misc_mod_findonly(US"dmarc");
-    if (mi)
-      {
-      typedef int (*fn_t)(header_line *);
-      (((fn_t *) mi->functions)[DMARC_STORE_DATA]) (dmarc_from_header);
-      }
-    }
-#endif
 
 #ifndef DISABLE_PRDR
     if (prdr_requested && recipients_count > 1)

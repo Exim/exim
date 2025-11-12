@@ -11,6 +11,10 @@ Since Version 4.99
  1. Lookups "psl" and "regdom" for, respectively, the public suffix or the
     registered domain, given a domain and a Public Suffix List file.
 
+ 2. EXPERIMENTAL_DMARC_NATIVE optional build feature.  See the experimental.spec
+    file.
+
+
 Version 4.99
 ------------
  1. A sieve_inbox option for redirect routers
