@@ -418,10 +418,8 @@ lsearch_close(void *handle)
 gstring *
 lsearch_version_report(gstring * g)
 {
-#ifdef DYNLOOKUP
-g = string_fmt_append(g, "Library version: lsearch: Exim version %s\n", EXIM_VERSION_STR);
-#endif
-return g;
+return string_fmt_append(g, "Library version: lsearch: Exim %s builtin\n",
+			    EXIM_VERSION_STR);
 }
 
 

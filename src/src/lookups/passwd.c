@@ -58,10 +58,8 @@ return OK;
 gstring *
 passwd_version_report(gstring * g)
 {
-#ifdef DYNLOOKUP
-g = string_fmt_append(g, "Library version: passwd: Exim version %s\n", EXIM_VERSION_STR);
-#endif
-return g;
+return string_fmt_append(g, "Library version: passwd: Exim %s builtin\n",
+			    EXIM_VERSION_STR);
 }
 
 static lookup_info _lookup_info = {

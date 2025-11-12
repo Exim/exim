@@ -433,13 +433,8 @@ return quoted;
 gstring *
 redis_version_report(gstring * g)
 {
-g = string_fmt_append(g,
-  "Library version: REDIS: Compile: %d [%d]\n", HIREDIS_MAJOR, HIREDIS_MINOR);
-#ifdef DYNLOOKUP
-g = string_fmt_append(g,
-  "                        Exim version %s\n", EXIM_VERSION_STR);
-#endif
-return g;
+return string_fmt_append(g, "Library version: REDIS: Compile: %d.%d.%d\n",
+    HIREDIS_MAJOR, HIREDIS_MINOR, HIREDIS_PATCH);
 }
 
 

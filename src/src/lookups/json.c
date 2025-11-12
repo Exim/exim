@@ -162,7 +162,8 @@ json_close(void *handle)
 gstring *
 json_version_report(gstring * g)
 {
-return string_fmt_append(g, "Library version: json: Jansonn version %s\n", JANSSON_VERSION);
+return string_fmt_append(g, "Library version: json: Jansonn version %s\n",
+			  JANSSON_VERSION);
 }
 
 

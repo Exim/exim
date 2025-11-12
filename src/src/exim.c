@@ -1316,19 +1316,15 @@ Currently they are output in misc_mod_add() */
 #ifndef PCRE_PRERELEASE
 # define PCRE_PRERELEASE
 #endif
-#define QUOTE(X) #X
-#define EXPAND_AND_QUOTE(X) QUOTE(X)
     {
     uschar buf[24];
     pcre2_config(PCRE2_CONFIG_VERSION, buf);
     g = string_fmt_append(g, "Library version: PCRE2: Compile: %d.%d%s\n"
 		"                        Runtime: %s\n",
 	    PCRE2_MAJOR, PCRE2_MINOR,
-	    EXPAND_AND_QUOTE(PCRE2_PRERELEASE) "",
+	    mac_expanded_string(PCRE2_PRERELEASE) "",
 	    buf);
     }
-#undef QUOTE
-#undef EXPAND_AND_QUOTE
 
   show_string(is_stdout, g);
   g = NULL;

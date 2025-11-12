@@ -172,10 +172,6 @@ g = string_fmt_append(g,
   "Library version: SQLite: Compile: %s\n"
   "                         Runtime: %s\n",
         SQLITE_VERSION, sqlite3_libversion());
-#ifdef DYNLOOKUP
-g = string_fmt_append(g,
-  "                         Exim version %s\n", EXIM_VERSION_STR);
-#endif
 return g;
 }
 

@@ -475,12 +475,8 @@ mysql_version_report(gstring * g)
 g = string_fmt_append(g,
   "Library version: MySQL: Compile: %lu %s [%s]\n"
   "                        Runtime: %lu %s\n",
-        (long)EXIM_MxSQL_VERSION_ID, EXIM_MxSQL_VERSION_STR, EXIM_MxSQL_BASE_STR,
-        mysql_get_client_version(), mysql_get_client_info());
-#ifdef DYNLOOKUP
-g = string_fmt_append(g,
-  "                        Exim version %s\n", EXIM_VERSION_STR);
-#endif
+      (long)EXIM_MxSQL_VERSION_ID, EXIM_MxSQL_VERSION_STR, EXIM_MxSQL_BASE_STR,
+      mysql_get_client_version(), mysql_get_client_info());
 return g;
 }
 

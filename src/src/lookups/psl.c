@@ -212,10 +212,8 @@ return psl_gen_find(handle, keystring, length, result, errmsg, TRUE);
 gstring *
 psl_version_report(gstring * g)
 {
-#ifdef DYNLOOKUP
-g = string_fmt_append(g, "Library version: psl: Exim version %s\n", EXIM_VERSION_STR);
-#endif
-return g;
+return string_fmt_append(g, "Library version: psl: Exim %s builtin\n",
+				EXIM_VERSION_STR);
 }
 
 static lookup_info psl_lookup_info = {

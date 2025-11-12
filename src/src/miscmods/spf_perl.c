@@ -121,16 +121,14 @@ return g;
 /******************************************************************************/
 
 
-#ifdef notdef
 /*API*/
 static gstring *
 spf_lib_version_report(gstring * g)
 {
 /*XXX Does Mail::SPF have a version? MetaCPAN says yes, but does not
 document a method that returns it. */
-return g;
+return string_fmt_append(g, "Library_version: SPF: perl Mail::SPF\n");
 }
-#endif
 
 
 
@@ -389,7 +387,7 @@ misc_module_info spf_module_info =
 # ifdef DYNLOOKUP
   .dyn_magic =		MISC_MODULE_MAGIC,
 # endif
-  /* .lib_vers_report =	spf_lib_version_report, */
+  .lib_vers_report =	spf_lib_version_report,
   .conn_init =		spf_conn_init,
   .smtp_reset =		spf_smtp_reset,
   .authres =		authres_spf,

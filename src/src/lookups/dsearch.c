@@ -172,10 +172,8 @@ handle = handle;   /* Avoid compiler warning */
 gstring *
 dsearch_version_report(gstring * g)
 {
-#ifdef DYNLOOKUP
-g = string_fmt_append(g, "Library version: dsearch: Exim version %s\n", EXIM_VERSION_STR);
-#endif
-return g;
+return string_fmt_append(g, "Library version: dsearch: Exim %s builtin\n",
+			  EXIM_VERSION_STR);
 }
 
 

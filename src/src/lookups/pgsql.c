@@ -477,9 +477,7 @@ return quoted;
 gstring *
 pgsql_version_report(gstring * g)
 {
-#ifdef DYNLOOKUP
-g = string_fmt_append(g, "Library version: PostgreSQL: Exim version %s\n", EXIM_VERSION_STR);
-#endif
+int ver = PQlibVersion();
 
 /* Version reporting: there appears to be no available information about
 the client library in libpq-fe.h; once you have a connection object, you
@@ -487,6 +485,9 @@ can access the server version and the chosen protocol version, but those
 aren't really what we want.  It might make sense to debug_printf those
 when the connection is established though? */
 
+/* version 9.1 onwards */
+g = string_fmt_append(g, "Library version: PostgreSQL: Runtime: %d.%d\n",
+			ver/10000, ver%10000);
 return g;
 }
 

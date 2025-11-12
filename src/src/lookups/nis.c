@@ -101,6 +101,7 @@ return (rc == YPERR_KEY || rc == YPERR_MAP)? FAIL : DEFER;
 gstring *
 nis_version_report(gstring * g)
 {
+/* maybe part of glibc? */
 #ifdef DYNLOOKUP
 g = string_fmt_append(g, "Library version: NIS: Exim version %s\n", EXIM_VERSION_STR);
 #endif

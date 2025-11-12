@@ -83,10 +83,8 @@ return quoted;
 gstring *
 testdb_version_report(gstring * g)
 {
-#ifdef DYNLOOKUP
-g = string_fmt_append(g, "Library version: TestDB: Exim version %s\n", EXIM_VERSION_STR);
-#endif
-return g;
+return string_fmt_append(g, "Library version: TestDB: Exim version %s\n",
+			EXIM_VERSION_STR);
 }
 
 

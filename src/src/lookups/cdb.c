@@ -462,10 +462,8 @@ if (cdbp->cdb_map)
 gstring *
 cdb_version_report(gstring * g)
 {
-#ifdef DYNLOOKUP
-g = string_fmt_append(g, "Library version: CDB: Exim version %s\n", EXIM_VERSION_STR);
-#endif
-return g;
+return string_fmt_append(g, "Library version: CDB: Exim %s builtin\n",
+			  EXIM_VERSION_STR);
 }
 
 

@@ -347,6 +347,7 @@ while ((cn = nmh_connections))
 gstring *
 nmh_version_report(gstring * g)
 {
+/* NMH has no version api! */
 #ifdef DYNLOOKUP
 g = string_fmt_append(g, "Library version: NMH: Exim version %s\n", EXIM_VERSION_STR);
 #endif

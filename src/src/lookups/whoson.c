@@ -68,13 +68,8 @@ switch (wso_query(CS query, CS buffer, sizeof(buffer)))
 gstring *
 whoson_version_report(gstring * g)
 {
-g = string_fmt_append(g,
+return string_fmt_append(g,
   "Library version: Whoson: Runtime: %s\n", wso_version());
-#ifdef DYNLOOKUP
-g = string_fmt_append(g,
-  "                         Exim version %s\n", EXIM_VERSION_STR);
-#endif
-return g;
 }
 
 static lookup_info _lookup_info = {

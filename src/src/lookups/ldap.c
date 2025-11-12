@@ -1563,11 +1563,29 @@ return quoted;
 gstring *
 ldap_version_report(gstring * g)
 {
-#ifdef DYNLOOKUP
-/*XXX it would be nice to haul a version string for the underlying ldap library */
-g = string_fmt_append(g, "Library version: LDAP: Exim version %s\n", EXIM_VERSION_STR);
-#endif
+#ifdef LDAP_LIB_OPENLDAP2
+LDAP * ld = ldap_init("", 0);
+LDAPAPIInfo info = {.ldapai_info_version = LDAP_API_INFO_VERSION};
+
+g = string_fmt_append(g, "Library version: LDAP: Compile %s %u.%u.%u\n",
+    LDAP_VENDOR_NAME, LDAP_VENDOR_VERSION_MAJOR,
+    LDAP_VENDOR_VERSION_MINOR, LDAP_VENDOR_VERSION_PATCH);
+
+if (ldap_get_option(ld, LDAP_OPT_API_INFO, &info) == LDAP_OPT_SUCCESS)
+  {
+  g = string_fmt_append(g, "                       Runtime %s %d\n",
+      info.ldapai_vendor_name, info.ldapai_vendor_version);
+
+  for (char ** sp = info.ldapai_extensions; *sp; *sp++)
+    ldap_memfree(*sp);
+  ldap_memfree(info.ldapai_extensions);
+  ldap_memfree(info.ldapai_vendor_name);
+  }
 return g;
+
+#else
+return string_fmt_append(g, "Library version: LDAP: (unknown)\n");
+#endif
 }
 
 
