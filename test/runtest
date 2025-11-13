@@ -1486,7 +1486,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /try option 'acl_smtp_dkim'$/;
 
     # DMARC: the native implementation builds a bunch of REs during init
-    next if / compiled RE '\^.+' (?:not found|saved) in local cache$/;
+    next if / compiled RE '\^(?:mailto:.+|\\d\{1,(?:3|10)\}\$|\[01ds\]\$)' (?:not found|saved) in local cache$/;
 
     # Some platforms have TIOCOUT, some do not
     next if /\d+ bytes remain in socket output buffer$/;
@@ -1786,7 +1786,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # pid in debug lines
     s/^(\d\d:\d\d:\d\d(?:\.\d{3})?\s+)(\d+)/$1 . new_value($2, "p%s", \$next_pid) . " "/mgxe;
-    s/(?<!post-)[Pp]rocess\K(\s\d+ )/new_value($1, "p%s", \$next_pid) . " "/gxe;
+    s/(?<!post-)[Pp]rocess\s\K(\d+ )/new_value($1, "p%s", \$next_pid) . " "/gxe;
 
     # Path in environment varies
     s/ PATH=\K.*$/<munged>/;
