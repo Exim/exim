@@ -418,6 +418,9 @@ g = string_fmt_append(g, "align_dkim %d\n"
   gstring * g2 = NULL;
   typedef const uschar * (*fn_t)(gstring **);
 
+  if (!dmarc_arc_mod_info)
+    dmarc_arc_mod_info = misc_mod_findonly(US"arc");
+
   if (  dmarc_arc_mod_info
      && (s = (((fn_t *) dmarc_arc_mod_info->functions)[ARC_ARCSET_INFO]) (&g2)))
     {
@@ -437,7 +440,7 @@ g = string_fmt_append(g, "align_dkim %d\n"
   else
 
 # endif
-    g = string_fmt_append(g, "arc %d\narc_policy %d json:[]\n",
+    g = string_fmt_append(g, "arc %d\narc_policy %d json[ ]\n",
 		      ARES_RESULT_UNKNOWN, DMARC_ARC_POLICY_RESULT_UNUSED);
   }
 #endif
