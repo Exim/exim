@@ -1576,7 +1576,7 @@ if (ldap_get_option(ld, LDAP_OPT_API_INFO, &info) == LDAP_OPT_SUCCESS)
   g = string_fmt_append(g, "                       Runtime %s %d\n",
       info.ldapai_vendor_name, info.ldapai_vendor_version);
 
-  for (char ** sp = info.ldapai_extensions; *sp; *sp++)
+  for (char ** sp = info.ldapai_extensions; *sp; sp++)
     ldap_memfree(*sp);
   ldap_memfree(info.ldapai_extensions);
   ldap_memfree(info.ldapai_vendor_name);
