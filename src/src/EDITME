@@ -406,7 +406,8 @@ TRANSPORT_SMTP=yes
 # for the specialist case of using the DNS as a general database facility (not
 # common).
 # If set to "2" instead of "yes" then the corresponding lookup will be
-# built as a module and must be installed into LOOKUP_MODULE_DIR. You need to
+# built as a module and left in the "dynlibs" directory under the build
+# directory. They must be installed into LOOKUP_MODULE_DIR. You need to
 # add -export-dynamic -rdynamic to EXTRALIBS. You may also need to add -ldl to
 # EXTRALIBS so that dlopen() is available to Exim. You need to define
 # LOOKUP_MODULE_DIR above so the exim binary actually loads dynamic lookup

@@ -86,11 +86,15 @@ return FAIL;
 gstring *
 spf_version_report(gstring * g)
 {
+#if EXIM_HAVE_SPF == 2
+return g;
+#else
 int maj, min, patch;
 
 SPF_get_lib_version(&maj, &min, &patch);
 return string_fmt_append(g, "Library version: SPF: Runtime: %d.%d.%d\n",
       maj, min, patch);
+#endif
 }
 
 
