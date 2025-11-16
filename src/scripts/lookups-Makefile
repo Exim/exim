@@ -158,7 +158,7 @@ sed -n "1,/$tag_marker/p" < "$input"
 
 for name_mod in \
     CDB DBM:dbmdb DNSDB DSEARCH JSON LMDB LDAP LSEARCH MYSQL NIS NISPLUS \
-    NMH ORACLE PASSWD PGSQL PSL REDIS SQLITE SPF TESTDB WHOSON
+    NMH ORACLE PASSWD PGSQL PSL REDIS SQLITE SPF SPF_PERL:spf TESTDB WHOSON
 do
   emit_module_rule $name_mod
 done

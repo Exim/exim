@@ -127,7 +127,7 @@ spf_lib_version_report(gstring * g)
 {
 /*XXX Does Mail::SPF have a version? MetaCPAN says yes, but does not
 document a method that returns it. */
-return string_fmt_append(g, "Library_version: SPF: perl Mail::SPF\n");
+return string_cat(g, US"Library_version: SPF: perl Mail::SPF\n");
 }
 
 

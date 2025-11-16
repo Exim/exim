@@ -1701,6 +1701,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^try option 'socks_proxy'$/;
 
     # Not all platforms build with SPF enabled
+    next if /^Library_version: SPF:/;
     next if /(^$time_pid?spf_conn_init|spf_compile\.c)/;
     next if /try option 'spf_smtp_comment_template'$/;
     next if /^$time_pid?Loaded "(?:dkim|dmarc|exim_filter|spf)"$/;
