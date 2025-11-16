@@ -1000,10 +1000,12 @@ else
       last_sig->next = sig;
       }
 
+    /* Check for too many signatures */
+
     if (dkim_collect_input && --dkim_collect_input == 0)
       {
       ctx->headers = pdkim_prepend_stringlist(ctx->headers, g->s);
-      g->s[g->ptr = 0] = '\0';
+      gstring_reset(g);
       return PDKIM_ERR_EXCESS_SIGS;
       }
     }
@@ -1013,7 +1015,7 @@ else
   }
 
 BAIL:
-g->s[g->ptr = 0] = '\0';	/* leave buffer for reuse */
+gstring_reset(g);	/* leave buffer for reuse */
 return PDKIM_OK;
 }
 

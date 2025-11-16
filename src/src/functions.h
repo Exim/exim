@@ -1080,7 +1080,7 @@ if (gstring_last_char(g) == c) gstring_trim(g, 1);
 static inline void
 gstring_reset(gstring * g)
 {
-g->ptr = 0;
+g->s[g->ptr = 0] = '\0';
 }
 
 

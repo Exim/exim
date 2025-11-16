@@ -299,7 +299,6 @@ dmarc_process(void)
 {
 const uschar * rr;
 BOOL has_dmarc_record = TRUE;
-u_char ** ruf; /* forensic report addressees, if called for */
 
 dmarc_alignment_spf = dmarc_alignment_dkim = FALSE;
 dmarc_dkim_alignment = DMARC_POLICY_DKIM_ALIGNMENT_FAIL;

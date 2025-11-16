@@ -836,6 +836,7 @@ Returns:     pointer to character string
 uschar *
 host_ntoa(int type, const void * arg, uschar * buffer, int * portptr)
 {
+#define NTOA_BSIZE 46
 uschar * yield;
 
 /* The new world. It is annoying that we have to fish out the address from
@@ -845,7 +846,7 @@ function inet_ntoa() returns just uschar *, and some picky compilers insist
 on warning if one assigns a const uschar * to a uschar *. Hence the casts. */
 
 #if HAVE_IPV6
-uschar addr_buffer[46];
+uschar addr_buffer[NTOA_BSIZE];
 if (type < 0)
   {
   int family = ((struct sockaddr *)arg)->sa_family;
@@ -888,7 +889,7 @@ else
 
 /* If there is no buffer, put the string into some new store. */
 
-if (!buffer) buffer = store_get(46, GET_UNTAINTED);
+if (!buffer) buffer = store_get(NTOA_BSIZE, GET_UNTAINTED);
 
 /* Callers of this function with a non-NULL buffer must ensure that it is
 large enough to hold an IPv6 address, namely, at least 46 bytes. That's what
@@ -896,9 +897,10 @@ makes this use of strcpy() OK.
 If the library returned apparently an apparently tainted string, clean it;
 we trust IP addresses. */
 
-string_format_nt(buffer, 46, "%s", yield);
+string_format_nt(buffer, NTOA_BSIZE, "%s", yield);
 return buffer;
 }
+#undef NTOA_BSIZE
 
 
 
