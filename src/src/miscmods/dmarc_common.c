@@ -11,9 +11,6 @@
 
 #ifdef EXIM_HAVE_DMARC
 
-// #  include "dmarc.h"
-// #  include "pdkim.h"
-
 extern BOOL		dmarc_local_init(void);
 extern void		dmarc_local_msg_init(void);
 extern gstring *	dmarc_version_report(gstring *);

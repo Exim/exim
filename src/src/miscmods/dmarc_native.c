@@ -43,7 +43,7 @@ if (!dmarc_regex_uri)
   dmarc_regex_uri = regex_must_compile(US "^mailto:[^@]+@[^ !]+(?:[ !]|$)",
 							MCS_CACHEABLE, FALSE);
 if (!dmarc_regex_pct)
-  dmarc_regex_uri = regex_must_compile(US "^\\d{1,3}$",  MCS_CACHEABLE, FALSE);
+  dmarc_regex_pct = regex_must_compile(US "^\\d{1,3}$",  MCS_CACHEABLE, FALSE);
 if (!dmarc_regex_ri)
   dmarc_regex_ri =  regex_must_compile(US "^\\d{1,10}$", MCS_CACHEABLE, FALSE);
 if (!dmarc_regex_fo)
@@ -56,13 +56,6 @@ if (!dmarc_regex_fo)
 gstring *
 dmarc_version_report(gstring * g)
 {
-/*
-return string_fmt_append(g, "Library version: dmarc: Compile: %d.%d.%d.%d\n",
-    (OPENDMARC_LIB_VERSION & 0xff000000) >> 24,
-    (OPENDMARC_LIB_VERSION & 0x00ff0000) >> 16,
-    (OPENDMARC_LIB_VERSION & 0x0000ff00) >> 8,
-    (OPENDMARC_LIB_VERSION & 0x000000ff));
-*/
 return string_fmt_append(g, "Library version: dmarc: Exim %s builtin\n",
 			    EXIM_VERSION_STR);
 }

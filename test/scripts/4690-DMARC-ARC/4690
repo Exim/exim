@@ -1,6 +1,6 @@
 # DMARC history-report of ARC results
 #
-mkdir DIR/tmp
+mkdir -p DIR/tmp
 sudo chmod 777 DIR/tmp
 #
 exim -DSERVER=server -bd -oX PORT_D
@@ -11,11 +11,13 @@ exim -DSERVER=server -bd -oX PORT_D
 # The outbound signs it with that, and the 2nd forwarder is happy to pass it.
 # The outbound signs again, and the final receiver is happy.
 #
-client 127.0.0.1 PORT_D
+# (Do not use localhost for the client; libspf2 special-cases it)
+#
+client HOSTIPV4 PORT_D
 ??? 220
 HELO xxx
 ??? 250
-MAIL FROM:<CALLER@test.ex>
+MAIL FROM:<CALLER@passspf.test.ex>
 ??? 250
 RCPT TO:<zza@test.ex>
 ??? 250

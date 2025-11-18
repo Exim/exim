@@ -1,10 +1,10 @@
-Connecting to 127.0.0.1 port PORT_D ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> HELO xxx
 ??? 250
-<<< 250 test.ex Hello xxx [127.0.0.1]
->>> MAIL FROM:<CALLER@test.ex>
+<<< 250 test.ex Hello xxx [ip4.ip4.ip4.ip4]
+>>> MAIL FROM:<CALLER@passspf.test.ex>
 ??? 250
 <<< 250 OK
 >>> RCPT TO:<zza@test.ex>
@@ -27,9 +27,9 @@ End of script
 job 10HmaX-000000005vi-0000
 reporter test.ex
 received 1692480217
-ipaddr 127.0.0.1
+ipaddr ip4.ip4.ip4.ip4
 from test.ex
-mfrom test.ex
+mfrom passspf.test.ex
 spf 0
 pdomain test.ex
 policy 15
@@ -49,7 +49,7 @@ reporter test.ex
 received 1692480217
 ipaddr 127.0.0.1
 from test.ex
-mfrom test.ex
+mfrom passspf.test.ex
 spf 0
 pdomain test.ex
 policy 15
@@ -63,13 +63,13 @@ align_dkim 5
 align_spf 4
 action 2
 arc 0
-arc_policy 0 json[ ("i":1, "d":"test.ex", "s":"sel", "ip":"127.0.0.1") ]
+arc_policy 0 json[ ("i":1, "d":"test.ex", "s":"sel", "ip":"ip4.ip4.ip4.ip4") ]
 job 10HmaZ-000000005vi-0000
 reporter test.ex
 received 1692480217
 ipaddr 127.0.0.1
 from test.ex
-mfrom test.ex
+mfrom passspf.test.ex
 spf 0
 pdomain test.ex
 policy 15
@@ -83,4 +83,4 @@ align_dkim 5
 align_spf 4
 action 2
 arc 0
-arc_policy 0 json[ ("i":1, "d":"test.ex", "s":"sel", "ip":"127.0.0.1"), ("i":2, "d":"test.ex", "s":"sel", "ip":"127.0.0.1") ]
+arc_policy 0 json[ ("i":1, "d":"test.ex", "s":"sel", "ip":"ip4.ip4.ip4.ip4"), ("i":2, "d":"test.ex", "s":"sel", "ip":"127.0.0.1") ]
