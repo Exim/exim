@@ -428,7 +428,6 @@ return quoted;
 /*************************************************
 *         Version reporting entry point          *
 *************************************************/
-#include "../version.h"
 
 gstring *
 redis_version_report(gstring * g)

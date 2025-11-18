@@ -1,0 +1,17 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D port PORT_S port PORT_D2
+1999-03-02 09:44:33 spf_result         neutral (guess <yes>)
+1999-03-02 09:44:33 Authentication-Results: myhost.test.ex;\n	spf=neutral (best guess record for domain) smtp.mailfrom=test.example.com
+1999-03-02 09:44:33 
+1999-03-02 09:44:33 H=(testclient) [ip4.ip4.ip4.ip4] F=<b@test.example.com> rejected RCPT <fred@test.ex>
+1999-03-02 09:44:33 spf_result         pass
+1999-03-02 09:44:33 Authentication-Results: myhost.test.ex;\n	spf=pass smtp.mailfrom=example.com
+1999-03-02 09:44:33 
+1999-03-02 09:44:33 spf_result         pass (guess <no>)
+1999-03-02 09:44:33 Authentication-Results: myhost.test.ex;\n	spf=pass smtp.mailfrom=example.com
+1999-03-02 09:44:33 
+1999-03-02 09:44:33 spf_result          (guess <no>)
+1999-03-02 09:44:33 Authentication-Results: myhost.test.ex
+1999-03-02 09:44:33 
+1999-03-02 09:44:33 H=(testclient) [127.0.0.1] F=<c@example.com> rejected RCPT <fred@test.ex>

@@ -1,24 +1,18 @@
 # acl condition and variables
 #
-# The 127.0.0.1 source addr seems to be a builtin in the spf library; no dns lookup is done.
-# HOSTIPV4 does get a series of lookups (see server debug output to verify that).
+# The 127.0.0.1 source addr seems to be a builtin in the libspf2 library;
+# no dns lookup is done.  So we run a separate testcase for that.
+# HOSTIPV4 does get a series of lookups (see server debug output to verify that)
 #
-# The libspf2 object stack is built with an exim-specific DNS lookup base object,
-# so the testsuite intercept to fakedns works.  Be careful of names and addresses
-# used, as nonhandled lookups are passed on to real DNS.
+# The libspf2 object stack is built with an exim-specific DNS lookup base
+# object, so the testsuite intercept to fakedns works.
+# Be careful of names and addresses used, as nonhandled lookups are passed on
+# to real DNS.
 #
-exim -bd -DSERVER=server -oX PORT_D:PORT_S:PORT_D2
+exim -bd -DSERVER=server -oX PORT_S:PORT_D2
 ****
-client 127.0.0.1 PORT_S
-??? 220
-helo testclient
-??? 250
-mail from:<a@example.com>
-??? 250
-rcpt to:<fred@test.ex>
-??? 250
-quit
-****
+#
+# no dns record - should get "none"
 client HOSTIPV4 PORT_S
 ??? 220
 helo testclient
@@ -29,38 +23,58 @@ rcpt to:<fred@test.ex>
 ??? 250
 quit
 ****
-client 127.0.0.1 PORT_D
+#
+# "fail"
+client HOSTIPV4 PORT_S
 ??? 220
 helo testclient
 ??? 250
-mail from:<c@example.com>
-??? 250
-rcpt to:<fred@test.ex>
-??? 250
-quit
-****
-client HOSTIPV4 PORT_D
-??? 220
-helo testclient
-??? 250
-mail from:<b@test.example.com>
-??? 250
-rcpt to:<fred@test.ex>
-??? 550
-quit
-****
-client 127.0.0.1 PORT_D2
-??? 220
-helo testclient
-??? 250
-mail from:<c@example.com>
+mail from:<failme@example.com>
 ??? 250
 rcpt to:<fred@test.ex>
 ??? 550
 quit
 ****
 #
+# "pass"
+client HOSTIPV4 PORT_S
+??? 220
+helo testclient
+??? 250
+mail from:<a@passme.example.com>
+??? 250
+rcpt to:<fred@test.ex>
+??? 250
+quit
+****
 #
+#
+# "neutral"
+client HOSTIPV4 PORT_S
+??? 220
+helo testclient
+??? 250
+mail from:<a@neutral.example.com>
+??? 250
+rcpt to:<fred@test.ex>
+??? 250
+quit
+****
+#
+#
+# "softfail"
+client HOSTIPV4 PORT_S
+??? 220
+helo testclient
+??? 250
+mail from:<a@softfail.example.com>
+??? 250
+rcpt to:<fred@test.ex>
+??? 250
+quit
+****
+#
+#XXX we need testcases for the other results
 #
 #
 #
@@ -76,7 +90,7 @@ rcpt to:<fred@test.ex>
 quit
 ****
 #
-# helo name is overridden when a mailfrom is set
+# a nonempty mailfrom takes precedence over the helo
 client HOSTIPV4 PORT_S
 ??? 220
 helo passme.helo.example.com

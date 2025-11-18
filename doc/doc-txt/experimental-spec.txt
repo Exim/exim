@@ -424,6 +424,8 @@ default values.  The spf_* options currently exist but are ignored.
 
 Note that the perl module behaves differently to libspf2 -
 for example, it does not give localhost a free pass.
+There is no support for the "spf_guess" ACL condition; it replicates 
+the plain "spf" condition.
 
 The embedded perl interpreter is started when an spf ACL condition or an
 spf lookup string-expansion is done, if not already running.  Use of the

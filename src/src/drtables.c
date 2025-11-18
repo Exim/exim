@@ -185,9 +185,13 @@ if (info->magic != LOOKUP_MODULE_INFO_MAGIC)
   }
 
 addlookupmodule(info);
-EARLY_DEBUG(D_lookup, "Loaded %q (%d lookup type%s)\n",
+if (debug_startup)
+  { EARLY_DEBUG(D_lookup, "Loaded %q (%d lookup type%s)\n",
 				    name, info->lookupcount,
-				    info->lookupcount > 1 ? "s" : "");
+				    info->lookupcount > 1 ? "s" : ""); }
+else
+  DEBUG(D_lookup) debug_printf_indent("Loaded module %q\n", name);
+
 return TRUE;
 }
 
@@ -341,7 +345,8 @@ if ((mi = misc_mod_findonly(name))) return mi;
 #ifdef LOOKUP_MODULE_DIR
 return misc_mod_load(name, errstr);
 #else
-*errstr = string_sprintf("module '%s' not found", name);
+*errstr = string_sprintf("module %q not built-in, and"
+	"no setting for LOOKUP_MODULE_DIR", name);
 return NULL;
 #endif	/*LOOKUP_MODULE_DIR*/
 }
@@ -470,7 +475,7 @@ else
   closedir(dd);
   }
 
-EARLY_DEBUG(D_lookup, "Loaded %d lookup modules\n", countmodules);
+EARLY_DEBUG(D_lookup, "Loaded %d dynamic lookup modules\n", countmodules);
 #endif
 }
 

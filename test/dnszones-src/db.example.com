@@ -32,6 +32,9 @@ doubleplus	TXT	v=spf1 include:_spf.google.com ~all
 		TXT	google-site-verification=q-4MSVLjluQIsBztu5jzJBxAcJXzNcHAk0jHTZEamB8
 		TXT	v=spf1 +a +mx -all
 
+passme		TXT	v=spf1 +all
+neutral		TXT	v=spf1 ?all
+softfail	TXT	v=spf1 ~all
 uppercase	TXT	v=sPf1 +all
 passme.helo	TXT	v=spf1 +all
 

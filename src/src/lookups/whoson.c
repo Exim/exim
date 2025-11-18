@@ -63,8 +63,6 @@ switch (wso_query(CS query, CS buffer, sizeof(buffer)))
 
 /* See local README for interface description. */
 
-#include "../version.h"
-
 gstring *
 whoson_version_report(gstring * g)
 {

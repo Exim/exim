@@ -131,7 +131,8 @@ s = US SvPV(ST(0), len);
 log_write(0, LOG_MAIN, "%.*s", (int)len, s);
 }
 
-/* Do a DNS lookup using Exim's facilities.  Returns a scalar with the response packet. */
+/* Do a DNS lookup using Exim's facilities.
+Returns a scalar with the response packet; undef for DNS_FAIL or DNS_AGAIN. */
 
 XS(xs_dns_lookup)
 {
@@ -154,8 +155,10 @@ debug_printf_indent(" dnsa answer %p len %d\n", dnsa->answer, dnsa->answerlen);
 */
 
 ST(0) = sv_newmortal();
-sv_setpvn(ST(0), CCS dnsa->answer,
-		  (STRLEN) (dns_res == DNS_NODATA ? 0 : dnsa->answerlen));
+if (dns_res == DNS_AGAIN || dns_res == DNS_FAIL)
+  sv_setsv(ST(0), &PL_sv_undef);
+else
+  sv_setpvn(ST(0), CCS dnsa->answer, (STRLEN) dnsa->answerlen);
 XSRETURN(1);	/* ? needed because there are 2 arg, but 1 res? */
 
 store_free_dns_answer(dnsa);
@@ -222,9 +225,11 @@ errstr = exim_perl_add_codeblock(US
 	"\"TLSA\"  => 52,"
 	"\"SPF\"   => 99,"
 	"};"
-	"my $rrtype = $rr->{$rrtype_str};"		/*XXX only one rrtype per query...*/
+	/*XXX only one rrtype per query...*/
+	"my $rrtype = $rr->{$rrtype_str};"
         "my $dnsa = Exim::dns_lookup($dom, $rrtype);"
-	"my $res = Net::DNS::Packet->decode( \\$dnsa );"
+	"my $res;"
+	"my $res = Net::DNS::Packet->decode(\\$dnsa) unless (!defined($dnsa));"
 		/* "Exim::debug_write( $res->string . '\n' );" */
 	"return $res;"
   "}"

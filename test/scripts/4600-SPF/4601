@@ -2,7 +2,8 @@
 #
 exim -bd -DSERVER=server -oX PORT_D:PORT_S
 ****
-client 127.0.0.1 PORT_D
+# do not use 127.0.0.1 here; libspf2 special-cases a pass for that
+client HOSTIPV4 PORT_D
 ??? 220
 helo testclient
 ??? 250
@@ -12,7 +13,7 @@ rcpt to:<fred@test.ex>
 ??? 250
 quit
 ****
-client 127.0.0.1 PORT_S
+client HOSTIPV4 PORT_S
 ??? 220
 helo testclient
 ??? 250
@@ -28,7 +29,8 @@ killdaemon
 #
 #
 exim -be
-eDNS_NOMATCH       none      ${lookup {fred@v6.test.ex} spf {HOSTIPV4}}
+eDNS_NOMATCH       none      ${lookup {fred@nosuch.test.ex} spf {HOSTIPV4}}
+eDNS_NODATA        none      ${lookup {fred@v6.test.ex} spf {HOSTIPV4}}
 eDNS_AGAIN         temperror ${lookup {fred@test.again.dns} spf {HOSTIPV4}}
 multiple rr        permerror ${lookup {fred@double.example.com} spf {8.8.8.8}}
 multi + non-spf    permerror ${lookup {fred@doubleplus.example.com} spf {8.8.8.8}}

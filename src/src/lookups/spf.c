@@ -81,39 +81,33 @@ return FAIL;
 
 /* See local README for interface description. */
 
-#include "../version.h"
-
 gstring *
 spf_version_report(gstring * g)
 {
-#if EXIM_HAVE_SPF == 2
-return g;
-#else
-int maj, min, patch;
-
-SPF_get_lib_version(&maj, &min, &patch);
-return string_fmt_append(g, "Library version: SPF: Runtime: %d.%d.%d\n",
-      maj, min, patch);
-#endif
+uschar * dummy_errmsg;
+misc_module_info * mi = misc_mod_find(US"spf", &dummy_errmsg);
+return mi && mi->lib_vers_report ? mi->lib_vers_report(g) : g;
 }
 
 
+
 static lookup_info spf_lookup_info = {
-  .name = US"spf",			/* lookup name */
-  .type = 0,				/* not absfile, not query style */
-  .open = spf_open,			/* open function */
-  .check = NULL,			/* no check function */
-  .find = spf_find,			/* find function */
-  .close = spf_close,			/* close function */
-  .tidy = NULL,				/* no tidy function */
-  .quote = NULL,			/* no quoting function */
-  .version_report = spf_version_report             /* version reporting */
+  .name =	US"spf",		/* lookup name */
+  .type =	0,			/* not absfile, not query style */
+  .open =	spf_open,		/* open function */
+  .check =	NULL,			/* no check function */
+  .find =	spf_find,		/* find function */
+  .close =	spf_close,		/* close function */
+  .tidy =	NULL,			/* no tidy function */
+  .quote =	NULL,			/* no quoting function */
+  .version_report = spf_version_report	/* version reporting */
 };
 
-#ifdef notdef_DYNLOOKUP
-#define spf_lookup_module_info _lookup_module_info
+#ifdef DYNLOOKUP
+# define spf_lookup_module_info _lookup_module_info
 #endif
 
 static lookup_info *_lookup_list[] = { &spf_lookup_info };
-lookup_module_info spf_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
+lookup_module_info spf_lookup_module_info =
+  { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 

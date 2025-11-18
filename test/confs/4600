@@ -29,7 +29,6 @@ limits_advertise_hosts = !*
 tls_advertise_hosts =
 
 primary_hostname = myhost.test.ex
-# log_selector = +millisec
 
 # ----- Main settings -----
 
@@ -38,33 +37,30 @@ acl_smtp_rcpt = check_rcpt
 begin acl
 
 check_rcpt:
-.ifdef _HAVE_EXPERIMENTAL_SPF_PERL
-# libspf2 alway pass for localhost, but Mail::SPF does not
-  accept	condition =	${if !eq {$received_port}{PORT_D2}}
-		hosts =		127.0.0.1
-.endif
-
   accept	condition =	${if eq {$received_port}{PORT_D}}
 		spf_guess =	pass
 		logwrite =	spf_result         $spf_result (guess <$spf_result_guessed>)
-		logwrite =	spf_header_comment $spf_header_comment
-		logwrite =	spf_smtp_comment   $spf_smtp_comment
-		logwrite =	spf_received       $spf_received
+#		logwrite =	spf_header_comment $spf_header_comment
+#		logwrite =	spf_smtp_comment   $spf_smtp_comment
+#		logwrite =	spf_received       $spf_received
 		logwrite =	${authresults {$primary_hostname}}
+		logwrite =
 
   accept	condition =	${if eq {$received_port}{PORT_S}}
 		spf =		pass : softfail : neutral : none
 		logwrite =	spf_result         $spf_result
-		logwrite =	spf_header_comment $spf_header_comment
-		logwrite =	spf_smtp_comment   $spf_smtp_comment
-		logwrite =	spf_received       $spf_received
+#		logwrite =	spf_header_comment $spf_header_comment
+#		logwrite =	spf_smtp_comment   $spf_smtp_comment
+#		logwrite =	spf_received       $spf_received
 		logwrite =	${authresults {$primary_hostname}}
+		logwrite =
 
   deny
 		logwrite =	spf_result         $spf_result (guess <$spf_result_guessed>)
-		logwrite =	spf_header_comment $spf_header_comment
-		logwrite =	spf_smtp_comment   $spf_smtp_comment
-		logwrite =	spf_received       $spf_received
+#		logwrite =	spf_header_comment $spf_header_comment
+#		logwrite =	spf_smtp_comment   $spf_smtp_comment
+#		logwrite =	spf_received       $spf_received
 		logwrite =	${authresults {$primary_hostname}}
+		logwrite =
 
 # End

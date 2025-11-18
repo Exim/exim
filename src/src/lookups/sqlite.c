@@ -163,8 +163,6 @@ return quoted;
 
 /* See local README for interface description. */
 
-#include "../version.h"
-
 gstring *
 sqlite_version_report(gstring * g)
 {

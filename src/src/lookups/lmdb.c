@@ -128,8 +128,6 @@ mdb_env_close(db_env);
 *         Version reporting entry point          *
 *************************************************/
 
-#include "../version.h"
-
 gstring *
 lmdb_version_report(gstring * g)
 {

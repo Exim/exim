@@ -212,7 +212,7 @@ else
   sep = '\n';
 
   spf_result = string_nextinlist(CUSS &res_list, &sep, NULL, 0);
-  DEBUG(D_acl) debug_printf_indent("SPF result is %s\n", spf_received);
+  DEBUG(D_acl) debug_printf_indent("MAIL::SPF result is %q\n", spf_received);
 
   spf_received = res_list;		/* remainder of the returned string */
 
@@ -329,9 +329,9 @@ spf_lookup_find(void * handle, const uschar * filename,
 {
 int res = FAIL;
 
-expand_level++;
 DEBUG(D_acl) debug_printf_indent("%s: mfrom:<%s> ip %q\n", __FUNCTION__,
 				  keystring, filename);
+expand_level++;
 
 if (setup_spf_perl_mi())
   if (!filename)
@@ -346,11 +346,12 @@ if (setup_spf_perl_mi())
       uschar * res_list = US string_from_gstring(g);
       int sep = '\n';
       *result = string_nextinlist(CUSS &res_list, &sep, NULL, 0);
-      DEBUG(D_acl) debug_printf_indent("SPF result is %s\n", *result);
+      DEBUG(D_acl) debug_printf_indent("MAIL::SPF result is %q\n", *result);
       res = OK;
       }
     }
 
+expand_level--;
 return res;
 }
 
