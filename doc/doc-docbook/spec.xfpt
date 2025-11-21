@@ -11285,6 +11285,11 @@ Whitespace at a chosen wrap point is removed.
 A line-wrap consists of a newline followed by a tab,
 and the tab is counted as 8 columns.
 
+.new
+&*Note*&: The defaults correspond to values defined in standards.
+Using larger values may result in problems in message delivery.
+.wen
+
 
 
 .vitem &*${hex2b64:*&<&'hexstring'&>&*}*&
