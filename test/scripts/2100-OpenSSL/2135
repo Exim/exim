@@ -5,8 +5,9 @@ need_ipv4
 exim -bd -DSERVER=server -oX PORT_D
 ****
 #
-# A recipient verify and continued-delivery.  The debug output should show "already connected to",
-# "proxied TLS", and the DATA smtp command only done by the transport process.
+# A recipient verify and continued-delivery.  The debug output should show
+# "already connected to", "proxied TLS",
+# and the DATA smtp command only done by the transport process.
 # cmdline -bs send
 exim -d-all+transport -bs
 helo test
@@ -23,6 +24,7 @@ sleep 1
 killdaemon
 exim -q
 ****
+#
 #
 #
 no_stdout_check

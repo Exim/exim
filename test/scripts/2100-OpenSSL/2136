@@ -5,10 +5,11 @@ need_ipv4
 # smtp send
 # a tls-capable target for the verify/delivery connection on PORT_D
 # plus a daemon under test on PORT_S
-exim -bd -DSERVER=server -oX PORT_D:PORT_S
+# The server debug should show "already connected to".
+exim -d-all+transport -bd -DSERVER=server -DSRV="" -oX PORT_D:PORT_S
 ****
 #
-client 127.0.0.1 PORT_S
+client HOSTIPV4 PORT_S
 ??? 220
 EHLO test.ex
 ??? 250-
@@ -39,10 +40,10 @@ exim -q
 #
 #
 # smtp send, deliver_drop_priv
-exim -bd -DSERVER=server -DOPT=deliver_drop_privilege -oX PORT_D:PORT_S
+exim -d-all+transport -bd -DSERVER=server -DSRV="" -DOPT=deliver_drop_privilege -oX PORT_D:PORT_S
 ****
 #
-client 127.0.0.1 PORT_S
+client HOSTIPV4 PORT_S
 ??? 220
 EHLO test.ex
 ??? 250-

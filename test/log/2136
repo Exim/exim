@@ -1,14 +1,20 @@
-1999-03-02 09:44:33 Start queue run: pid=p1234
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 => :blackhole: <userd@test.ex> R=target
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
-1999-03-02 09:44:33 End queue run: pid=p1234
-1999-03-02 09:44:33 Start queue run: pid=p1235
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <userf@test.ex> R=target
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
-1999-03-02 09:44:33 End queue run: pid=p1235
+2017-07-30 18:51:05.712 Start queue run: pid=p1234
+2017-07-30 18:51:05.712 End queue run: pid=p1234
+2017-07-30 18:51:05.712 Start queue run: pid=p1235
+2017-07-30 18:51:05.712 End queue run: pid=p1235
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D port PORT_S
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= userc@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userd@test.ex
-1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D port PORT_S
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= usere@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userf@test.ex
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D port PORT_S
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= userc@ok.example H=(test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss for userd@test.ex
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= userc@ok.example H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss for userd@test.ex
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => userd@test.ex R=passon T=t1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-000000005vi-0000"
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 => :blackhole: <userd@test.ex> R=target
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 Completed
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D port PORT_S
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= usere@ok.example H=(test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss for userf@test.ex
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= usere@ok.example H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss for userf@test.ex
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 => userf@test.ex R=passon T=t1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbA-000000005vi-0000"
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 => :blackhole: <userf@test.ex> R=target
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed

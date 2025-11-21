@@ -384,7 +384,7 @@ $date = "\\d{2}-\\w{3}-\\d{4}\\s\\d{2}:\\d{2}:\\d{2}";
 
 # Debug time & pid
 
-$time_pid = "(?:(?:\\d{2}:\\d{2}:\\d{2}\\s+)?\\d+\\s)";
+$time_pid = "(?:(?:\\d{2}:\\d{2}:\\d{2}\\s+)?p?\\d+\\s)";
 
 # Pattern for matching pids at start of stderr lines; initially something
 # that won't match.
@@ -398,7 +398,7 @@ $spid = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 LINE: while(<IN>)
   {
 RESET_AFTER_EXTRA_LINE_READ:
-#  print "<< $_" if $debug;
+  # print "<< $_" if $debug;
   if ($munge_skip)
     {
     # Munging is a no-op, except for exim_msgdate specials.
@@ -852,6 +852,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/^Port: (\d+)/"Port: " . new_value($1, "%s", \$next_port)/e;
   s/\(port=(\d+)/"(port=" . new_value($1, "%s", \$next_port)/e;
+  s/^Connection request from \S+ port \K(\d+)$/new_value($1, "%s", \$next_port)/e;
 
   # This handles "connection from" and the like, when the port is given
   s/(\[${re_ip}\]:)(\d+)/$1.new_value($2,"%s",\$next_port)/ie

@@ -1,5 +1,7 @@
 # Exim test configuration 2135
 
+SRV=queue_only
+
 .include DIR/aux-var/tls_conf_prefix
 
 .ifdef SERVER
@@ -21,10 +23,10 @@ acl_smtp_rcpt = client_rcpt
 acl_smtp_data = client_data
 .endif
 
-log_selector = +received_recipients +outgoing_port
+log_selector = +received_recipients +outgoing_port +millisec
 
 .ifdef SERVER
-queue_only
+SRV
 queue_run_in_order = true
 .endif
 
@@ -41,6 +43,8 @@ client_data:
 
 srvr_rcpt:
   defer	local_parts =	rcpt_defer
+  accept hosts =	HOSTIPV4
+	verify =	recipient/callout=use_sender,hold
   accept
 
 srvr_data:
@@ -50,6 +54,14 @@ srvr_data:
 # ----- Routers -----
 
 begin routers
+
+passon:
+  driver =	manualroute
+  condition =	${if eq {$sender_host_address}{HOSTIPV4}}
+  route_list=	* 127.0.0.1::PORT_D
+  self =	send
+  transport =	t1
+  errors_to =	""
 
 target:
   driver =	redirect
