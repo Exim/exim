@@ -40,7 +40,7 @@ routing myhost.test.ex@mxt1.test.ex
  lookuphost router called for myhost.test.ex@mxt1.test.ex
    domain = mxt1.test.ex
  main lookup for domain
-lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
+ lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
  lookuphost router passed for myhost.test.ex@mxt1.test.ex
 --------> self router <--------
  local_part=myhost.test.ex domain=mxt1.test.ex
@@ -55,7 +55,7 @@ route_item = * $local_part byname
  expanded list of hosts = 'myhost.test.ex' options = 'byname'
  set transport 'remote_smtp'
  finding IP address for myhost.test.ex
- calling host_find_byname
+  calling host_find_byname
  queued for remote_smtp transport: local_part = myhost.test.ex
  domain = mxt1.test.ex
    errors_to=NULL
@@ -81,7 +81,7 @@ routing xx@mxt1.test.ex
  lookuphost router called for xx@mxt1.test.ex
    domain = mxt1.test.ex
  main lookup for domain
-lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
+ lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
  lookuphost router passed for xx@mxt1.test.ex
 --------> self router <--------
  local_part=xx domain=mxt1.test.ex
@@ -96,7 +96,7 @@ route_item = * $local_part byname
  expanded list of hosts = 'xx' options = 'byname'
  set transport 'remote_smtp'
  finding IP address for xx
- calling host_find_byname
+  calling host_find_byname
  self router passed for xx@mxt1.test.ex
 --------> self2 router <--------
  local_part=xx domain=mxt1.test.ex
@@ -111,7 +111,7 @@ route_item = * myhost.test.ex byname
  expanded list of hosts = 'myhost.test.ex' options = 'byname'
  set transport 'remote_smtp'
  finding IP address for myhost.test.ex
- calling host_find_byname
+  calling host_find_byname
  queued for remote_smtp transport: local_part = xx
  domain = mxt1.test.ex
    errors_to=NULL

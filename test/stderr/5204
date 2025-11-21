@@ -170,8 +170,8 @@ route_item = * 127.0.0.1 byname
  expanded list of hosts = '127.0.0.1' options = 'byname'
  set transport 'smtp'
  finding IP address for 127.0.0.1
- calling host_find_byname
-remote host address is the local host: some.host: configured to try delivery anyway
+  calling host_find_byname
+  remote host address is the local host: some.host: configured to try delivery anyway
  queued for smtp transport: local_part = pass
  domain = some.host
    errors_to=NULL

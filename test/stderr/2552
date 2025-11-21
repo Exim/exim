@@ -83,7 +83,7 @@ host in "+ignore_unknown : +goodhosts"?
    ╎  the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=-151 
    ╎  checking addresses for the.local.host.name
    ╎  Forward DNS security status: unverified
-  ip4.ip4.ip4.ip4 OK
+   ╎    ip4.ip4.ip4.ip4 OK
    ╎sender_fullhost = the.local.host.name (test) [ip4.ip4.ip4.ip4]
    ╎sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4] helo=test)
    ╎list element: cioce.test.again.dns

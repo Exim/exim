@@ -291,8 +291,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxnone.test.ex>: domain doe
 >>> host in "@ : @[]"?
 >>>  list element: @
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=myhost.test.ex address=V4NET.10.10.10
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=myhost.test.ex address=V4NET.10.10.10
 >>>  list element: @[]
 >>> host in "@ : @[]"? no (end of list)
 >>> require: condition test failed in ACL acl_rcpt_5
@@ -317,8 +317,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <5@myhost.test.ex>: host doesn
 >>> host in "@ : @[]"?
 >>>  list element: @
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=myhost.test.ex address=V4NET.10.10.10
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=myhost.test.ex address=V4NET.10.10.10
 >>>  host in "@ : @[]"? yes (matched "@")
 >>> require: condition test succeeded in ACL acl_rcpt_5
 >>> processing ACL acl_rcpt_5 "accept" (TESTSUITE/test-config 41)
@@ -343,8 +343,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "@ : @[]"?
 >>>  list element: @
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=myhost.test.ex address=V4NET.10.10.10
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=myhost.test.ex address=V4NET.10.10.10
 >>>  list element: @[]
 >>>  host in "@ : @[]"? yes (matched "@[]")
 >>> require: condition test succeeded in ACL acl_rcpt_5

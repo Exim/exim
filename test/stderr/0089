@@ -91,7 +91,7 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>>    check dnssec request list
 >>>    ╎ten-99.test.ex not in empty list (option unset? cannot trace name)
 >>>    checking addresses for ten-99.test.ex
->>>   V4NET.0.0.99 OK
+>>>      V4NET.0.0.99 OK
 >>>  host in sender_unqualified_hosts? yes (matched "*N-99.test.EX")
 >>> host in recipient_unqualified_hosts? no (option unset)
 >>> host in helo_verify_hosts? no (option unset)

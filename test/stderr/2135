@@ -40,8 +40,8 @@ sync_responses expect rcpt for userb@test.ex
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
 LOG: smtp_connection MAIN
-  SMTP connection from CALLER D=qqs closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  SMTP connection from CALLER D=q.qqqs closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
 configuration file is TESTSUITE/test-config
@@ -77,12 +77,95 @@ cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 cmdlog: 'DATA:354:.:250:QUIT+:221'
 Leaving t1 transport
->>>>>>>>>>>>>>>> Exim pid=p1238 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-000000005vi-0000"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1239 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********
+Exim version x.yz ....
+Hints DB:
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+>>>>>>>>>>>>>>>> Exim pid=p1241 (cipher-validate) terminating with rc=0 >>>>>>>>>>>>>>>>
+daemon_smtp_port overridden by -oX:
+  <: PORT_D
+creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
+listening on all interfaces (IPv6) port PORT_D
+listening on all interfaces (IPv4) port PORT_D
+pid written to TESTSUITE/spool/exim-daemon.pid
+LOG: MAIN
+  exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Connection request from ip4.ip4.ip4.ip4 port 32772
+p1242 Process p1242 is handling incoming connection from [ip4.ip4.ip4.ip4]
+p1242 Process p1242 is ready for new message
+p1242 tester in helo_lookup_domains? no (end of list)
+p1242 userd in "rcpt_defer"? no (end of list)
+p1242  Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
+p1242  connected
+1 SMTP accept process running
+Connection request from 127.0.0.1 port sssss
+p1243 Process p1243 is handling incoming connection from [127.0.0.1]
+p1243 Process p1243 is ready for new message
+p1242    SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+p1242    SMTP>> EHLO myhost.test.ex
+p1242  cmd buf flush 21 bytes
+2 SMTP accept processes running
+p1243 host in chunking_advertise_hosts? no (end of list)
+p1242    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+p1242           250-SIZE 52428800
+p1242           250-LIMITS MAILMAX=1000 RCPTMAX=50000
+p1242           250-8BITMIME
+p1242           250-PIPELINING
+p1242           250-STARTTLS
+p1242           250 HELP
+p1242    SMTP>> STARTTLS
+p1242  cmd buf flush 10 bytes
+p1242    SMTP<< 220 TLS go ahead
+p1242  127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
+p1242    SMTP>> EHLO myhost.test.ex
+p1242  cmd buf flush 21 bytes
+p1243 host in chunking_advertise_hosts? no (end of list)
+p1242    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+p1242           250-SIZE 52428800
+p1242           250-LIMITS MAILMAX=1000 RCPTMAX=50000
+p1242           250-8BITMIME
+p1242           250-PIPELINING
+p1242           250 HELP
+p1242 using PIPELINING
+p1242 not using DSN
+p1242    SMTP|> MAIL FROM:<userc@ok.example>
+p1242    SMTP>> RCPT TO:<userd@test.ex>
+p1242  cmd buf flush 55 bytes
+p1242 sync_responses expect mail
+p1243 userd in "rcpt_defer"? no (end of list)
+p1243 host in "ip4.ip4.ip4.ip4"? no (end of list)
+p1242    SMTP<< 250 OK
+p1242 sync_responses expect rcpt for userd@test.ex
+p1242    SMTP<< 250 Accepted
+LOG: MAIN
+  <= userc@ok.example H=(tester) [ip4.ip4.ip4.ip4] P=smtp S=sss
+forked delivery process p1247 
+Process p1242 is ready for new message
+LOG: smtp_connection MAIN
+  SMTP connection from (tester) [ip4.ip4.ip4.ip4] D=q.qqqs closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=p1242 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1236 child p1242 ended: status=0x0
+p1236   normal exit, 0
+p1236 1 SMTP accept process now running
+LOG: MAIN
+  TLS error (SSL_read): on connection from localhost (myhost.test.ex) [127.0.0.1] error:0A000126:SSL routines::unexpected eof while reading
+LOG: lost_incoming_connection MAIN
+  unexpected disconnection while reading SMTP command from localhost (myhost.test.ex) [127.0.0.1] D=q.qqqs
+>>>>>>>>>>>>>>>> Exim pid=p1243 (daemon-accept) terminating with rc=1 >>>>>>>>>>>>>>>>
+p1236 child p1243 ended: status=0x100
+p1236   normal exit, 1
+p1236 0 SMTP accept processes now running
+p1236 SIGTERM/SIGINT seen
+p1236 >>>>>>>>>>>>>>>> Exim pid=p1236 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -528,7 +528,7 @@ for (struct ifaddrs * ifa = ifalist; ifa; ifa = ifa->ifa_next)
     last = next;
     }
 
-  DEBUG(D_interface) debug_printf("Actual local interface address is %s (%s)\n",
+  DEBUG(D_interface) debug_printf_indent("Actual local interface address is %s (%s)\n",
     last->address, ifa->ifa_name);
   }
 
@@ -761,7 +761,7 @@ for (char * cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
     last = next;
     }
 
-  DEBUG(D_interface) debug_printf("Actual local interface address is %s (%s)\n",
+  DEBUG(D_interface) debug_printf_indent("Actual local interface address is %s (%s)\n",
     last->address, ifreq.V_ifr_name);
   }
 

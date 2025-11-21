@@ -186,17 +186,17 @@ route_item = * $domain bydns
  set transport 'smtp'
  finding IP address for test.again.dns
 doing DNS lookup
- check dnssec require list
-  test.again.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.again.dns in dnssec_request_domains?
-   list element: *
-   test.again.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.again.dns (A) using fakens
- DNS lookup of test.again.dns (A) gave TRY_AGAIN
- test.again.dns in dns_again_means_nonexist? no (option unset)
- returning DNS_AGAIN
-  writing neg-cache entry for test.again.dns-A-xxxx, ttl -1
+  check dnssec require list
+   test.again.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.again.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.again.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.again.dns (A) using fakens
+  DNS lookup of test.again.dns (A) gave TRY_AGAIN
+  test.again.dns in dns_again_means_nonexist? no (option unset)
+  returning DNS_AGAIN
+   writing neg-cache entry for test.again.dns-A-xxxx, ttl -1
 useryz router: defer for usery@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -231,13 +231,13 @@ route_item = * $domain bydns
  expanded list of hosts = 'test.again.dns' options = 'bydns'
  finding IP address for test.again.dns
 doing DNS lookup
- check dnssec require list
-  test.again.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.again.dns in dnssec_request_domains?
-   list element: *
-   test.again.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.again.dns (A): using cached value DNS_AGAIN
+  check dnssec require list
+   test.again.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.again.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.again.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.again.dns (A): using cached value DNS_AGAIN
 useryz router: defer for userz@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -480,16 +480,16 @@ route_item = * $domain bydns
  set transport 'smtp'
  finding IP address for test.fail.dns
 doing DNS lookup
- check dnssec require list
-  test.fail.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.fail.dns in dnssec_request_domains?
-   list element: *
-   test.fail.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.fail.dns (A) using fakens
- DNS lookup of test.fail.dns (A) gave NO_RECOVERY
- returning DNS_FAIL
-  writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
+  check dnssec require list
+   test.fail.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.fail.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.fail.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.fail.dns (A) using fakens
+  DNS lookup of test.fail.dns (A) gave NO_RECOVERY
+  returning DNS_FAIL
+   writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
 useryz router: defer for usery@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -524,13 +524,13 @@ route_item = * $domain bydns
  expanded list of hosts = 'test.fail.dns' options = 'bydns'
  finding IP address for test.fail.dns
 doing DNS lookup
- check dnssec require list
-  test.fail.dns in dnssec_require_domains? no (option unset)
- check dnssec request list
-  test.fail.dns in dnssec_request_domains?
-   list element: *
-   test.fail.dns in dnssec_request_domains? yes (matched "*")
- DNS lookup of test.fail.dns (A): using cached value DNS_FAIL
+  check dnssec require list
+   test.fail.dns in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   test.fail.dns in dnssec_request_domains?
+   ╎list element: *
+   ╎test.fail.dns in dnssec_request_domains? yes (matched "*")
+  DNS lookup of test.fail.dns (A): using cached value DNS_FAIL
 useryz router: defer for userz@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -774,17 +774,17 @@ route_item = * $domain bydns
  set transport 'smtp'
  finding IP address for nonexist.test.ex
 doing DNS lookup
- check dnssec require list
-  nonexist.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  nonexist.test.ex in dnssec_request_domains?
-   list element: *
-   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of nonexist.test.ex (A) using fakens
- DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
- returning DNS_NOMATCH
- faking res_search(A) response length as 65535
-  writing neg-cache entry for nonexist.test.ex-A-xxxx, ttl 3000
+  check dnssec require list
+   nonexist.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   nonexist.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎nonexist.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of nonexist.test.ex (A) using fakens
+  DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
+  returning DNS_NOMATCH
+  faking res_search(A) response length as 65535
+   writing neg-cache entry for nonexist.test.ex-A-xxxx, ttl 3000
 useryz router: defer for usery@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -819,13 +819,13 @@ route_item = * $domain bydns
  expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
  finding IP address for nonexist.test.ex
 doing DNS lookup
- check dnssec require list
-  nonexist.test.ex in dnssec_require_domains? no (option unset)
- check dnssec request list
-  nonexist.test.ex in dnssec_request_domains?
-   list element: *
-   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
- DNS lookup of nonexist.test.ex (A): using cached value DNS_NOMATCH
+  check dnssec require list
+   nonexist.test.ex in dnssec_require_domains? no (option unset)
+  check dnssec request list
+   nonexist.test.ex in dnssec_request_domains?
+   ╎list element: *
+   ╎nonexist.test.ex in dnssec_request_domains? yes (matched "*")
+  DNS lookup of nonexist.test.ex (A): using cached value DNS_NOMATCH
 useryz router: defer for userz@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

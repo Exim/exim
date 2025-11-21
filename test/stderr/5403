@@ -89,11 +89,11 @@ LOG: rcpt for verify@domain.com
 >>>   domain.com in "*"?
 >>>    list element: *
 >>>    domain.com in "*"? yes (matched "*")
->>>   local host found for non-MX address
->>> fully qualified name = 127.0.0.1
+>>>    local host found for non-MX address
+>>>    fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=127.0.0.1 address=127.0.0.1
+>>>    get[host|ipnode]byname[2] looked up these IP addresses:
+>>>      name=127.0.0.1 address=127.0.0.1
 >>>  routed by all router
 >>> Attempting full verification using callout
 >>>  callout cache: disabled by no_cache

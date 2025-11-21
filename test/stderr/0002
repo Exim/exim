@@ -568,7 +568,7 @@ try option 'unknown_login'
   check dnssec request list
   ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
   checking addresses for ten-1.test.ex
-  V4NET.0.0.1 OK
+    V4NET.0.0.1 OK
  sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
  sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
  ├──────value: ten-1.test.ex
@@ -631,7 +631,7 @@ host in " partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
    ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
    checking addresses for ten-1.test.ex
    Forward DNS security status: unverified
-  V4NET.0.0.1 OK
+     V4NET.0.0.1 OK
  sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
  sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1])
  search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"

@@ -73,6 +73,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
 
   DEBUG(D_route|D_host_lookup)
     debug_printf_indent("finding IP address for %s\n", h->name);
+  expand_level++;
 
   /* Handle any port setting that may be on the name; it will be removed
   from the end of the name. */
@@ -164,12 +165,14 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
 
   if (rc == HOST_FIND_SECURITY)
     {
+    expand_level--;
     addr->message = string_sprintf("host lookup for %s done insecurely" , h->name);
     addr->basic_errno = ERRNO_DNSDEFER;
     return DEFER;
     }
   if (rc == HOST_FIND_AGAIN)
     {
+    expand_level--;
     if (rblock->pass_on_timeout)
       {
       DEBUG(D_route)
@@ -187,6 +190,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
 
   if (rc == HOST_FIND_FAILED)
     {
+    expand_level--;
     if (hff_code == hff_ignore)
       {
       if (prev == NULL) addr->host_list = next_h; else prev->next = next_h;
@@ -238,6 +242,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
         }
       prev->next = NULL;
       setflag(addr, af_local_host_removed);
+      expand_level--;
       break;
       }
     rc = rf_self_action(addr, h, rblock->self_code, rblock->self_rewrite,
@@ -245,6 +250,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
     if (rc != OK)
       {
       addr->host_list = NULL;   /* Kill the host list for */
+      expand_level--;
       return rc;                /* anything other than "send" */
       }
     self_send = TRUE;
@@ -255,6 +261,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
 
   prev = h;
   while (prev->next != next_h) prev = prev->next;
+  expand_level--;
   }
 
 return OK;

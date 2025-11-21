@@ -56,8 +56,8 @@
 >>>    host in "@"?
 >>>    ╎list element: @
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-1.test.ex address=V4NET.0.0.1
 >>>    ╎host in "@"? yes (matched "@")
 >>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
@@ -122,8 +122,8 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.1
 >>>    host in "@"?
 >>>    ╎list element: @
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-1.test.ex address=V4NET.0.0.1
 >>>    host in "@"? no (end of list)
 >>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)

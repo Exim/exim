@@ -1559,13 +1559,13 @@ LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>>   check dnssec request list
 >>>    ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>>   checking addresses for ten-3.test.ex
->>>   V4NET.0.0.3 OK
+>>>     V4NET.0.0.3 OK
 >>>   check dnssec require list
 >>>    ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>>   check dnssec request list
 >>>    ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>>   checking addresses for ten-3-alias.test.ex
->>>   V4NET.0.0.3 OK
+>>>     V4NET.0.0.3 OK
 >>> require: condition test succeeded in ACL acl_V4NET_0_0
 >>> processing ACL acl_V4NET_0_0 "accept" (TESTSUITE/test-config 98)
 >>> accept: condition test succeeded in ACL acl_V4NET_0_0
@@ -1620,7 +1620,7 @@ LOG: H=(test) [V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for re
 >>>   check dnssec request list
 >>>    x.test.again.dns not in empty list (option unset? cannot trace name)
 >>>   x.test.again.dns in dns_again_means_nonexist? no (option unset)
->>> temporary error for host name lookup
+>>>   temporary error for host name lookup
 >>> accept: condition test deferred in ACL acl_V4NET_99_99
 LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferred for reverse lookup check
 >>> host in hosts_connection_nolog? no (option unset)
@@ -1650,7 +1650,7 @@ LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup
 >>>   check dnssec request list
 >>>    x.test.again.dns not in empty list (option unset? cannot trace name)
 >>>   x.test.again.dns in dns_again_means_nonexist? no (option unset)
->>> temporary error for host name lookup
+>>>   temporary error for host name lookup
 >>> accept: condition test succeeded in ACL acl_V4NET_99_99
 >>> end of ACL acl_V4NET_99_99: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)

@@ -60,7 +60,7 @@ LOG: H=(test) [V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.u
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  checking addresses for ten-1.test.ex
->>>   V4NET.0.0.1 OK
+>>>    V4NET.0.0.1 OK
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
@@ -136,7 +136,7 @@ looking up host name for V4NET.99.99.90
  oneback.test.ex V4NET.99.99.90 mx=-1 sort=xx 
  checking addresses for oneback.test.ex
  Forward DNS security status: unverified
-  V4NET.99.99.90 OK
+   V4NET.99.99.90 OK
  check dnssec require list
   host1.masq.test.ex not in empty list (option unset? cannot trace name)
  check dnssec request list
@@ -146,8 +146,8 @@ looking up host name for V4NET.99.99.90
  host1.masq.test.ex V4NET.90.90.90 mx=-1 sort=xx 
  checking addresses for host1.masq.test.ex
  Forward DNS security status: unverified
-  V4NET.90.90.90
-no IP address for host1.masq.test.ex matched V4NET.99.99.90
+   V4NET.90.90.90
+ no IP address for host1.masq.test.ex matched V4NET.99.99.90
 sender_fullhost = oneback.test.ex [V4NET.99.99.90]
 sender_rcvhost = oneback.test.ex ([V4NET.99.99.90])
 set_process_info: pppp handling incoming connection from oneback.test.ex [V4NET.99.99.90]

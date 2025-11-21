@@ -12,7 +12,7 @@
 >>>    check dnssec request list
 >>>    ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>    checking addresses for ten-1.test.ex
->>>   V4NET.0.0.1 OK
+>>>      V4NET.0.0.1 OK
 >>>  host in sender_unqualified_hosts? yes (matched "^ten-1\.test\.ex")
 >>> host in recipient_unqualified_hosts? no (option unset)
 >>> host in helo_verify_hosts? no (option unset)

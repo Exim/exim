@@ -95,25 +95,25 @@ switch (code)
 
   case self_reroute:
     DEBUG(D_route)
-      debug_printf("%s: %s: domain changed to %s\n", msg, addr->domain, new);
+      debug_printf_indent("%s: %s: domain changed to %s\n", msg, addr->domain, new);
     rf_change_domain(addr, new, rewrite, addr_new);
     return REROUTED;
 
   case self_send:
     DEBUG(D_route)
-      debug_printf("%s: %s: configured to try delivery anyway\n", msg, addr->domain);
+      debug_printf_indent("%s: %s: configured to try delivery anyway\n", msg, addr->domain);
     return OK;
 
   case self_pass:    /* This is soft failure; pass to next router */
     DEBUG(D_route)
-      debug_printf("%s: %s: passed to next router (self = pass)\n", msg, addr->domain);
+      debug_printf_indent("%s: %s: passed to next router (self = pass)\n", msg, addr->domain);
     addr->message = msg;
     addr->self_hostname = string_copy(host->name);
     return PASS;
 
   case self_fail:
     DEBUG(D_route)
-      debug_printf("%s: %s: address failed (self = fail)\n", msg, addr->domain);
+      debug_printf_indent("%s: %s: address failed (self = fail)\n", msg, addr->domain);
     addr->message = msg;
     setflag(addr, af_pass_message);
     return FAIL;

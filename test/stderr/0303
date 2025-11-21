@@ -16,7 +16,7 @@
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  checking addresses for ten-1.test.ex
->>>   V4NET.0.0.1 OK
+>>>    V4NET.0.0.1 OK
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -36,7 +36,7 @@
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  checking addresses for ten-1.test.ex
->>>   V4NET.0.0.1 OK
+>>>    V4NET.0.0.1 OK
 >>>  list element: *
 >>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)

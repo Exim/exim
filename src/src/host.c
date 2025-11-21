@@ -413,7 +413,7 @@ else if (Ustrchr(h->name, ':') == p)
   h->name = string_copyn(h->name, p - h->name);
 else return PORT_NONE;
 
-DEBUG(D_route|D_host_lookup) debug_printf("host=%s port=%d\n", h->name, port);
+DEBUG(D_route|D_host_lookup) debug_printf_indent("host=%s port=%d\n", h->name, port);
 return port;
 }
 
@@ -792,7 +792,7 @@ if (!local_interface_data)
       local_interface_data = add_unique_interface(local_interface_data, ipa);
       DEBUG(D_interface)
         {
-        debug_printf("Configured local interface: address=%s", ipa->address);
+        debug_printf_indent("Configured local interface: address=%s", ipa->address);
         if (ipa->port != 0) debug_printf(" port=%d", ipa->port);
         debug_printf("\n");
         }
@@ -1408,7 +1408,7 @@ while (host != *lastptr)
       if (h->next->address != NULL &&
           Ustrcmp(h->next->address, host->address) == 0)
         {
-        DEBUG(D_host_lookup) debug_printf("duplicate IP address %s (MX=%d) "
+        DEBUG(D_host_lookup) debug_printf_indent("duplicate IP address %s (MX=%d) "
           "removed\n", host->address, h->next->mx);
         if (h->next == *lastptr) *lastptr = h;
         h->next = h->next->next;
@@ -1490,7 +1490,7 @@ if (  slow_lookup_log
 
 if (!hosts)
   {
-  HDEBUG(D_host_lookup) debug_printf("IP address lookup failed: h_errno=%d\n",
+  HDEBUG(D_host_lookup) debug_printf_indent("IP address lookup failed: h_errno=%d\n",
     h_errno);
   return (h_errno == TRY_AGAIN || h_errno == NO_RECOVERY) ? DEFER : FAIL;
   }
@@ -1602,7 +1602,7 @@ if (f.running_in_test_harness &&
     Ustrcmp(sender_host_address, "99.99.99.99") == 0)
   {
   HDEBUG(D_host_lookup)
-    debug_printf("Test harness: host name lookup returns DEFER\n");
+    debug_printf_indent("Test harness: host name lookup returns DEFER\n");
   host_lookup_deferred = TRUE;
   yield = DEFER;
   goto out;
@@ -1701,7 +1701,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
     if (rc == DNS_AGAIN)
       {
       HDEBUG(D_host_lookup)
-        debug_printf("IP address PTR lookup gave temporary error\n");
+        debug_printf_indent("IP address PTR lookup gave temporary error\n");
       host_lookup_deferred = TRUE;
       yield = DEFER;
       goto out;
@@ -1713,7 +1713,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
   else if (strcmpic(ordername, US"byaddr") == 0)
     {
     HDEBUG(D_host_lookup)
-      debug_printf("IP address lookup using gethostbyaddr()\n");
+      debug_printf_indent("IP address lookup using gethostbyaddr()\n");
     rc = host_name_lookup_byaddr();
     if (rc == DEFER)
       {
@@ -1786,27 +1786,27 @@ for (uschar * hname = sender_host_name; hname; hname = *aliases++)
     for (host_item * hh = &h; hh; hh = hh->next)
       if (host_is_in_net(hh->address, sender_host_address, 0))
         {
-        HDEBUG(D_host_lookup) debug_printf("  %s OK\n", hh->address);
+        HDEBUG(D_host_lookup) debug_printf_indent("  %s OK\n", hh->address);
         ok = TRUE;
         break;
         }
       else
-        HDEBUG(D_host_lookup) debug_printf("  %s\n", hh->address);
+        HDEBUG(D_host_lookup) debug_printf_indent("  %s\n", hh->address);
 
     if (!ok) HDEBUG(D_host_lookup)
-      debug_printf("no IP address for %s matched %s\n", hname,
+      debug_printf_indent("no IP address for %s matched %s\n", hname,
         sender_host_address);
     }
   else if (rc == HOST_FIND_AGAIN)
     {
-    HDEBUG(D_host_lookup) debug_printf("temporary error for host name lookup\n");
+    HDEBUG(D_host_lookup) debug_printf_indent("temporary error for host name lookup\n");
     host_lookup_deferred = TRUE;
     sender_host_name = NULL;
     yield = DEFER;
     goto out;
     }
   else
-    HDEBUG(D_host_lookup) debug_printf("no IP addresses found for %s\n", hname);
+    HDEBUG(D_host_lookup) debug_printf_indent("no IP addresses found for %s\n", hname);
 
   /* If this name is no good, and it's the sender name, set it null pro tem;
   if it's an alias, just remove it from the list. */
@@ -1835,7 +1835,7 @@ if (sender_host_name) { yield = OK; goto out; }
 /* We have failed to find an address that matches. */
 
 HDEBUG(D_host_lookup)
-  debug_printf("%s does not match any IP address for %s\n",
+  debug_printf_indent("%s does not match any IP address for %s\n",
     sender_host_address, save_hostname);
 
 /* This message must be in permanent store */
@@ -2051,7 +2051,7 @@ for (int i = 1; i <= times;
 	    text_address, NULL) == OK)
       {
       DEBUG(D_host_lookup)
-        debug_printf("ignored host %s [%s]\n", host->name, text_address);
+        debug_printf_indent("ignored host %s [%s]\n", host->name, text_address);
       continue;
       }
     #endif
@@ -2130,8 +2130,8 @@ yield = local_host_check?
 HDEBUG(D_host_lookup)
   {
   if (fully_qualified_name)
-    debug_printf("fully qualified name = %s\n", *fully_qualified_name);
-  debug_printf("%s looked up these IP addresses:\n",
+    debug_printf_indent("fully qualified name = %s\n", *fully_qualified_name);
+  debug_printf_indent("%s looked up these IP addresses:\n",
     #if HAVE_IPV6
       #if HAVE_GETIPNODEBYNAME
       "getipnodebyname"
@@ -2143,7 +2143,7 @@ HDEBUG(D_host_lookup)
     #endif
     );
   for (const host_item * h = host; h != last->next; h = h->next)
-    debug_printf("  name=%s address=%s\n", h->name,
+    debug_printf_indent("  name=%s address=%s\n", h->name,
       h->address ? h->address : US"<null>");
   }
 
@@ -2165,7 +2165,7 @@ RETURN_AGAIN:
   deliver_domain = save;
   if (rc == OK)
     {
-    DEBUG(D_host_lookup) debug_printf("%s is in dns_again_means_nonexist: "
+    DEBUG(D_host_lookup) debug_printf_indent("%s is in dns_again_means_nonexist: "
       "returning HOST_FIND_FAILED\n", host->name);
     return HOST_FIND_FAILED;
     }
@@ -2297,7 +2297,7 @@ for (; i >= 0; i--)
        && !dns_is_secure(dnsa)
        && dns_is_aa(dnsa)
        )
-      debug_printf("DNS lookup of %.256s (A/AAAA) requested AD, but got AA\n", host->name);
+      debug_printf_indent("DNS lookup of %.256s (A/AAAA) requested AD, but got AA\n", host->name);
 
   /* We want to return HOST_FIND_AGAIN if one of the A or AAAA lookups
   fails or times out, but not if another one succeeds. (In the early
@@ -2328,7 +2328,7 @@ for (; i >= 0; i--)
     {
     if (dns_is_secure(dnsa))
       {
-      DEBUG(D_host_lookup) debug_printf("%s A DNSSEC\n", host->name);
+      DEBUG(D_host_lookup) debug_printf_indent("%s A DNSSEC\n", host->name);
       if (host->dnssec_used == DS_UNK) /* set in host_find_bydns() */
 	host->dnssec_used = DS_YES;
       }
@@ -2337,13 +2337,13 @@ for (; i >= 0; i--)
       if (dnssec_require)
 	{
 	dnssec_fail = TRUE;
-	DEBUG(D_host_lookup) debug_printf("dnssec fail on %s for %.256s",
+	DEBUG(D_host_lookup) debug_printf_indent("dnssec fail on %s for %.256s",
 		i>0 ? "AAAA" : "A", host->name);
 	continue;
 	}
       if (host->dnssec_used == DS_YES) /* set in host_find_bydns() */
 	{
-	DEBUG(D_host_lookup) debug_printf("%s A cancel DNSSEC\n", host->name);
+	DEBUG(D_host_lookup) debug_printf_indent("%s A cancel DNSSEC\n", host->name);
 	host->dnssec_used = DS_NO;
 	lookup_dnssec_authenticated = US"no";
 	}
@@ -2364,7 +2364,7 @@ for (; i >= 0; i--)
     dns_address * da = dns_address_from_rr(dnsa, rr);
 
     DEBUG(D_host_lookup)
-      if (!da) debug_printf("no addresses extracted from A6 RR for %s\n",
+      if (!da) debug_printf_indent("no addresses extracted from A6 RR for %s\n",
 	  host->name);
 
     /* This loop runs only once for A and AAAA records, but may run
@@ -2378,7 +2378,7 @@ for (; i >= 0; i--)
 	      host->name, da->address, NULL) == OK)
 	{
 	DEBUG(D_host_lookup)
-	  debug_printf("ignored host %s [%s]\n", host->name, da->address);
+	  debug_printf_indent("ignored host %s [%s]\n", host->name, da->address);
 	continue;
 	}
       #endif
@@ -3198,7 +3198,7 @@ BOOL sec;
 rc = dns_lookup_timerwrap(dnsa, buffer, T_TLSA, &fullname);
 sec = dns_is_secure(dnsa);
 DEBUG(D_transport)
-  debug_printf("TLSA lookup ret %s %sDNSSEC\n", dns_rc_names[rc], sec ? "" : "not ");
+  debug_printf_indent("TLSA lookup ret %s %sDNSSEC\n", dns_rc_names[rc], sec ? "" : "not ");
 
 switch (rc)
   {
@@ -3221,7 +3221,7 @@ switch (rc)
 
 	    if (payload_length > MAX_TLSA_EXPANDED_SIZE)
 	      payload_length = MAX_TLSA_EXPANDED_SIZE;
-	    debug_printf(" %d %d %d %.*H\n",
+	    debug_printf_indent(" %d %d %d %.*H\n",
 			  usage, selector, matching_type, payload_length, p);
 	    }
 	}

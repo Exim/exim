@@ -106,7 +106,7 @@ for (nextaddr = buf; nextaddr < lim; nextaddr += ifm->ifm_msglen)
         last = next;
         }
 
-      DEBUG(D_interface) debug_printf("Actual local interface address is %s\n",
+      DEBUG(D_interface) debug_printf_indent("Actual local interface address is %s\n",
         last->address);
       }
     }

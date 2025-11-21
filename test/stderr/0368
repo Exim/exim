@@ -15,28 +15,28 @@ dropping to exim gid; retaining priv uid
  mxt14.test.ex in domains? no (end of list)
   check dnssec require list
   check dnssec request list
-duplicate IP address V4NET.0.0.5 (MX=5) removed
-duplicate IP address V4NET.0.0.6 (MX=6) removed
+  duplicate IP address V4NET.0.0.5 (MX=5) removed
+  duplicate IP address V4NET.0.0.6 (MX=6) removed
   fully qualified name = mxt14.test.ex
   host_find_bydns yield = HOST_FOUND (3); returned hosts:
     ten-5-6.test.ex V4NET.0.0.5 MX=4 
     ten-5-6.test.ex V4NET.0.0.6 MX=4 
  finding IP address for ten-1.test.ex
 doing DNS lookup
- check dnssec require list
- check dnssec request list
- fully qualified name = ten-1.test.ex
- ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+  check dnssec require list
+  check dnssec request list
+  fully qualified name = ten-1.test.ex
+  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
  finding IP address for ten-1.test.ex
 doing DNS lookup
- check dnssec require list
- check dnssec request list
- fully qualified name = ten-1.test.ex
- ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+  check dnssec require list
+  check dnssec request list
+  fully qualified name = ten-1.test.ex
+  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
  finding IP address for ten-2.test.ex
 doing DNS lookup
- check dnssec require list
- check dnssec request list
- fully qualified name = ten-2.test.ex
- ten-2.test.ex V4NET.0.0.2 mx=-1 sort=xx 
+  check dnssec require list
+  check dnssec request list
+  fully qualified name = ten-2.test.ex
+  ten-2.test.ex V4NET.0.0.2 mx=-1 sort=xx 
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

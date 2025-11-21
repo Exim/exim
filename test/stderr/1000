@@ -32,7 +32,7 @@ LOG: H=[2001:ab8:37f:20::1] rejected connection in "connect" ACL
 >>>  check dnssec request list
 >>>   test3.ipv6.test.ex not in empty list (option unset? cannot trace name)
 >>>  checking addresses for test3.ipv6.test.ex
->>>   V6NET:1234:5:6:7:8:abc:d OK
+>>>    V6NET:1234:5:6:7:8:abc:d OK
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
@@ -47,8 +47,8 @@ LOG: H=[2001:ab8:37f:20::1] rejected connection in "connect" ACL
 >>>  list element: 2001:ab8:37f:20:0:0:0:1
 >>>  list element: v6.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
 >>> host in " 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? no (end of list)
 >>> warn: condition test failed in ACL check_connect
 >>> processing ACL check_connect "accept" (TESTSUITE/test-config 24)
@@ -73,8 +73,8 @@ LOG: H=test3.ipv6.test.ex [V6NET:1234:5:6:7:8:abc:d] rejected connection in "con
 >>>  list element: 2001:ab8:37f:20:0:0:0:1
 >>>  list element: v6.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
 >>>  host in " 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "v6.test.ex")
 >>> warn: condition test succeeded in ACL check_connect
 LOG: H=[V6NET:ffff:836f:a00:a:800:200a:c032] Warning: matched hostlist

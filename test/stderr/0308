@@ -52,7 +52,7 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>>    check dnssec request list
 >>>    ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>    checking addresses for ten-1.test.ex
->>>   V4NET.0.0.1 OK
+>>>      V4NET.0.0.1 OK
 >>>  host in "*.test.ex"? yes (matched "*.test.ex")
 >>> accept: condition test succeeded in ACL acl_V4NET_0_0
 >>> end of ACL acl_V4NET_0_0: ACCEPT

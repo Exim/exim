@@ -140,7 +140,7 @@ while (fscanf(f, "%4s%4s%4s%4s%4s%4s%4s%4s %02x %02x %02x %02x %20s\n",
     }
 
   DEBUG(D_interface)
-    debug_printf("Actual local interface address is %s (%s)\n", last->address,
+    debug_printf_indent("Actual local interface address is %s (%s)\n", last->address,
       devname);
   }
 fclose(f);

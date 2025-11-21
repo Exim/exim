@@ -9,9 +9,9 @@ dropping to exim gid; retaining priv uid
   DNS lookup of 46.test.ex (A) using fakens
   DNS lookup of 46.test.ex (A) succeeded
  manualroute in local_parts? no (end of list)
- DNS lookup of 46.test.ex (AAAA) succeeded
- DNS lookup of 46.test.ex (A) using fakens
- DNS lookup of 46.test.ex (A) succeeded
+  DNS lookup of 46.test.ex (AAAA) succeeded
+  DNS lookup of 46.test.ex (A) using fakens
+  DNS lookup of 46.test.ex (A) succeeded
   DNS lookup of v6.test.ex (MX) using fakens
   DNS lookup of v6.test.ex (MX) gave NO_DATA
   returning DNS_NODATA
@@ -34,8 +34,8 @@ dropping to exim gid; retaining priv uid
   DNS lookup of 46.test.ex (A) using fakens
   DNS lookup of 46.test.ex (A) succeeded
  manualroute in local_parts? no (end of list)
- DNS lookup of 46.test.ex (A) using fakens
- DNS lookup of 46.test.ex (A) succeeded
+  DNS lookup of 46.test.ex (A) using fakens
+  DNS lookup of 46.test.ex (A) succeeded
   DNS lookup of v6.test.ex (MX) using fakens
   DNS lookup of v6.test.ex (MX) gave NO_DATA
   returning DNS_NODATA

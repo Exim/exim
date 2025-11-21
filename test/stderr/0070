@@ -6,8 +6,8 @@
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
 LOG: rejected MAIL from [V4NET.0.0.1]: no HELO/EHLO given
@@ -19,18 +19,18 @@ LOG: rejected MAIL from [V4NET.0.0.1]: no HELO/EHLO given
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
 >>> host in helo_try_verify_hosts?
 >>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-2.test.ex address=V4NET.0.0.2
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in hosts_require_helo?
@@ -52,18 +52,18 @@ LOG: H=[V4NET.0.0.13] F=<userx@cus.cam.ac.uk> rejected RCPT <a@b>: helo not veri
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
 >>> host in helo_try_verify_hosts?
 >>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-2.test.ex address=V4NET.0.0.2
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-2.test.ex address=V4NET.0.0.2
 >>>  host in helo_try_verify_hosts? yes (matched "ten-2.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> [V4NET.0.0.1] in helo_lookup_domains?
@@ -87,18 +87,18 @@ LOG: H=([V4NET.0.0.1]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo not verif
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
 >>> host in helo_try_verify_hosts?
 >>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-2.test.ex address=V4NET.0.0.2
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-2.test.ex address=V4NET.0.0.2
 >>>  host in helo_try_verify_hosts? yes (matched "ten-2.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> [V4NET.0.0.2] in helo_lookup_domains?
@@ -125,8 +125,8 @@ LOG: H=([V4NET.0.0.2]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo did verif
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> ten-1.test.ex in helo_lookup_domains?
@@ -141,7 +141,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  checking addresses for ten-1.test.ex
->>>   V4NET.0.0.1 OK
+>>>    V4NET.0.0.1 OK
 >>> matched host name
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -151,12 +151,12 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-3.test.ex address=V4NET.0.0.3
 >>>  host in helo_verify_hosts? yes (matched "ten-3.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> ten-3.test.ex in helo_lookup_domains?
@@ -172,13 +172,13 @@ MUNGED: ::1 will be omitted in what follows
 >>>  check dnssec request list
 >>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>>  checking addresses for ten-3.test.ex
->>>   V4NET.0.0.3 OK
+>>>    V4NET.0.0.3 OK
 >>>  check dnssec require list
 >>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>>  checking addresses for ten-3-alias.test.ex
->>>   V4NET.0.0.3 OK
+>>>    V4NET.0.0.3 OK
 >>> matched host name
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: *
@@ -204,8 +204,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> rhubarb in helo_lookup_domains?
@@ -220,7 +220,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  checking addresses for ten-1.test.ex
->>>   V4NET.0.0.1 OK
+>>>    V4NET.0.0.1 OK
 >>> getting IP address for rhubarb
 >>> check dnssec require list
 >>>  rhubarb in ""?
@@ -238,12 +238,12 @@ LOG: rejected "EHLO rhubarb" from (rhubarb) [V4NET.0.0.1]
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-3.test.ex address=V4NET.0.0.3
 >>>  list element: 99.99.99.99
 >>>  host in helo_verify_hosts? yes (matched "99.99.99.99")
 >>> host in helo_accept_junk_hosts? no (option unset)
@@ -253,7 +253,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> rhubarb in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "rhubarb"
 >>> looking up host name for 99.99.99.99
->>> Test harness: host name lookup returns DEFER
+>>>  Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
 >>> check dnssec require list
 >>>  rhubarb in ""?
@@ -271,18 +271,18 @@ LOG: temporarily rejected "EHLO rhubarb" from (rhubarb) [99.99.99.99]
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
 >>> host in helo_try_verify_hosts?
 >>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-2.test.ex address=V4NET.0.0.2
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> [V4NET.0.0.99] in helo_lookup_domains?
@@ -305,18 +305,18 @@ LOG: H=([V4NET.0.0.99]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo not ver
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
 >>> host in helo_try_verify_hosts?
 >>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-2.test.ex address=V4NET.0.0.2
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> [V4NET.0.0.13] in helo_lookup_domains?
@@ -343,18 +343,18 @@ LOG: H=([V4NET.0.0.13]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo did ver
 >>> host in helo_verify_hosts?
 >>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-1.test.ex address=V4NET.0.0.1
 >>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
 >>> host in helo_try_verify_hosts?
 >>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-2.test.ex address=V4NET.0.0.2
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> rhubarb in helo_lookup_domains?
@@ -375,7 +375,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "rhubarb"
 >>>  looking up host name for 99.99.99.99
->>> Test harness: host name lookup returns DEFER
+>>>   Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
 >>>  check dnssec require list
 >>>   rhubarb in ""?

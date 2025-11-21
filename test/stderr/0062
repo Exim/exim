@@ -63,7 +63,7 @@
 >>>    ╎  check dnssec request list
 >>>    ╎   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>    ╎  checking addresses for ten-1.test.ex
->>>   V4NET.0.0.1 OK
+>>>    ╎    V4NET.0.0.1 OK
 >>>    ╎list element: *-3-alias.test.ex
 >>>    host in "*-2.test.ex : *-3-alias.test.ex"? no (end of list)
 >>>   end sublist relay_hosts
@@ -144,7 +144,7 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=ten-1.test.ex (test
 >>>    ╎  check dnssec request list
 >>>    ╎   ten-2.test.ex not in empty list (option unset? cannot trace name)
 >>>    ╎  checking addresses for ten-2.test.ex
->>>   V4NET.0.0.2 OK
+>>>    ╎    V4NET.0.0.2 OK
 >>>    ╎host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-2.test.ex")
 >>>   end sublist relay_hosts
 >>>  data from lookup saved for cache for +relay_hosts: key 'V4NET.0.0.2' value '*-2.test.ex'
@@ -222,13 +222,13 @@ LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=ten-2.test.ex (test
 >>>    ╎  check dnssec request list
 >>>    ╎   ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>>    ╎  checking addresses for ten-3.test.ex
->>>   V4NET.0.0.3 OK
+>>>    ╎    V4NET.0.0.3 OK
 >>>    ╎  check dnssec require list
 >>>    ╎   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>>    ╎  check dnssec request list
 >>>    ╎   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>>    ╎  checking addresses for ten-3-alias.test.ex
->>>   V4NET.0.0.3 OK
+>>>    ╎    V4NET.0.0.3 OK
 >>>    ╎list element: *-3-alias.test.ex
 >>>    ╎host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-3-alias.test.ex")
 >>>   end sublist relay_hosts

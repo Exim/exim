@@ -16,12 +16,12 @@
 >>> host in "! @ : ! localhost"?
 >>>  list element: !░@
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=myhost.test.ex address=V4NET.10.10.10
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=myhost.test.ex address=V4NET.10.10.10
 >>>  list element: !░localhost
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=localhost address=127.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=localhost address=127.0.0.1
 >>>  host in "! @ : ! localhost"? no (matched "! localhost")
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 19)
@@ -55,8 +55,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "! @ : ! localhost"?
 >>>  list element: !░@
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=myhost.test.ex address=V4NET.10.10.10
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=myhost.test.ex address=V4NET.10.10.10
 >>>  host in "! @ : ! localhost"? no (matched "! @")
 >>> deny: condition test failed in ACL check_recipient
 >>> processing ACL check_recipient "accept" (TESTSUITE/test-config 19)
@@ -90,12 +90,12 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "! @ : ! localhost"?
 >>>  list element: !░@
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=myhost.test.ex address=V4NET.10.10.10
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=myhost.test.ex address=V4NET.10.10.10
 >>>  list element: !░localhost
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=localhost address=127.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=localhost address=127.0.0.1
 >>> host in "! @ : ! localhost"? yes (end of list)
 >>> deny: condition test succeeded in ACL check_recipient
 >>> end of ACL check_recipient: DENY

@@ -19,8 +19,8 @@
 >>>  routed by r1 router
 >>>  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=127.0.0.1 address=127.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
 >>> ... callout omitted by default when host testing
 >>> (Use -bhc if you want the callouts to happen.)
@@ -90,8 +90,8 @@ Considering x@y
  using host_fake_gethostbyname for 127.0.0.1 (IPv4)
  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
-get[host|ipnode]byname[2] looked up these IP addresses:
-  name=127.0.0.1 address=127.0.0.1
+ get[host|ipnode]byname[2] looked up these IP addresses:
+   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
   EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
   hintsdb_open(flags 0x2 mode 0640) No such file or directory
@@ -211,8 +211,8 @@ Considering x@y
  using host_fake_gethostbyname for 127.0.0.1 (IPv4)
  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
-get[host|ipnode]byname[2] looked up these IP addresses:
-  name=127.0.0.1 address=127.0.0.1
+ get[host|ipnode]byname[2] looked up these IP addresses:
+   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
   EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
   returned from EXIM_DBOPEN: 0xAAAAAAAA
@@ -256,8 +256,8 @@ search_tidyup called
 >>>  routed by r1 router
 >>>  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=127.0.0.1 address=127.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
 >>>  callout cache: found domain record for y
 >>>  callout cache: found address record for x@y
@@ -286,8 +286,8 @@ MUNGED: ::1 will be omitted in what follows
 >>>  routed by r1 router
 >>>  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=127.0.0.1 address=127.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
 >>>  callout cache: no domain record found for b
 >>>  callout cache: no address record found for a@b
@@ -338,8 +338,8 @@ MUNGED: ::1 will be omitted in what follows
 >>>  routed by r1 router
 >>>  local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=127.0.0.1 address=127.0.0.1
+>>>  get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
 >>>  callout cache: no domain record found for q
 >>>  callout cache: no address record found for p1@q

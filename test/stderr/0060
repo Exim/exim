@@ -60,8 +60,8 @@
 >>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
 >>>    ╎list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-1.test.ex address=V4NET.0.0.1
 >>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-1.test.ex")
 >>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
@@ -130,13 +130,13 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.1
 >>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
 >>>    ╎list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-1.test.ex address=V4NET.0.0.1
 >>>    ╎list element: ten-5-6.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-5-6.test.ex address=V4NET.0.0.5
->>>   name=ten-5-6.test.ex address=V4NET.0.0.6
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-5-6.test.ex address=V4NET.0.0.5
+>>>    ╎  name=ten-5-6.test.ex address=V4NET.0.0.6
 >>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (end of list)
 >>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
@@ -209,13 +209,13 @@ LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.2
 >>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
 >>>    ╎list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-1.test.ex address=V4NET.0.0.1
 >>>    ╎list element: ten-5-6.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-5-6.test.ex address=V4NET.0.0.5
->>>   name=ten-5-6.test.ex address=V4NET.0.0.6
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-5-6.test.ex address=V4NET.0.0.5
+>>>    ╎  name=ten-5-6.test.ex address=V4NET.0.0.6
 >>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-5-6.test.ex")
 >>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
@@ -284,13 +284,13 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.5
 >>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
 >>>    ╎list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-1.test.ex address=V4NET.0.0.1
 >>>    ╎list element: ten-5-6.test.ex
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-5-6.test.ex address=V4NET.0.0.5
->>>   name=ten-5-6.test.ex address=V4NET.0.0.6
+>>>    ╎get[host|ipnode]byname[2] looked up these IP addresses:
+>>>    ╎  name=ten-5-6.test.ex address=V4NET.0.0.5
+>>>    ╎  name=ten-5-6.test.ex address=V4NET.0.0.6
 >>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-5-6.test.ex")
 >>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")

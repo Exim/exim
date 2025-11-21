@@ -27,11 +27,11 @@
 >>>   bad.domain in "bad.domain"?
 >>>    list element: bad.domain
 >>>    bad.domain in "bad.domain"? yes (matched "bad.domain")
->>>   local host found for non-MX address
->>> fully qualified name = localhost
+>>>    local host found for non-MX address
+>>>    fully qualified name = localhost
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=localhost address=127.0.0.1
+>>>    get[host|ipnode]byname[2] looked up these IP addresses:
+>>>      name=localhost address=127.0.0.1
 >>>   fail_sender router forced address failure
 >>>  ----------- end verify ------------
 >>> require: condition test failed in ACL check_recipient
@@ -78,11 +78,11 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: S
 >>>   bad.domain2 in "bad.domain2"?
 >>>    list element: bad.domain2
 >>>    bad.domain2 in "bad.domain2"? yes (matched "bad.domain2")
->>>   local host found for non-MX address
->>> fully qualified name = localhost
+>>>    local host found for non-MX address
+>>>    fully qualified name = localhost
 MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=localhost address=127.0.0.1
+>>>    get[host|ipnode]byname[2] looked up these IP addresses:
+>>>      name=localhost address=127.0.0.1
 >>>  ----------- end verify ------------
 >>> require: condition test failed in ACL check_recipient
 >>> end of ACL check_recipient: not OK
