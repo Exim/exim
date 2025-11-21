@@ -1159,7 +1159,9 @@ no_conn:
       cutthrough.callout_hold_only = !cutthrough.delivery;
       if ((cutthrough.is_tls =	tls_out.active.sock >= 0))
 	{
+#ifdef SUPPORT_DANE
 	cutthrough.is_dane =	tls_out.sni && tls_out.dane_verified;
+#endif
 	cutthrough.sni =	tls_out.sni;
 	cutthrough.cipher =	tls_out.cipher;
 	}
