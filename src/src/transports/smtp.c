@@ -3881,7 +3881,7 @@ Do blocking full-size writes, and reads under a timeout.  Once both input
 channels are closed, exit the process.
 
 Arguments:
-  ct_ctx	tls context
+  ctx		client context
   buf		space to use for buffering
   bufsiz	size of buffer
   pfd		pipe filedescriptor array; [0] is comms to proxied process
@@ -3892,11 +3892,12 @@ Does not return.
 */
 
 void
-smtp_proxy_tls(void * ct_ctx, uschar * buf, size_t bsize, int * pfd,
+smtp_proxy_tls(client_conn_ctx * ctx, uschar * buf, size_t bsize, int * pfd,
   int timeout, const uschar * host)
 {
-struct pollfd p[2] = {{.fd = tls_out.active.sock, .events = POLLIN},
+struct pollfd p[2] = {{.fd = ctx->sock, .events = POLLIN},
 		      {.fd = pfd[0], .events = POLLIN}};
+void * tls_ctx = ctx->tls_ctx;
 int rc, i;
 BOOL send_tls_shutdown = TRUE;
 
@@ -3930,7 +3931,7 @@ do
 
     if (p[0].revents & POLLERR || p[1].revents & POLLERR)
       {
-      DEBUG(D_transport) debug_printf("select: exceptional cond on %s fd\n",
+      DEBUG(D_transport) debug_printf("poll: err cond on %s fd\n",
 	p[0].revents & POLLERR ? "tls" : "proxy");
       if (!(p[0].revents & POLLIN || p[1].events & POLLIN))
 	goto done;
@@ -3941,7 +3942,7 @@ do
 
   /* handle inbound data */
   if (p[0].revents & POLLIN)
-    if ((rc = tls_read(ct_ctx, buf, bsize)) <= 0)	/* Expect -1 for EOF; */
+    if ((rc = tls_read(tls_ctx, buf, bsize)) <= 0)	/* Expect -1 for EOF; */
       {				    /* that reaps the TLS Close Notify record */
       p[0].fd = -1;
       shutdown(pfd[0], SHUT_WR);
@@ -3965,19 +3966,19 @@ do
 # ifdef EXIM_TCP_CORK  /* Use _CORK to get TLS Close Notify in FIN segment */
       (void) setsockopt(tls_out.active.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
 # endif
-      tls_shutdown_wr(ct_ctx);
+      tls_shutdown_wr(tls_ctx);
       send_tls_shutdown = FALSE;
       shutdown(tls_out.active.sock, SHUT_WR);
       }
     else
       for (int nbytes = 0; rc - nbytes > 0; nbytes += i)
-	if ((i = tls_write(ct_ctx, buf + nbytes, rc - nbytes, FALSE)) < 0)
+	if ((i = tls_write(tls_ctx, buf + nbytes, rc - nbytes, FALSE)) < 0)
 	  goto done;
   }
 while (p[0].fd >= 0 || p[1].fd >= 0);
 
 done:
-  if (send_tls_shutdown) tls_close(ct_ctx, TLS_SHUTDOWN_NOWAIT);
+  if (send_tls_shutdown) tls_close(tls_ctx, TLS_SHUTDOWN_NOWAIT);
   testharness_pause_ms(100);	/* let logging complete */
   exim_exit(EXIT_SUCCESS);
 }
@@ -5108,7 +5109,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	      if (pid == 0)	/* child; fork again to disconnect totally */
 		{
 		/* does not return */
-		smtp_proxy_tls(sx->cctx.tls_ctx, sx->buffer, sizeof(sx->buffer),
+		smtp_proxy_tls(&sx->cctx, sx->buffer, sizeof(sx->buffer),
 			      pfd, ob->command_timeout, host->name);
 		}
 

@@ -405,13 +405,13 @@ Returns:   nothing
 */
 
 static void
-milliwait(struct itimerval *itval)
+milliwait(struct itimerval * itval)
 {
 sigset_t sigmask;
 sigset_t old_sigmask;
 int save_errno = errno;
 
-if (itval->it_value.tv_usec < 50 && itval->it_value.tv_sec == 0)
+if (itval->it_value.tv_usec < 50 && itval->it_value.tv_sec <= 0)
   return;
 (void)sigemptyset(&sigmask);                           /* Empty mask */
 (void)sigaddset(&sigmask, SIGALRM);                    /* Add SIGALRM */
@@ -3000,7 +3000,16 @@ on the second character (the one after '-'), to save some effort. */
 
       if (!continue_proxy_cipher)
 	if (getsockname(0, (struct sockaddr *)(&tmp_sock), &size) == 0)
-	  sending_ip_address = host_ntoa(-1, &tmp_sock, NULL, &sending_port);
+	  switch (tmp_sock.v0.sa_family)
+	    {
+	    case AF_INET:
+	    case AF_INET6:
+	      sending_ip_address =
+		    host_ntoa(-1, &tmp_sock, NULL, &sending_port);
+	      break;
+	    default:
+	      exim_fail("non-INET socket on stdin for -MC option");
+	    }
 	else
 	  exim_fail("getsockname() failed after -MC option: %s",
 	    strerror(errno));

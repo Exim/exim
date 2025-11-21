@@ -55,6 +55,10 @@ JH/13 Bug 3175: Fix file open mode flags for Gnu/Hurd. The values differ from
 JH/14 Remove support for the (long-deprecated) "pwcheck" expansion condition.
       Its replacement "saslauthd" has been available equally long.
 
+JH/15 Fix use of a verify held-open connection. When used with TLS the
+      details of the connection were not being preoperly passed to a later
+      delivery process, resulting in a null-indirection fault.
+
 Exim version 4.99
 -----------------
 

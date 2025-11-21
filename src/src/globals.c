@@ -665,14 +665,8 @@ open_db *continue_wait_db      = NULL;
 #endif
 
 uschar *csa_status             = NULL;
-cut_t   cutthrough = {
-  .callout_hold_only =	FALSE,				/* verify-only: normal delivery */
-  .delivery =		FALSE,				/* when to attempt */
-  .tpt_sender =		FALSE,				/* use tpt's sender */
-  .defer_pass =		FALSE,				/* on defer: spool locally */
-  .is_tls =		FALSE,				/* not a TLS conn yet */
+cut_t   cutthrough = {	/* All remaining items 0/FALSE/NULL */
   .cctx =		{.sock = -1},			/* open connection */
-  .nrcpt =		0,				/* number of addresses */
 };
 
 int	daemon_notifier_fd     = -1;

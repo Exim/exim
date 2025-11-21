@@ -9011,7 +9011,6 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
   {
   int channel_fd = cutthrough.cctx.sock;
 
-  smtp_peer_options = cutthrough.peer_options;
   continue_sequence = 0;
 
 #ifndef DISABLE_TLS
@@ -9019,9 +9018,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
     {
     int pfd[2], pid;
 
-    smtp_peer_options |= OPTION_TLS;
-    sending_ip_address = cutthrough.snd_ip;
-    sending_port = cutthrough.snd_port;
+    cutthrough.peer_options |= OPTION_TLS;
 
     where = US"socketpair";
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) != 0)
@@ -9034,7 +9031,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
 
     if (pid == 0)	/* child: will fork again to totally disconnect */
       {
-      smtp_proxy_tls(cutthrough.cctx.tls_ctx, big_buffer, big_buffer_size,
+      smtp_proxy_tls(&cutthrough.cctx, big_buffer, big_buffer_size,
 		      pfd, 5*60, cutthrough.host.name);
       /* does not return */
       }
@@ -9046,8 +9043,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
     }
 #endif
 
-  transport_do_pass_socket(cutthrough.transport, cutthrough.host.name,
-    cutthrough.host.address, cutthrough.host.port, message_id, channel_fd);
+  transport_do_pass_socket(message_id, channel_fd);
   }
 else
   {

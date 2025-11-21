@@ -551,7 +551,7 @@ extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
 extern void    smtp_notquit_exit(const uschar *, uschar *, const uschar *, ...);
 extern void    smtp_port_for_connect(host_item *, int);
-extern void    smtp_proxy_tls(void *, uschar *, size_t, int *, int, const uschar *) NORETURN;
+extern void    smtp_proxy_tls(client_conn_ctx *, uschar *, size_t, int *, int, const uschar *) NORETURN;
 extern BOOL    smtp_read_response(void *, uschar *, int, int, int);
 rmark	       smtp_reset(rmark);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
@@ -662,8 +662,7 @@ extern uschar *tod_stamp(int);
 extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, uschar *,
                  oicf, void*);
 extern uschar *transport_current_name(void);
-extern void    transport_do_pass_socket(const uschar *, const uschar *,
-		 const uschar *, int, uschar *, int);
+extern void    transport_do_pass_socket(uschar *, int);
 extern void    transport_init(void);
 extern const uschar *transport_rcpt_address(address_item *, BOOL);
 extern BOOL    transport_set_up_command(const uschar ***, const uschar *,

@@ -709,11 +709,8 @@ if (pid == 0)
         signal(SIGINT, SIG_DFL);
 
         if (geteuid() != root_uid && !deliver_drop_privilege)
-          {
-          signal(SIGALRM, SIG_DFL);
 	  delivery_re_exec(CEE_EXEC_PANIC);
           /* Control does not return here. */
-          }
 
         /* No need to re-exec; SIGALRM remains set to the default handler */
 

@@ -1157,7 +1157,12 @@ no_conn:
 	? "cutthrough delivery" : "potential further verifies and delivery");
 
       cutthrough.callout_hold_only = !cutthrough.delivery;
-      cutthrough.is_tls =	tls_out.active.sock >= 0;
+      if ((cutthrough.is_tls =	tls_out.active.sock >= 0))
+	{
+	cutthrough.is_dane =	tls_out.sni && tls_out.dane_verified;
+	cutthrough.sni =	tls_out.sni;
+	cutthrough.cipher =	tls_out.cipher;
+	}
       /* We assume no buffer in use in the outblock */
       cutthrough.cctx =		sx->cctx;
       cutthrough.nrcpt =	1;

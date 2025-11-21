@@ -2025,16 +2025,17 @@ retfalse:
 *    Deliver waiting message down same socket    *
 *************************************************/
 
-/* Just the regain-root-privilege exec portion */
+/* Just the regain-root-privilege exec portion.
+The sole caller is delivery_re_exec(). */
+
 void
-transport_do_pass_socket(const uschar * transport_name, const uschar * hostname,
-  const uschar * hostaddress, int hostport, uschar * id, int socket_fd)
+transport_do_pass_socket(uschar * id, int socket_fd)
 {
 int i = 14;
 const uschar **argv;
 
 #ifndef DISABLE_TLS
-if (smtp_peer_options & OPTION_TLS) i += 6;
+if (cutthrough.peer_options & OPTION_TLS) i += 6;
 #endif
 #ifndef DISABLE_ESMTP_LIMITS
 if (continue_limit_mail || continue_limit_rcpt || continue_limit_rcptdom)
@@ -2051,27 +2052,27 @@ but we have a number of extras that may be added. */
 argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
 if (f.smtp_authenticated)			argv[i++] = US"-MCA";
-if (smtp_peer_options & OPTION_CHUNKING)	argv[i++] = US"-MCK";
-if (smtp_peer_options & OPTION_DSN)		argv[i++] = US"-MCD";
-if (smtp_peer_options & OPTION_PIPE)		argv[i++] = US"-MCP";
-if (smtp_peer_options & OPTION_SIZE)		argv[i++] = US"-MCS";
+if (cutthrough.peer_options & OPTION_CHUNKING)	argv[i++] = US"-MCK";
+if (cutthrough.peer_options & OPTION_DSN)	argv[i++] = US"-MCD";
+if (cutthrough.peer_options & OPTION_PIPE)	argv[i++] = US"-MCP";
+if (cutthrough.peer_options & OPTION_SIZE)	argv[i++] = US"-MCS";
 #ifndef DISABLE_TLS
-if (smtp_peer_options & OPTION_TLS)
-  if (tls_out.active.sock >= 0 || continue_proxy_cipher)
+if (cutthrough.peer_options & OPTION_TLS)
+  if (cutthrough.is_tls)
     {
     argv[i++] = US"-MCt";
-    argv[i++] = sending_ip_address;
-    argv[i++] = string_sprintf("%d", sending_port);
-    argv[i++] = tls_out.active.sock >= 0 ? tls_out.cipher : continue_proxy_cipher;
+    argv[i++] = cutthrough.snd_ip;
+    argv[i++] = string_sprintf("%d", cutthrough.snd_port);
+    argv[i++] = cutthrough.cipher;
 
-    if (tls_out.sni)
+    if (cutthrough.sni)
       {
       argv[i++] =
 #ifdef SUPPORT_DANE
-        tls_out.dane_verified ? US"-MCr" :
+        cutthrough.is_dane ? US"-MCr" :
 #endif
         US"-MCs";
-      argv[i++] = tls_out.sni;
+      argv[i++] = cutthrough.sni;
       }
     }
   else
@@ -2107,11 +2108,11 @@ if (proxy_session)
 #endif
 
 argv[i++] = US"-MC";
-argv[i++] = US transport_name;
-argv[i++] = US hostname;
-argv[i++] = US hostaddress;
-argv[i++] = string_sprintf("%d", hostport);
-argv[i++] = string_sprintf("%d", continue_sequence + 1);
+argv[i++] = US cutthrough.transport;
+argv[i++] = US cutthrough.host.name;
+argv[i++] = US cutthrough.host.address;
+argv[i++] = string_sprintf("%d", cutthrough.host.port);
+argv[i++] = string_sprintf("%d", continue_sequence + 1); /*XXX always 0+1 */
 argv[i++] = id;
 argv[i++] = NULL;
 
