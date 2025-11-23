@@ -44,7 +44,7 @@ each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
 #define LOCAL_SCAN_ABI_VERSION_MAJOR 6
-#define LOCAL_SCAN_ABI_VERSION_MINOR 0
+#define LOCAL_SCAN_ABI_VERSION_MINOR 1
 #define LOCAL_SCAN_ABI_VERSION \
   LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
 

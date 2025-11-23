@@ -1125,6 +1125,9 @@ g = string_cat(g, US"Support for:");
 #ifdef WITH_CONTENT_SCAN
   g = string_cat(g, US" Content_Scanning");
 #endif
+#ifdef HAVE_LOCAL_SCAN
+  g = string_cat(g, US" Local_Scan");
+#endif
 #ifndef DISABLE_EXIM_FILTER
   g = string_cat(g, US" Exim_filter");
 #endif
@@ -1282,6 +1285,7 @@ DEBUG(D_any)
 #else
   g = string_cat(g, US"Compiler: <unknown>\n");
 #endif
+/*XXX Sun Studio compiler? */
 
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
   g = string_fmt_append(g, "Library version: Glibc: Compile: %d.%d\n",
@@ -1344,6 +1348,10 @@ Currently they are output in misc_mod_add() */
   g = string_fmt_append(g, "TRUSTED_CONFIG_LIST: %q\n", TRUSTED_CONFIG_LIST);
 #else
   g = string_cat(g, US"TRUSTED_CONFIG_LIST unset\n");
+#endif
+#ifdef HAVE_LOCAL_SCAN
+  g = string_cat(g, US"Local-Scan API: "
+		    mac_expanded_string(LOCAL_SCAN_ABI_VERSION) "\n");
 #endif
   }
 

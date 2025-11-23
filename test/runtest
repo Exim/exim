@@ -1624,6 +1624,11 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Spool filesystem free space changes on different systems.
     s/((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
 
+    # LOCAL_SCAN
+    next if /Local-Scan API:/;
+    next if /$time_pid?calling local_scan\(\); timeout=300$/;
+    next if /$time_pid?local_scan\(\) returned 0 NULL$/;
+
     # CONTENT_SCAN
     next if /try option 'acl_(?:not_)?smtp_mime'$/;
 
