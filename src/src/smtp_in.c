@@ -1798,6 +1798,9 @@ deliver_host = deliver_host_address = NULL;	/* Can be set by ACL */
 #ifdef SUPPORT_SRS
  srs_recipient = NULL;
 #endif
+#ifdef HAVE_LOCAL_SCAN
+local_scan_data = NULL;
+#endif
 #ifdef WITH_CONTENT_SCAN
  regex_vars_clear();
  malware_name = NULL;

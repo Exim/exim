@@ -1626,8 +1626,8 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # LOCAL_SCAN
     next if /Local-Scan API:/;
-    next if /$time_pid?calling local_scan\(\); timeout=300$/;
-    next if /$time_pid?local_scan\(\) returned 0 NULL$/;
+    next if /^$time_pid?calling local_scan\(\); timeout=300$/;
+    next if /^$time_pid?local_scan\(\) returned \d+/;
 
     # CONTENT_SCAN
     next if /try option 'acl_(?:not_)?smtp_mime'$/;

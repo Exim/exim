@@ -193,7 +193,19 @@ extern BOOL    smtp_input;             /* TRUE if input is via SMTP */
 
 extern int     child_close(pid_t, int);
 extern void    debug_printf(const char *, ...) PRINTF_FUNCTION(1,2);
-extern uschar *expand_string(uschar *);
+
+extern const uschar * expand_string_2(const uschar *, BOOL *);
+static inline uschar * expand_nc_string(uschar * s)
+{ return US expand_string_2(s, NULL); }
+static inline const uschar * expand_c_string(const uschar * s)
+{ return expand_string_2(s, NULL); }
+
+/* A macro that picks which function to use depending on the type of the arg */
+#define expand_string(X) _Generic((X),     \
+	      uschar *:		expand_nc_string, \
+	      const uschar *:	expand_c_string   \
+	      )(X)
+
 extern void    header_add(int, const char *, ...);
 extern void    header_add_at_position(BOOL, uschar *, BOOL, int, const char *, ...);
 extern void    header_remove(int, const uschar *);

@@ -238,19 +238,6 @@ extern int     exp_bool(address_item *,
 extern BOOL    expand_check_condition(const uschar *, const uschar *, const uschar *);
 extern uschar *expand_file_big_buffer(const uschar *);
 
-extern const uschar *expand_string_2(const uschar *, BOOL *);
-
-static inline uschar * expand_nc_string(uschar * s)
-{ return US expand_string_2(s, NULL); }
-static inline const uschar * expand_c_string(const uschar * s)
-{ return expand_string_2(s, NULL); }
-
-/* A macro that picks which function to use depending on the type of the arg */
-#define expand_string(X) _Generic((X),     \
-	      uschar *:		expand_nc_string, \
-	      const uschar *:	expand_c_string   \
-	      )(X)
-
 extern BOOL   expand_string_nonempty(const uschar *);
 extern uschar *expand_getkeyed(const uschar *, const uschar *);
 

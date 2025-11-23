@@ -59,6 +59,10 @@ JH/15 Fix use of a verify held-open connection. When used with TLS the
       details of the connection were not being preoperly passed to a later
       delivery process, resulting in a null-indirection fault.
 
+JH/16: Fix local-scan API. Constification work done for 4.99 included a
+       function [ expand_string() ] replacement with a macro, but the latter
+       definition was not placed in the API .h file.
+
 Exim version 4.99
 -----------------
 
