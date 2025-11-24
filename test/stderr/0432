@@ -99,10 +99,10 @@ Attempting full verification using callout
   TESTSUITE/spool/db/callout appears not to exist: trying to create
   EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
   returned from EXIM_DBOPEN: 0xAAAAAAAA
- dbfn_read: key=y
+ dbfn_read: key=y␀
  dbfn_read: null return
  callout cache: no domain record found for y
- dbfn_read: key=x@y
+ dbfn_read: key=x@y␀
  dbfn_read: null return
  callout cache: no address record found for x@y
 SMTP>- ◀flush▶
@@ -216,10 +216,10 @@ MUNGED: ::1 will be omitted in what follows
 Attempting full verification using callout
   EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
   returned from EXIM_DBOPEN: 0xAAAAAAAA
- dbfn_read: key=y
+ dbfn_read: key=y␀
  dbfn_read: size nn return
  callout cache: found domain record for y
- dbfn_read: key=x@y
+ dbfn_read: key=x@y␀
  dbfn_read: size nn return
  callout cache: found address record for x@y
  callout cache: address record is positive

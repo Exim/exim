@@ -1,0 +1,8 @@
+# lookup dbmnz
+# NB: the reference DB file is an SQLITE db;
+# builds for other hints-DB interface will fail
+#
+exim -be
+[]          [${lookup{test}dbmnz{DIR/aux-fixed/TESTNUM.dbmnzlookup}}]
+result-data [${lookup{hasdata}dbmnz{DIR/aux-fixed/TESTNUM.dbmnzlookup}}]
+****

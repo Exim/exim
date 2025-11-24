@@ -142,10 +142,10 @@ MUNGED: ::1 will be omitted in what follows
 Attempting full verification using callout
   EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
   returned from EXIM_DBOPEN: 0xAAAAAAAA
- dbfn_read: key=remote
+ dbfn_read: key=remote␀
  dbfn_read: size nn return
  callout cache: found domain record for remote
- dbfn_read: key=qq@remote
+ dbfn_read: key=qq@remote␀
  dbfn_read: null return
  callout cache: no address record found for qq@remote
 SMTP>- ◀flush▶
@@ -268,10 +268,10 @@ MUNGED: ::1 will be omitted in what follows
 Attempting full verification using callout
   EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
   returned from EXIM_DBOPEN: 0xAAAAAAAA
- dbfn_read: key=remote
+ dbfn_read: key=remote␀
  dbfn_read: size nn return
  callout cache: found domain record for remote
- dbfn_read: key=qq@remote
+ dbfn_read: key=qq@remote␀
  dbfn_read: size nn return
  callout cache: found address record for qq@remote
  callout cache: address record is negative

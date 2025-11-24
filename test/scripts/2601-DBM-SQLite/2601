@@ -1,0 +1,7 @@
+# lookup dbmjz
+# NB: the reference DB file is an SQLITE db.
+# builds for other hints-DB interface will fail
+#
+exim -be
+result-data ${lookup{testid:test.example.invalid:userPassword}dbmjz{DIR/aux-fixed/TESTNUM.testsasldb}{$value}fail}
+****

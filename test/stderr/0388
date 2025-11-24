@@ -150,7 +150,7 @@ Processing retry items
    ╎  y in "*"? yes (matched "*")
    ╎ x@y in "*"? yes (matched "*")
    retry for R:x@y = * 0 0
-   dbfn_read: key=R:x@y
+   dbfn_read: key=R:x@y␀
    dbfn_read: null return
    failing_interval=ttt message_age=ttt
    Writing retry data for R:x@y
@@ -166,7 +166,7 @@ Processing retry items
    ╎  V4NET.0.0.0 in "*"? yes (matched "*")
    ╎ *@V4NET.0.0.0 in "*"? yes (matched "*")
    retry for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S (y) = * 0 0
-   dbfn_read: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
+   dbfn_read: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S␀
    dbfn_read: null return
    failing_interval=ttt message_age=ttt
    on queue longer than maximum retry
@@ -254,11 +254,11 @@ set_process_info: pppp delivering 10HmaY-000000005vi-0000
 Considering: CALLER@myhost.test.ex
 unique = CALLER@myhost.test.ex
 checking router retry status
- dbfn_read: key=R:myhost.test.ex
+ dbfn_read: key=R:myhost.test.ex␀
  dbfn_read: null return
- dbfn_read: key=R:CALLER@myhost.test.ex
+ dbfn_read: key=R:CALLER@myhost.test.ex␀
  dbfn_read: null return
- dbfn_read: key=R:CALLER@myhost.test.ex:<>
+ dbfn_read: key=R:CALLER@myhost.test.ex:<>␀
  dbfn_read: null return
  no   domain  retry record
  no   address retry record

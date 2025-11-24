@@ -547,7 +547,7 @@ Processing retry items
    ╎  test.ex in "*"? yes (matched "*")
    ╎ userx@test.ex in "*"? yes (matched "*")
    retry for T:userx@test.ex = * 0 0
-   dbfn_read: key=T:userx@test.ex
+   dbfn_read: key=T:userx@test.ex␀
    dbfn_read: null return
    failing_interval=ttt message_age=ttt
    Writing retry data for T:userx@test.ex
@@ -645,11 +645,11 @@ Delivery address list:
 Considering: userx@test.ex
 unique = userx@test.ex
 checking router retry status
- dbfn_read: key=R:test.ex
+ dbfn_read: key=R:test.ex␀
  dbfn_read: null return
- dbfn_read: key=R:userx@test.ex
+ dbfn_read: key=R:userx@test.ex␀
  dbfn_read: null return
- dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>
+ dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>␀
  dbfn_read: null return
  no   domain  retry record
  no   address retry record
@@ -679,7 +679,7 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
-dbfn_read: key=T:userx@test.ex
+dbfn_read: key=T:userx@test.ex␀
 dbfn_read: size nn return
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
@@ -735,7 +735,7 @@ Processing retry items
    ╎  test.ex in "*"? yes (matched "*")
    ╎ userx@test.ex in "*"? yes (matched "*")
    retry for T:userx@test.ex = * 0 0
-   dbfn_read: key=T:userx@test.ex
+   dbfn_read: key=T:userx@test.ex␀
    dbfn_read: size nn return
    failing_interval=ttt message_age=ttt
    Writing retry data for T:userx@test.ex
