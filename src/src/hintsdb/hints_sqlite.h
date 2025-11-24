@@ -25,7 +25,13 @@ backend provider. */
 /* Some text for messages */
 # define EXIM_DBTYPE "sqlite3"
 
-# /* Access functions */
+/* Utility functions */
+
+extern uschar *xtextencode(const uschar *, int);
+extern int xtextdecode(const uschar *, uschar**);
+
+
+/* Access functions */
 
 /* The key must be zero terminated, an empty key has len == 1. */
 static inline BOOL
@@ -97,7 +103,7 @@ return NULL;
 }
 
 static inline BOOL
-exim_dbget__(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
+exim_dbget__(EXIM_DB * dbp, uschar *key, EXIM_DATUM * res)
 {
 int ret = FALSE;
 sqlite3_stmt * stmt = NULL; /* don't make it static, as it depends on the dbp */
@@ -115,7 +121,7 @@ if (SQLITE_OK != sqlite3_prepare_v2(dbp, query, sizeof(query)-1, &stmt, NULL))
 DEBUG(D_hints_lookup) debug_printf_indent("prepared SQL: %s\n", sqlite3_sql(stmt));
 # endif
 
-if (SQLITE_OK != sqlite3_bind_text(stmt, 1, CCS key->data, key->len-1, SQLITE_STATIC))
+if (SQLITE_OK != sqlite3_bind_text(stmt, 1, CCS key, strlen(key), SQLITE_STATIC))
   {
 # ifdef SQL_DEBUG
   fprintf(stderr, EXIM_DBTYPE " bind text (%s): %s\n", sqlite3_sql(stmt), sqlite3_errmsg(dbp));
@@ -160,14 +166,31 @@ be zero terminated, an empty key has len == 1. */
 static inline BOOL
 exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
-# ifdef SQL_DEBUG
-DEBUG(D_hints_lookup) debug_printf_indent(EXIM_DBTYPE " get key: len=%d, strlen=%d, key=%.*s\n", key->len, Ustrlen(key->data), key->len, key->data);
+uschar * encoded_key;
+BOOL ret;
+
+encoded_key = xtextencode(key->data, key->len);
+# ifdef COMPILE_UTILITY
+if (!encoded_key) return FALSE;
+#endif
+/* DEBUG(D_hints_lookup) debug_printf_indent("exim_dbget(k len %d '%s')\n",
+				  (int)key->len, encoded_key); */
+
+ret = exim_dbget__(dbp, encoded_key, res);
+
+# ifdef COMPILE_UTILITY
+free(encoded_key);
 # endif
-if (!is_cstring(key)) return FALSE;
-return exim_dbget__(dbp, key, res);
+return ret;
 }
 
-/**/
+
+/* Note that we return claiming a duplicate record for any error.
+It seem not uncommon to get a "database is locked" error.
+
+Keys are stored xtext-encoded (which is mostly readable, for plaintext).
+Values are stored in a BLOB type in the DB, for which the SQL interface
+is hex-encoded. */
 # define EXIM_DBPUTB_OK  0
 # define EXIM_DBPUTB_DUP (-1)
 
@@ -175,9 +198,12 @@ static inline int
 exim_s_dbp(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, const uschar * alt)
 {
 const char sql[] = "INSERT OR %s INTO tbl (ky, dat) VALUES(?, ?)";
+uschar * query;
 int ret = EXIM_DBPUTB_DUP;
 sqlite3_stmt *stmt = NULL;
-uschar * query;
+uschar * encoded_key;
+
+if (!(encoded_key = xtextencode(key->data, key->len))) return EXIM_DBPUTB_DUP;
 
 # ifdef COMPILE_UTILITY
 int i = 1 + snprintf(NULL, 0, sql, alt);
@@ -203,7 +229,7 @@ if (SQLITE_OK != sqlite3_prepare_v2(dbp, CCS query, -1, &stmt, NULL))
 DEBUG(D_hints_lookup) debug_printf_indent("prepared SQL: %s\n", sqlite3_sql(stmt));
 # endif
 
-if (SQLITE_OK != sqlite3_bind_text(stmt, 1, CCS key->data, key->len-1, NULL))
+if (SQLITE_OK != sqlite3_bind_text(stmt, 1, encoded_key, strlen(encoded_key), NULL))
   {
 # ifdef SQL_DEBUG
   fprintf(stderr, EXIM_DBTYPE " bind to value 1: %s\n", sqlite3_errmsg(dbp));
@@ -250,8 +276,6 @@ exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 # ifdef SQL_DEBUG
 DEBUG(D_hints_lookup) debug_printf_indent(EXIM_DBTYPE " put: key: len=%d, strlen=%d, key=%.*s\n", key->len, Ustrlen(key->data), key->len, key->data);
 # endif
-if (!is_cstring(key)) return -1;
-/* fprintf(stderr, "exim_dbput()\n"); */
 (void) exim_s_dbp(dbp, key, data, US"REPLACE");
 return 0;
 }
@@ -273,9 +297,11 @@ exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 int res = -1;
 sqlite3_stmt *stmt = NULL; /* don't make it static, because it depends on the dbp */
 const char query[] = "DELETE FROM tbl WHERE ky = ?";
+uschar * encoded_key;
+
+if (!(encoded_key = xtextencode(key->data, key->len))) return EXIM_DBPUTB_DUP;
 
 DEBUG(D_hints_lookup) debug_printf_indent(EXIM_DBTYPE " del key: len=%d, strlen=%d, key=%.*s\n", key->len, Ustrlen(key->data), key->len, key->data);
-if (!is_cstring(key)) return -1;
 
 if (SQLITE_OK != sqlite3_prepare_v2(dbp, query, sizeof(query)-1, &stmt, NULL))
   {
@@ -289,7 +315,7 @@ if (SQLITE_OK != sqlite3_prepare_v2(dbp, query, sizeof(query)-1, &stmt, NULL))
 DEBUG(D_hints_lookup) debug_printf_indent("query: %s\n", sqlite3_sql(stmt));
 # endif
 
-if (SQLITE_OK != sqlite3_bind_text(stmt, 1, CCS key->data, key->len-1, SQLITE_STATIC))
+if (SQLITE_OK != sqlite3_bind_text(stmt, 1, CCS encoded_key, strlen(encoded_key), SQLITE_STATIC))
   {
 # ifdef SQL_DEBUG
   fprintf(stderr, EXIM_DBTYPE " bind value 1: %s\n", sqlite3_errmsg(dbp));
@@ -334,13 +360,14 @@ return c;
 
 /* EXIM_DBSCAN */
 /* Note that we return the (next) key, not the record value.
- * We've to add the zero terminator, as this isn't stored in the database */
+We allocate memory for the return. */
 static inline BOOL
 exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res /* unusied */, BOOL first /*unused*/, EXIM_CURSOR * cursor)
 {
 BOOL more = FALSE;
 sqlite3_stmt *stmt = NULL;
 const char query[] = "SELECT ky FROM tbl ORDER BY ky LIMIT 1 OFFSET ?";
+EXIM_DATUM encoded_key;
 
 if (SQLITE_OK != sqlite3_prepare_v2(dbp, query, sizeof(query)-1, &stmt, NULL))
   {
@@ -370,14 +397,14 @@ switch (sqlite3_step(stmt))
   {
     case SQLITE_DONE: goto DONE;
     case SQLITE_ROW: (*cursor)++;
-                      key->len = sqlite3_column_bytes(stmt, 0);
+                      encoded_key.len = sqlite3_column_bytes(stmt, 0);
 #ifdef COMPILE_UTILITY
-                      if (!(key->data = malloc(key->len+1))) goto DONE;
+                      if (!(encoded_key.data = malloc(encoded_key.len+1))) goto DONE;
 #else
-                      key->data = store_get(key->len+1, GET_TAINTED); // TAINTED? We're talking about the key!
+                      encoded_key.data = store_get(encoded_key.len+1, GET_TAINTED); // TAINTED? We're talking about the key!
 #endif
-                      memcpy(key->data, sqlite3_column_blob(stmt, 0), key->len);
-                      key->data[key->len] = '\0';
+                      memcpy(encoded_key.data, sqlite3_column_blob(stmt, 0), encoded_key.len);
+                      key->len = xtextdecode(encoded_key.data, &key->data);
 # ifdef SQL_DEBUG
                       DEBUG(D_hints_lookup) debug_printf_indent("key length=%d, val=%s\n", key->len, key->data);
 # endif
