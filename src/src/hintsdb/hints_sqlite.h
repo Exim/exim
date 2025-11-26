@@ -252,12 +252,11 @@ return cursor;
 }
 
 /* EXIM_DBSCAN */
-/* Note that we return the (next) key, not the record value.
-We allocate memory for the return. */
+/* Note that we return the (next) key into the key parameter, not the res parameter. */
 static inline BOOL
-exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res /* unusied */, BOOL first /*unused*/, EXIM_CURSOR * cursor)
+exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res /* unused */, BOOL first /*unused*/, EXIM_CURSOR * cursor)
 {
-return (exim_sqlstep(dbp, cursor, res )==SQLITE_ROW);
+return (exim_sqlstep(dbp, cursor, key )==SQLITE_ROW);
 }
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation. */
