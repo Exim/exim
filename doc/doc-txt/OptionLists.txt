@@ -69,6 +69,7 @@ acl_smtp_quit                        string*         unset         main         
 acl_smtp_rcpt                        string*         unset         main              4.00
 acl_smtp_starttls                    string*         unset         main              4.11
 acl_smtp_vrfy                        string*         unset         main              4.00
+acl_smtp_wellknown		     string*         unset         main              4.98
 address_data                         string*         unset         routers           4.00
 address_retry_include_sender         boolean         true          smtp              4.64
 address_test                         boolean         true          routers           4.14
@@ -669,6 +670,7 @@ verify_only                          boolean         false         routers      
 verify_recipient                     boolean         true          routers           4.00
 verify_sender                        boolean         true          routers           4.00
 warn_message_file                    string*         unset         main              4.00 expanded from 4.94
+wellknown_advertise_hosts	     host list*      unset	   main		     4.98
 widen_domains                        string list     unset         dnslookup         4.00
 write_rejectlog                      boolean         true          main              4.31
 

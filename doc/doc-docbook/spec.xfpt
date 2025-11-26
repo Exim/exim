@@ -19173,7 +19173,7 @@ absolute and untainted.
 See also &%bounce_message_file%&.
 
 
-.option wellknown_advertise_hosts main boolean unset
+.option wellknown_advertise_hosts main "host list&!!" unset
 .cindex WELLKNOWN advertisement
 .cindex "ESMTP extensions" WELLKNOWN
 This option enables the advertising of the SMTP WELLKNOWN extension.
