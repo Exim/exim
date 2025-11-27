@@ -52,3 +52,19 @@ ${lookup sqlite{select name from them where id='userx';}}
 exim -DDATA=DIR/missingfile -d-all+lookup -be
 ${lookup sqlite{select name from them where id='userx';}}
 ****
+#
+#
+mkdir -p tmp
+# All these SQL statements return no data, so are "fail" for ${lookup }.
+# Enforcement of quoting is not yet enabled (cf. search.c 630) so only
+# a paniclog results on violation.
+exim -DDATA=DIR/tmp/newdb.sqlite -d-all+expand+lookup -f tainted_username@needsquote.dom -be
+${lookup sqlite{create table tb (key text, data1 text, data2 text);} {}{A}}
+${lookup sqlite{insert into tb (key, data1, data1) values ('k1', 'plain data', '${quote_sqlite:needs a ' quoted}');} {}{B}}
+${lookup sqlite{insert into tb (key, data1, data1) values ('$sender_address', 'should NOT work', 'foo');} {}{C}}
+${lookup sqlite{insert into tb (key, data1, data1) values ('${quote_sqlite:$sender_address}', 'should work', 'bar');} {}{D}}
+****
+perl
+system("sqlite3 DIR/tmp/newdb.sqlite .dump");
+****
+sudo rm -fr tmp
