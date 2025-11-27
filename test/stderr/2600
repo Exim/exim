@@ -781,10 +781,10 @@ dropping to exim gid; retaining priv uid
 try option 'gecos_pattern'
 try option 'gecos_name'
 try option 'unknown_login'
- ╭considering: ${lookup░sqlite{create░table░tb░(key░text,░data1░text,░data2░text);}░{A}}
-  ╭considering: create░table░tb░(key░text,░data1░text,░data2░text);}░{A}}
+ ╭considering: ${lookup░sqlite{create░table░tb░(key░text,░data1░text,░data2░text);}░{}{A}}
+  ╭considering: create░table░tb░(key░text,░data1░text,░data2░text);}░{}{A}}
   ├───────text: create░table░tb░(key░text,░data1░text,░data2░text);
-  ├considering: }░{A}}
+  ├considering: }░{}{A}}
   ├───expanded: create░table░tb░(key░text,░data1░text,░data2░text);
   ╰─────result: create░table░tb░(key░text,░data1░text,░data2░text);
  search_open: sqlite "NULL"
@@ -797,27 +797,30 @@ try option 'unknown_login'
  database lookup required for create table tb (key text, data1 text, data2 text);
  lookup forced cache cleanup
  lookup failed
-  ╭───scanning: A}}
-  ├───────text: A
-  ├───scanning: }}
-  ├───expanded: A
+  ╭───scanning: }{A}}
+  ├───expanded: 
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
- ├───expanded: ${lookup░sqlite{create░table░tb░(key░text,░data1░text,░data2░text);}░{A}}
- ╰─────result: 
- ╭considering: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'${quote_sqlite:needs░a░'░quoted}');}░{B}}
-  ╭considering: insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'${quote_sqlite:needs░a░'░quoted}');}░{B}}
+  ╭considering: A}}
+  ├───────text: A
+  ├considering: }}
+  ├───expanded: A
+  ╰─────result: A
+ ├───expanded: ${lookup░sqlite{create░table░tb░(key░text,░data1░text,░data2░text);}░{}{A}}
+ ╰─────result: A
+ ╭considering: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'${quote_sqlite:needs░a░'░quoted}');}░{}{B}}
+  ╭considering: insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'${quote_sqlite:needs░a░'░quoted}');}░{}{B}}
   ├───────text: insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'
-  ├considering: ${quote_sqlite:needs░a░'░quoted}');}░{B}}
-   ╭considering: needs░a░'░quoted}');}░{B}}
+  ├considering: ${quote_sqlite:needs░a░'░quoted}');}░{}{B}}
+   ╭considering: needs░a░'░quoted}');}░{}{B}}
    ├───────text: needs░a░'░quoted
-   ├considering: }');}░{B}}
+   ├considering: }');}░{}{B}}
    ├───expanded: needs░a░'░quoted
    ╰─────result: needs░a░'░quoted
   ├─────op-res: needs a '' quoted
-  ├considering: ');}░{B}}
+  ├considering: ');}░{}{B}}
   ├───────text: ');
-  ├considering: }░{B}}
+  ├considering: }░{}{B}}
   ├───expanded: insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'${quote_sqlite:needs░a░'░quoted}');
   ╰─────result: insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'needs░a░''░quoted');
  search_open: sqlite "NULL"
@@ -830,23 +833,26 @@ try option 'unknown_login'
  database lookup required for insert into tb (key, data1, data1) values ('k1', 'plain data', 'needs a '' quoted');
  lookup forced cache cleanup
  lookup failed
-  ╭───scanning: B}}
-  ├───────text: B
-  ├───scanning: }}
-  ├───expanded: B
+  ╭───scanning: }{B}}
+  ├───expanded: 
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
- ├───expanded: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'${quote_sqlite:needs░a░'░quoted}');}░{B}}
- ╰─────result: 
- ╭considering: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('$sender_address',░'should░NOT░work',░'foo');}░{C}}
-  ╭considering: insert░into░tb░(key,░data1,░data1)░values░('$sender_address',░'should░NOT░work',░'foo');}░{C}}
+  ╭considering: B}}
+  ├───────text: B
+  ├considering: }}
+  ├───expanded: B
+  ╰─────result: B
+ ├───expanded: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('k1',░'plain░data',░'${quote_sqlite:needs░a░'░quoted}');}░{}{B}}
+ ╰─────result: B
+ ╭considering: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('$sender_address',░'should░NOT░work',░'foo');}░{}{C}}
+  ╭considering: insert░into░tb░(key,░data1,░data1)░values░('$sender_address',░'should░NOT░work',░'foo');}░{}{C}}
   ├───────text: insert░into░tb░(key,░data1,░data1)░values░('
-  ├considering: $sender_address',░'should░NOT░work',░'foo');}░{C}}
+  ├considering: $sender_address',░'should░NOT░work',░'foo');}░{}{C}}
   ├──────value: tainted_username@needsquote.dom
              ╰──(tainted)
-  ├considering: ',░'should░NOT░work',░'foo');}░{C}}
+  ├considering: ',░'should░NOT░work',░'foo');}░{}{C}}
   ├───────text: ',░'should░NOT░work',░'foo');
-  ├considering: }░{C}}
+  ├considering: }░{}{C}}
   ├───expanded: insert░into░tb░(key,░data1,░data1)░values░('$sender_address',░'should░NOT░work',░'foo');
   ╰─────result: insert░into░tb░(key,░data1,░data1)░values░('tainted_username@needsquote.dom',░'should░NOT░work',░'foo');
              ╰──(tainted)
@@ -865,30 +871,33 @@ LOG: MAIN PANIC
  required_quoter_id (sqlite) quoting -1 (NULL)
  lookup forced cache cleanup
  lookup failed
-  ╭───scanning: C}}
-  ├───────text: C
-  ├───scanning: }}
-  ├───expanded: C
+  ╭───scanning: }{C}}
+  ├───expanded: 
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
- ├───expanded: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('$sender_address',░'should░NOT░work',░'foo');}░{C}}
- ╰─────result: 
- ╭considering: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('${quote_sqlite:$sender_address}',░'should░work',░'bar');}░{D}}
-  ╭considering: insert░into░tb░(key,░data1,░data1)░values░('${quote_sqlite:$sender_address}',░'should░work',░'bar');}░{D}}
+  ╭considering: C}}
+  ├───────text: C
+  ├considering: }}
+  ├───expanded: C
+  ╰─────result: C
+ ├───expanded: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('$sender_address',░'should░NOT░work',░'foo');}░{}{C}}
+ ╰─────result: C
+ ╭considering: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('${quote_sqlite:$sender_address}',░'should░work',░'bar');}░{}{D}}
+  ╭considering: insert░into░tb░(key,░data1,░data1)░values░('${quote_sqlite:$sender_address}',░'should░work',░'bar');}░{}{D}}
   ├───────text: insert░into░tb░(key,░data1,░data1)░values░('
-  ├considering: ${quote_sqlite:$sender_address}',░'should░work',░'bar');}░{D}}
-   ╭considering: $sender_address}',░'should░work',░'bar');}░{D}}
+  ├considering: ${quote_sqlite:$sender_address}',░'should░work',░'bar');}░{}{D}}
+   ╭considering: $sender_address}',░'should░work',░'bar');}░{}{D}}
    ├──────value: tainted_username@needsquote.dom
               ╰──(tainted)
-   ├considering: }',░'should░work',░'bar');}░{D}}
+   ├considering: }',░'should░work',░'bar');}░{}{D}}
    ├───expanded: $sender_address
    ╰─────result: tainted_username@needsquote.dom
               ╰──(tainted)
   ├─────op-res: tainted_username@needsquote.dom
              ╰──(tainted, quoted:sqlite)
-  ├considering: ',░'should░work',░'bar');}░{D}}
+  ├considering: ',░'should░work',░'bar');}░{}{D}}
   ├───────text: ',░'should░work',░'bar');
-  ├considering: }░{D}}
+  ├considering: }░{}{D}}
   ├───expanded: insert░into░tb░(key,░data1,░data1)░values░('${quote_sqlite:$sender_address}',░'should░work',░'bar');
   ╰─────result: insert░into░tb░(key,░data1,░data1)░values░('tainted_username@needsquote.dom',░'should░work',░'bar');
              ╰──(tainted, quoted:sqlite)
@@ -903,13 +912,16 @@ LOG: MAIN PANIC
                               (tainted, quoted:sqlite)
  lookup forced cache cleanup
  lookup failed
-  ╭───scanning: D}}
-  ├───────text: D
-  ├───scanning: }}
-  ├───expanded: D
+  ╭───scanning: }{D}}
+  ├───expanded: 
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
- ├───expanded: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('${quote_sqlite:$sender_address}',░'should░work',░'bar');}░{D}}
- ╰─────result: 
+  ╭considering: D}}
+  ├───────text: D
+  ├considering: }}
+  ├───expanded: D
+  ╰─────result: D
+ ├───expanded: ${lookup░sqlite{insert░into░tb░(key,░data1,░data1)░values░('${quote_sqlite:$sender_address}',░'should░work',░'bar');}░{}{D}}
+ ╰─────result: D
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1245 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
