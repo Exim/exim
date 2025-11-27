@@ -64,3 +64,18 @@ macro 'DATA' -> 'TESTSUITE/missingfile'
 macro 'DATA' -> 'TESTSUITE/missingfile'
 > 
 > 
+macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
+macro 'DATA' -> 'TESTSUITE/tmp/newdb.sqlite'
+macro 'DATA' -> 'TESTSUITE/tmp/newdb.sqlite'
+> A
+> B
+> C
+> D
+> 
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE tb (key text, data1 text, data2 text);
+INSERT INTO tb VALUES('k1','plain data',NULL);
+INSERT INTO tb VALUES('tainted_username@needsquote.dom','should NOT work',NULL);
+INSERT INTO tb VALUES('tainted_username@needsquote.dom','should work',NULL);
+COMMIT;
