@@ -30,25 +30,23 @@ There are a number of common subroutines, followed by three main programs,
 whose inclusion is controlled by -D on the compilation command. */
 
 
+#include <libgen.h>
 #include "exim.h"
 #include "hintsdb.h"
 
 
 /* Identifiers for the different database types. */
 
-#define type_retry     1
-#define type_wait      2
-#define type_misc      3
-#define type_callout   4
-#define type_ratelimit 5
-#define type_tls       6
-#define type_seen      7
-
+enum dbtype { type_retry = 1, type_wait, type_misc, type_callout,
+	      type_ratelimit, type_tls, type_seen, type_dbm
+};
 
 /* This is used by our cut-down dbfn_open(). */
 
-uschar *spool_directory;
+uschar * spool_directory = NULL;
+const uschar * lockfile_name = NULL;
 
+BOOL dbmdb = FALSE;
 BOOL keyonly = FALSE;
 BOOL utc = FALSE;
 
@@ -110,7 +108,15 @@ sigalrm_seen = 1;
 static void
 usage(const uschar * name, const uschar * options)
 {
-printf("Usage: exim_%s%s  <spool-directory> <database-name>\n", name, options);
+uschar * s = store_get(Ustrlen(options), options), * t = s;
+
+if (Ustrchr(options, 'L'))
+  printf("Usage: exim_%s -L <database-path>\n\n", name);
+
+/* drop the L from options */
+do { if (*options != 'L') *t++ = *options; } while (*options++);
+
+printf("Usage: exim_%s%s  <spool-directory> <database-name>\n", name, s);
 printf("  <database-name> = retry | misc | wait-<transport-name> | callout | ratelimit | tls | seen\n");
 exit(EXIT_FAILURE);
 }
@@ -146,6 +152,8 @@ second of them to be sure it is a known database name. */
 static int
 check_args(int argc, uschar **argv, const uschar * name, const uschar * options)
 {
+if (dbmdb && argc - optind == 1) return type_dbm;
+
 if (argc - optind == 2)
   {
   const uschar * aname = argv[optind + 1];
@@ -172,9 +180,10 @@ opterr = 0;
 while ((opt = getopt(argc, (char * const *)argv, CCS opts)) != -1)
   switch (opt)
   {
+  case 'L':	dbmdb = TRUE; break;
   case 'k':	keyonly = TRUE; break;
   case 'z':	utc = TRUE; break;
-  default:	usage(name, US" [-z] [-k]");
+  default:	usage(name, US" [-kLz]");
   }
 }
 
@@ -322,29 +331,40 @@ dbfn_open(const uschar * name, int flags, open_db * dbblock,
 {
 int rc;
 struct flock lock_data;
-uschar * dirname, * filename;
+uschar * dname, * filename;
 
 /* The first thing to do is to open a separate file on which to lock. This
 ensures that Exim has exclusive use of the database before it even tries to
 open it. If there is a database, there should be a lock file in existence;
-if no lockfile we infer there is no database and error out.  We open the
+if no lockfile and a create fails, we assume it was the spooldir perms (and
+we have no write perms) and there is no database - and error out.  We open the
 lockfile using the r/w mode requested for the DB, users lacking permission
 for the DB access mode will error out here. */
 
-if (  asprintf(CSS &dirname, "%s/db", spool_directory) < 0
-   || asprintf(CSS &filename, "%s/%s.lockfile", dirname, name) < 0)
+if (dbmdb)
+  {
+  if (asprintf(CSS &filename, "%s.lockfile", name) < 0)
+    return NULL;
+  dname = Ustrchr(name, '/')		/* path has dirs */
+    ? US dirname(CS string_copy(name))
+    : US ".";
+  }
+else if (  asprintf(CSS &dname, "%s/db", spool_directory) < 0
+	|| asprintf(CSS &filename, "%s/%s.lockfile", dname, name) < 0)
   return NULL;
 
 dbblock->readonly = (flags & O_ACCMODE) == O_RDONLY;
 dbblock->lockfd = -1;
 if (exim_lockfile_needed())
   {
-  if ((dbblock->lockfd = Uopen(filename, flags, 0)) < 0)
+  if ((dbblock->lockfd = Uopen(filename, dbmdb ? flags | O_CREAT : flags,
+			      0600)) < 0)
     {
     printf("** Failed to open database lock file %s: %s\n", filename,
       strerror(errno));
     return NULL;
     }
+  lockfile_name = string_copy(filename);
 
   /* Now we must get a lock on the opened lock file; do this with a blocking
   lock that times out. */
@@ -366,6 +386,7 @@ if (exim_lockfile_needed())
       filename,
       errno == ETIMEDOUT ? "timed out" : strerror(errno));
     (void)close(dbblock->lockfd);
+    unlink(CS filename);
     return NULL;
     }
 
@@ -373,11 +394,14 @@ if (exim_lockfile_needed())
   exclusive access to the database, so we can go ahead and open it. */
   }
 
-if (asprintf(CSS &filename, "%s/%s", dirname, name) < 0) return NULL;
+if ((dbmdb
+    ? asprintf(CSS &filename, "%s", name)
+    : asprintf(CSS &filename, "%s/%s", dname, name)
+    ) < 0) return NULL;
 
 if (!(dbblock->dbptr = dbblock->readonly && !exim_lockfile_needed()
-		      ? exim_dbopen_multi(filename, dirname, flags, 0)
-		      : exim_dbopen(filename, dirname, flags, 0)))
+		      ? exim_dbopen_multi(filename, dname, flags, 0)
+		      : exim_dbopen(filename, dname, flags, 0)))
   {
   printf("** Failed to open hintsdb file %s for %s: %s%s\n", filename,
     dbblock->readonly ? "reading" : "writing", strerror(errno),
@@ -388,6 +412,7 @@ if (!(dbblock->dbptr = dbblock->readonly && !exim_lockfile_needed()
 #endif
     );
   if (dbblock->lockfd >= 0) (void)close(dbblock->lockfd);
+  unlink(CCS lockfile_name);
   return NULL;
   }
 
@@ -590,26 +615,33 @@ return yield;
 *************************************************/
 
 int
-main(int argc, char **cargv)
+main(int argc, char ** cargv)
 {
-int dbdata_type = 0;
-int yield = 0;
+int dbdata_type = 0, yield = 0;
 open_db dbblock;
-open_db *dbm;
-EXIM_CURSOR *cursor;
-uschar **argv = USS cargv;
+open_db * dbm;
+EXIM_CURSOR * cursor;
+uschar ** argv = USS cargv;
+const uschar * file;
 uschar keybuffer[1024];
 
 store_init();
-options(argc, argv, US"dumpdb", US"kz");
+options(argc, argv, US"dumpdb", US"kLz");
 
 /* Check the arguments, and open the database */
 
-dbdata_type = check_args(argc, argv, US"dumpdb", US" [-z] [-k]");
+dbdata_type = check_args(argc, argv, US"dumpdb", US" [-kLz]");
 argc -= optind; argv += optind;
-spool_directory = argv[0];
 
-if (!(dbm = dbfn_open(argv[1], O_RDONLY, &dbblock, FALSE, TRUE)))
+if (dbmdb)
+  file = argv[0];
+else
+  {
+  spool_directory = argv[0];
+  file = argv[1];
+  }
+
+if (!(dbm = dbfn_open(file, O_RDONLY, &dbblock, FALSE, TRUE)))
   exit(EXIT_FAILURE);
 
 /* Scan the file, formatting the information for each entry. Note
@@ -772,11 +804,15 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	seen = (dbdata_seen *)value;
 	printf("%s\t%s\n", keybuffer, print_time(seen->time_stamp));
 	break;
+
+      case type_dbm:
+	printf("%s\t%s\n", keybuffer, value);
       }
   store_reset(reset_point);
   }
 
 dbfn_close(dbm);
+unlink(CCS lockfile_name);
 return yield;
 }
 

@@ -98,13 +98,14 @@ In order to run this test suite, the following requirements must be met:
 
       Routers:        accept, dnslookup, manualroute, redirect
       Transports:     appendfile, autoreply, pipe, smtp
-      Lookups:        lsearch
+      Lookups:        lsearch dsearch
       Authenticators: plaintext
 
     Most Exim binaries will have these included.
 
-(6) A C compiler is needed to build some test programs, and the test script is
-    written in Perl, so you need that.
+(6) Make and a C compiler are needed to build some test programs, and the test
+    script is written in Perl, so you need that (and some perl modules; running
+    the script will tell you what).
 
 (7) Some of the tests run Exim as a daemon, and others use a testing server
     (described below). These require TCP ports. In the configurations and
