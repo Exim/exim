@@ -36499,7 +36499,7 @@ returns a non-NULL value if decoding was successful, but there was a problem
 with translation.
 
 
-.vitem &*int&~smtp_fflush(void)*&
+.vitem &*int&~smtp_fflush(BOOL)*&
 This function is used in conjunction with &'smtp_printf()'&, as described
 below.
 
@@ -36542,14 +36542,14 @@ the data returned via the &%return_text%& argument. The added value of using
 multiple output lines.
 
 The &'smtp_printf()'& function does not return any error indication, because it
-does not
-guarantee a flush of
+does not guarantee a flush of
 pending output, and therefore does not test
 the state of the stream. (In the main code of Exim, flushing and error
 detection is done when Exim is ready for the next SMTP input command.) If
 you want to flush the output and check for an error (for example, the
-dropping of a TCP/IP connection), you can call &'smtp_fflush()'&, which has no
-arguments. It flushes the output stream, and returns a non-zero value if there
+dropping of a TCP/IP connection), you can call &'smtp_fflush()'&, which has one
+argument saying whether to also uncork the socket layer (it is always safe to do so).
+It flushes the output stream, and returns a non-zero value if there
 is an error.
 
 .vitem &*void&~*store_get(int,BOOL)*&
