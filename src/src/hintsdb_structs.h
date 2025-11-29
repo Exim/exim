@@ -25,8 +25,10 @@ typedef struct {
 } open_db;
 
 
-/* Structures for records stored in exim database dbm files. They all
-start with the same fields, described in the generic type. */
+/* Structures for records stored in exim database hinsts files. They all
+start with the same fields, described in the generic type.
+DBM databases are used for hints files.
+*/
 
 
 typedef struct {

@@ -586,7 +586,7 @@ exim:   buildlookups buildauths buildrouters buildtransports buildmisc \
 
 # The utility for dumping the contents of an exim database
 
-OBJ_DUMPDB = exim_dumpdb.o util-os.o util-store.o util-xtextencode.o
+OBJ_DUMPDB = exim_dumpdb.o util-os.o util-store.o util-string.o
 
 exim_dumpdb: $(OBJ_DUMPDB)
 	@echo "$(LNCC) -o exim_dumpdb"
@@ -601,7 +601,7 @@ exim_dumpdb: $(OBJ_DUMPDB)
 
 # The utility for interrogating/fixing the contents of an exim database
 
-OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o util-md5.o util-xtextencode.o
+OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o util-md5.o
 
 exim_fixdb:  $(OBJ_FIXDB)
 	@echo "$(LNCC) -o exim_fixdb"
@@ -616,7 +616,7 @@ exim_fixdb:  $(OBJ_FIXDB)
 
 # The utility for tidying the contents of an exim database
 
-OBJ_TIDYDB = exim_tidydb.o util-os.o util-store.o util-xtextencode.o
+OBJ_TIDYDB = exim_tidydb.o util-os.o util-store.o
 
 exim_tidydb: $(OBJ_TIDYDB)
 	@echo "$(LNCC) -o exim_tidydb"
@@ -632,7 +632,7 @@ exim_tidydb: $(OBJ_TIDYDB)
 
 # The utility for building dbm files
 
-OBJ_DBMBUILD = exim_dbmbuild.o util-xtextencode.o
+OBJ_DBMBUILD = exim_dbmbuild.o
 
 exim_dbmbuild: $(OBJ_DBMBUILD)
 	@echo "$(LNCC) -o exim_dbmbuild"
@@ -682,7 +682,6 @@ OBJ_MONBIN = util-host_address.o \
 	     util-string.o \
 	     util-tod.o \
 	     util-tree.o \
-	     util-xtextencode.o \
 	     $(MONBIN)
 
 eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) ../exim_monitor/em_version.c \
@@ -842,10 +841,6 @@ util-tod.o:   $(HDRS) tod.c
 util-tree.o:   $(HDRS) tree.c
 	@echo "$(CC) -DCOMPILE_UTILITY tree.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-tree.o tree.c
-
-util-xtextencode.o:   $(HDRS) xtextencode.c
-	@echo "$(CC) -DCOMPILE_UTILITY xtextencode.c"
-	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-xtextencode.o xtextencode.c
 
 util-os.o:       $(HDRS) os.c
 	@echo "$(CC) -DCOMPILE_UTILITY os.c"

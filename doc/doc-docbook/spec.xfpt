@@ -40978,6 +40978,16 @@ may be seen. The data in these records is often out of date, because a message
 may be routed to several alternative hosts, and Exim makes no effort to keep
 cross-references.
 
+.new
+For non-hints DBM databases (as created by the &'exim_dbmbuild'& utility)
+a &'-L'& option signals that only a single argument follows, giving the
+file path:
+.code
+exim_dumpdb -L my_dbm_file
+.endd
+One line of output is given for each entry, with the key and the value.
+.wen
+
 
 
 .subsection "exim_tidydb" "SECTtidydb"
@@ -41038,9 +41048,11 @@ is somewhat crude. On entry, it prompts for input with a right angle-bracket. A
 key of a database record can then be entered, and the data for that record is
 displayed.
 
-If &"d"& is typed at the next prompt, the entire record is deleted. For all
-except the &'retry'& database, that is the only operation that can be carried
-out. For the &'retry'& database, each field is output preceded by a number, and
+If &"d"& is typed at the next prompt, the entire record is deleted.
+For all except the &'retry'&, &'callout'&, and '&ratelimit'& databases,
+that is the only operation that can be carried
+out.
+For the modifiable ones, each field is output preceded by a number, and
 data for individual fields can be changed by typing the field number followed
 by new data, for example:
 .code
@@ -41053,6 +41065,16 @@ used as optional separators.
 Both displayed and input times are in the local timezone by default.
 If an option &'-z'& is used on the command line, displayed times
 are in UTC.
+
+.new
+For non-hints DBM databases (as created by the &'exim_dbmbuild'& utility)
+a &'-L'& option signals that only a single argument follows, giving the
+file path:
+.code
+exim_fixdb -L my_dbm_file
+.endd
+Records have no timestamp, and only have field number zero.
+.wen
 
 
 

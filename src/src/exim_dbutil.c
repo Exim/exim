@@ -52,7 +52,7 @@ BOOL utc = FALSE;
 
 
 /******************************************************************************/
-      /* dummies needed by Solaris build */
+	/* dummies needed by Solaris build */
 void
 millisleep(int msec)
 {}
@@ -61,20 +61,6 @@ readconf_printtime(int t)
 { return NULL; }
 const uschar * expand_string_2(const uschar * string, BOOL * textonly_p)
 { return NULL; }
-gstring *
-string_catn(gstring * g, const uschar * s, int count)
-{ return NULL; }
-gstring *
-string_vformat_trc(gstring * g, const uschar * func, unsigned line,
-  unsigned size_limit, unsigned flags, const char *format, va_list ap)
-{ return NULL; }
-uschar *
-string_sprintf_trc(const char * fmt, const uschar * func, unsigned line, ...)
-{ return NULL; }
-BOOL
-string_format_trc(uschar * buf, int len, const uschar * func, unsigned line,
-  const char * fmt, ...)
-{ return FALSE; }
 const uschar * parse_find_address_end_gen(const uschar * s, BOOL b)
 {return NULL; }
 
@@ -442,7 +428,9 @@ else
   exim_dbclose(dbp->dbptr);
 
 if (dbp->lockfd >= 0)
-  (void) close(dbp->lockfd);
+  { (void) close(dbp->lockfd); dbp->lockfd = -1; }
+unlink(CCS lockfile_name);
+lockfile_name = NULL;
 }
 
 
@@ -516,15 +504,13 @@ Returns:    the yield of the underlying dbm or db "write" function. If this
 */
 
 int
-dbfn_write(open_db *dbblock, const uschar *key, void *ptr, int length)
+dbfn_write(open_db * dbblock, const uschar * key, void * ptr, int length)
 {
 EXIM_DATUM key_datum, value_datum;
-dbdata_generic *gptr = (dbdata_generic *)ptr;
 int klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen, key);
 
 memcpy(key_copy, key, klen);
-gptr->time_stamp = time(NULL);
 
 exim_datum_init(&key_datum);         /* Some DBM libraries require the datum */
 exim_datum_init(&value_datum);       /* to be cleared before use. */
@@ -738,9 +724,18 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	break;
 
       case type_misc:
-	printf("%s %s\n", print_time(((dbdata_generic *)value)->time_stamp),
-	  keybuffer);
+	/* It might be nice to recognize the subtypes of "misc" DBs (by the
+	key prefix?) for better decode.  For now, dump the raw data. */
+
+	{
+	dbdata_generic * recp = (dbdata_generic *)value;
+	uschar * dp = US (recp + 1);
+	int dlen = length = sizeof(dbdata_generic);
+
+	printf("%s %s\n", print_time(recp->time_stamp), keybuffer);
+	printf("%s\n", string_sprintf("%.*q\n", dlen, dp));
 	break;
+	}
 
       case type_callout:
 	callout = (dbdata_callout_cache *)value;
@@ -806,13 +801,12 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	break;
 
       case type_dbm:
-	printf("%s\t%s\n", keybuffer, value);
+	printf("%s\t%.*s\n", keybuffer, length, value);
       }
   store_reset(reset_point);
   }
 
 dbfn_close(dbm);
-unlink(CCS lockfile_name);
 return yield;
 }
 
@@ -860,22 +854,30 @@ int dbdata_type;
 uschar **argv = USS cargv;
 uschar buffer[256];
 uschar name[256];
+const uschar * file;
 rmark reset_point;
-uschar * aname;
 
 store_init();
-options(argc, argv, US"fixdb", US"z");
-name[0] = 0;  /* No name set */
+options(argc, argv, US"fixdb", US"Lz");
+*name = '\0';  /* No name set */
 
 /* Sort out the database type, verify what we are working on and then process
 user requests */
 
-dbdata_type = check_args(argc, argv, US"fixdb", US" [-z]");
+dbdata_type = check_args(argc, argv, US"fixdb", US" [-Lz]");
 argc -= optind; argv += optind;
-spool_directory = argv[0];
-aname = argv[1];
 
-printf("Modifying Exim hints database %s/db/%s\n", spool_directory, aname);
+if (dbmdb)
+  {
+  file = argv[0];
+  printf("Modifying Exim dbm database %s\n", file);
+  }
+else
+  {
+  spool_directory = argv[0];
+  file = argv[1];
+  printf("Modifying Exim hints database %s/db/%s\n", spool_directory, file);
+  }
 
 for(; (reset_point = store_mark()); store_reset(reset_point))
   {
@@ -888,9 +890,8 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
   dbdata_ratelimit *ratelimit;
   dbdata_ratelimit_unique *rate_unique;
   dbdata_tls_session *session;
-  int oldlength;
-  uschar *t;
-  uschar field[256], value[256];
+  int oldlength, newlength;
+  uschar * t, field[256], value[256];
 
   printf("> ");
   if (Ufgets(buffer, 256, stdin) == NULL) break;
@@ -904,7 +905,7 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
   if ((isdigit((uschar)buffer[0]) && (buffer[1] == ' ' || buffer[1] == '\0'))
        || Ustrcmp(buffer, "d") == 0)
     {
-    if (name[0] == 0)
+    if (!*name)
       {
       printf("No previous record name is set\n");
       continue;
@@ -913,167 +914,175 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
     }
   else
     {
-    name[0] = 0;
+    *name = '\0';
     (void)sscanf(CS buffer, "%s %s %s", name, field, value);
     }
 
   /* Handle an update request */
 
-  if (field[0] != 0)
+  if (*field)
     {
     int verify = 1;
 
-    if (!(dbm = dbfn_open(aname, O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
+    if (!(dbm = dbfn_open(file, O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
       continue;
 
     if (Ustrcmp(field, "d") == 0)
       {
-      if (value[0] != 0) printf("unexpected value after \"d\"\n");
-        else printf("%s\n", (dbfn_delete(dbm, name) < 0)?
-          "not found" : "deleted");
+      if (*value)
+	printf("unexpected value after \"d\"\n");
+      else
+	printf("%s\n", dbfn_delete(dbm, name) < 0 ?  "not found" : "deleted");
       dbfn_close(dbm);
       continue;
       }
 
-    else if (isdigit((uschar)field[0]))
+    else if (dbdata_type == type_dbm || isdigit((uschar)field[0]))
       {
-      int fieldno = Uatoi(field);
-      if (value[0] == 0)
+      if (!*value)
         {
         printf("value missing\n");
         dbfn_close(dbm);
         continue;
         }
+      else if (!(record = dbfn_read_with_length(dbm, name, &oldlength)))
+	printf("not found\n");
       else
-        {
-        record = dbfn_read_with_length(dbm, name, &oldlength);
-        if (record == NULL) printf("not found\n"); else
-          {
-          time_t tt;
-          /*int length = 0;      Stops compiler warning */
+	{
+	int fieldno = Uatoi(field);
+	time_t tt;
+	/*int length = 0;      Stops compiler warning */
 
-          switch(dbdata_type)
-            {
-            case type_retry:
-	      retry = (dbdata_retry *)record;
-	      /* length = sizeof(dbdata_retry) + Ustrlen(retry->text); */
+	newlength = oldlength;
+	switch(dbdata_type)
+	  {
+	  case type_retry:
+	    retry = (dbdata_retry *)record;
+	    /* length = sizeof(dbdata_retry) + Ustrlen(retry->text); */
 
-	      switch(fieldno)
-		{
-		case 0: retry->basic_errno = Uatoi(value);
-			break;
-		case 1: retry->more_errno = Uatoi(value);
-			break;
-		case 2: if ((tt = read_time(value)) > 0) retry->first_failed = tt;
-			else printf("bad time value\n");
-			break;
-		case 3: if ((tt = read_time(value)) > 0) retry->last_try = tt;
-			else printf("bad time value\n");
-			break;
-		case 4: if ((tt = read_time(value)) > 0) retry->next_try = tt;
-			else printf("bad time value\n");
-			break;
-		case 5: if (Ustrcmp(value, "yes") == 0) retry->expired = TRUE;
-			else if (Ustrcmp(value, "no") == 0) retry->expired = FALSE;
-			else printf("\"yes\" or \"no\" expected=n");
-			break;
-		default: printf("unknown field number\n");
-			 verify = 0;
-			 break;
-		}
+	    switch(fieldno)
+	      {
+	      case 0: retry->basic_errno = Uatoi(value);
+		      break;
+	      case 1: retry->more_errno = Uatoi(value);
+		      break;
+	      case 2: if ((tt = read_time(value)) > 0) retry->first_failed = tt;
+		      else printf("bad time value\n");
+		      break;
+	      case 3: if ((tt = read_time(value)) > 0) retry->last_try = tt;
+		      else printf("bad time value\n");
+		      break;
+	      case 4: if ((tt = read_time(value)) > 0) retry->next_try = tt;
+		      else printf("bad time value\n");
+		      break;
+	      case 5: if (Ustrcmp(value, "yes") == 0) retry->expired = TRUE;
+		      else if (Ustrcmp(value, "no") == 0) retry->expired = FALSE;
+		      else printf("\"yes\" or \"no\" expected=n");
+		      break;
+	      default: printf("unknown field number\n");
+		       verify = 0;
+		       break;
+	      }
+	    break;
+
+	  case type_wait:
+	    printf("Can't change contents of wait database record\n");
+	    break;
+
+	  case type_misc:
+	    printf("Can't change contents of misc database record\n");
+	    break;
+
+	  case type_callout:
+	    callout = (dbdata_callout_cache *)record;
+	    /* length = sizeof(dbdata_callout_cache); */
+	    switch(fieldno)
+	      {
+	      case 0: callout->result = Uatoi(value);
+		      break;
+	      case 1: callout->postmaster_result = Uatoi(value);
+		      break;
+	      case 2: callout->random_result = Uatoi(value);
+		      break;
+	      default: printf("unknown field number\n");
+		       verify = 0;
+		       break;
+	      }
 	      break;
 
-            case type_wait:
-	      printf("Can't change contents of wait database record\n");
-	      break;
-
-            case type_misc:
-	      printf("Can't change contents of misc database record\n");
-	      break;
-
-            case type_callout:
-	      callout = (dbdata_callout_cache *)record;
-	      /* length = sizeof(dbdata_callout_cache); */
-	      switch(fieldno)
-		{
-		case 0: callout->result = Uatoi(value);
+	  case type_ratelimit:
+	    ratelimit = (dbdata_ratelimit *)record;
+	    switch(fieldno)
+	      {
+	      case 0: if ((tt = read_time(value)) > 0) ratelimit->time_stamp = tt;
+		      else printf("bad time value\n");
+		      break;
+	      case 1: ratelimit->time_usec = Uatoi(value);
+		      break;
+	      case 2: ratelimit->rate = Ustrtod(value, NULL);
+		      break;
+	      case 3: if (Ustrstr(name, "/unique/") != NULL
+			  && oldlength >= sizeof(dbdata_ratelimit_unique))
+			{
+			rate_unique = (dbdata_ratelimit_unique *)record;
+			if ((tt = read_time(value)) > 0) rate_unique->bloom_epoch = tt;
+			  else printf("bad time value\n");
 			break;
-		case 1: callout->postmaster_result = Uatoi(value);
-			break;
-		case 2: callout->random_result = Uatoi(value);
-			break;
-		default: printf("unknown field number\n");
-			 verify = 0;
-			 break;
-		}
-		break;
-
-            case type_ratelimit:
-	      ratelimit = (dbdata_ratelimit *)record;
-	      switch(fieldno)
-		{
-		case 0: if ((tt = read_time(value)) > 0) ratelimit->time_stamp = tt;
-			else printf("bad time value\n");
-			break;
-		case 1: ratelimit->time_usec = Uatoi(value);
-			break;
-		case 2: ratelimit->rate = Ustrtod(value, NULL);
-			break;
-		case 3: if (Ustrstr(name, "/unique/") != NULL
-			    && oldlength >= sizeof(dbdata_ratelimit_unique))
+			}
+		      /* else fall through */
+	      case 4:
+	      case 5: if (Ustrstr(name, "/unique/") != NULL
+			  && oldlength >= sizeof(dbdata_ratelimit_unique))
+			{
+			/* see acl.c */
+			BOOL seen;
+			unsigned hash, hinc;
+			uschar md5sum[16];
+			md5 md5info;
+			md5_start(&md5info);
+			md5_end(&md5info, value, Ustrlen(value), md5sum);
+			hash = md5sum[0] <<  0 | md5sum[1] <<  8
+			     | md5sum[2] << 16 | md5sum[3] << 24;
+			hinc = md5sum[4] <<  0 | md5sum[5] <<  8
+			     | md5sum[6] << 16 | md5sum[7] << 24;
+			rate_unique = (dbdata_ratelimit_unique *)record;
+			seen = TRUE;
+			for (unsigned n = 0; n < 8; n++, hash += hinc)
 			  {
-			  rate_unique = (dbdata_ratelimit_unique *)record;
-			  if ((tt = read_time(value)) > 0) rate_unique->bloom_epoch = tt;
-			    else printf("bad time value\n");
-			  break;
-			  }
-			/* else fall through */
-		case 4:
-		case 5: if (Ustrstr(name, "/unique/") != NULL
-			    && oldlength >= sizeof(dbdata_ratelimit_unique))
-			  {
-			  /* see acl.c */
-			  BOOL seen;
-			  unsigned hash, hinc;
-			  uschar md5sum[16];
-			  md5 md5info;
-			  md5_start(&md5info);
-			  md5_end(&md5info, value, Ustrlen(value), md5sum);
-			  hash = md5sum[0] <<  0 | md5sum[1] <<  8
-			       | md5sum[2] << 16 | md5sum[3] << 24;
-			  hinc = md5sum[4] <<  0 | md5sum[5] <<  8
-			       | md5sum[6] << 16 | md5sum[7] << 24;
-			  rate_unique = (dbdata_ratelimit_unique *)record;
-			  seen = TRUE;
-			  for (unsigned n = 0; n < 8; n++, hash += hinc)
+			  int bit = 1 << (hash % 8);
+			  int byte = (hash / 8) % rate_unique->bloom_size;
+			  if ((rate_unique->bloom[byte] & bit) == 0)
 			    {
-			    int bit = 1 << (hash % 8);
-			    int byte = (hash / 8) % rate_unique->bloom_size;
-			    if ((rate_unique->bloom[byte] & bit) == 0)
-			      {
-			      seen = FALSE;
-			      if (fieldno == 5) rate_unique->bloom[byte] |= bit;
-			      }
+			    seen = FALSE;
+			    if (fieldno == 5) rate_unique->bloom[byte] |= bit;
 			    }
-			  printf("%s %s\n",
-			    seen ? "seen" : fieldno == 5 ? "added" : "unseen", value);
-			  break;
 			  }
-			/* else fall through */
-		default: printf("unknown field number\n");
-			 verify = 0;
-			 break;
-		}
-	      break;
+			printf("%s %s\n",
+			  seen ? "seen" : fieldno == 5 ? "added" : "unseen", value);
+			break;
+			}
+		      /* else fall through */
+	      default: printf("unknown field number\n");
+		       verify = 0;
+		       break;
+	      }
+	    break;
 
-            case type_tls:
-	      printf("Can't change contents of tls database record\n");
-	      break;
-            }
+	  case type_tls:
+	    printf("Can't change contents of tls database record\n");
+	    break;
 
-          dbfn_write(dbm, name, record, oldlength);
-          }
-        }
+	  case type_dbm:
+	    record = value;
+	    newlength = Ustrlen(value);
+	    break;
+	  }
+
+	if (dbdata_type != type_dbm)
+	  ((dbdata_generic *)record)->time_stamp = time(NULL);
+
+	dbfn_write(dbm, name, record, newlength);
+	}
       }
 
     else
@@ -1092,18 +1101,21 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 
   /* Handle a read request, or verify after an update. */
 
-  if (!(dbm = dbfn_open(aname, O_RDONLY, &dbblock, FALSE, TRUE)))
+  if (!(dbm = dbfn_open(file, O_RDONLY, &dbblock, FALSE, TRUE)))
     continue;
 
   if (!(record = dbfn_read_with_length(dbm, name, &oldlength)))
     {
     printf("record %s not found\n", name);
-    name[0] = 0;
+    *name = '\0';
     }
   else
     {
     int count_bad = 0;
-    printf("%s\n", CS print_time(((dbdata_generic *)record)->time_stamp));
+
+    if (dbdata_type != type_dbm)
+      printf("%s\n", CS print_time(((dbdata_generic *)record)->time_stamp));
+
     switch(dbdata_type)
       {
       case type_retry:
@@ -1113,7 +1125,7 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 	printf("2 first failed: %s\n", print_time(retry->first_failed));
 	printf("3 last try:     %s\n", print_time(retry->last_try));
 	printf("4 next try:     %s\n", print_time(retry->next_try));
-	printf("5 expired:      %s\n", (retry->expired)? "yes" : "no");
+	printf("5 expired:      %s\n", retry->expired ? "yes" : "no");
 	break;
 
       case type_wait:
@@ -1185,6 +1197,9 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 	printf("0 time stamp:  %s\n", print_time(session->time_stamp));
 	printf("1 session: .%s\n", session->session);
 	break;
+
+      case type_dbm:
+	printf("0 value:  %.*s\n", oldlength, record);
       }
     }
 
@@ -1451,6 +1466,7 @@ for (; keychain && (reset_point = store_mark()); store_reset(reset_point))
     if (update)
       {
       printf("updated %s\n", key);
+      wait->time_stamp = time(NULL);
       dbfn_write(dbm, key, wait, sizeof(dbdata_wait) +
         wait->count * MESSAGE_ID_LENGTH);
       }

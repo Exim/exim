@@ -594,6 +594,7 @@ extern int     string_is_ip_addressX(const uschar *, int *, const uschar **);
 extern BOOL    string_is_utf8(const uschar *);
 #endif
 extern const uschar *string_printing2(const uschar *, int);
+extern const uschar *string_printing3(const uschar *, int, int);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_unprinting(uschar *);
 #ifdef SUPPORT_I18N
