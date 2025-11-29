@@ -63,7 +63,7 @@ negative = cache_record->result != ccache_accept ||
 expire = negative? negative_expire : positive_expire;
 now = time(NULL);
 
-if (now - cache_record->time_stamp > expire)
+if (now - cache_record->gen.time_stamp > expire)
   {
   HDEBUG(D_verify) debug_printf_indent("callout cache: %s record expired for %s\n", type, key);
   return NULL;
@@ -81,7 +81,7 @@ if (type[0] == 'd' && cache_record->result != ccache_reject)
     {
     dbdata_callout_cache * new = store_get(sizeof(dbdata_callout_cache), GET_UNTAINTED);
     memcpy(new, cache_record, length);
-    new->postmaster_stamp = new->random_stamp = new->time_stamp;
+    new->postmaster_stamp = new->random_stamp = new->gen.time_stamp;
     cache_record = new;
     }
 

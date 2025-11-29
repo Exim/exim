@@ -410,6 +410,7 @@ void * yield;
 EXIM_DATUM key_datum, result_datum;
 uschar * key_copy = store_get(klen, key);
 unsigned dlen;
+BOOL tainted;
 
 memcpy(key_copy, key, klen);
 
@@ -426,13 +427,17 @@ if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum))
   return NULL;
   }
 
-/* Assume the data store could have been tainted.  Properly, we should
-store the taint status with the data. */
-
 dlen = exim_datum_size_get(&result_datum);
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
 
-yield = store_get(dlen+1, hintsdb ? GET_TAINTED : GET_UNTAINTED);
+/* Hintsdb uses store the taint of the payload of the value in the value.
+For non-hints uses we have no provenance, so assume untainted */
+
+tainted = hintsdb
+  ? ((dbdata_generic *) exim_datum_data_get(&result_datum))->tainted
+  : FALSE;
+
+yield = store_get(dlen+1, tainted ? GET_TAINTED : GET_UNTAINTED);
 memcpy(yield, exim_datum_data_get(&result_datum), dlen);
 ((uschar *)yield)[dlen] = '\0';
 if (length) *length = dlen;
@@ -498,6 +503,8 @@ return NULL;
 *************************************************/
 
 /*
+All callers are writing a hintsdb record.
+
 Arguments:
   dbblock   a pointer to an open database block
   key       the key of the record to be written
@@ -509,7 +516,7 @@ Returns:    the yield of the underlying dbm or db "write" function. If this
 */
 
 int
-dbfn_write(open_db *dbblock, const uschar *key, void *ptr, int length)
+dbfn_write(open_db * dbblock, const uschar * key, void * ptr, int length)
 {
 EXIM_DATUM key_datum, value_datum;
 dbdata_generic *gptr = (dbdata_generic *)ptr;
@@ -518,6 +525,7 @@ uschar * key_copy = store_get(klen, key);
 
 memcpy(key_copy, key, klen);
 gptr->time_stamp = time(NULL);
+gptr->tainted = is_tainted(ptr);
 
 DEBUG(D_hints_lookup)
   debug_printf_indent("dbfn_write: key=%s datalen %d\n", key, length);

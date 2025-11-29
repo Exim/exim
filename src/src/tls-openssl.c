@@ -4035,7 +4035,7 @@ if (tlsp->host_resumable)
 #else			/* Use, fairly arbitrilarily, what we as server would */
 	  f.running_in_test_harness ? TESTSUITE_TICKET_LIFE : ssl_session_timeout;
 #endif
-	time_t now = time(NULL), expires = lifetime + dt->time_stamp;
+	time_t now = time(NULL), expires = lifetime + dt->gen.time_stamp;
 	if (expires < now)
 	  {
 	  DEBUG(D_tls) debug_printf("session expired (by " TIME_T_FMT "s from %lus)\n", now - expires, lifetime);

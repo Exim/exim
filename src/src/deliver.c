@@ -2932,7 +2932,7 @@ while (addr_local)
 	DEBUG(D_retry)
 	  {
 	  debug_printf("retry record exists: age=%s ",
-	    readconf_printtime(now - retry_record->time_stamp));
+	    readconf_printtime(now - retry_record->gen.time_stamp));
 	  debug_printf("(max %s)\n", readconf_printtime(retry_data_expire));
 	  debug_printf("  time to retry = %s expired = %d\n",
 	    readconf_printtime(retry_record->next_try - now),
@@ -2941,7 +2941,7 @@ while (addr_local)
 
 	if (f.queue_running && !f.deliver_force)
 	  {
-	  ok = (now - retry_record->time_stamp > retry_data_expire)
+	  ok = (now - retry_record->gen.time_stamp > retry_data_expire)
 	    || (now >= retry_record->next_try)
 	    || retry_record->expired;
 
@@ -7827,7 +7827,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       {
       domain_retry_record = dbfn_read(dbm_file, addr->domain_retry_key);
       if (  domain_retry_record
-	 && now - domain_retry_record->time_stamp > retry_data_expire
+	 && now - domain_retry_record->gen.time_stamp > retry_data_expire
 	 )
 	{
 	DEBUG(D_deliver|D_retry)
@@ -7837,7 +7837,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
       address_retry_record = dbfn_read(dbm_file, addr->address_retry_key);
       if (  address_retry_record
-	 && now - address_retry_record->time_stamp > retry_data_expire
+	 && now - address_retry_record->gen.time_stamp > retry_data_expire
 	 )
 	{
 	DEBUG(D_deliver|D_retry)
@@ -7851,7 +7851,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 				  addr->address_retry_key, sender_address);
 	address_retry_record = dbfn_read(dbm_file, altkey);
 	if (  address_retry_record
-	   && now - address_retry_record->time_stamp > retry_data_expire)
+	   && now - address_retry_record->gen.time_stamp > retry_data_expire)
 	  {
 	  DEBUG(D_deliver|D_retry)
 	    debug_printf_indent("address<sender> retry record present but expired\n");

@@ -2826,7 +2826,7 @@ if (!dbd)
   {
   HDEBUG(D_acl) debug_printf_indent("ratelimit initializing new key's rate data\n");
   dbd = &dbdb->dbd;
-  dbd->time_stamp = tv.tv_sec;
+  dbd->gen.time_stamp = tv.tv_sec;
   dbd->time_usec = tv.tv_usec;
   dbd->rate = count;
   }
@@ -2876,7 +2876,7 @@ else
 
   double this_time = (double)tv.tv_sec
                    + (double)tv.tv_usec / 1000000.0;
-  double prev_time = (double)dbd->time_stamp
+  double prev_time = (double)dbd->gen.time_stamp
                    + (double)dbd->time_usec / 1000000.0;
 
   /* We must avoid division by zero, and deal gracefully with the clock going
@@ -2893,7 +2893,7 @@ else
   using the smoothing factor a. In order to measure sized events, multiply the
   instantaneous rate by the count of bytes or recipients etc. */
 
-  dbd->time_stamp = tv.tv_sec;
+  dbd->gen.time_stamp = tv.tv_sec;
   dbd->time_usec = tv.tv_usec;
   dbd->rate = (1 - a) * count / i_over_p + a * dbd->rate;
 
@@ -3048,7 +3048,7 @@ dbd = dbfn_read_with_length(dbm, key, NULL);
 now = time(NULL);
 if (dbd)		/* an existing record */
   {
-  time_t diff = now - dbd->time_stamp;	/* time since the record was written */
+  time_t diff = now - dbd->gen.time_stamp;  /* time since record was written */
 
   if (before ? diff >= interval : diff < interval)
     yield = OK;
@@ -3057,13 +3057,13 @@ if (dbd)		/* an existing record */
     { HDEBUG(D_acl) debug_printf_indent("seen db not written (readonly)\n"); }
   else if (mode == SEEN_WRITE || !before)
     {
-    dbd->time_stamp = now;
+    dbd->gen.time_stamp = now;
     dbfn_write(dbm, key, dbd, sizeof(*dbd));
     HDEBUG(D_acl) debug_printf_indent("seen db written (update)\n");
     }
   else if (diff >= refresh)
     {
-    dbd->time_stamp = now - interval;
+    dbd->gen.time_stamp = now - interval;
     dbfn_write(dbm, key, dbd, sizeof(*dbd));
     HDEBUG(D_acl) debug_printf_indent("seen db written (refresh)\n");
     }
@@ -3072,7 +3072,7 @@ else
   {			/* No record found, yield always FAIL */
   if (mode != SEEN_READONLY)
     {
-    dbdata_seen d = {.time_stamp = now};
+    dbdata_seen d = {.gen = {.time_stamp = now}};
     dbfn_write(dbm, key, &d, sizeof(*dbd));
     HDEBUG(D_acl) debug_printf_indent("seen db written (create)\n");
     }

@@ -227,7 +227,7 @@ if (!host_retry_record)
   {
   DEBUG(D_transport|D_retry) debug_printf_indent("no host retry record\n");
   }
-else if (now - host_retry_record->time_stamp > retry_data_expire)
+else if (now - host_retry_record->gen.time_stamp > retry_data_expire)
   {
   host_retry_record = NULL;
   DEBUG(D_transport|D_retry) debug_printf_indent("host retry record too old\n");
@@ -237,7 +237,7 @@ if (!message_retry_record)
   {
   DEBUG(D_transport|D_retry) debug_printf_indent("no message retry record\n");
   }
-else if (now - message_retry_record->time_stamp > retry_data_expire)
+else if (now - message_retry_record->gen.time_stamp > retry_data_expire)
   {
   message_retry_record = NULL;
   DEBUG(D_transport|D_retry)
@@ -744,7 +744,7 @@ for (int i = 0; i < 3; i++)
         retry_record = dbfn_read_with_length(dbm_file, rti->key,
 					      &message_space);
         if (  retry_record
-	   && now - retry_record->time_stamp > retry_data_expire)
+	   && now - retry_record->gen.time_stamp > retry_data_expire)
           retry_record = NULL;
 
         if (!retry_record)

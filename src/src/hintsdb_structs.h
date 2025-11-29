@@ -32,7 +32,8 @@ DBM databases are used for hints files.
 
 
 typedef struct {
-  time_t time_stamp;      /* Timestamp of writing */
+  time_t time_stamp;	/* Timestamp of writing */
+  BOOL	 tainted;	/* metadata for the "value" part of the record */
 } dbdata_generic;
 
 
@@ -40,7 +41,7 @@ typedef struct {
 address. */
 
 typedef struct {
-  time_t time_stamp;
+  dbdata_generic gen;
   /*************/
   time_t first_failed;    /* Time of first failure */
   time_t last_try;        /* Time of last try */
@@ -72,7 +73,7 @@ handle the old type of record, we retain the old definition. The different
 kinds of record can be distinguished by their different lengths. */
 
 typedef struct {
-  time_t time_stamp;
+  dbdata_generic gen;
   /*************/
   int   result;
   int   postmaster_result; /* Postmaster is accepted */
@@ -80,7 +81,7 @@ typedef struct {
 } dbdata_callout_cache_obs;
 
 typedef struct {
-  time_t time_stamp;       /* Timestamp of last address check */
+  dbdata_generic gen;		/* Timestamp of last address check */
   /*************/
   int   result;            /* accept or reject */
 } dbdata_callout_cache_address;
@@ -90,7 +91,7 @@ last so that if somebody reverts to an older Exim, the new records will
 still make sense because they match the old layout. */
 
 typedef struct {
-  time_t time_stamp;       /* Time stamp of last connection */
+  dbdata_generic gen;		/* Time stamp of last connection */
   /*************/
   int   result;            /* Domain reject or accept */
   int   postmaster_result; /* Postmaster result */
@@ -103,7 +104,7 @@ typedef struct {
 host for a particular transport. */
 
 typedef struct {
-  time_t time_stamp;
+  dbdata_generic gen;
   /*************/
   int    count;           /* Count of message ids */
   int    sequence;        /* Sequence for continued records */
@@ -123,7 +124,7 @@ at present in use. The same structure is used for recording a running ETRN
 process. */
 
 typedef struct {
-  time_t time_stamp;
+  dbdata_generic gen;
   /*************/
   int    count;           /* Reserved for possible connection count */
 } dbdata_serialize;
@@ -133,7 +134,7 @@ typedef struct {
 ACL condition. */
 
 typedef struct {
-  time_t time_stamp;
+  dbdata_generic gen;
   /*************/
   int    time_usec;       /* Fractional part of time, from gettimeofday() */
   double rate;            /* Smoothed sending rate at that time */
@@ -151,7 +152,7 @@ typedef struct {
 
 /* For "seen" ACL condition */
 typedef struct {
-  time_t time_stamp;
+  dbdata_generic gen;
 } dbdata_seen;
 
 #ifndef DISABLE_PIPE_CONNECT
@@ -174,14 +175,14 @@ typedef struct {
 } ehlo_resp_precis;
 
 typedef struct {
-  time_t time_stamp;
+  dbdata_generic gen;
   /*************/
   ehlo_resp_precis data;
 } dbdata_ehlo_resp;
 #endif
 
 typedef struct {
-  time_t time_stamp;
+  dbdata_generic gen;
   /*************/
   uschar verify_override:1;
   uschar ocsp:3;

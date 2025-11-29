@@ -53,7 +53,7 @@ if (!(dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
 proceed with the connection unless the record is very old. */
 
 serial_record = dbfn_read_enforce_length(dbm_file, key, sizeof(dbdata_serialize));
-if (serial_record && time(NULL) - serial_record->time_stamp < 6*60*60)
+if (serial_record && time(NULL) - serial_record->gen.time_stamp < 6*60*60)
   {
   if (serial_record->count >= lim)
     {

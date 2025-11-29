@@ -992,7 +992,7 @@ if (  sx->early_pipe_active
       debug_printf("no ehlo-resp record!\n");
     else
       debug_printf("ehlo-resp record is %.0f seconds old\n",
-		    difftime(time(NULL), er->time_stamp));
+		    difftime(time(NULL), er->gen.time_stamp));
     }
 
   dbfn_delete(dbm_file, ehlo_resp_key);
@@ -1018,7 +1018,7 @@ else
     dbfn_close(dbm_file);
     DEBUG(D_transport) debug_printf("no ehlo-resp record\n");
     }
-  else if (time(NULL) - er->time_stamp > retry_data_expire)
+  else if (time(NULL) - er->gen.time_stamp > retry_data_expire)
     {
     DEBUG(D_transport) debug_printf("ehlo-resp record too old\n");
     dbfn_close(dbm_file);

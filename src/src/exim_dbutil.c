@@ -380,10 +380,7 @@ if (exim_lockfile_needed())
   exclusive access to the database, so we can go ahead and open it. */
   }
 
-if ((dbmdb
-    ? asprintf(CSS &filename, "%s", name)
-    : asprintf(CSS &filename, "%s/%s", dname, name)
-    ) < 0) return NULL;
+if (asprintf(CSS &filename, "%s", name) < 0) return NULL;
 
 if (!(dbblock->dbptr = dbblock->readonly && !exim_lockfile_needed()
 		      ? exim_dbopen_multi(filename, dname, flags, 0)
@@ -461,6 +458,7 @@ EXIM_DATUM key_datum, result_datum;
 int klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen, key);
 unsigned dlen;
+BOOL tainted;
 
 memcpy(key_copy, key, klen);
 
@@ -475,7 +473,15 @@ if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum)) return NULL;
 we should store the taint status along with the data. */
 
 dlen = exim_datum_size_get(&result_datum);
-yield = store_get(dlen, GET_TAINTED);
+
+/* Hintsdb uses store the taint of the payload of the value in the value.
+For non-hints uses we have no provenance, so assume untainted */
+
+tainted = dbmdb
+  ? FALSE
+  : ((dbdata_generic *) exim_datum_data_get(&result_datum))->tainted;
+
+yield = store_get(dlen, tainted ? GET_TAINTED : GET_UNTAINTED);
 memcpy(yield, exim_datum_data_get(&result_datum), dlen);
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
 if (length) *length = dlen;
@@ -733,7 +739,33 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	int dlen = length = sizeof(dbdata_generic);
 
 	printf("%s %s\n", print_time(recp->time_stamp), keybuffer);
-	printf("%s\n", string_sprintf("%.*q\n", dlen, dp));
+	if (  Ustrncmp(keybuffer, "etrn-", 5) == 0
+	   || Ustrncmp(keybuffer, "tpt-serialize-", 14) == 0
+	   || Ustrncmp(keybuffer, "host-serialize-", 15) == 0
+	   )
+	  printf("serialize %.*s: %d running\n",
+		  (int)(Ustrchr(keybuffer, '-') - keybuffer), keybuffer,
+		  ((dbdata_serialize *)recp)->count);
+	else
+	  {
+	  uschar * s = keybuffer + Ustrlen(keybuffer) - 5;
+	  if (s > keybuffer && Ustrcmp(s, ".EHLO") == 0)
+	    {
+	    ehlo_resp_precis * erp = &((dbdata_ehlo_resp *)recp)->data;
+
+	    printf("helo/ehlo %.*s clr %04x/%04x cry %04x/%04x",
+		    (int)(s - keybuffer), keybuffer,
+		    erp->cleartext_features, erp->cleartext_auths,
+		    erp->crypted_features,   erp->crypted_auths);
+
+	    if (sizeof(*erp) > 4 * sizeof(unsigned short))
+	      printf(" lim %05d/%05d/%05d",
+		erp->limit_mail, erp->limit_rcpt, erp->limit_rcptdom);
+	    putchar('\n');
+	    }
+	  else
+	    printf("%s\n", string_sprintf("%.*q\n", dlen, dp));
+	  }
 	break;
 	}
 
@@ -745,7 +777,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	if (length == sizeof(dbdata_callout_cache_address))
 	  {
 	  printf("%s %s callout=%s\n",
-	    print_time(((dbdata_generic *)value)->time_stamp),
+	    print_time(callout->gen.time_stamp),
 	    keybuffer,
 	    print_cache(callout->result));
 	  }
@@ -755,7 +787,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	else if (length == sizeof(dbdata_callout_cache))
 	  {
 	  printf("%s %s callout=%s postmaster=%s",
-	    print_time(((dbdata_generic *)value)->time_stamp),
+	    print_time(callout->gen.time_stamp),
 	    keybuffer,
 	    print_cache(callout->result),
 	    print_cache(callout->postmaster_result));
@@ -775,7 +807,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	  ratelimit = (dbdata_ratelimit *)value;
 	  rate_unique = (dbdata_ratelimit_unique *)value;
 	  printf("%s.%06d rate: %10.3f epoch: %s size: %u key: %s\n",
-	    print_time(ratelimit->time_stamp),
+	    print_time(ratelimit->gen.time_stamp),
 	    ratelimit->time_usec, ratelimit->rate,
 	    print_time(rate_unique->bloom_epoch), rate_unique->bloom_size,
 	    keybuffer);
@@ -784,7 +816,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	  {
 	  ratelimit = (dbdata_ratelimit *)value;
 	  printf("%s.%06d rate: %10.3f key: %s\n",
-	    print_time(ratelimit->time_stamp),
+	    print_time(ratelimit->gen.time_stamp),
 	    ratelimit->time_usec, ratelimit->rate,
 	    keybuffer);
 	  }
@@ -797,7 +829,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 
       case type_seen:
 	seen = (dbdata_seen *)value;
-	printf("%s\t%s\n", keybuffer, print_time(seen->time_stamp));
+	printf("%s\t%s\n", keybuffer, print_time(seen->gen.time_stamp));
 	break;
 
       case type_dbm:
@@ -1014,8 +1046,10 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 	    ratelimit = (dbdata_ratelimit *)record;
 	    switch(fieldno)
 	      {
-	      case 0: if ((tt = read_time(value)) > 0) ratelimit->time_stamp = tt;
-		      else printf("bad time value\n");
+	      case 0: if ((tt = read_time(value)) > 0)
+			ratelimit->gen.time_stamp = tt;
+		      else
+			printf("bad time value\n");
 		      break;
 	      case 1: ratelimit->time_usec = Uatoi(value);
 		      break;
@@ -1079,7 +1113,11 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 	  }
 
 	if (dbdata_type != type_dbm)
-	  ((dbdata_generic *)record)->time_stamp = time(NULL);
+	  {
+	  dbdata_generic * p = (dbdata_generic *)record;
+	  p->time_stamp = time(NULL);
+	  p->tainted = FALSE;
+	  }
 
 	dbfn_write(dbm, name, record, newlength);
 	}
@@ -1179,7 +1217,7 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 
       case type_ratelimit:
 	ratelimit = (dbdata_ratelimit *)record;
-	printf("0 time stamp:  %s\n", print_time(ratelimit->time_stamp));
+	printf("0 time stamp:  %s\n", print_time(ratelimit->gen.time_stamp));
 	printf("1 fract. time: .%06d\n", ratelimit->time_usec);
 	printf("2 sender rate: % .3f\n", ratelimit->rate);
 	if (Ustrstr(name, "/unique/") != NULL
@@ -1193,8 +1231,8 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 	break;
 
       case type_tls:
-	session = (dbdata_tls_session *)value;
-	printf("0 time stamp:  %s\n", print_time(session->time_stamp));
+	session = (dbdata_tls_session *)record;
+	printf("0 time stamp:  %s\n", print_time(session->gen.time_stamp));
 	printf("1 session: .%s\n", session->session);
 	break;
 
@@ -1360,10 +1398,10 @@ for (; keychain && (reset_point = store_mark()); store_reset(reset_point))
 
     /* Leave corrupt records alone */
 
-    if (wait->time_stamp > time(NULL))
+    if (wait->gen.time_stamp > time(NULL))
       {
       printf("**** Data for '%s' corrupted\n  time in future: %s\n",
-        key, print_time(((dbdata_generic *)value)->time_stamp));
+        key, print_time(wait->gen.time_stamp));
       continue;
       }
     if (wait->count > WAIT_NAME_MAX)
@@ -1381,7 +1419,7 @@ for (; keychain && (reset_point = store_mark()); store_reset(reset_point))
 
     /* Record over 1 year old; just remove it */
 
-    if (wait->time_stamp < time(NULL) - 365*24*60*60)
+    if (wait->gen.time_stamp < time(NULL) - 365*24*60*60)
       {
       dbfn_delete(dbm, key);
       printf("deleted %s (too old)\n", key);
@@ -1466,7 +1504,8 @@ for (; keychain && (reset_point = store_mark()); store_reset(reset_point))
     if (update)
       {
       printf("updated %s\n", key);
-      wait->time_stamp = time(NULL);
+      wait->gen.time_stamp = time(NULL);
+      /* leave the taint marker unchanged */
       dbfn_write(dbm, key, wait, sizeof(dbdata_wait) +
         wait->count * MESSAGE_ID_LENGTH);
       }
