@@ -44,7 +44,7 @@ uschar *
 readconf_printtime(int t)
 { return NULL; }
 const uschar * expand_string_2(const uschar * string, BOOL * textonly_p)
-{return NULL; }
+{ return NULL; }
 void *
 store_get_3(int size, const void * proto_mem, const char *filename, int linenumber)
 { return NULL; }
@@ -54,9 +54,6 @@ store_reset_3(void **ptr, const char *filename, int linenumber)
 void
 store_release_above_3(void *ptr, const char *func, int linenumber)
 { }
-gstring *
-string_catn(gstring * g, const uschar * s, int count)
-{ return NULL; }
 gstring *
 string_vformat_trc(gstring * g, const uschar * func, unsigned line,
   unsigned size_limit, unsigned flags, const char *format, va_list ap)

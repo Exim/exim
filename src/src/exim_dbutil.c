@@ -62,9 +62,6 @@ uschar *
 readconf_printtime(int t)
 { return NULL; }
 const uschar * expand_string_2(const uschar * string, BOOL * textonly_p)
-{return NULL; }
-gstring *
-string_catn(gstring * g, const uschar * s, int count)
 { return NULL; }
 gstring *
 string_vformat_trc(gstring * g, const uschar * func, unsigned line,

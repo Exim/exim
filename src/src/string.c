@@ -15,6 +15,11 @@ utilities and tests, and are cut out by the COMPILE_UTILITY macro. */
 #include <assert.h>
 
 
+#ifdef COMPILE_UTILITY
+BOOL print_topbitchars = FALSE;	/* referenced by string_printing3() */
+#endif
+
+
 #ifndef COMPILE_UTILITY
 /*************************************************
 *            Test for IP address                 *
@@ -310,7 +315,6 @@ return ch;
 
 
 
-#ifndef COMPILE_UTILITY
 /*************************************************
 *          Ensure string is printable            *
 *************************************************/
@@ -325,19 +329,20 @@ Arguments:
   flags		Bit 0: convert tabs.
 		Bit 1: convert spaces.
 		Bit 2: convert doublequotes.
+  len		if >= 0, max size of string
+		otherwise, NUL-terminated
 
 Returns:        string with non-printers encoded as printing sequences
 */
 
 const uschar *
-string_printing2(const uschar * s, int flags)
+string_printing3(const uschar * s, int flags, int len)
 {
-int nonprintcount = 0;
-int length = 0;
-const uschar *t = s;
-uschar *ss, *tt;
+int nonprintcount = 0, olen = 0;
+const uschar * t = s;
+uschar * ss, * tt;
 
-while (*t)
+for (int n = len; n != 0 && *t; n--)
   {
   int c = *t++;
   if (  !mac_isprint(c)
@@ -345,7 +350,7 @@ while (*t)
      || flags & SP_SPACE && c == ' '
      || flags & SP_DQUOTES && c == '"'
      ) nonprintcount++;
-  length++;
+  olen++;
   }
 
 if (nonprintcount == 0) return s;
@@ -353,13 +358,15 @@ if (nonprintcount == 0) return s;
 /* Get a new block of store guaranteed big enough to hold the
 expanded string. */
 
-tt = ss = store_get(length + nonprintcount * 3 + 1, s);
+tt = ss = store_get(olen + nonprintcount * 3 + 1, s);
 
 /* Copy everything, escaping non printers. */
 
 for (t = s; *t; )
   {
   int c = *t;
+  /*XXX does \ go through unchanged here?  Since we use it for escaping,
+  surely it should be doubled? */
   if (  mac_isprint(c)
      && (!(flags & SP_TAB) || c != '\t')
      && (!(flags & SP_SPACE) || c != ' ')
@@ -386,7 +393,12 @@ for (t = s; *t; )
 *tt = 0;
 return ss;
 }
-#endif  /* COMPILE_UTILITY */
+
+const uschar *
+string_printing2(const uschar * s, int flags)
+{
+return string_printing3(s, flags, -1);
+}
 
 /*************************************************
 *        Undo printing escapes in string         *
@@ -1215,6 +1227,7 @@ if (!store_extend(g->s, oldsize, g->size))
   g->s = store_newblock(g->s, g->size, p);
 }
 
+#endif	/*!COMPILE_UTILITY*/
 
 
 /*************************************************
@@ -1290,6 +1303,7 @@ return g;
 
 
 
+#ifndef COMPILE_UTILITY
 /*************************************************
 *        Append strings to another string        *
 *************************************************/
@@ -1410,14 +1424,14 @@ enum ltypes { L_NORMAL=1, L_SHORT=2, L_LONG=3, L_LONGLONG=4, L_LONGDOUBLE=5, L_S
 int width, precision, initial_off, lim, need;
 const char * fp = format;	/* Deliberately not unsigned */
 
-string_datestamp_offset = -1;	/* Datestamp not inserted */
-string_datestamp_length = 0;	/* Datestamp not inserted */
-string_datestamp_type = 0;	/* Datestamp not inserted */
-
 #ifdef COMPILE_UTILITY
 assert(!(flags & SVFMT_EXTEND));
 assert(g);
 #else
+
+string_datestamp_offset = -1;	/* Datestamp not inserted */
+string_datestamp_length = 0;	/* Datestamp not inserted */
+string_datestamp_type = 0;	/* Datestamp not inserted */
 
 /* Ensure we have a string, to save on checking later */
 if (!g) g = string_get(16);
@@ -1532,7 +1546,7 @@ while (*fp)
 	gp = CS g->s + g->ptr;
 	}
       strncpy(newformat, item_start, fp - item_start);
-      newformat[fp - item_start] = 0;
+      newformat[fp - item_start] = '\0';
 
       /* Short int is promoted to int when passing through ..., so we must use
       int for va_arg(). */
@@ -1566,7 +1580,7 @@ while (*fp)
       if ((ptr = va_arg(ap, void *)))
 	{
 	strncpy(newformat, item_start, fp - item_start);
-	newformat[fp - item_start] = 0;
+	newformat[fp - item_start] = '\0';
 	g->ptr += sprintf(gp, newformat, ptr);
 	}
       else
@@ -1595,7 +1609,7 @@ while (*fp)
 	gp = CS g->s + g->ptr;
 	}
       strncpy(newformat, item_start, fp - item_start);
-      newformat[fp-item_start] = 0;
+      newformat[fp-item_start] = '\0';
       if (length == L_LONGDOUBLE)
 	g->ptr += sprintf(gp, newformat, va_arg(ap, long double));
       else
@@ -1624,6 +1638,7 @@ while (*fp)
       g->s[g->ptr++] = (uschar) va_arg(ap, int);
       break;
 
+#ifndef COMPILE_UTILITY
     case 'D':                   /* Insert daily datestamp for log file names */
       s = CS tod_stamp(tod_log_datestamp_daily);
       string_datestamp_offset = g->ptr;		/* Passed back via global */
@@ -1639,6 +1654,7 @@ while (*fp)
       string_datestamp_type = tod_log_datestamp_monthly;
       slen = string_datestamp_length;
       goto INSERT_STRING;
+#endif
 
     case 'Y':			/* gstring pointer */
       {
@@ -1782,12 +1798,14 @@ while (*fp)
 	{ s = "<NULL>"; precision = slen = 6; }
       }
       goto INSERT_GSTRING;
+#endif
 
     case 'q':			/* string, to be wrapped in "" and with tab & " escaped */
       if ((s = va_arg(ap, char *)))
 	{
 	gstring * zg = string_catn(NULL, US"\"", 1);
-	zg = string_cat(zg, string_printing2(US s, SP_TAB | SP_DQUOTES));
+	zg = string_cat(zg,
+			string_printing3(US s, SP_TAB | SP_DQUOTES, precision));
 	zg = string_catn(zg, US"\"", 1);
 	s = CS zg->s; precision = slen = gstring_length(zg);
 	}
@@ -1795,7 +1813,6 @@ while (*fp)
 	{ s = "<NULL>"; precision = slen = 6; }
       goto INSERT_GSTRING;
 
-#endif
     case 's':
     case 'S':                   /* Forces *lower* case */
     case 'T':                   /* Forces *upper* case */
@@ -1876,7 +1893,7 @@ while (*fp)
 
     default:
       strncpy(newformat, item_start, fp - item_start);
-      newformat[fp-item_start] = 0;
+      newformat[fp-item_start] = '\0';
       log_write_die(0, LOG_MAIN, "string_format: unsupported type "
 	"in %q in %q", newformat, format);
       break;
