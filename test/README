@@ -83,6 +83,8 @@ In order to run this test suite, the following requirements must be met:
     The login must not contain a dash or an equal sign. (Otherwise some tests
     about local_from_{suffix,prefix} will fail.)
 
+    The home directory of this login must not be "/home/exim".
+
 (4) The directory into which you unpack the test suite must be accessible by
     the Exim user, so that code running as exim can access the files therein.
     This includes search-access on all path elements leading to it. A
