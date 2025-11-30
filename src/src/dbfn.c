@@ -17,25 +17,29 @@ with database files like $spooldirectory/db/<name> */
 
 
 /* Functions for accessing Exim's hints database, which consists of a number of
-different DBM files. This module does not contain code for reading DBM files
-for (e.g.) alias expansion. That is all contained within the general search
-functions. As Exim now has support for several DBM interfaces, all the relevant
+different DBM files.  Also used for the readonly access for dbm lookup
+expansions via the general search functions, for non-hints DBM file.
+
+As Exim now has support for several DBM interfaces, all the relevant
 functions are called as inlinable functions from an included file.
 
-All the data in Exim's database is in the nature of *hints*. Therefore it
+All the data in Exim's hists database is in the nature of *hints*. Therefore it
 doesn't matter if it gets destroyed by accident. These functions are not
 supposed to implement a "safe" database.
 
-Keys are passed in as C strings, and the terminating zero *is* used when
-building the dbm files. This just makes life easier when scanning the files
+For hints, keys are passed in as C strings - and the terminating zero *is* used
+when building the dbm files. This just makes life easier when scanning the files
 sequentially.
 
-Synchronization is required on the database files, and this is achieved by
-means of locking on independent lock files. (Earlier attempts to lock on the
-DBM files themselves were never completely successful.) Since callers may in
-general want to do more than one read or write while holding the lock, there
-are separate open and close functions. However, the calling modules should
-arrange to hold the locks for the bare minimum of time.
+For many of the DBM interfaces, synchronization is required on the database
+files; and this is achieved by means of locking on independent lock files.
+(Earlier attempts to lock on the DBM files themselves were never completely
+successful.) Since callers may in general want to do more than one read or write
+while holding the lock, there are separate open and close functions.
+However, the calling modules should arrange to hold the locks for the bare
+minimum of time.
+A predicate call is provided to tell if this locking is required, as opposed
+to being built-in to the DBM.
 
 API:
   exim_lockfile_needed			facilities predicate
@@ -62,6 +66,13 @@ Users:
   peer capability cache
   callout & quota cache
   DBM lookup type
+
+
+NOTE: the autoreply transport accesses a DBM database using
+exim_db{open,close,get,put} directly, not using this layer.
+
+The DBM interface is selected at build time from one of the
+files src/hintsdb/hints_*.h
 */
 
 
@@ -430,12 +441,30 @@ if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum))
 dlen = exim_datum_size_get(&result_datum);
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
 
-/* Hintsdb uses store the taint of the payload of the value in the value.
-For non-hints uses we have no provenance, so assume untainted */
+if (hintsdb)
+  {
+  dbdata_generic *  gp = (dbdata_generic *) exim_datum_data_get(&result_datum);
 
-tainted = hintsdb
-  ? ((dbdata_generic *) exim_datum_data_get(&result_datum))->tainted
-  : FALSE;
+  if (dlen < sizeof(dbdata_generic))
+    {
+    DEBUG(D_hints_lookup)
+      debug_printf_indent("dbfn_read: bad record size %u\n", dlen);
+    return NULL;
+    }
+  if (gp->version != HINTS_VERSION)
+    {
+    DEBUG(D_hints_lookup)
+      debug_printf_indent("dbfn_read: bad record version %u\n", gp->version);
+    return NULL;
+    }
+
+  /* Hintsdb uses store the taint of the payload of the value in the value.
+  For non-hints uses we have no provenance, so assume untainted */
+
+  tainted = gp->tainted;
+  }
+else
+  tainted = FALSE;
 
 yield = store_get(dlen+1, tainted ? GET_TAINTED : GET_UNTAINTED);
 memcpy(yield, exim_datum_data_get(&result_datum), dlen);
@@ -519,13 +548,14 @@ int
 dbfn_write(open_db * dbblock, const uschar * key, void * ptr, int length)
 {
 EXIM_DATUM key_datum, value_datum;
-dbdata_generic *gptr = (dbdata_generic *)ptr;
+dbdata_generic * gptr = (dbdata_generic *)ptr;
 int klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen, key);
 
 memcpy(key_copy, key, klen);
-gptr->time_stamp = time(NULL);
+gptr->version = HINTS_VERSION;
 gptr->tainted = is_tainted(ptr);
+gptr->time_stamp = time(NULL);
 
 DEBUG(D_hints_lookup)
   debug_printf_indent("dbfn_write: key=%s datalen %d\n", key, length);

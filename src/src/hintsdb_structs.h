@@ -25,16 +25,19 @@ typedef struct {
 } open_db;
 
 
-/* Structures for records stored in exim database hinsts files. They all
+/* Structures for records stored in exim database hints files. They all
 start with the same fields, described in the generic type.
 DBM databases are used for hints files.
 */
 
 
 typedef struct {
-  time_t time_stamp;	/* Timestamp of writing */
+  unsigned version;
   BOOL	 tainted;	/* metadata for the "value" part of the record */
+  time_t time_stamp;	/* Timestamp of writing */
 } dbdata_generic;
+
+#define	HINTS_VERSION	2
 
 
 /* This structure keeps track of retry information for a host or a local

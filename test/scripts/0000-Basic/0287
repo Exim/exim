@@ -34,6 +34,7 @@ sleep 2
 #
 #
 #
+# Check the hints DB exists during the run of the ETRN-triggered command
 exim -DSLEEP=3 -DSERVER=server -bd -oX PORT_D
 ****
 client 127.0.0.1 PORT_D

@@ -380,7 +380,8 @@ if (exim_lockfile_needed())
   exclusive access to the database, so we can go ahead and open it. */
   }
 
-if (asprintf(CSS &filename, "%s", name) < 0) return NULL;
+/* Drop the ".lockfile" off the name */
+*Ustrrchr(filename, '.') = '\0';
 
 if (!(dbblock->dbptr = dbblock->readonly && !exim_lockfile_needed()
 		      ? exim_dbopen_multi(filename, dname, flags, 0)
@@ -447,7 +448,7 @@ Arguments:
   length    where to put the length (or NULL if length not wanted). Includes overhead.
 
 Returns: a pointer to the retrieved record, or
-         NULL if the record is not found
+         NULL if the record is not found or bad
 */
 
 void *
@@ -467,26 +468,42 @@ exim_datum_init(&result_datum);      /* to be cleared before use. */
 exim_datum_data_set(&key_datum, key_copy);
 exim_datum_size_set(&key_datum, klen);
 
-if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum)) return NULL;
-
-/* Assume for now that anything stored could have been tainted. Properly
-we should store the taint status along with the data. */
+if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum))
+  return NULL;
 
 dlen = exim_datum_size_get(&result_datum);
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
+if (length) *length = dlen;
 
 /* Hintsdb uses store the taint of the payload of the value in the value.
 For non-hints uses we have no provenance, so assume untainted */
 
-tainted = dbmdb
-  ? FALSE
-  : ((dbdata_generic *) exim_datum_data_get(&result_datum))->tainted;
+if (dbmdb)
+  tainted = FALSE;
+else
+  {
+  dbdata_generic * gp = (dbdata_generic *) exim_datum_data_get(&result_datum);
+  if (dlen < sizeof(dbdata_generic))
+    {
+    DEBUG(D_hints_lookup)
+      debug_printf_indent("dbfn_read: bad record size %u\n", dlen);
+    return NULL;
+    }
+  if (gp->version != HINTS_VERSION)
+    {
+    DEBUG(D_hints_lookup)
+      debug_printf_indent("dbfn_read: bad record version %u; deleting\n",
+			    gp->version);
+    return NULL;
+    }
+
+  tainted = gp->tainted;
+  }
 
 yield = store_get(dlen, tainted ? GET_TAINTED : GET_UNTAINTED);
 memcpy(yield, exim_datum_data_get(&result_datum), dlen);
-DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
-if (length) *length = dlen;
+exim_datum_free(&result_datum);		/* Some DBM libs require freeing */
 
-exim_datum_free(&result_datum);    /* Some DBM libs require freeing */
 return yield;
 }
 
@@ -726,13 +743,10 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	  printf("%s ", name);
 	  t += MESSAGE_ID_LENGTH;
 	  }
-	printf("\n");
+	putchar('\n');
 	break;
 
       case type_misc:
-	/* It might be nice to recognize the subtypes of "misc" DBs (by the
-	key prefix?) for better decode.  For now, dump the raw data. */
-
 	{
 	dbdata_generic * recp = (dbdata_generic *)value;
 	uschar * dp = US (recp + 1);
@@ -1368,16 +1382,26 @@ the store each time round. */
 
 for (; keychain && (reset_point = store_mark()); store_reset(reset_point))
   {
-  dbdata_generic *value;
+  dbdata_generic * value;
+  int size = 0;
 
   key = keychain->key;
   keychain = keychain->next;
-  value = dbfn_read_with_length(dbm, key, NULL);
+  value = dbfn_read_with_length(dbm, key, &size);
 
   /* A continuation record may have been deleted or renamed already, so
-  non-existence is not serious. */
+  non-existence is not serious. Also, for a back-version record we get
+  a null value - so attempt a delete. */
 
-  if (!value) continue;
+  if (!value)
+    {
+    if (size)
+      {
+      printf(" deleted %s (bad record version)\n", key);
+      dbfn_delete(dbm, key);
+      }
+    continue;
+    }
 
   /* Delete if too old */
 
