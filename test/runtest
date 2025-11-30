@@ -4330,7 +4330,8 @@ if (-d "eximdir")
   { unlink "eximdir/exim"; }     # Just in case
 else
   {
-  mkdir("eximdir", 0710) || die "** Unable to mkdir $parm_cwd/eximdir: $!\n";
+  # For exim_exim to read modules, the dir must be group-readable
+  mkdir("eximdir", 0750) || die "** Unable to mkdir $parm_cwd/eximdir: $!\n";
   system("sudo chgrp $parm_eximgroup eximdir");
   }
 
