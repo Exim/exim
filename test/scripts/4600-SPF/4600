@@ -12,10 +12,22 @@
 exim -bd -DSERVER=server -oX PORT_S:PORT_D2
 ****
 #
+# DNS_AGAIN
+client HOSTIPV4 PORT_S
+??? 220
+helo cname.test.ex
+??? 250
+mail from:<a@test.again.dns>
+??? 250
+rcpt to:<fred@test.ex>
+??? 451
+quit
+****
+#
 # no dns record - should get "none"
 client HOSTIPV4 PORT_S
 ??? 220
-helo testclient
+helo cname.test.ex
 ??? 250
 mail from:<b@test.example.com>
 ??? 250
@@ -27,7 +39,7 @@ quit
 # "fail"
 client HOSTIPV4 PORT_S
 ??? 220
-helo testclient
+helo cname.test.ex
 ??? 250
 mail from:<failme@example.com>
 ??? 250
@@ -39,7 +51,7 @@ quit
 # "pass"
 client HOSTIPV4 PORT_S
 ??? 220
-helo testclient
+helo cname.test.ex
 ??? 250
 mail from:<a@passme.example.com>
 ??? 250
@@ -52,7 +64,7 @@ quit
 # "neutral"
 client HOSTIPV4 PORT_S
 ??? 220
-helo testclient
+helo cname.test.ex
 ??? 250
 mail from:<a@neutral.example.com>
 ??? 250
@@ -65,7 +77,7 @@ quit
 # "softfail"
 client HOSTIPV4 PORT_S
 ??? 220
-helo testclient
+helo cname.test.ex
 ??? 250
 mail from:<a@softfail.example.com>
 ??? 250

@@ -55,6 +55,9 @@ check_rcpt:
 		logwrite =	${authresults {$primary_hostname}}
 		logwrite =
 
+  defer		condition =     ${if eq {$received_port}{PORT_S}}
+		spf_guess =	temperror
+
   deny
 		logwrite =	spf_result         $spf_result (guess <$spf_result_guessed>)
 #		logwrite =	spf_header_comment $spf_header_comment

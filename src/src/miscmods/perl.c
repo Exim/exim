@@ -77,6 +77,7 @@ if (SvTRUE(ERRSV))
   STRLEN len;
   s = US SvPV(ERRSV, len);
   s = string_copyn(s, (unsigned)len);
+  debug_printf_indent("adding perl codeblock: %s\n", s);
   }
 
 setlocale(LC_ALL, "C");		/* In case it got changed */
@@ -228,9 +229,13 @@ errstr = exim_perl_add_codeblock(US
 	/*XXX only one rrtype per query...*/
 	"my $rrtype = $rr->{$rrtype_str};"
         "my $dnsa = Exim::dns_lookup($dom, $rrtype);"
+
 	"my $res;"
-	"my $res = Net::DNS::Packet->decode(\\$dnsa) unless (!defined($dnsa));"
-		/* "Exim::debug_write( $res->string . '\n' );" */
+	"$res = new Net::DNS::Packet(\\$dnsa) if (defined($dnsa));"
+
+	/*XXX dumb, but at least clears the undef on errorstring */
+	"$self->errorstring(defined($dnsa) ? 'ok' : 'timeout');"
+
 	"return $res;"
   "}"
   "package MAIN;"

@@ -61,9 +61,10 @@ static const uschar spf_pl[] =
   "use Mail::SPF;"
   "sub my_spf_req {"
     "my ($mfrom, $conn_addr, $conn_helo) = @_;"
+    "my ($id, $sc) = ($mfrom ne '') ? ($mfrom, 'mfrom') : ($conn_helo, 'helo');"
     "my $request = Mail::SPF::Request->new("
-      "scope       => 'mfrom',"
-      "identity    => $mfrom,"
+      "scope       => $sc,"
+      "identity    => $id,"
       "ip_address  => $conn_addr,"
       "helo_identity => $conn_helo"
       ");"
@@ -80,21 +81,19 @@ spf lookup routine to it.  Safely does nothing if called again.
 */
 
 static const misc_module_info *
-setup_spf_perl_mi(void)
+setup_spf_perl_mi(uschar ** errstr)
 {
 typedef uschar * (*fn_t)(const uschar *);
 
 if (!spf_perl_mi)
   {
   if (!(spf_perl_mi = perl_startup(opt_perl_startup ? opt_perl_startup : US"")))
-    /* errstr = string_sprintf("spf: %s", expand_string_message); */
+    {
+    *errstr = string_sprintf("spf: %s", expand_string_message);
     return NULL;
+    }
 
-  /*XXX could return an error string here:
-  if ((errstr = (((fn_t *) spf_perl_mi->functions)[PERL_ADDBLOCK]) (spf_pl)))
-  */
-
-  if ((((fn_t *) spf_perl_mi->functions)[PERL_ADDBLOCK]) (spf_pl))
+  if ((*errstr = (((fn_t *) spf_perl_mi->functions)[PERL_ADDBLOCK]) (spf_pl)))
     return spf_perl_mi = NULL;
   }
 return spf_perl_mi;
@@ -187,14 +186,18 @@ spf_process(const uschar ** listptr, const uschar * spf_envelope_sender,
   int action)
 {
 int res = FAIL, sep;
+uschar * errstr;
 const uschar * arglist = *listptr;
 
 expand_level++;
 DEBUG(D_acl)
   debug_printf_indent("%s: mfrom:<%s>\n", __FUNCTION__, spf_envelope_sender);
 
-if (!setup_spf_perl_mi())
+if (!setup_spf_perl_mi(&errstr))
+  {
+  expand_level--;
   return FAIL;
+  }
 
 if (!(conn_helo && conn_addr))
   spf_result = US"permerror";
@@ -327,13 +330,14 @@ spf_lookup_find(void * handle, const uschar * filename,
   const uschar * keystring, int key_len, uschar ** result, uschar ** errmsg,
   uint * do_cache, const uschar * opts)
 {
+uschar * errstr;
 int res = FAIL;
 
 DEBUG(D_acl) debug_printf_indent("%s: mfrom:<%s> ip %q\n", __FUNCTION__,
 				  keystring, filename);
 expand_level++;
 
-if (setup_spf_perl_mi())
+if (setup_spf_perl_mi(&errstr))
   if (!filename)
     *result = US"permerror";
   else
