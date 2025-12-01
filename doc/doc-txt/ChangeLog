@@ -63,6 +63,12 @@ JH/16: Fix local-scan API. Constification work done for 4.99 included a
        function [ expand_string() ] replacement with a macro, but the latter
        definition was not placed in the API .h file.
 
+JH/17: Bug 3177: Fix DNS lookups from perl on nonstandard port.  Version 4.99
+       diverted lookups done using Net::DNS::Resolver to use Exim's dns lookup
+       path, for observability and for support of testing.  This only handled
+       the standard port usage (via the system resolver library, in production).
+       Cancel the diversion if a nonstandard port number is selected.
+
 Exim version 4.99
 -----------------
 

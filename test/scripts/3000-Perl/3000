@@ -21,6 +21,9 @@ ${sg{${perl{return_hash}}}{\\d+}{X}}
 
 this change-locale fails in earlier systems.  Works on Fedora 29.
 $tod_full // ${perl{change_locale}} // $tod_full
+
+local:    ${extract{-1}{ \t}{${filter {<\n ${perl{local_dns}}}        {match{$item}{exim.example.com}}}}}
+external: ${extract{-1}{ \t}{${filter {<\n ${perl{no_intercept_dns}}} {match{$item}{a.iana-servers.net}}}}}
 ****
 exim -d-all+expand -be
 ${perl{foo}{arg1}}

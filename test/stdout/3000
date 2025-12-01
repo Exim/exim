@@ -1,13 +1,13 @@
 > Subroutine foo called with args: 
 > Subroutine foo called with args: arg1
 > Failed: Perl subroutine "foo_undef" returned undef to force failure
-> Failed: expiring... at TESTSUITE/aux-fixed/3000.pl line 7.
+> Failed: expiring... at TESTSUITE/aux-fixed/3000.pl line 8.
 
 > Wrote warning
 > Failed: Undefined subroutine &main::unknown called.
 
 > myhost.test.ex
-> Failed: syntax error in Exim::expand_string argument: unknown variable name "notexists" at TESTSUITE/aux-fixed/3000.pl line 9.
+> Failed: syntax error in Exim::expand_string argument: unknown variable name "notexists" at TESTSUITE/aux-fixed/3000.pl line 10.
 
 > 
 > Failed: Not enough arguments for 'perl' (min is 1)
@@ -21,6 +21,9 @@
 > 
 > this change-locale fails in earlier systems.  Works on Fedora 29.
 > Tue, 2 Mar 1999 09:44:33 +0000 // Changed locale // dim., 10 févr 2019 20:05:49 +0000
+> 
+> local:    exim.example.com.
+> external: a.iana-servers.net.
 > 
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
 > Subroutine foo called with args: arg1

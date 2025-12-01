@@ -200,19 +200,26 @@ perl_parse(interp_perl, xs_init, argc, argv, 0);
 perl_run(interp_perl);
 
 /*********************************************************************/
+errstr = exim_perl_add_codeblock(US
+
 /* These lines by PH added to make "warn" output go to the Exim log; I
 hope this doesn't break anything. */
 
-errstr = exim_perl_add_codeblock(US
   "$SIG{__WARN__} = sub { my($s) = $_[0];"
   "$s =~ s/\\n$//;"
   "Exim::log_write($s) };"
 
-/* These lines added by JGH to route DNS queries via Exim's facilities */
+/* These lines added by JGH to route DNS queries via Exim's facilities.
+If a port was specified, we punt.
+*/
 
   "package Net::DNS::Resolver;"
   "sub send {"
-        "my ( $self, $dom, $rrtype_str ) = @_;"
+	"my $self = shift;"
+
+	"return $self->SUPER::send(@_) if ($self->{'port'} != 53);"
+
+        "my ( $dom, $rrtype_str ) = @_;"
 	"my $rr = {"
 	"\"A\"     => 1,"
 	"\"NS\"    => 2,"

@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.
+1999-03-02 09:44:33 this is a warning at TESTSUITE/aux-fixed/3000.pl line 26.
 Exim version x.yz ....
 Hints DB:
 environment after trimming:
@@ -69,7 +69,7 @@ LOG: MAIN
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
 LOG: MAIN
-  this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.
+  this is a warning at TESTSUITE/aux-fixed/3000.pl line 26.
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -94,7 +94,7 @@ LOG: smtp_connection MAIN
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing ACL check_rcpt "accept" (TESTSUITE/test-config 20)
-LOG: this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.
+LOG: this is a warning at TESTSUITE/aux-fixed/3000.pl line 26.
 >>> check condition = ${if !eq {${perl{foo_warn}}}{}}
 >>>                 = true
 >>> accept: condition test succeeded in ACL check_rcpt

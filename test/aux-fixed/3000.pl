@@ -1,4 +1,5 @@
 use POSIX qw(locale_h);
+use Net::DNS::Resolver;
 
 sub foo { "Subroutine foo called with args: @_" }
 
@@ -25,3 +26,18 @@ sub change_locale { setlocale(LC_TIME, 'fr_FR'); 'Changed locale' }
 sub foo_warn { warn 'this is a warning'; 'Wrote warning' }
 
 sub no_warn { $SIG{__WARN__} = sub { }; 'Discarded warnings' }
+
+sub local_dns {
+  my $resolver = Net::DNS::Resolver->new();
+  my $pkt = $resolver ->search('example.com', 'NS');
+  return $pkt->string;
+}
+
+sub no_intercept_dns {
+  my $resolver = Net::DNS::Resolver->new(
+    nameservers => [ '9.9.9.9' ],
+    port        => 9953,
+    );
+  my $pkt = $resolver ->search('example.com', 'NS');
+  return $pkt->string;
+}
