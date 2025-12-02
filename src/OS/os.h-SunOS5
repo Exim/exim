@@ -2,6 +2,13 @@
 /* Copyright (c) The Exim Maintainers 2021 - 2025 */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+/* The Sun Studio compilers define these, but GCC does not.
+Adjust if needed. */
+#if !defined(__SunOS_5_10) && !defined(__SunOS_5_11)
+# define __SunOS_5_11
+#endif
+
+
 #define CRYPT_H
 #define HAVE_MMAP
 #define HAVE_SYS_STATVFS_H
@@ -35,6 +42,11 @@ it seems. */
 
 /* default is non-const */
 #define ICONV_ARG2_TYPE const char **
+/* A GCC user reported that the following was needed.  Possibly using
+Glibc iconv?
+  #define ICONV_ARG2_TYPE char ** restrict
+A way of spotting the difference would be useful.
+*/
 
 #if _POSIX_C_SOURCE + 0 < 200112L
 # define MISSING_UNSETENV_3
