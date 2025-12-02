@@ -9,7 +9,7 @@
 # Be careful of names and addresses used, as nonhandled lookups are passed on
 # to real DNS.
 #
-exim -bd -DSERVER=server -oX PORT_S:PORT_D2
+exim -bd -DLOG_SELECTOR=+spf_verbose -DSERVER=server -oX PORT_S:PORT_D2
 ****
 #
 # DNS_AGAIN
@@ -32,6 +32,10 @@ helo cname.test.ex
 mail from:<b@test.example.com>
 ??? 250
 rcpt to:<fred@test.ex>
+??? 250
+data
+??? 354
+.
 ??? 250
 quit
 ****
@@ -56,6 +60,10 @@ helo cname.test.ex
 mail from:<a@passme.example.com>
 ??? 250
 rcpt to:<fred@test.ex>
+??? 250
+data
+??? 354
+.
 ??? 250
 quit
 ****
@@ -115,3 +123,68 @@ quit
 ****
 #
 killdaemon
+#
+#
+#
+#
+# Basic logging only
+exim -bd -DLOG_SELECTOR=+spf -DSERVER=server -oX PORT_S:PORT_D2
+****
+#
+# no dns record - should get "none" (and no log field)
+client HOSTIPV4 PORT_S
+??? 220
+helo cname.test.ex
+??? 250
+mail from:<b@test.example.com>
+??? 250
+rcpt to:<fred@test.ex>
+??? 250
+data
+??? 354
+.
+??? 250
+quit
+****
+#
+# "pass" (with a basic log field)
+client HOSTIPV4 PORT_S
+??? 220
+helo cname.test.ex
+??? 250
+mail from:<a@passme.example.com>
+??? 250
+rcpt to:<fred@test.ex>
+??? 250
+data
+??? 354
+.
+??? 250
+quit
+****
+#
+killdaemon
+#
+#
+# No logging at all
+exim -bd -DLOG_SELECTOR="" -DSERVER=server -oX PORT_S:PORT_D2
+****
+# "pass" (but no log field)
+client HOSTIPV4 PORT_S
+??? 220
+helo cname.test.ex
+??? 250
+mail from:<a@passme.example.com>
+??? 250
+rcpt to:<fred@test.ex>
+??? 250
+data
+??? 354
+.
+??? 250
+quit
+****
+#
+#
+killdaemon
+no_msglog_check

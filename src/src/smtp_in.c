@@ -3166,7 +3166,7 @@ switch (where)
 #ifdef WITH_CONTENT_SCAN
   case ACL_WHERE_MIME:
 #endif
-    sender_info = string_sprintf("F=<%s>%s%s%s%s ",
+    sender_info = string_sprintf(" F=<%s>%s%s%s%s",
       sender_address_unrewritten ? sender_address_unrewritten : sender_address,
       sender_host_authenticated ? US" A="                                    : US"",
       sender_host_authenticated ? sender_host_authenticated                  : US"",
@@ -3266,18 +3266,23 @@ is closing if required and return 2.  */
 if (log_reject_target)
   {
 #ifndef DISABLE_TLS
-  gstring * g = add_tls_info_for_log(NULL);
-  uschar * tls = string_from_gstring(g);
-  if (!tls) tls = US"";
+  gstring * tls = add_tls_info_for_log(NULL);
 #else
-  uschar * tls = US"";
+  gstring * tls = NULL;
 #endif
+#ifdef EXIM_HAVE_SPF
+  gstring * spf= add_spf_info_for_log(NULL);
+#else
+  gstring * spf = NULL;
+#endif
+
   log_write(where == ACL_WHERE_CONNECT ? L_connection_reject : 0,
-    log_reject_target, "%s%s%s %s%srejected %s%s",
+    log_reject_target, "%s%s%#Y%s%#Y %srejected %s%s",
     LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
     host_and_ident(TRUE),
     tls,
     sender_info,
+    spf,
     rc == FAIL ? US"" : US"temporarily ",
     what, log_msg);
   }

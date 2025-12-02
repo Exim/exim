@@ -107,6 +107,7 @@ extern uschar *acl_standalone_setvar(const uschar *, BOOL);
 extern tree_node *acl_var_create(const uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
 extern void    add_driver_info(driver_info **, const driver_info *, size_t);
+extern gstring * add_spf_info_for_log(gstring *);
 
 extern void    assert_no_variables(void *, int, const char *, int);
 extern void    atrn_handle_customer(void);

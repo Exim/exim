@@ -453,7 +453,7 @@ enum logbit {
   LOG_BIT(dnslist_defer),
   LOG_BIT(etrn),
   LOG_BIT(host_lookup_failed),
-  LOG_BIT(lost_incoming_connection),
+  LOG_BIT(lost_incoming_connection),	/* 7 */
   LOG_BIT(queue_run),
   LOG_BIT(retry_defer),
   LOG_BIT(size_reject),
@@ -461,7 +461,7 @@ enum logbit {
   LOG_BIT(smtp_connection),
   LOG_BIT(smtp_incomplete_transaction),
   LOG_BIT(smtp_protocol_error),
-  LOG_BIT(smtp_syntax_error),
+  LOG_BIT(smtp_syntax_error),		/* 15 */
 
   Li_8bitmime = BITWORDSIZE,
   Li_acl_warn_skipped,
@@ -497,6 +497,8 @@ enum logbit {
   Li_smtp_confirmation,
   Li_smtp_mailauth,
   Li_smtp_no_mail,
+  Li_spf,
+  Li_spf_verbose,
   Li_subject,
   Li_tls_certificate_verified,
   Li_tls_cipher,

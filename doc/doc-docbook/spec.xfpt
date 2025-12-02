@@ -39859,6 +39859,8 @@ selection marked by asterisks:
 .irow &`smtp_no_mail`&			&nbsp; "session with no MAIL commands"
 .irow &`smtp_protocol_error`&		&nbsp; "SMTP protocol errors"
 .irow &`smtp_syntax_error`&		&nbsp; "SMTP syntax errors"
+.irow &`spf`&				&nbsp; "SPF pass marker on accept/reject lines"
+.irow &`spf_verbose`&			&nbsp; "SPF status on accept/reject lines"
 .irow &`subject`&			&nbsp; "contents of &'Subject:'& on <= lines"
 .irow &`tls_certificate_verified`&	*	"certificate verification status"
 .irow &`tls_cipher`&			*	"TLS cipher suite on <= and => lines"
@@ -40277,6 +40279,12 @@ received after rejecting MAIL) as protocol errors.
 encountered. An unrecognized command is treated as a syntax error. For an
 external connection, the host identity is given; for an internal connection
 using &%-bs%& the sender identification (normally the calling user) is given.
+.next
+.cindex log SPF
+.cindex SPF logging
+&%spf%&: An &`SPF`& item is added to the message accept or reject line if SPF verification was done and result in a pass status.
+
+&%spf_verbose%&: An &`SPF=`& item is added to the message accept or reject line if SPF verification was done, with the result status.
 .next
 .cindex "log" "subject"
 .cindex "subject, logging"

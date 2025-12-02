@@ -1361,6 +1361,21 @@ DEBUG(D_receive|D_acl) debug_printf_indent(">>\n");
 *       Add host information for log line        *
 *************************************************/
 
+gstring *
+add_spf_info_for_log(gstring * g)
+{
+#ifdef EXIM_HAVE_SPF
+if (LOGGING(spf_verbose))
+  {
+  const uschar * s = expand_string(CUS"$spf_result");
+  if (*s) g = string_append(g, 2, US" SPF=", s);
+  }
+else if (LOGGING(spf) && Ustrcmp(expand_string(CUS"$spf_result"), "pass") == 0)
+  g = string_catn(g, US" SPF", 4);
+#endif
+return g;
+}
+
 /* Called for acceptance and rejecting log lines. This adds information about
 the calling host to a string that is being built dynamically.
 
@@ -1407,6 +1422,8 @@ if (LOGGING(pipelining) && f.smtp_in_pipelining_advertised)
   if (!f.smtp_in_pipelining_used)
     g = string_catn(g, US"-", 1);
   }
+
+g = add_spf_info_for_log(g);
 return g;
 }
 

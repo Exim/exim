@@ -1021,6 +1021,10 @@ bit_table log_options[]        = { /* must be in alphabetical order,
   BIT_TABLE(L, smtp_no_mail),
   BIT_TABLE(L, smtp_protocol_error),
   BIT_TABLE(L, smtp_syntax_error),
+#ifdef EXIM_HAVE_SPF
+  BIT_TABLE(L, spf),
+  BIT_TABLE(L, spf_verbose),
+#endif
   BIT_TABLE(L, subject),
   BIT_TABLE(L, tls_certificate_verified),
   BIT_TABLE(L, tls_cipher),
