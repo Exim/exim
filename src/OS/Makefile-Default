@@ -227,6 +227,7 @@ HOSTNAME_COMMAND=/bin/hostname
 
 RANLIB=ranlib
 
+LD=ld
 
 # EXIM_CHMOD is available to specify a command that is automatically applied
 # to the Exim binary immediately it is compiled. (I find this useful when
