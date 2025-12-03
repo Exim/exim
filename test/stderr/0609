@@ -2,9 +2,15 @@
 ******** SERVER ********
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
 daemon_smtp_port overridden by -oX:
   <: PORT_D
 creating notifier socket

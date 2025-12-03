@@ -2,16 +2,20 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=p1234
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-seeking password data for user "root": cache not available
-getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": cache not available
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+ seeking password data for user "root": cache not available
+ getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: retry
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
@@ -19,16 +23,20 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1235
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-seeking password data for user "root": cache not available
-getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": cache not available
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+ seeking password data for user "root": cache not available
+ getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: retry
  somebody in local_parts? no (end of list)
  somebody in local_parts? no (end of list)
 changed uid/gid: local delivery to somebody <somebody@myhost.test.ex> transport=t1
@@ -43,6 +51,7 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1237
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
@@ -50,26 +59,33 @@ trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=p1237
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-seeking password data for user "root": cache not available
-getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": cache not available
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+ seeking password data for user "root": cache not available
+ getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: retry
 LOG: MAIN
   <= <> R=10HmaY-000000005vi-0000 U=EXIMUSER P=local S=sss
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1238
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-seeking password data for user "root": cache not available
-getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": cache not available
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+ seeking password data for user "root": cache not available
+ getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: retry
  CALLER in local_parts? no (end of list)
 changed uid/gid: local delivery to CALLER <CALLER@myhost.test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=p1239
@@ -90,32 +106,40 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1240
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=p1240
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-seeking password data for user "root": cache not available
-getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": cache not available
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+ seeking password data for user "root": cache not available
+ getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: retry
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1241
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-seeking password data for user "root": cache not available
-getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": cache not available
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+ seeking password data for user "root": cache not available
+ getpwnam() succeeded uid=uuuu gid=gggg
+readconf_rest: retry
 LOG: MAIN PANIC
   User 0 set for t3 transport is on the never_users list
 LOG: MAIN

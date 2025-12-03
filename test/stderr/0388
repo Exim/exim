@@ -2,9 +2,13 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-000000005vi-0000
 no retry data available
@@ -183,11 +187,15 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1236
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=p1236
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 originator: uid=EXIM_UID gid=EXIM_GID login=EXIMUSER name=
 sender address = 
 set_process_info: pppp accepting a local non-SMTP message from <>
@@ -244,10 +252,14 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1237
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-000000005vi-0000
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

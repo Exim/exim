@@ -1,8 +1,17 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SERVER' ''
+macro_create: 'PEX' ':'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+ macros_expand: matched 'SERVER' in 'condition = ${if eq {SERVER}{server}{no}{yes}}'
+readconf_rest: transports
+ macros_expand: matched 'PEX' in 'hosts_noproxy_tls = PEX'
 LOG: queue_run MAIN
   Start queue run: pid=p1234 -qqf
 >>>>>>>>>>>>>>>> Exim pid=p1242 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -95,9 +104,19 @@ LOG: queue_run MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SERVER' ''
+macro_create: 'PEX' ':'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+ macros_expand: matched 'REQUIRE' in '.ifdef REQUIRE'
+ macros_expand: matched 'SERVER' in 'condition = ${if eq {SERVER}{server}{no}{yes}}'
+readconf_rest: transports
+ macros_expand: matched 'PEX' in 'hosts_noproxy_tls = PEX'
 LOG: queue_run MAIN
   Start queue run: pid=p1235 -qqf
 >>>>>>>>>>>>>>>> Exim pid=p1253 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -190,9 +209,17 @@ LOG: queue_run MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SERVER' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+ macros_expand: matched 'SERVER' in 'condition = ${if eq {SERVER}{server}{no}{yes}}'
+readconf_rest: transports
+ macros_expand: matched 'PEX' in 'hosts_noproxy_tls = PEX'
 LOG: queue_run MAIN
   Start queue run: pid=p1236 -qqf
 >>>>>>>>>>>>>>>> Exim pid=p1264 (transport ph1) terminating with rc=0 >>>>>>>>>>>>>>>>

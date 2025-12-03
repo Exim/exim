@@ -4592,7 +4592,7 @@ readconf_rest(void)
 {
 int had = 0;
 
-while(next_section[0] != 0)
+while(*next_section)
   {
   int bit;
   int first = 0;
@@ -4601,6 +4601,7 @@ while(next_section[0] != 0)
   int n = Ustrlen(next_section);
 
   EARLY_DEBUG(D_any, "%s: %s\n", __FUNCTION__, next_section);
+  expand_level++;
   if (tolower(next_section[n-1]) != 's') Ustrcpy(next_section+n, US"s");
 
   for (;;)
@@ -4630,6 +4631,7 @@ while(next_section[0] != 0)
     case 5: route_init(); break;
     case 6: transport_init(); break;
     }
+  expand_level--;
   }
 
 (void)fclose(config_file);

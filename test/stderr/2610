@@ -3,9 +3,14 @@
 ### create testdb and extra users
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PARTIAL' '127.0.0.1::PORT_N'
+macro_create: 'SSPEC' '127.0.0.1::PORT_N/test/root/pass'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
  search_open: mysql "NULL"
  search_find: file="NULL"
    key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
@@ -255,9 +260,18 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1235  Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=p1235 D=fff9ffff
 01:01:01 p1235  Hints DB:
+01:01:01 p1235  Module init: "dkim"
+01:01:01 p1235  Module init: "spf"
+01:01:01 p1235  Module init: "arc"
 01:01:01 p1235  macros_trusted overridden to true by whitelisting
 01:01:01 p1235  changed uid/gid: forcing real = effective
 01:01:01 p1235    uid=uuuu gid=CALLER_GID pid=p1235
+01:01:01 p1235  macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+01:01:01 p1235  macros_expand: matched '_HAVE_PIPE_CONNECT' in '.ifdef _HAVE_PIPE_CONNECT'
+01:01:01 p1235  macro_create: 'PARTIAL' '127.0.0.1::PORT_N'
+01:01:01 p1235  macros_expand: matched 'PARTIAL' in 'SSPEC = PARTIAL/test/root/pass'
+01:01:01 p1235  macro_create: 'SSPEC' '127.0.0.1::PORT_N/test/root/pass'
+01:01:01 p1235  macros_expand: matched 'SSPEC' in 'hide mysql_servers = SSPEC'
 01:01:01 p1235  environment after trimming:
 01:01:01 p1235   PATH=<munged>
 01:01:01 p1235  adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
@@ -265,8 +279,17 @@ search_tidyup called
 01:01:01 p1235  admin user
 01:01:01 p1235  changed uid/gid: privilege not needed
 01:01:01 p1235    uid=EXIM_UID gid=EXIM_GID pid=p1235
-01:01:01 p1235  seeking password data for user "CALLER": cache not available
-01:01:01 p1235  getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+01:01:01 p1235  readconf_rest: acl
+01:01:01 p1235   macros_expand: matched 'SSPEC' in 'set acl_m0 =	ok:    ${lookup mysql,servers=SSPEC      {select name from them where id = '${quote_mysql:$local_part}'}}'
+01:01:01 p1235   macros_expand: matched 'PARTIAL' in 'set acl_m0 =	ok:    ${lookup mysql,servers=PARTIAL    {select name from them where id = '${quote_mysql:$local_part}'}}'
+01:01:01 p1235   macros_expand: matched 'SSPEC' in 'set acl_m0 =	FAIL2: ${lookup mysql     {servers=SSPEC; select name from them where id = '${quote_mysql:$local_part}'}}'
+01:01:01 p1235   macros_expand: matched 'PARTIAL' in 'warn	  set acl_m0 =	FAIL3: ${lookup mysql     {servers=PARTIAL; select name from them where id = '$local_part'}}'
+01:01:01 p1235   macros_expand: matched 'SSPEC' in 'hosts =	<& net-mysql;servers=SSPEC; select * from them where id='${quote_mysql:$local_part}''
+01:01:01 p1235   macros_expand: matched 'SSPEC' in 'hosts =	<& net-mysql,servers=SSPEC; select * from them where id='${quote_mysql:$local_part}''
+01:01:01 p1235  readconf_rest: routers
+01:01:01 p1235  readconf_rest: transports
+01:01:01 p1235   seeking password data for user "CALLER": cache not available
+01:01:01 p1235   getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 01:01:01 p1235  try option 'gecos_pattern'
 01:01:01 p1235  try option 'gecos_name'
 01:01:01 p1235  try option 'unknown_login'
@@ -739,12 +762,26 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macro_create: 'PARTIAL' '127.0.0.1::PORT_N'
+macros_expand: matched 'PARTIAL' in 'SSPEC = PARTIAL/test/root/pass'
+macro_create: 'SSPEC' '127.0.0.1::PORT_N/test/root/pass'
+macros_expand: matched 'SSPEC' in 'hide mysql_servers = SSPEC'
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=p1236
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: acl
+ macros_expand: matched 'SSPEC' in 'set acl_m0 =	ok:    ${lookup mysql,servers=SSPEC      {select name from them where id = '${quote_mysql:$local_part}'}}'
+ macros_expand: matched 'PARTIAL' in 'set acl_m0 =	ok:    ${lookup mysql,servers=PARTIAL    {select name from them where id = '${quote_mysql:$local_part}'}}'
+ macros_expand: matched 'SSPEC' in 'set acl_m0 =	FAIL2: ${lookup mysql     {servers=SSPEC; select name from them where id = '${quote_mysql:$local_part}'}}'
+ macros_expand: matched 'PARTIAL' in 'warn	  set acl_m0 =	FAIL3: ${lookup mysql     {servers=PARTIAL; select name from them where id = '$local_part'}}'
+ macros_expand: matched 'SSPEC' in 'hosts =	<& net-mysql;servers=SSPEC; select * from them where id='${quote_mysql:$local_part}''
+ macros_expand: matched 'SSPEC' in 'hosts =	<& net-mysql,servers=SSPEC; select * from them where id='${quote_mysql:$local_part}''
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": cache not available
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
@@ -796,12 +833,26 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1237
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macro_create: 'PARTIAL' '127.0.0.1::PORT_N'
+macros_expand: matched 'PARTIAL' in 'SSPEC = PARTIAL/test/root/pass'
+macro_create: 'SSPEC' '127.0.0.1::PORT_N/test/root/pass'
+macros_expand: matched 'SSPEC' in 'hide mysql_servers = SSPEC'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: acl
+ macros_expand: matched 'SSPEC' in 'set acl_m0 =	ok:    ${lookup mysql,servers=SSPEC      {select name from them where id = '${quote_mysql:$local_part}'}}'
+ macros_expand: matched 'PARTIAL' in 'set acl_m0 =	ok:    ${lookup mysql,servers=PARTIAL    {select name from them where id = '${quote_mysql:$local_part}'}}'
+ macros_expand: matched 'SSPEC' in 'set acl_m0 =	FAIL2: ${lookup mysql     {servers=SSPEC; select name from them where id = '${quote_mysql:$local_part}'}}'
+ macros_expand: matched 'PARTIAL' in 'warn	  set acl_m0 =	FAIL3: ${lookup mysql     {servers=PARTIAL; select name from them where id = '$local_part'}}'
+ macros_expand: matched 'SSPEC' in 'hosts =	<& net-mysql;servers=SSPEC; select * from them where id='${quote_mysql:$local_part}''
+ macros_expand: matched 'SSPEC' in 'hosts =	<& net-mysql,servers=SSPEC; select * from them where id='${quote_mysql:$local_part}''
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": cache not available
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-000000005vi-0000
 Trying spool file TESTSUITE/spool//input//10HmaX-000000005vi-0000-D

@@ -1,7 +1,9 @@
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: rewrite
 c.domain in "a.domain"? no (end of list)
 User@c.domain in "*@a.domain"? no (end of list)
 LOG: address_rewrite MAIN

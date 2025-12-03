@@ -3,6 +3,7 @@ Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
  search_open: dnsdb "NULL"
  search_find: file="NULL"
    key="a=localhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
@@ -25,8 +26,10 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: acl
 search_tidyup called
 search_tidyup called
   search_open: dnsdb "NULL"

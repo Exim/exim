@@ -4,6 +4,12 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+macro_create: 'IFACE' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'PORT' in 'PORT'
+macros_expand: matched 'IFACE' in 'IFACE'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -27,6 +33,12 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+macro_create: 'IFACE' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'PORT' in 'PORT'
+macros_expand: matched 'IFACE' in 'IFACE'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -52,6 +64,11 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'PORT' in 'PORT'
+macros_expand: matched 'IFACE' in 'IFACE'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -78,6 +95,11 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1237
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'PORT' in 'PORT'
+macros_expand: matched 'IFACE' in 'IFACE'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -104,6 +126,11 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1238
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'PORT' in 'PORT'
+macros_expand: matched 'IFACE' in 'IFACE'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -127,6 +154,11 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1239
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'PORT' in 'PORT'
+macros_expand: matched 'IFACE' in 'IFACE'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -153,6 +185,11 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1240
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'PORT' in 'PORT'
+macros_expand: matched 'IFACE' in 'IFACE'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -180,6 +217,13 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1241
+macro_create: 'PORT' ''
+macro_create: 'IFACE' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'PORT' in 'PORT'
+macros_expand: matched 'IFACE' in 'IFACE'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid

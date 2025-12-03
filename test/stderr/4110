@@ -1,16 +1,26 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'FILTER_PREPEND_HOME' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: routers
+ macros_expand: matched 'FILTER_PREPEND_HOME' in 'FILTER_PREPEND_HOME'
+readconf_rest: transports
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
 Hints DB:
+macro_create: 'FILTER_PREPEND_HOME' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+ macros_expand: matched 'FILTER_PREPEND_HOME' in 'FILTER_PREPEND_HOME'
+readconf_rest: transports
 rda_interpret (file): 'TESTSUITE/aux-var/4110.F'
 expanded: 'TESTSUITE/aux-var/4110.F'
 ssss bytes read from TESTSUITE/aux-var/4110.F

@@ -1,8 +1,15 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -45,9 +52,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -72,9 +86,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -99,9 +120,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -140,9 +168,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -163,9 +198,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -203,9 +245,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -225,9 +274,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -274,9 +330,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -297,9 +360,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1242 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -349,9 +419,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1243 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -377,9 +454,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1244 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -423,9 +507,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1245 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -451,9 +542,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1246 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -497,9 +595,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1247 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -525,9 +630,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1248 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -583,9 +695,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1249 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -612,9 +731,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1250 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -664,9 +790,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1251 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -710,9 +843,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1252 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -761,9 +901,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1253 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -807,9 +954,15 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1254 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -858,9 +1011,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1255 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -901,9 +1061,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1256 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -953,9 +1120,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1257 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -1003,9 +1177,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1258 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -1051,9 +1232,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1259 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)
@@ -1105,9 +1293,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1260 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'PEX' '10s'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'PEX' in 'callout_domain_positive_expire = PEX'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from root
 test in helo_lookup_domains? no (end of list)

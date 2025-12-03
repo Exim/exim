@@ -1,15 +1,35 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'CONNECTCOND' ''
+macro_create: 'RETRY' '7d'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched '_OPT_MAIN_LIMITS_ADVERTISE_HOSTS' in '.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS'
+macros_expand: matched 'CONNECTCOND' in 'pipelining_connect_advertise_hosts = CONNECTCOND'
+macros_expand: matched 'RETRY' in 'retry_data_expire = RETRY'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'CONTROL' in 'hosts_pipe_connect =	CONTROL'
+readconf_rest: retry
 LOG: MAIN
   <= CALLER@the.local.host.name U=CALLER P=local S=sss
 Exim version x.yz ....
 Hints DB:
+macro_create: 'CONNECTCOND' ''
+macro_create: 'RETRY' '7d'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched '_OPT_MAIN_LIMITS_ADVERTISE_HOSTS' in '.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS'
+macros_expand: matched 'CONNECTCOND' in 'pipelining_connect_advertise_hosts = CONNECTCOND'
+macros_expand: matched 'RETRY' in 'retry_data_expire = RETRY'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'CONTROL' in 'hosts_pipe_connect =	CONTROL'
+readconf_rest: retry
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> extchange@test.ex <--------
 smtp transport entered

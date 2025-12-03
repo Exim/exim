@@ -1,8 +1,11 @@
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
   DNS lookup of mx-sec-a-aa.test.ex (MX) using fakens
   DNS lookup of mx-sec-a-aa.test.ex (MX) succeeded
   DNS lookup of a-aa.test.ex (A) using fakens
@@ -11,9 +14,12 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
   DNS lookup of mx-aa-a-sec.test.ex (MX) using fakens
   DNS lookup of mx-aa-a-sec.test.ex (MX) succeeded
   DNS lookup of mx-aa-a-sec.test.ex (MX) requested AD, but got AA

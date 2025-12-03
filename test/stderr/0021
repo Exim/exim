@@ -1,8 +1,20 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SERVER' ''
+macro_create: 'BR' ''
+macro_create: 'LOG_SELECTOR' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'BR' in 'BR'
+macros_expand: matched 'HVH' in 'HVH'
+macros_expand: matched 'LOG_SELECTOR' in 'log_selector = LOG_SELECTOR'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
 host in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
@@ -159,9 +171,21 @@ LOG: smtp_connection MAIN
 1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SERVER' ''
+macro_create: 'BR' ''
+macro_create: 'LOG_SELECTOR' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'BR' in 'BR'
+macros_expand: matched 'HVH' in 'HVH'
+macros_expand: matched 'LOG_SELECTOR' in 'log_selector = LOG_SELECTOR'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
 host in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
@@ -285,10 +309,22 @@ LOG: MAIN
   <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SERVER' ''
+macro_create: 'BR' ''
+macro_create: 'LOG_SELECTOR' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'BR' in 'BR'
+macros_expand: matched 'HVH' in 'HVH'
+macros_expand: matched 'LOG_SELECTOR' in 'log_selector = LOG_SELECTOR'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
  x in local_parts?
   list element: !bad
  x in local_parts? yes (end of list)

@@ -1,8 +1,11 @@
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@mxt6.test.ex
 --------> lookuphost router <--------
@@ -26,9 +29,12 @@ routed by lookuphost router
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing myhost.test.ex@mxt1.test.ex
 --------> lookuphost router <--------
@@ -67,9 +73,12 @@ routed by self router
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@mxt1.test.ex
 --------> lookuphost router <--------
@@ -123,9 +132,12 @@ routed by self2 router
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@not-exist.test.ex
 --------> lookuphost router <--------

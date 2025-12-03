@@ -1,16 +1,28 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'QUOTA_FILECOUNT' '0'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'QUOTA_FILECOUNT' in 'quota_filecount = QUOTA_FILECOUNT'
+readconf_rest: retry
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 Exim version x.yz ....
 Hints DB:
+macro_create: 'QUOTA_FILECOUNT' '0'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'QUOTA_FILECOUNT' in 'quota_filecount = QUOTA_FILECOUNT'
+readconf_rest: retry
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 appendfile transport entered
@@ -44,16 +56,26 @@ LOG: MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'QUOTA_FILECOUNT' in 'quota_filecount = QUOTA_FILECOUNT'
+readconf_rest: retry
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'QUOTA_FILECOUNT' in 'quota_filecount = QUOTA_FILECOUNT'
+readconf_rest: retry
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 appendfile transport entered

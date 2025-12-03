@@ -2,6 +2,7 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
@@ -9,8 +10,11 @@ trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=p1234
-seeking password data for user "CALLER": using cached result
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": using cached result
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 sender_fullhost = [V4NET.9.8.7]
@@ -175,6 +179,7 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
@@ -182,8 +187,11 @@ trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=p1235
-seeking password data for user "CALLER": using cached result
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": using cached result
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = NULL
 sender_fullhost = [V4NET.11.12.13]
@@ -293,14 +301,18 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1236
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-seeking password data for user "CALLER": using cached result
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": using cached result
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-000000005vi-0000
 Trying spool file TESTSUITE/spool//input//10HmaX-000000005vi-0000-D
@@ -484,14 +496,18 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1238
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-seeking password data for user "CALLER": using cached result
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+ seeking password data for user "CALLER": using cached result
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-000000005vi-0000
 Trying spool file TESTSUITE/spool//input//10HmaY-000000005vi-0000-D

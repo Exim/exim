@@ -1,8 +1,12 @@
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 set_process_info: pppp running the queue (single queue run)
 LOG: queue_run MAIN
   Start queue run: pid=p1234
@@ -65,9 +69,13 @@ LOG: MAIN
 set_process_info: pppp tidying up after delivering 10HmaX-000000005vi-0000
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 set_process_info: pppp accepting a local non-SMTP message from <>
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
@@ -75,10 +83,14 @@ LOG: MAIN
   <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>

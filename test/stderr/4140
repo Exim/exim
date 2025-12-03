@@ -1,9 +1,12 @@
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing /a/b/c@myhost.test.ex
 --------> r1 router <--------
@@ -25,10 +28,13 @@ routed by r1 router
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing /x/y/z@myhost.test.ex
 --------> r1 router <--------

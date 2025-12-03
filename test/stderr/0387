@@ -4,6 +4,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
  search_find: file="TESTSUITE/aux-fixed/0387.1"
    key="a.b.c" partial=2 affix=*. starflags=0 opts=NULL

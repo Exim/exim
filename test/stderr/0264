@@ -1,7 +1,11 @@
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: transports
+readconf_rest: routers
+readconf_rest: retry
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbJ-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <rz.b@outside> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbJ-000000005vi-0000-H
@@ -9,10 +13,14 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: transports
+readconf_rest: routers
+readconf_rest: retry
 delivering 10HmbJ-000000005vi-0000
 Trying spool file TESTSUITE/spool//input//10HmbJ-000000005vi-0000-D
 reading spool file 10HmbJ-000000005vi-0000-H

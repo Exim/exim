@@ -1,8 +1,15 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'ACL_RCPT' 'acl_rcpt'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'ACL_RCPT' in 'acl_smtp_rcpt = ACL_RCPT'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+ macros_expand: matched 'USE_SENDER' in 'accept   verify  = recipient/callout=1sUSE_SENDER'
+readconf_rest: routers
+readconf_rest: transports
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  in chunking_advertise_hosts? no (end of list)
@@ -35,9 +42,16 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'ACL_RCPT' 'acl_rcpt'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'ACL_RCPT' in 'acl_smtp_rcpt = ACL_RCPT'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+ macros_expand: matched 'USE_SENDER' in 'accept   verify  = recipient/callout=1sUSE_SENDER'
+readconf_rest: routers
+readconf_rest: transports
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  in chunking_advertise_hosts? no (end of list)

@@ -1,16 +1,28 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'EXTRA' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'EXTRA' in 'port = ${if queue_running{1226}{1225}}EXTRA'
+readconf_rest: retry
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 Exim version x.yz ....
 Hints DB:
+macro_create: 'EXTRA' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'EXTRA' in 'port = ${if queue_running{1226}{1225}}EXTRA'
+readconf_rest: retry
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 t1 transport entered
@@ -37,9 +49,15 @@ LOG: MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'EXTRA' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+ macros_expand: matched 'EXTRA' in 'port = ${if queue_running{1226}{1225}}EXTRA'
+readconf_rest: retry
 LOG: queue_run MAIN
   Start queue run: pid=p1234
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>

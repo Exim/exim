@@ -1,8 +1,12 @@
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
  mxt9.test.ex in domains? no (end of list)
   check dnssec require list
   check dnssec request list

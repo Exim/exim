@@ -2,14 +2,18 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-seeking password data for user "CALLER": using cached result
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: transports
+ seeking password data for user "CALLER": using cached result
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: routers
+readconf_rest: retry
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=
 sender address = CALLER@test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
@@ -113,14 +117,18 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-seeking password data for user "CALLER": using cached result
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: transports
+ seeking password data for user "CALLER": using cached result
+ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+readconf_rest: routers
+readconf_rest: retry
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=
 sender address = user1@fun.1
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID

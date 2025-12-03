@@ -1,15 +1,45 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SERVER' ''
+macro_create: 'FAKE' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched '_DKIM_SIGN_HEADERS' in 'acl_smtp_rcpt = accept logwrite = rcpt_acl: macro: _DKIM_SIGN_HEADERS'
+macro_create: 'DDIR' 'TESTSUITE/aux-fixed/dkim'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: acl
+readconf_rest: routers
+ macros_expand: matched 'SERVER' in 'condition =	${if eq {SERVER}{server}{yes}{no}}'
+readconf_rest: transports
+ macros_expand: matched 'SELECTOR' in '.ifdef SELECTOR'
+ macros_expand: matched 'SELECTOR' in 'dkim_selector =	SELECTOR'
+ macros_expand: matched 'DDIR' in '}{DDIR/$value}}'
+ macros_expand: matched 'OPT' in 'dkim_sign_headers =	OPT'
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SERVER' ''
+macro_create: 'FAKE' ''
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched '_DKIM_SIGN_HEADERS' in 'acl_smtp_rcpt = accept logwrite = rcpt_acl: macro: _DKIM_SIGN_HEADERS'
+macro_create: 'DDIR' 'TESTSUITE/aux-fixed/dkim'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+ macros_expand: matched 'SERVER' in 'condition =	${if eq {SERVER}{server}{yes}{no}}'
+readconf_rest: transports
+ macros_expand: matched 'SELECTOR' in '.ifdef SELECTOR'
+ macros_expand: matched 'SELECTOR' in 'dkim_selector =	SELECTOR'
+ macros_expand: matched 'DDIR' in '}{DDIR/$value}}'
+ macros_expand: matched 'OPT' in 'dkim_sign_headers =	OPT'
 Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_D ...
 connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

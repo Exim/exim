@@ -1,8 +1,13 @@
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 Single queue run
 LOG: queue_run MAIN
   Start queue run: pid=p1234 -qq
@@ -82,9 +87,14 @@ LOG: queue_run MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 Single queue run
 LOG: queue_run MAIN
   Start queue run: pid=p1235 -qq
@@ -134,9 +144,14 @@ LOG: MAIN
   ** a@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 550 NO
 Exim version x.yz ....
 Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: MAIN
   <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss
 >>>>>>>>>>>>>>>> Exim pid=p1249 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>

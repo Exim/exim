@@ -1,7 +1,14 @@
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SRV' 'queue_only'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SRV' in 'SRV'
 configuration file is TESTSUITE/test-config
 admin user
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
@@ -44,10 +51,17 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
+macro_create: 'SRV' 'queue_only'
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SRV' in 'SRV'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+readconf_rest: transports
+readconf_rest: retry
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userb@test.ex <--------
 t1 transport entered
