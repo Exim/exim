@@ -1483,7 +1483,6 @@ return string_from_gstring(g);
 
 
 
-#ifndef DISABLE_TLS
 /* Append TLS-related information to a log line
 
 Arguments:
@@ -1494,13 +1493,14 @@ Returns:	Allocated string or NULL
 gstring *
 add_tls_info_for_log(gstring * g)
 {
+#ifndef DISABLE_TLS
 if (LOGGING(tls_cipher) && tls_in.cipher)
   {
   g = string_append(g, 2, US" X=", tls_in.cipher);
-#ifndef DISABLE_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   if (LOGGING(tls_resumption) && tls_in.resumption & RESUME_USED)
     g = string_catn(g, US"*", 1);
-#endif
+# endif
   }
 if (LOGGING(tls_certificate_verified) && tls_in.peercert)
   g = string_append(g, 2, US" CV=", tls_in.certificate_verified? "yes":"no");
@@ -1509,8 +1509,8 @@ if (LOGGING(tls_peerdn) && tls_in.peerdn)
 if (LOGGING(tls_sni) && tls_in.sni)
   g = string_append(g, 2, US" SNI=", string_printing2(tls_in.sni, SP_TAB|SP_SPACE));
 return g;
-}
 #endif
+}
 
 
 
@@ -1547,7 +1547,6 @@ Returns:     nothing
 void
 smtp_log_no_mail(void)
 {
-uschar * s;
 gstring * g = NULL;
 
 if (smtp_mailcmd_count > 0 || !LOGGING(smtp_no_mail))
@@ -1559,17 +1558,12 @@ if (sender_host_authenticated)
   if (authenticated_id) g = string_append(g, 2, US":", authenticated_id);
   }
 
-#ifndef DISABLE_TLS
 g = add_tls_info_for_log(g);
-#endif
-
 g = s_connhad_log(g);
 
-if (!(s = string_from_gstring(g))) s = US"";
-
-log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%s",
+log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%#Y",
   f.tcp_in_fastopen ? f.tcp_in_fastopen_data ? US"TFO* " : US"TFO " : US"",
-  host_and_ident(FALSE), string_timesince(&smtp_connection_start), s);
+  host_and_ident(FALSE), string_timesince(&smtp_connection_start), g);
 }
 
 
@@ -2178,21 +2172,13 @@ static void
 log_connect_tls_drop(const uschar * what, const uschar * log_msg)
 {
 if (log_reject_target)
-  {
-#ifdef DISABLE_TLS
-  uschar * tls = NULL;
-#else
-  gstring * g = add_tls_info_for_log(NULL);
-  uschar * tls = string_from_gstring(g);
-#endif
   log_write(L_connection_reject,
-    log_reject_target, "%s%s%s dropped by %s%s%s",
+    log_reject_target, "%s%s%#Y dropped by %s%s%s",
     LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
     host_and_ident(TRUE),
-    tls ? tls : US"",
+    add_tls_info_for_log(NULL),
     what,
     log_msg ? US": " : US"", log_msg);
-  }
 }
 
 
@@ -3264,28 +3250,16 @@ the connection is not forcibly to be dropped, return 0. Otherwise, log why it
 is closing if required and return 2.  */
 
 if (log_reject_target)
-  {
-#ifndef DISABLE_TLS
-  gstring * tls = add_tls_info_for_log(NULL);
-#else
-  gstring * tls = NULL;
-#endif
-#ifdef EXIM_HAVE_SPF
-  gstring * spf= add_spf_info_for_log(NULL);
-#else
-  gstring * spf = NULL;
-#endif
-
   log_write(where == ACL_WHERE_CONNECT ? L_connection_reject : 0,
-    log_reject_target, "%s%s%#Y%s%#Y %srejected %s%s",
+    log_reject_target, "%s%s%#Y%s%#Y%#Y %srejected %s%s",
     LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
     host_and_ident(TRUE),
-    tls,
+    add_tls_info_for_log(NULL),
     sender_info,
-    spf,
+    add_spf_info_for_log(NULL),
+    add_dmarc_info_for_log(NULL),
     rc == FAIL ? US"" : US"temporarily ",
     what, log_msg);
-  }
 
 if (!drop) return 0;
 

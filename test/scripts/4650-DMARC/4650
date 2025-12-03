@@ -9,7 +9,7 @@
 mkdir -p DIR/tmp
 sudo chmod 777 DIR/tmp
 #
-exim -bd -DSERVER=server -oX PORT_D
+exim -bd -DLOG_SELECTOR=+dmarc_verbose -DSERVER=server -oX PORT_D
 ****
 #
 #

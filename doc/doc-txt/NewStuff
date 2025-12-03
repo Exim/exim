@@ -14,7 +14,7 @@ Since Version 4.99
  2. EXPERIMENTAL_DMARC_NATIVE optional build feature.  See the experimental.spec
     file.
 
- 3. Log selectors "spf", "spf_verbose".
+ 3. Log selectors "spf", "spf_verbose", "dmarc", "dmarc_verbose".
 
 
 Version 4.99

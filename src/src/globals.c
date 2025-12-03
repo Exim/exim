@@ -980,6 +980,10 @@ bit_table log_options[]        = { /* must be in alphabetical order,
   BIT_TABLE(L, dkim),
   BIT_TABLE(L, dkim_verbose),
 #endif
+#ifdef EXIM_HAVE_DMARC
+  BIT_TABLE(L, dmarc),
+  BIT_TABLE(L, dmarc_verbose),
+#endif
   BIT_TABLE(L, dnslist_defer),
   BIT_TABLE(L, dnssec),
   BIT_TABLE(L, etrn),

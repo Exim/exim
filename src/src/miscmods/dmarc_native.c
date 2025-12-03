@@ -628,14 +628,12 @@ use the sp.  Otherwise use the p. */
       }
     }
 
-  // the alignments would be results of the DMARC evaluation
-  // - we have them already, from the dkim & spf processing
-
   if (has_dmarc_record && !dmarc_abort)
     {
-    /* Log results.  Robably should have a log_selector to reduce noise. */
+    /* Log results. */
 
-    log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
+    if (LOGGING(dmarc_verbose))
+      log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
 			   "spf_align=%s dkim_align=%s enforcement='%s'",
 			   spf_sender_domain, dmarc_used_domain,
 			   dmarc_alignment_spf  ? "yes" : "no",

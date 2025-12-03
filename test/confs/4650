@@ -14,6 +14,8 @@ pipelining_connect_advertise_hosts =
 .endif
 
 primary_hostname = myhost.test.ex
+LOG_SELECTOR=
+log_selector = LOG_SELECTOR
 
 # ----- Main settings -----
 
@@ -30,8 +32,8 @@ begin acl
 
 check_data:
   accept	hosts = 	HOSTIPV4
-		spf =		pass : !pass
-		dmarc_status =	none : !none
+		spf =		*
+		dmarc_status =	*
 		logwrite =	dmarc_status <$dmarc_status>
 		logwrite =	dmarc_status_text <$dmarc_status_text>
 		logwrite =	dmarc_used_domain <$dmarc_used_domain>

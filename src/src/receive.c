@@ -1376,6 +1376,21 @@ else if (LOGGING(spf) && Ustrcmp(expand_string(CUS"$spf_result"), "pass") == 0)
 return g;
 }
 
+gstring *
+add_dmarc_info_for_log(gstring * g)
+{
+#ifdef EXIM_HAVE_DMARC
+if (LOGGING(dmarc_verbose))
+  {
+  const uschar * s = expand_string(CUS"$dmarc_status");
+  if (*s) g = string_append(g, 2, US" DMARC=", s);
+  }
+else if (LOGGING(dmarc) && Ustrcmp(expand_string(CUS"$dmarc_status"), "accept") == 0)
+  g = string_catn(g, US" DMARC", 6);
+#endif
+return g;
+}
+
 /* Called for acceptance and rejecting log lines. This adds information about
 the calling host to a string that is being built dynamically.
 
@@ -4099,10 +4114,7 @@ if (message_reference)
   g = string_append(g, 2, US" R=", message_reference);
 
 g = add_host_info_for_log(g);
-
-#ifndef DISABLE_TLS
 g = add_tls_info_for_log(g);
-#endif
 
 if (sender_host_authenticated)
   {
@@ -4155,6 +4167,8 @@ if (LOGGING(dkim))
 # endif
   }
 #endif
+
+g = add_dmarc_info_for_log(g);
 
 if (LOGGING(receive_time))
   {
