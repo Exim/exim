@@ -42956,7 +42956,11 @@ There was an error during processing of the SPF lookup
 
 You can prefix each string with an exclamation mark to  invert
 its meaning,  for example  "!fail" will  match all  results but
-"fail".  The  string  list is  evaluated  left-to-right,  in a
+"fail".
+.new
+An asterisk (&"*"&) will match any outcome.
+.wen
+The  string  list is  evaluated  left-to-right,  in a
 short-circuit fashion.
 
 Example:

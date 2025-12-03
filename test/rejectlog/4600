@@ -1,5 +1,5 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 H=(cname.test.ex) [ip4.ip4.ip4.ip4] F=<a@test.again.dns> SPF=temperror temporarily rejected RCPT <fred@test.ex>
-1999-03-02 09:44:33 H=(cname.test.ex) [ip4.ip4.ip4.ip4] F=<failme@example.com> SPF=fail rejected RCPT <fred@test.ex>
-1999-03-02 09:44:33 H=(passme.helo.example.com) [ip4.ip4.ip4.ip4] F=<failme@example.com> SPF=fail rejected RCPT <fred@test.ex>
+1999-03-02 09:44:33 H=(cname.test.ex) [ip4.ip4.ip4.ip4] F=<a@test.again.dns> SPF=temperror temporarily rejected RCPT <fred_a@test.ex>
+1999-03-02 09:44:33 H=(cname.test.ex) [ip4.ip4.ip4.ip4] F=<failme@example.com> SPF=fail rejected RCPT <fred_fail@test.ex>
+1999-03-02 09:44:33 H=(passme.helo.example.com) [ip4.ip4.ip4.ip4] F=<failme@example.com> SPF=fail rejected RCPT <fred_fail_dom@test.ex>

@@ -373,10 +373,7 @@ static int
 spf_process(const uschar ** listptr, const uschar * spf_envelope_sender,
   int action)
 {
-int sep = 0;
-const uschar * list = * listptr;
-uschar * spf_result_id;
-int rc = SPF_RESULT_PERMERROR, ret = OK;
+int rc = SPF_RESULT_PERMERROR, ret;
 
 DEBUG(D_receive) { debug_printf_indent("SPF: process\n"); expand_level++; }
 
@@ -419,24 +416,13 @@ if (action == SPF_PROCESS_GUESS && (!strcmp (SPF_strresult(rc), "none")))
 
 else
   {
-  while ((spf_result_id = string_nextinlist(&list, &sep, NULL, 0)))
-    {
-    BOOL negate, result;
-
-    if ((negate = spf_result_id[0] == '!'))
-      spf_result_id++;
-
-    result = Ustrcmp(spf_result_id, spf_result_id_list[rc].name) == 0;
-    if (negate != result) goto out;
-    }
-
-  /* no match */
-  ret = FAIL;
+  const uschar * list = *listptr;
+  ret = match_isinlist(spf_result_id_list[rc].name, &list,
+                    0, NULL, NULL, MCL_STRING, TRUE, NULL);
   }
 
-out:
-  DEBUG(D_receive) expand_level--;
-  return ret;
+DEBUG(D_receive) expand_level--;
+return ret;
 }
 
 

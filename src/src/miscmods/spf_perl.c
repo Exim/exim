@@ -35,9 +35,6 @@ static spf_result_id spf_result_id_list[] = {
   { US"permerror",	7 }  /* RFC 4408 defined */
 };
 
-const uschar * conn_helo = NULL;
-const uschar * conn_addr = NULL;
-
 uschar * spf_guess              = US"v=spf1 a/24 mx/24 ptr ?all";
 uschar * spf_header_comment     = NULL;
 uschar * spf_received           = NULL;
@@ -132,34 +129,6 @@ return string_cat(g, US"Library_version: SPF: perl Mail::SPF\n");
 
 
 /*API*/
-/* Set up a context that can be re-used for several
-   messages on the same SMTP connection (that come from the
-   same host with the same HELO string).
-
-We delay doing perl startup until spf processing time, as ACL might
-never need us on any given connection.
-
-Return: OK/FAIL
-*/
-
-static int
-spf_conn_init(const uschar * spf_helo_domain, const uschar * spf_remote_addr,
-  const uschar ** errstr)
-{
-DEBUG(D_receive) debug_printf_indent("spf_conn_init: helo:%s addr:%s\n",
-			      spf_helo_domain, spf_remote_addr);
-
-/* Copy the args to globals */
-
-conn_helo = spf_helo_domain;
-conn_addr = spf_remote_addr;
-
-return OK;
-}
-
-
-
-/*API*/
 static void
 spf_smtp_reset(void)
 {
@@ -185,7 +154,7 @@ static int
 spf_process(const uschar ** listptr, const uschar * spf_envelope_sender,
   int action)
 {
-int res = FAIL, sep;
+int res, sep;
 uschar * errstr;
 const uschar * arglist = *listptr;
 
@@ -199,17 +168,18 @@ if (!setup_spf_perl_mi(&errstr))
   return FAIL;
   }
 
-if (!(conn_helo && conn_addr))
+if (!(sender_helo_name && sender_host_address))
   spf_result = US"permerror";
 
 else
   {
-  const uschar * argv[4] = {spf_envelope_sender, conn_addr, conn_helo, NULL};
+  const uschar * argv[4] = {spf_envelope_sender, sender_host_address,
+			    sender_helo_name, NULL};
   gstring * g;
   uschar * res_list, * s;
 
   if (!(g = call_my_spf_req(argv)))
-    goto out;
+    { res = FAIL; goto out; }
 
   res_list = US string_from_gstring(g);
   sep = '\n';
@@ -228,18 +198,8 @@ else
     }
   }
 
-sep = 0;
-for (uschar * ele; ele = string_nextinlist(&arglist, &sep, NULL, 0); )
-  {
-  BOOL negate, result;
-
-  if ((negate = *ele == '!'))
-    ele++;
-
-  result = Ustrcmp(ele, spf_result) == 0;
-  if (negate != result) { res = OK; break; }
-  }
-/* if the loop ran out of list, no match */
+res = match_isinlist(spf_result, &arglist,
+		    0, NULL, NULL, MCL_STRING, TRUE, NULL);
 
 out:
   expand_level--;
@@ -342,7 +302,7 @@ if (setup_spf_perl_mi(&errstr))
     *result = US"permerror";
   else
     {
-    const uschar * argv[4] = {keystring, filename, conn_helo, NULL};
+    const uschar * argv[4] = {keystring, filename, sender_helo_name, NULL};
     gstring * g;
 
     if ((g = call_my_spf_req(argv)))
@@ -393,7 +353,7 @@ misc_module_info spf_module_info =
   .dyn_magic =		MISC_MODULE_MAGIC,
 # endif
   .lib_vers_report =	spf_lib_version_report,
-  .conn_init =		spf_conn_init,
+  .conn_init =		NULL,
   .smtp_reset =		spf_smtp_reset,
   .authres =		authres_spf,
 

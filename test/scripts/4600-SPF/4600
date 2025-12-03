@@ -19,10 +19,11 @@ helo cname.test.ex
 ??? 250
 mail from:<a@test.again.dns>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_a@test.ex>
 ??? 451
 quit
 ****
+millisleep 500
 #
 # no dns record - should get "none"
 client HOSTIPV4 PORT_S
@@ -31,7 +32,7 @@ helo cname.test.ex
 ??? 250
 mail from:<b@test.example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_b@test.ex>
 ??? 250
 data
 ??? 354
@@ -39,6 +40,7 @@ data
 ??? 250
 quit
 ****
+millisleep 500
 #
 # "fail"
 client HOSTIPV4 PORT_S
@@ -47,10 +49,11 @@ helo cname.test.ex
 ??? 250
 mail from:<failme@example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_fail@test.ex>
 ??? 550
 quit
 ****
+millisleep 500
 #
 # "pass"
 client HOSTIPV4 PORT_S
@@ -59,7 +62,7 @@ helo cname.test.ex
 ??? 250
 mail from:<a@passme.example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_passme@test.ex>
 ??? 250
 data
 ??? 354
@@ -67,6 +70,7 @@ data
 ??? 250
 quit
 ****
+millisleep 500
 #
 #
 # "neutral"
@@ -76,10 +80,11 @@ helo cname.test.ex
 ??? 250
 mail from:<a@neutral.example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_neutral@test.ex>
 ??? 250
 quit
 ****
+millisleep 500
 #
 #
 # "softfail"
@@ -89,10 +94,11 @@ helo cname.test.ex
 ??? 250
 mail from:<a@softfail.example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_softfail@test.ex>
 ??? 250
 quit
 ****
+millisleep 500
 #
 #XXX we need testcases for the other results
 #
@@ -105,10 +111,11 @@ helo passme.helo.example.com
 ??? 250
 mail from:<>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_pass_helo@test.ex>
 ??? 250
 quit
 ****
+millisleep 500
 #
 # a nonempty mailfrom takes precedence over the helo
 client HOSTIPV4 PORT_S
@@ -117,10 +124,11 @@ helo passme.helo.example.com
 ??? 250
 mail from:<failme@example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_fail_dom@test.ex>
 ??? 550
 quit
 ****
+millisleep 500
 #
 killdaemon
 #
@@ -138,7 +146,7 @@ helo cname.test.ex
 ??? 250
 mail from:<b@test.example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_b@test.ex>
 ??? 250
 data
 ??? 354
@@ -154,7 +162,7 @@ helo cname.test.ex
 ??? 250
 mail from:<a@passme.example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_a@test.ex>
 ??? 250
 data
 ??? 354
@@ -176,7 +184,7 @@ helo cname.test.ex
 ??? 250
 mail from:<a@passme.example.com>
 ??? 250
-rcpt to:<fred@test.ex>
+rcpt to:<fred_a@test.ex>
 ??? 250
 data
 ??? 354

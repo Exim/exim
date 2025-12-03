@@ -28,6 +28,7 @@ limits_advertise_hosts = !*
 .endif
 tls_advertise_hosts =
 
+LOG_SELECTOR=
 log_selector = LOG_SELECTOR
 primary_hostname = myhost.test.ex
 
