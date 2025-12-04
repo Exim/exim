@@ -40,7 +40,7 @@ avail_static_lookups.o: $(HDRS) avail_static_lookups.c
 lookups.a:       avail_static_lookups.o $(OBJS)
 		 @$(RM_COMMAND) -f lookups.a
 		 @echo "$(AR) lookups.a"
-		 @$(AR) lookups.a avail_static_lookups.o $(OBJS)
+		 $(FE)$(AR) lookups.a avail_static_lookups.o $(OBJS)
 		 $(RANLIB) $@
 
 .SUFFIXES:       .o .c .so

@@ -248,6 +248,7 @@ extern uschar *expand_string_copy(const uschar *);
 extern int_eximarith_t expand_string_integer(uschar *, BOOL);
 extern void    modify_variable(uschar *, void *);
 
+extern BOOL    fake_dnsa_len_for_fail(dns_answer *, int);
 extern BOOL    fd_ready(int, time_t);
 extern BOOL    filter_runtest(int, const uschar *, BOOL, BOOL);
 

@@ -717,7 +717,7 @@ the packet length if the packet header looks plausible.
 
 Return TRUE iff it seemed ok */
 
-static BOOL
+BOOL
 fake_dnsa_len_for_fail(dns_answer * dnsa, int type)
 {
 const HEADER * h = (const HEADER *)dnsa->answer;

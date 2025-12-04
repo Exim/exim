@@ -158,6 +158,8 @@ debug_printf_indent(" dnsa answer %p len %d\n", dnsa->answer, dnsa->answerlen);
 ST(0) = sv_newmortal();
 if (dns_res == DNS_AGAIN || dns_res == DNS_FAIL)
   sv_setsv(ST(0), &PL_sv_undef);
+else if (dnsa->answerlen == -1 && !fake_dnsa_len_for_fail(dnsa, rrtype_int))
+  sv_setsv(ST(0), &PL_sv_undef);
 else
   sv_setpvn(ST(0), CCS dnsa->answer, (STRLEN) dnsa->answerlen);
 XSRETURN(1);	/* ? needed because there are 2 arg, but 1 res? */
