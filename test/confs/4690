@@ -25,7 +25,7 @@ dmarc_history_file = DIR/tmp/TESTNUM.hist.dmarc
 acl_smtp_rcpt = accept
 acl_smtp_data = check_data
 
-log_selector = +received_recipients +dkim_verbose
+log_selector = +received_recipients +dkim_verbose +dmarc_verbose
 queue_only
 queue_run_in_order
 
