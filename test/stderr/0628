@@ -33,10 +33,6 @@
 01:01:01 p1237  >>>>>>>>>>>>>>>> Exim pid=p1237 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1238  Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=p1238 D=fff9ffff
 01:01:01 p1238  Hints DB:
-01:01:01 p1238  Module init: "dkim"
-01:01:01 p1238  Module init: "spf"
-01:01:01 p1238  Module init: "arc"
-01:01:01 p1238  Module init: "dmarc"
 01:01:01 p1238  macros_trusted overridden to true by whitelisting
 01:01:01 p1238  changed uid/gid: forcing real = effective
 01:01:01 p1238    uid=uuuu gid=EXIM_GID pid=p1238
@@ -44,7 +40,6 @@
 01:01:01 p1238  macros_expand: matched 'SERVER' in '.ifdef SERVER'
 01:01:01 p1238  macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
 01:01:01 p1238  macros_expand: matched '_HAVE_PIPE_CONNECT' in '.ifdef _HAVE_PIPE_CONNECT'
-01:01:01 p1238  macros_expand: matched '_HAVE_DMARC' in '.ifdef _HAVE_DMARC'
 01:01:01 p1238  environment after trimming:
 01:01:01 p1238   PATH=<munged>
 01:01:01 p1238  adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys

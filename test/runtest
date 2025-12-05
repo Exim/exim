@@ -1612,7 +1612,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s%(?<!lsearch)[^ ](?=TESTSUITE/aux-fixed/(?:0414.list[12]|0464.domains)$)%0%;
 
     # Different builds will have different optional modules
-    next if /^Module init: /;
+    next if /^$time_pid?Module init: /;
 
     # Environment cleaning
     next if /\w+ in keep_environment\? (yes|no)/;
@@ -1781,7 +1781,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/ \[\d+\] (?=(LOG:  redirecting log|HINT:  Future log output))/ [pppp] /;
 
     # Not all builds include DMARC
-    next if /^macros_expand: matched '_HAVE_DMARC/;
+    next if /^$time_pid?macros_expand: matched '_HAVE_DMARC/;
     next if /try option 'dmarc_tld_file'$/;
     next if /^DMARC: no (dmarc_tld_file|sender_host_address)$/ ;
 

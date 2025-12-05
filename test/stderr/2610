@@ -260,9 +260,6 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1235  Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=p1235 D=fff9ffff
 01:01:01 p1235  Hints DB:
-01:01:01 p1235  Module init: "dkim"
-01:01:01 p1235  Module init: "spf"
-01:01:01 p1235  Module init: "arc"
 01:01:01 p1235  macros_trusted overridden to true by whitelisting
 01:01:01 p1235  changed uid/gid: forcing real = effective
 01:01:01 p1235    uid=uuuu gid=CALLER_GID pid=p1235
