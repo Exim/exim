@@ -1574,6 +1574,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # remote port numbers vary
     s/(Connection request from 127.0.0.1 port) \d{1,5}/$1 sssss/;
 
+    # local port numbers configured when running multiple animals on a system
+    s/macros_expand: matched \'EXTRA\' in \'port = \$\{if queue_running\{\K\d{4}\}\{\d{4}\}/ppp1}{ppp2}/;
+
     # Platform-dependent error strings
     s/Operation timed out/Connection timed out/;
 

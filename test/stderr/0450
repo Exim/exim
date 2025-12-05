@@ -6,7 +6,7 @@ configuration file is TESTSUITE/test-config
 admin user
 readconf_rest: routers
 readconf_rest: transports
- macros_expand: matched 'EXTRA' in 'port = ${if queue_running{1226}{1225}}EXTRA'
+ macros_expand: matched 'EXTRA' in 'port = ${if queue_running{ppp1}{ppp2}}EXTRA'
 readconf_rest: retry
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -21,7 +21,7 @@ admin user
 dropping to exim gid; retaining priv uid
 readconf_rest: routers
 readconf_rest: transports
- macros_expand: matched 'EXTRA' in 'port = ${if queue_running{1226}{1225}}EXTRA'
+ macros_expand: matched 'EXTRA' in 'port = ${if queue_running{ppp1}{ppp2}}EXTRA'
 readconf_rest: retry
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
@@ -56,7 +56,7 @@ admin user
 dropping to exim gid; retaining priv uid
 readconf_rest: routers
 readconf_rest: transports
- macros_expand: matched 'EXTRA' in 'port = ${if queue_running{1226}{1225}}EXTRA'
+ macros_expand: matched 'EXTRA' in 'port = ${if queue_running{ppp1}{ppp2}}EXTRA'
 readconf_rest: retry
 LOG: queue_run MAIN
   Start queue run: pid=p1234
