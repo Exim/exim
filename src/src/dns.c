@@ -318,6 +318,20 @@ dnss_inc_aptr(const dns_answer * dnsa, dns_scan * dnss, unsigned delta)
 return dnsa_bad_ptr(dnsa, dnss->aptr += delta);
 }
 
+static int
+dns_rr_expand_taint(const uschar * msg, const uschar * eom,
+  const uschar * comp_dn, dns_scan * dnss)
+{
+uschar buf[DNS_MAXNAME];
+int ret;
+
+if ((ret = dn_expand(msg, eom, comp_dn,
+		    (DN_EXPAND_ARG4_TYPE) buf, sizeof(buf))) < 0)
+  return ret;
+dnss->srr.name = string_copy_taint(buf, GET_TAINTED);
+return ret;
+}
+
 /*************************************************
 *       Get next DNS record from answer block    *
 *************************************************/
@@ -339,6 +353,7 @@ dns_record *
 dns_next_rr(const dns_answer * dnsa, dns_scan * dnss, int reset)
 {
 const HEADER * h = (const HEADER *)dnsa->answer;
+const uschar * eom = dnsa->answer + dnsa->answerlen;
 int namelen;
 
 char * trace = NULL;
@@ -361,9 +376,9 @@ if (reset != RESET_NEXT)
   while (dnss->rrcount-- > 0)
     {
     TRACE trace = "Q-namelen";
-    namelen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-      dnss->aptr, (DN_EXPAND_ARG4_TYPE) &dnss->srr.name, DNS_MAXNAME);
-    if (namelen < 0) goto null_return;
+    /*TTT*/
+    if ((namelen = dns_rr_expand_taint(dnsa->answer, eom, dnss->aptr, dnss)) <0)
+      goto null_return;
     /* skip name & type & class */
     TRACE trace = "Q-skip";
     if (dnss_inc_aptr(dnsa, dnss, namelen+4)) goto null_return;
@@ -392,9 +407,10 @@ if (reset != RESET_NEXT)
     while (dnss->rrcount-- > 0)
       {
       TRACE trace = "A-namelen";
-      namelen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-        dnss->aptr, (DN_EXPAND_ARG4_TYPE) &dnss->srr.name, DNS_MAXNAME);
-      if (namelen < 0) goto null_return;
+      /*TTT*/
+      if (  (namelen = dns_rr_expand_taint(dnsa->answer, eom, dnss->aptr, dnss))
+	  < 0)
+	goto null_return;
 
       /* skip name, type, class & TTL */
       TRACE trace = "A-hdr";
@@ -426,9 +442,9 @@ if (dnss->rrcount-- <= 0) return NULL;
 (something safe). */
 
 TRACE trace = "R-namelen";
-namelen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, dnss->aptr,
-  (DN_EXPAND_ARG4_TYPE) &dnss->srr.name, DNS_MAXNAME);
-if (namelen < 0) goto null_return;
+/*TTT*/
+if ((namelen = dns_rr_expand_taint(dnsa->answer, eom, dnss->aptr, dnss)) < 0)
+  goto null_return;
 
 /* Move the pointer past the name and fill in the rest of the data structure
 from the following bytes.  We seem to be assuming here that the RR blob passed
@@ -482,16 +498,16 @@ Scan the whole AUTHORITY section, since it may contain other records
 Return: name for the authority, in an allocated string, or NULL if none found */
 
 static const uschar *
-dns_extract_auth_name(const dns_answer * dnsa)	/* FIXME: const dns_answer */
+dns_extract_auth_name(const dns_answer * dnsa)
 {
-dns_scan dnss;
+dns_scan dnss = {0};
 const HEADER * h = (const HEADER *) dnsa->answer;
 
 if (h->nscount && h->aa)
   for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
        rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
     if (rr->type == (h->ancount ? T_NS : T_SOA))
-      return string_copy(rr->name);
+      return string_copy(rr->name);	/*TTT*/
 return NULL;
 }
 
@@ -750,7 +766,7 @@ bother doing a separate lookup; if not found return a forever TTL.
 time_t
 dns_expire_from_soa(dns_answer * dnsa, int type)
 {
-dns_scan dnss;
+dns_scan dnss = {0};
 
 if (fake_dnsa_len_for_fail(dnsa, type))
   for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
@@ -1046,7 +1062,7 @@ for (int i = 0; i <= dns_cname_loops; i++)
   {
   uschar * data;
   dns_record cname_rr, type_rr;
-  dns_scan dnss;
+  dns_scan dnss = {0};
 
   /* DNS lookup failures get passed straight back. */
 
@@ -1087,7 +1103,7 @@ for (int i = 0; i <= dns_cname_loops; i++)
 	  )
 #endif
        )
-        *fully_qualified_name = string_copy_dnsdomain(rr_name);
+        *fully_qualified_name = string_copy_dnsdomain(rr_name);	/*TTT*/
     }
 
   /* If any data records of the correct type were found, we are done. */
@@ -1111,7 +1127,7 @@ for (int i = 0; i <= dns_cname_loops; i++)
     }
 
   /* DNS data comes from the outside, hence tainted */
-  data = store_get(256, GET_TAINTED);
+  data = store_get(256, GET_TAINTED);				/*TTT alloc*/
   if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
       cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256) < 0)
     {
@@ -1119,6 +1135,13 @@ for (int i = 0; i <= dns_cname_loops; i++)
     goto not_good;
     }
   name = data;
+
+  for (int i = 256-50; i > 0; i--)	/* Usually much smaller, so find end */
+    if (!*data++)
+      {
+      store_release_above(data);	/* and release excess allocation */
+      break;
+      }
 
   if (!dns_is_secure(dnsa))
     secure_so_far = FALSE;
@@ -1239,8 +1262,8 @@ switch (type)
     uschar * namesuff, * tld;
     int priority, dummy_weight, port, limit, rc, i;
     BOOL ipv6;
-    dns_record *rr;
-    dns_scan dnss;
+    dns_record * rr;
+    dns_scan dnss = {0};
 
     DEBUG(D_dns) debug_printf_indent("CSA lookup of %s\n", name);
 
@@ -1336,7 +1359,7 @@ switch (type)
 	/* If it's making an interesting assertion, return this response. */
 	if (port & 1)
 	  {
-	  *fully_qualified_name = namesuff + 1;
+	  *fully_qualified_name = namesuff + 1;	/*TTT*/
 	  return DNS_SUCCEED;
 	  }
 	}

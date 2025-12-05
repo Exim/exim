@@ -3397,7 +3397,7 @@ after verification is done.*/
 static BOOL
 dane_tlsa_load(exim_gnutls_state_st * state, const dns_answer * dnsa)
 {
-dns_scan dnss;
+dns_scan dnss = {0};
 int i;
 const char **	dane_data;
 int *		dane_data_len;
@@ -3416,7 +3416,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
     ) if (rr->type == T_TLSA && rr->size > 3)
   {
   const uschar * p = rr->data;
-/*XXX need somehow to mark rr and its data as tainted.  Doues this mean copying it? */
+/*XXX need somehow to mark rr and its data as tainted.  Doues this mean copying it? *//*TTT*/
   uint8_t usage = p[0], sel = p[1], type = p[2];
 
   DEBUG(D_tls)
@@ -3438,7 +3438,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
     }
 
   tls_out.tlsa_usage |= 1<<usage;
-  dane_data[i] = CS p;
+  dane_data[i] = CS p;			/*TTT*/
   dane_data_len[i++] = rr->size;
   }
 

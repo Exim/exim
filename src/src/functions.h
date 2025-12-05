@@ -590,7 +590,7 @@ extern uschar *string_base62_32(unsigned long int);
 extern uschar *string_base62_64(unsigned long int);
 extern gstring *string_catn(gstring *, const uschar *, int) WARN_UNUSED_RESULT;
 extern int     string_compare_by_pointer(const void *, const void *);
-extern uschar *string_copy_dnsdomain(uschar *);
+extern uschar *string_copy_dnsdomain(const uschar *);
 extern uschar *string_copy_malloc(const uschar *);
 extern uschar *string_dequote(const uschar **);
 extern uschar *string_format_size(int, uschar *);
@@ -1145,8 +1145,9 @@ return item
 /* Use store_malloc for DNSA structs, and explicit frees. Using the same pool
 for them as the strings we proceed to copy from them meant they could not be
 released, hence blowing 64k for every DNS lookup. That mounted up. With malloc
-we do have to take care over marking tainted all copied strings.  A separate pool
-could be used and would handle that implicitly. */
+we do have to take care over marking tainted all copied strings.
+A separate pool could be used and could handle taint implicitly - but we would
+want to support independent free ops, not limited to stacked alloc/release */
 
 #define store_get_dns_answer() store_get_dns_answer_trc(CUS __FUNCTION__, __LINE__)
 

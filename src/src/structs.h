@@ -760,11 +760,11 @@ typedef struct search_cache {
 uncompressed, but the data pointer is into the raw data. */
 
 typedef struct {
-  uschar        name[DNS_MAXNAME];      /* domain name */
-  int           type;                   /* record type */
-  unsigned short ttl;		        /* time-to-live, seconds */
-  int           size;                   /* size of data */
-  const uschar *data;                   /* pointer to data */
+  uschar       *name;			/* domain name */
+  int           type;			/* record type */
+  unsigned short ttl;			/* time-to-live, seconds */
+  int           size;			/* size of data */
+  const uschar *data;			/* pointer to data */
 } dns_record;
 
 /* Structure for holding the result of a DNS query.  A touch over
@@ -826,6 +826,9 @@ typedef struct {
 
 #ifdef SUPPORT_DANE
   BOOL			dane:1;		/* TLSA says connection must do dane */
+  /*TTT alloc*/
+  /* Strictly, this should use tainted mem. Also, is rather large - 64k - so
+  perhaps should be allocated only when needed (for DANE)? */
   dns_answer		tlsa_dnsa;	/* strictly, this should use tainted mem */
 #endif
 } smtp_connect_args;

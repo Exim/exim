@@ -258,6 +258,8 @@ for(;;)
   {
   int idx;
   host_item proxy;
+
+  /* Large (64k if DANE supported) */
   smtp_connect_args proxy_sc = {.sock = -1};
 
   if ((idx = socks_get_proxy(proxies, nproxies)) < 0)

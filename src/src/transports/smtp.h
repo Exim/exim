@@ -144,7 +144,7 @@ typedef struct {
   const uschar *	from_addr;
   address_item *	addrlist;
 
-  smtp_connect_args	conn_args;
+  smtp_connect_args	conn_args;	/* Large (if DANE supported) */
   int			port;
 
   BOOL verify:1;

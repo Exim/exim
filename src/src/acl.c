@@ -1435,7 +1435,7 @@ tree_node *t;
 const uschar *found;
 int priority, weight, port;
 dns_answer * dnsa;
-dns_scan dnss;
+dns_scan dnss = {0};
 dns_record *rr;
 int rc, type, yield;
 #define TARGET_SIZE 256
@@ -1584,7 +1584,7 @@ be authorized. (This is an odd configuration because weight=2 target=. is
 equivalent to weight=1, but we check for it in order to keep load off the
 root name servers.) Note that dn_expand() turns "." into "". */
 
-if (Ustrcmp(target, "") == 0)
+if (!*target)
   {
   yield = CSA_FAIL_NOADDR;
   goto out;

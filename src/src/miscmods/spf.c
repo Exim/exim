@@ -67,7 +67,7 @@ SPF_dns_exim_lookup(SPF_dns_server_t *spf_dns_server,
   const char *domain, ns_type rr_type, int should_cache)
 {
 dns_answer * dnsa = store_get_dns_answer();
-dns_scan dnss;
+dns_scan dnss = {0};
 SPF_dns_rr_t * spfrr;
 unsigned found = 0;
 
@@ -134,9 +134,16 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	s += 2;	/* skip the MX precedence field */
       case T_PTR:
 	{
-	uschar * buf = store_malloc(256);
-	(void)dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, s,
-	  (DN_EXPAND_ARG4_TYPE)buf, 256);
+	/* We lose taint-tracking here, really just assuming the data
+	given to the spf library will never leak back out.  Not sure if
+	the lib assumes it can free this (it does for srr.rr) - meaning we
+	cannot use pool store. The use of malloc also for T_TXT implies so. */
+
+	uschar * buf = store_malloc(256);	/*TTT alloc*/
+	/*TTT*/
+	if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, s,
+	    (DN_EXPAND_ARG4_TYPE)buf, 256) < 0)
+	  continue;
 	s = buf;
 	break;
 	}
@@ -160,12 +167,13 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	  if (  !(chunk_len = s[offset++])
 	     || rr->size < offset + chunk_len	/* ignore bogus size chunks */
 	     ) break;
-	  g = string_catn(g, s+offset , chunk_len);
+	  g = string_catn(g, s+offset , chunk_len);	/*TTT*/
 	  }
 	if (!g)
 	  continue;
+	s = string_copy_malloc(string_from_gstring(g));	/*TTT*/
+	gstring_reset(g);
 	gstring_release_unused(g);
-	s = string_copy_malloc(string_from_gstring(g));
 	DEBUG(D_receive) debug_printf_indent("SPF_dns_exim_lookup '%s'\n", s);
 	break;
 	}
@@ -174,7 +182,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
       case T_AAAA:
       default:
 	{
-	uschar * buf = store_malloc(dnsa->answerlen + 1);
+	uschar * buf = store_malloc(dnsa->answerlen + 1);	/*TTT alloc*/
 	s = memcpy(buf, s, dnsa->answerlen + 1);
 	break;
 	}

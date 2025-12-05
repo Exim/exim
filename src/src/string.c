@@ -618,9 +618,10 @@ Returns:    copy of string in new store, de-escaped
 */
 
 uschar *
-string_copy_dnsdomain(uschar * s)
+string_copy_dnsdomain(const uschar * s)
 {
 uschar * yield;
+/*TTT*/
 uschar * ss = yield = store_get(Ustrlen(s) + 1, GET_TAINTED);	/* always treat as tainted */
 
 while (*s)

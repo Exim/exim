@@ -16,7 +16,7 @@ caching was contributed by Kevin Fleming (but I hacked it around a bit). */
 
 #define CUTTHROUGH_CMD_TIMEOUT  30	/* timeout for cutthrough-routing calls */
 #define CUTTHROUGH_DATA_TIMEOUT 60	/* timeout for cutthrough-routing calls */
-static smtp_context ctctx;
+static smtp_context ctctx;		/* Large (12k, 66k if DANE supported */
 uschar ctbuffer[8192];
 
 
@@ -703,7 +703,8 @@ coding means skipping this whole loop and doing the append separately.  */
       log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
         addr->message);
 
-    if (!sx) sx = store_get(sizeof(*sx), GET_TAINTED);	/* tainted buffers */
+    /* Large (12k, 66k if DANE supported.  Tainted, for the receive buffers */
+    if (!sx) sx = store_get(sizeof(*sx), GET_TAINTED);
     memset(sx, 0, sizeof(*sx));
 
     sx->addrlist = sx->first_addr = addr;
@@ -1417,7 +1418,7 @@ Used for
 static uschar
 cutthrough_response(client_conn_ctx * cctx, char expect, uschar ** copy, int timeout)
 {
-smtp_context sx = {0};
+smtp_context sx = {0};		/* Large (12k, 66k if DANE supported) */
 uschar inbuffer[4096];
 uschar responsebuffer[4096];
 

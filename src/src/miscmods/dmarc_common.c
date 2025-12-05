@@ -228,7 +228,7 @@ const uschar *
 dmarc_dns_lookup(const uschar * dom)
 {
 dns_answer * dnsa = store_get_dns_answer();
-dns_scan dnss;
+dns_scan dnss = {0};
 const uschar * res = NULL;
 
 expand_level++;
@@ -256,7 +256,7 @@ if (dns_lookup(dnsa, string_sprintf("_dmarc.%s", dom), T_TXT, NULL)
     if (  rr->type == T_TXT && len > 9
        && Ustrncmp(rdata, "v=DMARC1;", 9) == 0)
       if (!res)
-	res = string_copyn_taint(rdata, len, GET_TAINTED);
+	res = string_copyn_taint(rdata, len, GET_TAINTED);	/*XXX*/
       else
 /* RFC 7489 6.6.3 step 5: multiple records are treated as no record */
 	{

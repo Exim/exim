@@ -3940,7 +3940,7 @@ static int
 dane_tlsa_load(SSL * ssl, const host_item * host, const dns_answer * dnsa,
   uschar ** errstr)
 {
-dns_scan dnss;
+dns_scan dnss = {0};
 const char * hostnames[2] = { CS host->name, NULL };
 int found = 0;
 
@@ -3972,6 +3972,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
     }
 
   found++;
+  /*TTT*/
   switch (DANESSL_add_tlsa(ssl, usage, selector, mdname, p, rr->size - 3))
     {
     default:

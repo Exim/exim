@@ -70,7 +70,7 @@ one_check_dnsbl(uschar *domain, uschar *domain_txt, uschar *keydomain,
   int defer_return)
 {
 dns_answer * dnsa = store_get_dns_answer();
-dns_scan dnss;
+dns_scan dnss = {0};
 tree_node *t;
 dnsbl_cache_block *cb;
 int old_pool = store_pool;
@@ -363,6 +363,7 @@ if (cb->rc == DNS_SUCCEED)
 	  int len = (rr->data)[0];
 	  if (len > 511) len = 127;
 	  store_pool = POOL_PERM;
+	  /*TTT*/
 	  cb->text = string_copyn_taint(CUS (rr->data+1), len, GET_TAINTED);
 	  store_pool = old_pool;
 	  break;

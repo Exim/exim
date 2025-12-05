@@ -4045,8 +4045,11 @@ int yield = OK;
 int save_errno;
 int rc;
 
-uschar *message = NULL;
-smtp_context * sx = store_get(sizeof(*sx), GET_TAINTED);	/* tainted, for the data buffers */
+uschar * message = NULL;
+
+/* Large (12k, 66k if DANE supported).  Tainted, for the data buffers */
+smtp_context * sx = store_get(sizeof(*sx), GET_TAINTED);
+
 BOOL pass_message = FALSE;
 #ifndef DISABLE_ESMTP_LIMITS
 BOOL mail_limit = FALSE;
@@ -5346,7 +5349,7 @@ smtp_transport_closedown(transport_instance * tblock)
 {
 const smtp_transport_options_block * ob = tblock->drinst.options_block;
 client_conn_ctx cctx;
-smtp_context sx = {0};
+smtp_context sx = {0};		/* Large (12k, 66k if DANE supported) */
 uschar buffer[256];
 uschar inbuffer[4096];
 uschar outbuffer[16];
@@ -5381,7 +5384,7 @@ int
 smtp_write_atrn(address_item * addr, cut_t * cutp)
 {
 const smtp_transport_options_block * ob = addr->transport->drinst.options_block;
-smtp_context sx = {0};
+smtp_context sx = {0};		/* Large (12k, 66k if DANE supported */
 uschar buffer[256];
 uschar inbuffer[4096];
 uschar outbuffer[256];

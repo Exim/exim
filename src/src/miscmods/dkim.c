@@ -81,9 +81,9 @@ static uschar *
 dkim_exim_query_dns_txt(const uschar * name)
 {
 dns_answer * dnsa = store_get_dns_answer();
-dns_scan dnss;
+dns_scan dnss = {0};
 rmark reset_point = store_mark();
-gstring * g = string_get_tainted(256, GET_TAINTED);
+gstring * g = string_get_tainted(256, GET_TAINTED);	/*TTT alloc*/
 
 lookup_dnssec_authenticated = NULL;
 if (dns_lookup(dnsa, name, T_TXT, NULL) != DNS_SUCCEED)
@@ -100,6 +100,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
       {
       uschar len = rr->data[rr_offset++];
 
+      /*TTT*/
       g = string_catn(g, US(rr->data + rr_offset), len);
       if (g->ptr >= PDKIM_DNS_TXT_MAX_RECLEN)
 	goto bad;

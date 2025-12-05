@@ -134,22 +134,19 @@ dnsdb_find(void * handle, const uschar * filename, const uschar * keystring,
  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
  const uschar * opts)
 {
-int rc;
-int sep = 0;
 int defer_mode = PASS, dnssec_mode = PASS;
-int save_retrans = dns_retrans, save_retry =   dns_retry;
-int type;
-int failrc = FAIL;
+int save_retrans = dns_retrans, save_retry = dns_retry;
+int sep = 0, rc, type, failrc = FAIL;
 const uschar * outsep = CUS"\n", * outsep2 = NULL;
 uschar * equals, * domain, * found;
 
-dns_answer * dnsa = store_get_dns_answer();
-dns_scan dnss;
+dns_answer * dnsa = store_get_dns_answer();	/*TTT alloc */
+dns_scan dnss = {0};
 
 /* Because we're working in the search pool, we try to reclaim as much
 store as possible later, so we preallocate the result here */
 
-gstring * yield = string_get(256);
+gstring * yield = string_get_tainted(256, GET_TAINTED);	/*TTT alloc*/
 
 /* If the string starts with '>' we change the output separator.
 If it's followed by ';' or ',' we set the TXT output separator. */
@@ -406,6 +403,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  remain = rr->size - ++data_offset;
 	  if (chunk_len > remain)
 	    chunk_len = remain;
+	  /*TTT*/
 	  yield = string_catn(yield, US ((rr->data) + data_offset), chunk_len);
 	  data_offset += chunk_len;
 
@@ -430,6 +428,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
 	  if (payload_length > MAX_TLSA_EXPANDED_SIZE)
 	    payload_length = MAX_TLSA_EXPANDED_SIZE;
+	  /*TTT*/
 	  yield = string_fmt_append(yield, "%d%c%d%c%d%c%.*H",
 				      usage, *outsep2,
 				      selector, *outsep2,
@@ -439,8 +438,14 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
       else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SOA, T_SRV */
         {
         int priority, weight, port;
-        uschar s[264];
         uschar * p = US rr->data;
+
+	/* NB: this memory is released implicitly by the call
+	gstring_release_unused(yield) below. We used to use a stack-auto, but
+	I want to track taint wherever possible. The dnsa is not (yet)
+	allocated using taint-marked memory. */
+#define LCL_BUF_SIZE 264
+	uschar * buf = store_get(LCL_BUF_SIZE, GET_TAINTED);
 
 	switch (type)
 	  {
@@ -453,8 +458,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  case T_MX:
 	    if (rr_bad_size(rr, sizeof(uint16_t))) continue;
 	    GETSHORT(priority, p);
-	    sprintf(CS s, "%d%c", priority, *outsep2);
-	    yield = string_cat(yield, s);
+	    yield = string_fmt_append(yield, "%d%c", priority, *outsep2);
 	    break;
 
 	  case T_SRV:
@@ -462,9 +466,8 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	    GETSHORT(priority, p);
 	    GETSHORT(weight, p);
 	    GETSHORT(port, p);
-	    sprintf(CS s, "%d%c%d%c%d%c", priority, *outsep2,
+	    yield = string_fmt_append(yield, "%d%c%d%c%d%c", priority, *outsep2,
 			      weight, *outsep2, port, *outsep2);
-	    yield = string_cat(yield, s);
 	    break;
 
 	  case T_CSA:
@@ -481,20 +484,18 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	    authorization status in the weight field. */
 
 	    if (Ustrcmp(found, domain) != 0)
-	      {
-	      if (port & 1) *s = 'X';         /* explicit authorization required */
-	      else *s = '?';                  /* no subdomain assertions here */
-	      }
+	      yield = string_catn(yield, port & 1
+				  ? US"X " /* explicit authorization required */
+				  : US"? ", /* no subdomain assertions here */
+				  2);
+	    else if (weight > 3)
+	      continue;
 	    else
-	      {
-	      if (weight < 2) *s = 'N';       /* not authorized */
-	      else if (weight == 2) *s = 'Y'; /* authorized */
-	      else if (weight == 3) *s = '?'; /* unauthorizable */
-	      else continue;                  /* invalid */
-	      }
-
-	    s[1] = ' ';
-	    yield = string_catn(yield, s, 2);
+	      yield = string_catn(yield,
+				    weight < 2  ? US"N "  /* not authorized */
+				  : weight == 2 ? US"Y "  /* authorized */
+				  :		  US"? ", /* unauthorizable */
+				  2);
 	    break;
 
 	  default:
@@ -503,8 +504,9 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
         /* GETSHORT() has advanced the pointer to the target domain. */
 
+	/*TTT*/
         rc = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, p,
-          (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
+          (DN_EXPAND_ARG4_TYPE)buf, LCL_BUF_SIZE);
 
         /* If an overlong response was received, the data will have been
         truncated and dn_expand may fail. */
@@ -515,7 +517,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
             "domain=%s", dns_text_type(type), domain);
           break;
           }
-        else yield = string_cat(yield, s);
+        else yield = string_cat(yield, buf);
 
 	if (type == T_SOA && outsep2 != NULL)
 	  {
@@ -524,15 +526,16 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  p += rc;
 	  yield = string_catn(yield, outsep2, 1);
 
+	  /*TTT*/
 	  rc = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, p,
-	    (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
+	    (DN_EXPAND_ARG4_TYPE)buf, LCL_BUF_SIZE);
 	  if (rc < 0)
 	    {
 	    log_write(0, LOG_MAIN, "responsible-mailbox truncated: type=%s "
 	      "domain=%s", dns_text_type(type), domain);
 	    break;
 	    }
-	  else yield = string_cat(yield, s);
+	  else yield = string_cat(yield, buf);
 
 	  p += rc;
 	  if (!rr_bad_increment(rr, p, 5 * sizeof(uint32_t)))
@@ -540,12 +543,12 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	    GETLONG(serial, p); GETLONG(refresh, p);
 	    GETLONG(retry,  p); GETLONG(expire,  p); GETLONG(minimum, p);
 	    }
-	  sprintf(CS s, "%c%lu%c%lu%c%lu%c%lu%c%lu",
+	  yield = string_fmt_append(yield, "%c%lu%c%lu%c%lu%c%lu%c%lu",
 	    *outsep2, serial, *outsep2, refresh,
 	    *outsep2, retry,  *outsep2, expire,  *outsep2, minimum);
-	  yield = string_cat(yield, s);
 	  }
         }
+#undef LCL_BUF_SIZE
       }    /* Loop for list of returned records */
 
            /* Loop for set of A-lookup types */
@@ -564,7 +567,7 @@ dns_retrans = save_retrans;
 dns_retry = save_retry;
 dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
 
-if (!yield || !yield->ptr)
+if (gstring_length(yield) == 0)
   rc = failrc;
 else
   {

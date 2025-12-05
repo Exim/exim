@@ -298,7 +298,10 @@ if (ob->server_tls)
   {
   union sockaddr_46 interface_sock;
   EXIM_SOCKLEN_T size = sizeof(interface_sock);
+
+  /* Large (64k if DANE supported) */
   smtp_connect_args conn_args = { .host = &host };
+
   tls_support tls_dummy = { .sni = NULL };
   uschar * errstr;
 

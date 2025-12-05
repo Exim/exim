@@ -1217,7 +1217,7 @@ return yield;
 }
 
 void *
-store_malloc_3(size_t size, const char *func, int linenumber)
+store_malloc_3(size_t size, const char * func, int linenumber)
 {
 if (n_nonpool_blocks++ > max_nonpool_blocks)
   max_nonpool_blocks = n_nonpool_blocks;

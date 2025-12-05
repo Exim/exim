@@ -180,7 +180,7 @@ uschar *adds;
 uschar **alist;
 struct hostent *yield;
 dns_answer * dnsa = store_get_dns_answer();
-dns_scan dnss;
+dns_scan dnss = {0};
 
 DEBUG(D_host_lookup)
   debug_printf_indent("using host_fake_gethostbyname for %s (%s)\n", name,
@@ -1587,7 +1587,7 @@ uschar **aliases;
 uschar *ordername;
 const uschar *list = host_lookup_order;
 dns_answer * dnsa = store_get_dns_answer();
-dns_scan dnss;
+dns_scan dnss = {0};
 
 sender_host_dnssec = host_lookup_deferred = host_lookup_failed = FALSE;
 
@@ -1662,6 +1662,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
         /* If an overlong response was received, the data will have been
         truncated and dn_expand may fail. */
 
+	/*TTT*/
         if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
              US rr->data, (DN_EXPAND_ARG4_TYPE)(s), ssize) < 0)
           {
@@ -2286,7 +2287,7 @@ for (; i >= 0; i--)
   int type = types[i];
   int randoffset = i == (whichrrs & HOST_FIND_IPV4_FIRST ? 1 : 0)
     ? 500 : 0;  /* Ensures v6/4 sort order */
-  dns_scan dnss;
+  dns_scan dnss = {0};
 
   int rc = dns_lookup_timerwrap(dnsa, host->name, type, fully_qualified_name);
   lookup_dnssec_authenticated = !dnssec_request ? NULL
@@ -2389,7 +2390,7 @@ for (; i >= 0; i--)
       if (thishostlast == NULL)
 	{
 	if (strcmpic(host->name, rr->name) != 0)
-	  host->name = string_copy_dnsdomain(rr->name);
+	  host->name = string_copy_dnsdomain(rr->name);	/*TTT*/
 	host->address = da->address;
 	host->sort_key = host->mx * 1000 + random_number(500) + randoffset;
 	host->status = hstatus_unknown;
@@ -2530,7 +2531,7 @@ BOOL srv_smtps = FALSE;
 #endif
 int rc = DNS_FAIL, ind_type = 0, yield;
 dns_answer * dnsa = store_get_dns_answer();
-dns_scan dnss;
+dns_scan dnss = {0};
 BOOL dnssec_require, dnssec_request;
 dnssec_status_t dnssec;
 
@@ -2784,7 +2785,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   int port = PORT_NONE;		/* MX lookups get PORT_NONE */
   const uschar * s = rr->data;	/* MUST be unsigned for GETSHORT */
   host_item * next;
-  uschar data[256];
+  uschar data[256];	/*TTT*/
 
   if (rr_bad_size(rr, sizeof(uint16_t))) continue;
   GETSHORT(precedence, s);      /* Pointer s is advanced */
@@ -2811,8 +2812,10 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
 
   /* Get the name of the host pointed to. */
 
-  (void)dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, s,
-    (DN_EXPAND_ARG4_TYPE)data, sizeof(data));
+  /*TTT*/
+  if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, s,
+      (DN_EXPAND_ARG4_TYPE)data, sizeof(data)) < 0)
+    continue;
 
   /* Check that we haven't already got this host on the chain; if we have,
   keep only the lower precedence. This situation shouldn't occur, but you
@@ -2851,7 +2854,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   before the first block, copy the first block's data to a new second block. */
 
   next = last ? store_get(sizeof(host_item), GET_UNTAINTED) : host;
-  next->name = string_copy_dnsdomain(data);
+  next->name = string_copy_dnsdomain(data);	/*TTT*/
   next->address = NULL;
   next->port = port;
   next->mx = precedence;
@@ -3210,7 +3213,7 @@ switch (rc)
       {
       DEBUG(D_transport)
 	{
-	dns_scan dnss;
+	dns_scan dnss = {0};
 	for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
 	  if (rr->type == T_TLSA && rr->size > 3)
