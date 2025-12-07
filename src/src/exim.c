@@ -988,13 +988,13 @@ has the effect of collapsing source routes.
 Arguments:
   s            the address string
   flags        flag bits for verify_address()
-  exit_value   to be set for failures
+  ret	       exit value so far
 
-Returns:       nothing
+Returns:       updated exit value
 */
 
-static void
-test_address(const uschar * s, int flags, int * exit_value)
+static int
+test_address(const uschar * s, int flags, int ret)
 {
 int start, end, domain;
 uschar * parse_error = NULL;
@@ -1003,16 +1003,17 @@ const uschar * address = parse_extract_address(s, &parse_error,
 if (!address)
   {
   fprintf(stdout, "syntax error: %s\n", parse_error);
-  *exit_value = 2;
+  ret = 2;
   }
 else
   {
   /* NB we lose stdio buffering here */
   int rc = verify_address(deliver_make_addr(address,TRUE), fileno(stdout),
     flags, -1, -1, -1, NULL, NULL, NULL);
-  if (rc == FAIL) *exit_value = 2;
-  else if (rc == DEFER && *exit_value == 0) *exit_value = 1;
+  if (rc == FAIL) ret = 2;
+  else if (rc == DEFER && ret == EXIT_SUCCESS) ret = EXIT_FAILURE;
   }
+return ret;
 }
 
 
@@ -5302,8 +5303,7 @@ stdin. Set debug_level to at least D_v to get full output for address testing.
 
 if (verify_address_mode || f.address_test_mode)
   {
-  int exit_value = 0;
-  int flags = vopt_qualify;
+  int exit_value = EXIT_SUCCESS, flags = vopt_qualify;
 
   if (verify_address_mode)
     {
@@ -5320,33 +5320,35 @@ if (verify_address_mode || f.address_test_mode)
     DEBUG(D_verify) debug_print_ids(US"Address testing:");
     }
 
-  if (recipients_arg < argc)
+  if (recipients_arg < argc)			/* addresses on cmdline */
     while (recipients_arg < argc)
       {
       /* Supplied addresses are tainted since they come from a user */
       uschar * s = string_copy_taint(
-	exim_str_fail_toolong(argv[recipients_arg++], EXIM_DISPLAYMAIL_MAX, "address verification"),
+	exim_str_fail_toolong(argv[recipients_arg++], EXIM_DISPLAYMAIL_MAX,
+			      "address verification"),
 	GET_TAINTED);
       while (*s)
         {
         BOOL finished = FALSE;
         uschar * ss = parse_find_address_end(s, FALSE);
         if (*ss == ',') *ss = 0; else finished = TRUE;
-        test_address(s, flags, &exit_value);
+        exit_value = test_address(s, flags, exit_value);
         s = ss;
         if (!finished)
           while (*++s == ',' || isspace(*s)) ;
         }
       }
 
-  else for (;;)
+  else for (;;)					/* addresses from stdin */
     {
     const uschar * s = get_stdinput(NULL, NULL);
     if (!s) break;
-    test_address(string_copy_taint(
-	exim_str_fail_toolong(s, EXIM_DISPLAYMAIL_MAX, "address verification (stdin)"),
+    exit_value = test_address(string_copy_taint(
+	exim_str_fail_toolong(s, EXIM_DISPLAYMAIL_MAX,
+			      "address verification (stdin)"),
 	GET_TAINTED),
-      flags, &exit_value);
+      flags, exit_value);
     }
 
   route_tidyup();

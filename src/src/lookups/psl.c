@@ -46,7 +46,7 @@ psl_gen_find(void * handle, const uschar * keystring,
   int length, uschar ** result, uschar ** errmsg, BOOL is_regdom)
 {
 uschar rulebuf[128], * res = NULL;
-const uschar * s, * k, * kmatch;
+const uschar * s, * k, * kmatch = NULL;
 unsigned res_label_cnt = 0, nlabels;
 BOOL key_utf8;
 
@@ -138,7 +138,7 @@ while ((s = US fgets(CS rulebuf, sizeof(rulebuf), handle)))
       kmatch = k;
       }
 
-    nonmatch:
+    nonmatch: ;
     }
   }
     /* kmatch is the key trail after the regdom. label */

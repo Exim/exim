@@ -666,7 +666,7 @@ void
 moan_smtp_batch(const uschar * cmd_buffer, const char * format, ...)
 {
 va_list ap;
-int yield = (receive_messagecount > 0)? 1 : 2;
+int yield = receive_messagecount > 0 ? EXIT_FAILURE : 2;
 
 DEBUG(D_any) debug_printf("Handling error in batched SMTP input\n");
 

@@ -359,7 +359,7 @@ if (!dmarc_abort && !sender_host_authenticated)
     .ri =	US"86400",
     };
 
-  int sr = SPF_RESULT_INVALID, spf_origin;
+  int sr = SPF_RESULT_INVALID /*, spf_origin*/;
   uschar * spf_human_readable = NULL, * spf_sender_domain = NULL;
   unsigned dkim_sig_count = 0;
   gstring * dkim_history_buffer = NULL;
@@ -525,7 +525,7 @@ if (!dmarc_abort && !sender_host_authenticated)
 	}
       spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
       dmarc_spf_ares_result = ARES_RESULT_UNKNOWN;
-      spf_origin = DMARC_POLICY_SPF_ORIGIN_HELO;
+      /* spf_origin = DMARC_POLICY_SPF_ORIGIN_HELO; */
       spf_human_readable = US"";
       }
     else
@@ -544,7 +544,7 @@ if (!dmarc_abort && !sender_host_authenticated)
 			      sr == SPF_RESULT_PERMERROR ? ARES_RESULT_PERMERROR :
 			      ARES_RESULT_UNKNOWN;
       /*XXX hmm, spf_origin never used? */
-      spf_origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM;
+      /* spf_origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM; */
       DEBUG(D_receive)
 	debug_printf_indent("DMARC: using SPF sender domain = %s\n",
 					  spf_sender_domain);

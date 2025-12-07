@@ -1835,9 +1835,9 @@ while (*fp)
 	else
 	  die_tainted(US"string_vformat", func, line);
 #endif
-
-    INSERT_STRING:              /* Come to from %D or %M above */
-
+#ifndef COMPILE_UTILITY
+    INSERT_STRING:              /* Come from %D or %M above */
+#endif
       {
       BOOL truncated = FALSE;
 
