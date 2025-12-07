@@ -13572,7 +13572,7 @@ Exim uses the protocol name &"smtps"& for the unusual case when
 the client initially uses EHLO, sets up an encrypted connection using
 STARTTLS, and then uses HELO afterwards.
 
-If the log selector &"tls_on_connect"& is <emphasis>not</emphhasis>
+If the log selector &"tls_on_connect"& is <emphasis>not</emphasis>
 used (the default), &"smtps"& is also used for the case when encryption is
 automatically set up on connection without the use of STARTTLS (see
 &%tls_on_connect_ports%&), and the client uses HELO to initiate the
