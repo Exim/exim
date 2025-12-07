@@ -48,6 +48,7 @@ if (!dmarc_regex_ri)
   dmarc_regex_ri =  regex_must_compile(US "^\\d{1,10}$", MCS_CACHEABLE, FALSE);
 if (!dmarc_regex_fo)
   dmarc_regex_fo =  regex_must_compile(US "^[01ds]$",    MCS_CACHEABLE, FALSE);
+return TRUE;
 }
 
 

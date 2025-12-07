@@ -63,9 +63,9 @@ extern uschar * dmarc_history_file;	/* File to store dmarc results */
 extern uschar * dmarc_tld_file;		/* Mozilla TLDs text file */
 
 
-void
+BOOL
 dmarc_local_init(void)
-{}
+{ return TRUE; }
 
 gstring *
 dmarc_version_report(gstring * g)
