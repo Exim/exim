@@ -431,8 +431,8 @@ The EDITME provides a DMARC_API variable */
     dmarc_alignment_dkim =
       dmarc_dkim_alignment == DMARC_POLICY_DKIM_ALIGNMENT_PASS;
 
-    if (LOGGING(dmarc_verbose))
-      log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
+    DEBUG(D_receive)
+      debug_printf_indent("DMARC results: spf_domain=%s dmarc_domain=%s "
 			   "spf_align=%s dkim_align=%s enforcement='%s'",
 			   spf_sender_domain, dmarc_used_domain,
 			   dmarc_alignment_spf  ? "yes" : "no",
