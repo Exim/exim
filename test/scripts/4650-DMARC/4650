@@ -14,6 +14,7 @@ exim -bd -DLOG_SELECTOR=+dmarc_verbose -DSERVER=server -oX PORT_D
 #
 #
 # Without a dkim signing, then with (copied from 4500)
+# and then one with an empty env-from and no dkim
 client HOSTIPV4 PORT_D
 ??? 220
 HELO testclient
@@ -32,6 +33,7 @@ body line
 ??? 250
 RSET
 ??? 250
++++ 1
 MAIL FROM:<CALLER@not-exist.test.ex>
 ??? 250
 RCPT TO:<a@test.ex>
@@ -50,6 +52,21 @@ Message-ID: <qwerty1234@disco-zombie.net>
 Subject: simple test
 
 This is a simple test.
+.
+??? 250
+RSET
+??? 250
++++ 1
+MAIL FROM:<>
+??? 250
+RCPT TO:<c@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+From: <z@test.ex>
+
+body line
 .
 ??? 250
 QUIT

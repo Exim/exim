@@ -206,30 +206,19 @@ if (!dmarc_abort && !sender_host_authenticated)
   int sr = SPF_RESULT_INVALID, origin;
   uschar * spf_human_readable = NULL, * spf_sender_domain;
   gstring * dkim_history_buffer = NULL;
-  typedef const pdkim_signature * (*sigs_fn_t)(void);
+  typedef const pdkim_signature * (*dkim_sigs_fn_t)(void);
+  typedef int (*spf_fn_t)(uschar **);
 
-  /* Use the envelope sender domain for this part of DMARC */
+  if (dmarc_spf_mod_info)
+    sr = ((spf_fn_t *) dmarc_spf_mod_info->functions)[SPF_GET_RESULTS]
+							(&spf_human_readable);
 
-  spf_sender_domain = expand_string(US"$sender_address_domain");
-
-    {
-    typedef int (*fn_t)(uschar **);
-    if (dmarc_spf_mod_info)
-      sr = ((fn_t *) dmarc_spf_mod_info->functions)[SPF_GET_RESULTS]
-							  (&spf_human_readable);
-    }
+  spf_sender_domain = expand_string(US"$spf_used_domain");
 
   if (sr == SPF_RESULT_INVALID)
     {
-    /* No spf data means null envelope sender so generate a domain name
-    from the sender_helo_name  */
+    DEBUG(D_receive) debug_printf_indent("DMARC: spf result 'invalid'\n");
 
-    if (!spf_sender_domain || !*spf_sender_domain)
-      {
-      spf_sender_domain = sender_helo_name;
-      log_write(0, LOG_MAIN, "DMARC using synthesized SPF sender domain = %s\n",
-			     spf_sender_domain);
-      }
     dmarc_spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
     dmarc_spf_ares_result = ARES_RESULT_UNKNOWN;
     origin = DMARC_POLICY_SPF_ORIGIN_HELO;
@@ -237,11 +226,12 @@ if (!dmarc_abort && !sender_host_authenticated)
     }
   else
     {
-    dmarc_spf_result = sr == SPF_RESULT_NEUTRAL  ? DMARC_POLICY_SPF_OUTCOME_NONE :
-		       sr == SPF_RESULT_PASS     ? DMARC_POLICY_SPF_OUTCOME_PASS :
-		       sr == SPF_RESULT_FAIL     ? DMARC_POLICY_SPF_OUTCOME_FAIL :
-		       sr == SPF_RESULT_SOFTFAIL ? DMARC_POLICY_SPF_OUTCOME_TMPFAIL :
-		       DMARC_POLICY_SPF_OUTCOME_NONE;
+    dmarc_spf_result =
+      sr == SPF_RESULT_NEUTRAL  ? DMARC_POLICY_SPF_OUTCOME_NONE :
+      sr == SPF_RESULT_PASS     ? DMARC_POLICY_SPF_OUTCOME_PASS :
+      sr == SPF_RESULT_FAIL     ? DMARC_POLICY_SPF_OUTCOME_FAIL :
+      sr == SPF_RESULT_SOFTFAIL ? DMARC_POLICY_SPF_OUTCOME_TMPFAIL :
+      DMARC_POLICY_SPF_OUTCOME_NONE;
     dmarc_spf_ares_result = sr == SPF_RESULT_NEUTRAL   ? ARES_RESULT_NEUTRAL :
 			    sr == SPF_RESULT_PASS      ? ARES_RESULT_PASS :
 			    sr == SPF_RESULT_FAIL      ? ARES_RESULT_FAIL :
@@ -269,7 +259,7 @@ if (!dmarc_abort && !sender_host_authenticated)
   the opendmarc context, further building the DMARC reply. */
 
   for(const pdkim_signature * sig =
-	      (((sigs_fn_t *)dmarc_dkim_mod_info->functions)[DKIM_SIGS_LIST])();
+	(((dkim_sigs_fn_t *)dmarc_dkim_mod_info->functions)[DKIM_SIGS_LIST])();
       sig; sig = sig->next)
     {
     int dkim_result, dkim_ares_result, vs, ves;

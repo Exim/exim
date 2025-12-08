@@ -43,7 +43,8 @@ uschar * spf_smtp_comment       = NULL;
 uschar * spf_smtp_comment_template
                     /* Used to be: "Please%_see%_http://www.open-spf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}" */
 				= US"Please%_see%_http://www.open-spf.org/Why";
-BOOL    spf_result_guessed     = FALSE;
+BOOL    spf_result_guessed	= FALSE;
+const uschar * spf_used_domain	= NULL;
 
 
 static const misc_module_info * spf_perl_mi = NULL;
@@ -196,6 +197,10 @@ else
     uschar * t = Ustrchr(s, ')');	/* grab a (comment) if there is one */
     if (t) spf_header_comment = string_copyn(s+1, t-s-1);
     }
+
+  spf_used_domain	 = sender_address && *sender_address
+			  ? expand_string(US"$sender_address_domain")
+			  : sender_helo_name;
   }
 
 res = match_isinlist(spf_result, &arglist,
@@ -344,6 +349,7 @@ static var_entry spf_variables[] = {
   { "spf_result",		vtype_stringptr,	&spf_result },
   { "spf_result_guessed",	vtype_bool,		&spf_result_guessed },
   { "spf_smtp_comment",		vtype_stringptr,	&spf_smtp_comment },
+  { "spf_used_domain",		vtype_stringptr,	&spf_used_domain },
 };
 
 misc_module_info spf_module_info =

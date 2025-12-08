@@ -719,6 +719,7 @@ static var_entry var_table[] = {
   { "spf_result",          vtype_module,	US"spf" },
   { "spf_result_guessed",  vtype_module,	US"spf" },
   { "spf_smtp_comment",    vtype_module,	US"spf" },
+  { "spf_used_domain",	   vtype_module,	US"spf" },
 #endif
   { "spool_directory",     vtype_stringptr,   &spool_directory },
   { "spool_inodes",        vtype_pinodes,     (void *)TRUE },

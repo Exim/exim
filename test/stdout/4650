@@ -23,6 +23,7 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 >>> RSET
 ??? 250
 <<< 250 Reset OK
++++ 1
 >>> MAIL FROM:<CALLER@not-exist.test.ex>
 ??? 250
 <<< 250 OK
@@ -47,6 +48,26 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 >>> .
 ??? 250
 <<< 250 OK id=10HmaY-000000005vi-0000
+>>> RSET
+??? 250
+<<< 250 Reset OK
++++ 1
+>>> MAIL FROM:<>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<c@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> From: <z@test.ex>
+>>> 
+>>> body line
+>>> .
+??? 250
+<<< 250 OK id=10HmaZ-000000005vi-0000
 >>> QUIT
 End of script
 job 10HmaX-000000005vi-0000
@@ -86,6 +107,26 @@ aspf 114
 p 110
 sp 0
 align_dkim 4
+align_spf 5
+action 2
+arc 11
+arc_policy 1 json[ ]
+job 10HmaZ-000000005vi-0000
+reporter myhost.test.ex
+received 1692480217
+ipaddr ip4.ip4.ip4.ip4
+from test.ex
+mfrom 
+spf 6
+pdomain test.ex
+policy 18
+rua mailto:CALLER@test.ex!5m
+pct 100
+adkim 114
+aspf 114
+p 110
+sp 0
+align_dkim 5
 align_spf 5
 action 2
 arc 11

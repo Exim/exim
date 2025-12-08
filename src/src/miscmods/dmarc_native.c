@@ -360,7 +360,8 @@ if (!dmarc_abort && !sender_host_authenticated)
     };
 
   int sr = SPF_RESULT_INVALID /*, spf_origin*/;
-  uschar * spf_human_readable = NULL, * spf_sender_domain = NULL;
+  uschar * spf_human_readable = NULL;
+  const uschar * spf_sender_domain = NULL;
   unsigned dkim_sig_count = 0;
   gstring * dkim_history_buffer = NULL;
   typedef const pdkim_signature * (*sigs_fn_t)(void);
@@ -502,30 +503,19 @@ if (!dmarc_abort && !sender_host_authenticated)
     int spf_result;
     typedef int (*fn_t)(uschar **);
 
-    /* Use the envelope sender domain for this part of DMARC */
-
-    spf_sender_domain = expand_string(US"$sender_address_domain");
-
     if (dmarc_spf_mod_info)
       sr = ((fn_t *) dmarc_spf_mod_info->functions)[SPF_GET_RESULTS]
 							  (&spf_human_readable);
 
+    spf_sender_domain = expand_string(CUS"$spf_used_domain");
+
     if (sr == SPF_RESULT_INVALID)
       {
-      /* No spf data means null envelope sender so generate a domain name
-      from the sender_helo_name  */
-
       DEBUG(D_receive) debug_printf_indent("DMARC: spf result 'invalid'\n");
 
-      if (!spf_sender_domain || !*spf_sender_domain)
-	{
-	spf_sender_domain = sender_helo_name;
-	log_write(0, LOG_MAIN, "DMARC using synthesized SPF sender domain = %s\n",
-			       spf_sender_domain);
-	}
       spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
       dmarc_spf_ares_result = ARES_RESULT_UNKNOWN;
-      /* spf_origin = DMARC_POLICY_SPF_ORIGIN_HELO; */
+      /* spf_origin = DMARC_POLICY_SPF_ORIGIN_HELO; not used, and we'd want to ask the spf impl really */
       spf_human_readable = US"";
       }
     else
