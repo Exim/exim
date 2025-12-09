@@ -870,7 +870,8 @@ SOFTWARE.
 
 .next
 .cindex "opendmarc" "acknowledgment"
-The DMARC implementation uses the OpenDMARC library which is Copyrighted by
+The library DMARC implementation option uses the OpenDMARC library
+which is Copyrighted by
 The Trusted Domain Project. Portions of Exim source which use OpenDMARC
 derived code are indicated in the respective source files. The full OpenDMARC
 license is provided in the LICENSE.opendmarc file contained in the distributed
@@ -43280,10 +43281,10 @@ envelope from.
 .subsection Controls SSECDMARCCONTROLS
 .cindex DMARC controls
 
-By default, the DMARC processing will run for any remote,
-non-authenticated user.  It makes sense to only verify DMARC
-status of messages coming from remote, untrusted sources.  You can
-use standard conditions such as hosts, senders, etc, to decide that
+It makes sense to only verify DMARC
+status of messages coming from remote, untrusted sources.
+You can use standard conditions such as hosts, senders, authenticated, etc,
+to decide that
 DMARC verification should *not* be performed for them and disable
 DMARC with an ACL control modifier:
 .code
@@ -43317,9 +43318,7 @@ DMARC checks can be run on incoming SMTP  messages by using the
 &"dmarc_status"& ACL condition in the DATA ACL.  You are required to
 call the &"spf"& condition first in the ACLs, then the &"dmarc_status"&
 condition.  Putting this condition in the ACLs is required in order
-for a DMARC check to actually occur.  All of the variables are set
-up before the DATA ACL, but there is no actual DMARC check that
-occurs until a &"dmarc_status"& condition is encountered in the ACLs.
+for a DMARC check to actually occur.
 
 The &"dmarc_status"& condition takes a list of strings on its
 right-hand side.  These strings describe recommended action based
@@ -43348,10 +43347,13 @@ supports, including LDAP, Postgres, MySQL, etc, as long as the
 result is a list of colon-separated strings.
 
 Performing the check sets up information used by the
-&%authresults%& expansion item.
+&%authresults%& expansion item
+.new
+and several expansion variables.
+You should not use these variables before a check has been run.
+.wen
 
-Several expansion variables are set before the DATA ACL is
-processed, and you can use them in this ACL.  The following
+The following
 expansion variables are available:
 
 .vlist
