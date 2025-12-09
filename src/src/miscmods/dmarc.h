@@ -120,7 +120,6 @@
 extern BOOL dmarc_abort;
 extern uschar * dmarc_header_from_sender;
 extern uschar * dmarc_pass_fail;
-extern const uschar * dmarc_from_header;
 extern const misc_module_info * dmarc_dkim_mod_info;
 extern const misc_module_info * dmarc_spf_mod_info;
 extern int dmarc_spf_ares_result;

@@ -1732,47 +1732,36 @@ not. */
 BOOL
 receive_msg(BOOL extract_recip)
 {
-int  rc = FAIL;
-int  msg_size = 0;
-int  process_info_len = Ustrlen(process_info);
+int  rc = FAIL, msg_size = 0, process_info_len = Ustrlen(process_info);
+int  header_size = 256, had_zero = 0, prevlines_length = 0, ptr = 0;
+
 int  error_rc = error_handling == ERRORS_SENDER
 	? errors_sender_rc : EXIT_FAILURE;
-int  header_size = 256;
-int  had_zero = 0;
-int  prevlines_length = 0;
 const int id_resolution = BASE_62 == 62 && !host_number_string ? 1
   : BASE_62 != 62 && host_number_string ? 4
   : 2;
 
-int ptr = 0;
-
-BOOL contains_resent_headers = FALSE;
-BOOL extracted_ignored = FALSE;
-BOOL first_line_ended_crlf = TRUE_UNSET;
-BOOL smtp_yield = TRUE;
-BOOL yield = FALSE;
+BOOL contains_resent_headers = FALSE, extracted_ignored = FALSE;
+BOOL first_line_ended_crlf = TRUE_UNSET, smtp_yield = TRUE, yield = FALSE;
 
 BOOL resents_exist = FALSE;
-uschar *resent_prefix = US"";
-uschar *blackholed_by = NULL;
-uschar *blackhole_log_msg = US"";
+uschar * resent_prefix = US"", * blackholed_by = NULL;
+uschar * blackhole_log_msg = US"";
 enum {NOT_TRIED, TMP_REJ, PERM_REJ, ACCEPTED} cutthrough_done = NOT_TRIED;
 
 flock_t lock_data;
-error_block *bad_addresses = NULL;
+error_block * bad_addresses = NULL;
 
-uschar *frozen_by = NULL;
-uschar *queued_by = NULL;
+uschar * frozen_by = NULL, * queued_by = NULL;
 
-uschar *errmsg;
+uschar * errmsg;
 rmark rcvd_log_reset_point;
 gstring * g;
 struct stat statbuf;
 
 /* Final message to give to SMTP caller, and messages from ACLs */
 
-uschar *smtp_reply = NULL;
-uschar *user_msg, *log_msg;
+uschar * smtp_reply = NULL,  * user_msg, * log_msg;
 
 /* Working header pointers */
 
@@ -1808,6 +1797,7 @@ search_tidyup();
 /* Extracting the recipient list from an input file is incompatible with
 cutthrough delivery with the no-spool option.  It shouldn't be possible
 to set up the combination, but just in case kill any ongoing connection. */
+
 if (extract_recip || !smtp_input)
   cancel_cutthrough_connection(TRUE, US"not smtp input");
 
@@ -1815,7 +1805,8 @@ if (extract_recip || !smtp_input)
 header. Temporarily mark it as "old", i.e. not to be used. We keep header_last
 pointing to the end of the chain to make adding headers simple. */
 
-received_header = header_list = header_last = store_get(sizeof(header_line), GET_UNTAINTED);
+received_header = header_list = header_last =
+  store_get(sizeof(header_line), GET_UNTAINTED);
 header_list->next = NULL;
 header_list->type = htype_old;
 header_list->text = NULL;
@@ -1842,11 +1833,7 @@ received_count = 1;            /* For the one we will add */
 
 if (thismessage_size_limit <= 0) thismessage_size_limit = INT_MAX;
 
-/* While reading the message, the following counts are computed. */
-
-message_linecount = body_linecount = body_zerocount =
-  max_received_linelength = 0;
-
+header_from = NULL;
 #ifdef WITH_CONTENT_SCAN
 /* reset non-per-part mime variables */
 mime_is_coverletter    = 0;
@@ -1856,6 +1843,11 @@ mime_part_count        = -1;
 
 if (misc_mod_msg_init() != OK)
   goto CONN_GONE;
+
+/* While reading the message, the following counts are computed. */
+
+message_linecount = body_linecount = body_zerocount =
+  max_received_linelength = 0;
 
 /* In SMTP sessions we may receive several messages in one connection. Before
 each subsequent one, we wait for the clock to tick at the level of message-id
@@ -2170,7 +2162,7 @@ OVERSIZE:
   beyond it. If it turns out to be a real header, internal binary zeros will
   be squashed later. */
 
-  next->text[ptr] = 0;
+  next->text[ptr] = '\0';
   next->slen = ptr;
   store_release_above(next->text + ptr + 1);
 
@@ -2483,17 +2475,7 @@ for (header_line * h = header_list->next; h; h = h->next)
 
     case htype_from:
       h->type = htype_from;
-#ifdef EXIM_HAVE_DMARC
-      if (!is_resent && !f.dmarc_disable_verify)
-	{
-	misc_module_info * mi = misc_mod_findonly(US"dmarc");
-	if (mi)
-	  {
-	  typedef void (*fn_t)(const uschar *);
-	  (((fn_t *) mi->functions)[DMARC_STORE_FROMHDR]) (h->text);
-	  }
-	}
-#endif
+      if (!is_resent) header_from = h->text;
       if (!resents_exist || is_resent)
 	{
 	from_header = h;

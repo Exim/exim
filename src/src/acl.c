@@ -3939,25 +3939,20 @@ for (; cb; cb = cb->next)
       /* See comment on ACLC_SPF wrt. coding issues */
       {
       misc_module_info * mi = misc_mod_find(US"dmarc", &log_message);
-      typedef const uschar * (*efn_t)(void);
-      const uschar * expanded_query;
+      typedef int (*pfn_t)(void);
+      typedef int (*mfn_t)(const uschar * const *);
 
       if (!mi)
-	{ rc = DEFER; break; }			/* shouldn't happen */
-
-      if (!f.dmarc_has_been_checked)		/* only once per message */
+	rc = DEFER;				/* shouldn't happen */
+      else
 	{
-	typedef int (*pfn_t)(void);
-	(void) (((pfn_t *) mi->functions)[DMARC_PROCESS]) ();
-	f.dmarc_has_been_checked = TRUE;
+	if (!f.dmarc_has_been_checked)		/* only once per message */
+	  {
+	  (void) (((pfn_t *) mi->functions)[DMARC_PROCESS]) ();
+	  f.dmarc_has_been_checked = TRUE;
+	  }
+	rc = (((mfn_t *) mi->functions)[DMARC_RESULT_INLIST]) (&arg);
 	}
-
-      /* used long way of dmarc_exim_expand_query() in case we need more
-      view into the process in the future. */
-
-      expanded_query = (((efn_t *) mi->functions)[DMARC_EXPAND_QUERY]) ();
-      rc = match_isinlist(expanded_query,
-			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
       }
       break;
 #endif

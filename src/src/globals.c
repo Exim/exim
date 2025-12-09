@@ -838,6 +838,7 @@ volatile sig_atomic_t had_command_sigterm = 0;
 volatile sig_atomic_t had_data_timeout    = 0;
 volatile sig_atomic_t had_data_sigint     = 0;
 const uschar *headers_charset  = US HEADERS_CHARSET;
+const uschar *header_from      = NULL;		/* mainly for dmarc */
 int     header_insert_maxlen   = 64 * 1024;
 header_line  *header_last      = NULL;
 header_line  *header_list      = NULL;

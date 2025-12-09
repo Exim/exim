@@ -15,7 +15,7 @@ extern BOOL		dmarc_local_init(void);
 extern void		dmarc_local_msg_init(void);
 extern gstring *	dmarc_version_report(gstring *);
 extern int		dmarc_process(void);
-extern const uschar *	dmarc_exim_expand_query(void);
+extern const uschar *	dmarc_result_inlist(const uschar * const *);
 
 
 /* Other modules needed for services */
@@ -26,7 +26,6 @@ const misc_module_info * dmarc_arc_mod_info;
 /* Working data */
 BOOL		dmarc_abort;
 uschar *	dmarc_pass_fail;	/* for authres */
-const uschar *	dmarc_from_header;
 uschar *	dmarc_header_from_sender;
 
 /* results */
@@ -96,7 +95,6 @@ dmarc_msg_init(void)
 multiple messages in one connection. */
 
 f.dmarc_has_been_checked = FALSE;
-dmarc_from_header	 = NULL;
 dmarc_header_from_sender = NULL;
 dmarc_spf_ares_result  = ARES_RESULT_UNDEFINED;
 dmarc_status       = US"none";
@@ -137,18 +135,6 @@ f.dmarc_has_been_checked = f.dmarc_disable_verify =
   f.dmarc_enable_forensic = FALSE;
 dmarc_domain_policy = dmarc_status = dmarc_status_text =
   dmarc_used_domain = NULL;
-}
-
-
-/* API: dmarc_store_data stores the header data so that subsequent dmarc_process
-can access the data.  Cleared by msg_init.
-Called after the entire message has been received, with the From: header. */
-
-static void
-dmarc_store_fromhdr(const uschar * hdr)
-{
-/* No debug output because would change every test debug output */
-dmarc_from_header = hdr;
 }
 
 
@@ -501,8 +487,7 @@ static optionlist dmarc_options[] = {
 
 static void * dmarc_functions[] = {
   [DMARC_PROCESS] =	(void *) dmarc_process,
-  [DMARC_EXPAND_QUERY] = (void *) dmarc_exim_expand_query,
-  [DMARC_STORE_FROMHDR] = (void *) dmarc_store_fromhdr,
+  [DMARC_RESULT_INLIST] = (void *) dmarc_result_inlist,
 };
 
 /* dmarc_forensic_sender is provided for visibility of the the option setting

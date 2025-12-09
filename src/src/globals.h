@@ -633,6 +633,7 @@ extern volatile sig_atomic_t had_command_timeout;   /* Alarm sighandler called *
 extern volatile sig_atomic_t had_command_sigterm;   /* TERM  sighandler called */
 extern volatile sig_atomic_t had_data_timeout;      /* Alarm sighandler called */
 extern volatile sig_atomic_t had_data_sigint;       /* TERM/INT  sighandler called */
+extern const uschar *header_from;      /* Text of the From: header */
 extern int     header_insert_maxlen;   /* Max for inserting headers */
 extern int     header_maxsize;         /* Max total length for header */
 extern int     header_line_maxsize;    /* Max for an individual line */

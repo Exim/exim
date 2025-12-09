@@ -161,7 +161,7 @@ is locally generated and relying on fixups to add it.  Just skip
 the entire DMARC system if we can't find a From: header....or if
 there was a previous error.  */
 
-if (!dmarc_from_header)
+if (!header_from)
   {
   DEBUG(D_receive) debug_printf_indent("DMARC: no From: header\n");
   dmarc_abort = TRUE;
@@ -173,10 +173,10 @@ else if (!dmarc_abort)
   int dummy, domain;
 
   f.parse_allow_group = TRUE;
-  end_addr = parse_find_address_end(dmarc_from_header, FALSE);
+  end_addr = parse_find_address_end(header_from, FALSE);
   s = *end_addr
-      ? string_copyn(dmarc_from_header, end_addr - dmarc_from_header)
-      : dmarc_from_header;
+      ? string_copyn(header_from, end_addr - header_from)
+      : header_from;
   if ((dmarc_header_from_sender = parse_extract_address(s, &errormsg,
 			      &dummy, &dummy, &domain, FALSE)))
     dmarc_header_from_sender += domain;
@@ -193,7 +193,7 @@ else if (!dmarc_abort)
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
 	      "failure to store header From: in DMARC: %s, header was '%s'",
-	      opendmarc_policy_status_to_str(libdm_status), dmarc_from_header);
+	      opendmarc_policy_status_to_str(libdm_status), header_from);
     dmarc_abort = TRUE;
     }
   }
@@ -335,7 +335,7 @@ The EDITME provides a DMARC_API variable */
       DEBUG(D_receive)
 	debug_printf_indent("DMARC skipping (%s), unsure what to do with %s",
 		      opendmarc_policy_status_to_str(libdm_status),
-		      dmarc_from_header);
+		      header_from);
       has_dmarc_record = FALSE;
       break;
     }
@@ -458,14 +458,17 @@ dmarc_exim_expand_defaults(void)
 return f.dmarc_disable_verify ?  US"off" : US"none";
 }
 
-/*API*/
-const uschar *
-dmarc_exim_expand_query(void)
+/*API
+Check result against list.  Return OK/FAIL/DEFER.
+*/
+int
+dmarc_result_inlist(const uschar * const * listp)
 {
-if (f.dmarc_disable_verify || !dmarc_pctx)
-  return dmarc_exim_expand_defaults();
-
-return dmarc_status;
+const uschar * res =
+  f.dmarc_disable_verify || !dmarc_pctx
+  ? dmarc_exim_expand_defaults()
+  : dmarc_status;
+return match_isinlist(res, listp, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
 }
 
 

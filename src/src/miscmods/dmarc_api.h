@@ -12,5 +12,4 @@
 /* Function table entry numbers */
 
 #define	DMARC_PROCESS		0
-#define DMARC_EXPAND_QUERY	1
-#define DMARC_STORE_FROMHDR	2
+#define DMARC_RESULT_INLIST	1
