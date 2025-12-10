@@ -210,13 +210,32 @@ JH/47 Fix potential UAFs for $value, $tls_out_*, $srs_recipient and
       $malware_name.
 
 
+Exim version 4.98.2
+-------------------
+
+This is a security release, addressing CVE-2025-30232
+
+JH/01 Fix use-after-free notified by Trend Micro (ref: ZDI-CAN-26250).
+      Null out debug_pretrigger_buf pointer before freeing the buffer;
+      the use of this buffer by the storage management checks the pointer
+      for non-null before using it.
+
+Exim version 4.98.1
+-------------------
+
+This is a security release, addressing CVE-2025-26794
+
+JH/01 Serialization of SMTP commands is based on the MD5 sum of
+      the command's argument.
+
+HS/01 Prevent SQL injection for the hints database.
 Exim version 4.98
 -----------------
 
 JH/01 Support list of dkim results in the dkim_status ACL condition, making
       it more usable in the data ACL.
 
-JH/02 Bug 3040: Handle error on close of the spool data file during reception. 
+JH/02 Bug 3040: Handle error on close of the spool data file during reception.
       Previously This was only logged, on the assumption that errors would be
       seen for a previous fflush().  However, a fuse filesystem has been
       reported as showing this an error for the fclose().  The spool is now in

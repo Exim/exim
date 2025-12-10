@@ -25,13 +25,28 @@ backend provider. */
 /* Some text for messages */
 # define EXIM_DBTYPE "sqlite3"
 
-/* Utility functionss */
+# /* Access functions */
 
-extern uschar *xtextencode(const uschar *, int);
-extern int xtextdecode(const uschar *, uschar**);
-
-
-/* Access functions */
+/* The key must be zero terminated, an empty key has len == 1. */
+static inline BOOL
+is_cstring(EXIM_DATUM *key)
+{
+if (key->len < 1)
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, "invalid key length %d (must be >= 1)\n", key->len);
+# endif
+  return FALSE;
+  }
+if (key->data[key->len-1] != '\0')
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, "key %.*s is not zero terminated\n", key->len, key->data);
+# endif
+  return FALSE;
+  }
+return TRUE;
+}
 
 static inline BOOL
 exim_lockfile_needed(void)
@@ -81,146 +96,162 @@ sqlite3_close(dbp);
 return NULL;
 }
 
-/* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-/* note we alloc'n'copy - the caller need not do so */
-/* result has a NUL appended, but the length is as per the DB */
-
 static inline BOOL
-exim_dbget__(EXIM_DB * dbp, const uschar * s, EXIM_DATUM * res)
+exim_dbget__(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
-sqlite3_stmt * statement;
-int ret;
+int ret = FALSE;
+sqlite3_stmt * stmt = NULL; /* don't make it static, as it depends on the dbp */
+const char query[] = "SELECT dat FROM tbl WHERE ky = ?";
 
-res->len = (size_t) -1;
-/* DEBUG(D_hints_lookup) debug_printf_indent("exim_dbget__(%s)\n", s); */
-if ((ret = sqlite3_prepare_v2(dbp, CCS s, -1, &statement, NULL)) != SQLITE_OK)
+if (SQLITE_OK != sqlite3_prepare_v2(dbp, query, sizeof(query)-1, &stmt, NULL))
   {
-  DEBUG(D_hints_lookup)
-    debug_printf_indent("prepare fail: %s\n", sqlite3_errmsg(dbp));
-  return FALSE;
-  }
-if (sqlite3_step(statement) != SQLITE_ROW)
-  {
-  /* DEBUG(D_hints_lookup)
-    debug_printf_indent("step fail: %s\n", sqlite3_errmsg(dbp)); */
-  sqlite3_finalize(statement);
-  return FALSE;
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " prepare %s: %s\n", query, sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
   }
 
-res->len = sqlite3_column_bytes(statement, 0);
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent("prepared SQL: %s\n", sqlite3_sql(stmt));
+# endif
+
+if (SQLITE_OK != sqlite3_bind_text(stmt, 1, CCS key->data, key->len-1, SQLITE_STATIC))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " bind text (%s): %s\n", sqlite3_sql(stmt), sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
+
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent("expanded SQL: %s\n", sqlite3_expanded_sql(stmt));
+# endif
+
+if (SQLITE_ROW != sqlite3_step(stmt))
+  {
+# ifdef SQL_DEBUG
+  DEBUG(D_hints_lookup) debug_printf_indent("step (%s): %s\n", sqlite3_expanded_sql(stmt), sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
+
+res->len = sqlite3_column_bytes(stmt, 0);
+
 # ifdef COMPILE_UTILITY
-if (!(res->data = malloc(res->len +1)))
-  { sqlite3_finalize(statement); return FALSE; }
+if (!(res->data = malloc(res->len +1))) goto DONE;
 # else
 res->data = store_get(res->len +1, GET_TAINTED);
 # endif
-memcpy(res->data, sqlite3_column_blob(statement, 0), res->len);
+
+memcpy(res->data, sqlite3_column_blob(stmt, 0), res->len);
 res->data[res->len] = '\0';
-/* DEBUG(D_hints_lookup) debug_printf_indent("res %d bytes: '%.*s'\n",
-				  (int)res->len, (int)res->len, res->data); */
-sqlite3_finalize(statement);
-return TRUE;
+/* fprintf(stderr, "res %d bytes: '%.*s'\n", (int)res->len, (int)res->len, res->data); */
+
+ret = TRUE;
+
+DONE:
+sqlite3_finalize(stmt);
+
+return ret;
 }
 
+/* EXIM_DBGET - returns the value associated with the key. The key must
+be zero terminated, an empty key has len == 1. */
 static inline BOOL
 exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
-# define FMT "SELECT dat FROM tbl WHERE ky = '%s';"
-uschar * encoded_key, * qry;
-int i;
-BOOL ret;
-
-# ifdef COMPILE_UTILITY
-if (!(encoded_key = xtextencode(key->data, key->len)))
-  return FALSE;
-# else
-encoded_key = xtextencode(key->data, key->len);
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent(EXIM_DBTYPE " get key: len=%d, strlen=%d, key=%.*s\n", key->len, Ustrlen(key->data), key->len, key->data);
 # endif
-/* DEBUG(D_hints_lookup) debug_printf_indent("exim_dbget(k len %d '%s')\n",
-				  (int)key->len, encoded_key); */
-
-# ifdef COMPILE_UTILITY
-i = snprintf(NULL, 0, FMT, encoded_key) + 1;
-if (!(qry = malloc(i)))
-  return FALSE;
-snprintf(CS qry, i, FMT, encoded_key);
-ret = exim_dbget__(dbp, qry, res);
-free(qry);
-free(encoded_key);
-# else
-qry = string_sprintf(FMT, encoded_key);
-ret = exim_dbget__(dbp, qry, res);
-# endif
-
-return ret;
-# undef FMT
+if (!is_cstring(key)) return FALSE;
+return exim_dbget__(dbp, key, res);
 }
 
-/* Note that we return claiming a duplicate record for any error.
-It seem not uncommon to get a "database is locked" error.
-
-Keys are stored xtext-encoded (which is mostly readable, for plaintext).
-Values are stored in a BLOB type in the DB, for which the SQL interface
-is hex-encoded. */
+/**/
 # define EXIM_DBPUTB_OK  0
 # define EXIM_DBPUTB_DUP (-1)
 
 static inline int
 exim_s_dbp(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, const uschar * alt)
 {
-int hlen = data->len * 2, off = 0, res;
-# define FMT "INSERT OR %s INTO tbl (ky,dat) VALUES ('%s', X'%.*s');"
-uschar * encoded_key, * qry;
-# ifdef COMPILE_UTILITY
-uschar * hex = malloc(hlen+1);
-if (!hex) return EXIM_DBPUTB_DUP;	/* best we can do */
-# else
-uschar * hex = store_get(hlen+1, data->data);
-# endif
-
-/* Encode the value for the SQL API */
-
-for (const uschar * s = data->data, * t = s + data->len; s < t; s++, off += 2)
-  sprintf(CS hex + off, "%02X", *s);
+const char sql[] = "INSERT OR %s INTO tbl (ky, dat) VALUES(?, ?)";
+int ret = EXIM_DBPUTB_DUP;
+sqlite3_stmt *stmt = NULL;
+uschar * query;
 
 # ifdef COMPILE_UTILITY
-if (!(encoded_key = xtextencode(key->data, key->len)))
+int i = 1 + snprintf(NULL, 0, sql, alt);
+if (NULL == (query = US malloc(i)))
+  {
+  fprintf(stderr, "can't allocate memory for %s", sql);
   return EXIM_DBPUTB_DUP;
-res = snprintf(CS hex, 0, FMT, alt, encoded_key, hlen, hex) +1;
-if (!(qry = malloc(res))) return EXIM_DBPUTB_DUP;
-snprintf(CS qry, res, FMT, alt, encoded_key, hlen, hex);
-DEBUG(D_hints_lookup) debug_printf_indent("exim_s_dbp(%s)\n", qry);
-
-res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
-free(qry);
-free(encoded_key);
-free(hex);
-
+  }
+snprintf(CS query, i, sql, alt);
 # else
-encoded_key = xtextencode(key->data, key->len);
-qry = string_sprintf(FMT, alt, encoded_key, hlen, hex);
-/* DEBUG(D_hints_lookup) debug_printf_indent("exim_s_dbp(%s)\n", qry); */
-
-res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
-/* DEBUG(D_hints_lookup) debug_printf_indent("exim_s_dbp res %d\n", res); */
+query = string_sprintf(sql, alt);
 # endif
 
+if (SQLITE_OK != sqlite3_prepare_v2(dbp, CCS query, -1, &stmt, NULL))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " prepare %s: %s\n", query, sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
+
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent("prepared SQL: %s\n", sqlite3_sql(stmt));
+# endif
+
+if (SQLITE_OK != sqlite3_bind_text(stmt, 1, CCS key->data, key->len-1, NULL))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " bind to value 1: %s\n", sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
+
+if (SQLITE_OK != sqlite3_bind_blob(stmt, 2, data->data, data->len, NULL))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " bind to value 2: %s\n", sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
+
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent("expanded SQL: %s\n", sqlite3_expanded_sql(stmt));
+# endif
+
+if (SQLITE_DONE != sqlite3_step(stmt))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " step (%s): %s\n", sqlite3_expanded_sql(stmt), sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
+
+ret = EXIM_DBPUTB_OK;
+
+DONE:
+sqlite3_finalize(stmt);
 # ifdef COMPILE_UTILITY
-if (res != SQLITE_OK)
-  DEBUG(D_hints_lookup)
-    debug_printf_indent("sqlite3_exec: %s\n", sqlite3_errmsg(dbp));
+free(query);
 # endif
 
-return res == SQLITE_OK ? EXIM_DBPUTB_OK : EXIM_DBPUTB_DUP;
-# undef FMT
+return ret;
 }
 
-/* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-
+/* EXIM_DBPUT - returns nothing useful, assumes replace mode
+The key must be zero terminated. An empty key has len == 1. */
 static inline int
 exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 {
-/* DEBUG(D_hints_lookup) debug_printf_indent("exim_dbput()\n"); */
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent(EXIM_DBTYPE " put: key: len=%d, strlen=%d, key=%.*s\n", key->len, Ustrlen(key->data), key->len, key->data);
+# endif
+if (!is_cstring(key)) return -1;
+/* fprintf(stderr, "exim_dbput()\n"); */
 (void) exim_s_dbp(dbp, key, data, US"REPLACE");
 return 0;
 }
@@ -239,30 +270,51 @@ return exim_s_dbp(dbp, key, data, US"ABORT");
 static inline int
 exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 {
-# define FMT "DELETE FROM tbl WHERE ky = '%s';"
-uschar * encoded_key, * qry;
-int res;
+int res = -1;
+sqlite3_stmt *stmt = NULL; /* don't make it static, because it depends on the dbp */
+const char query[] = "DELETE FROM tbl WHERE ky = ?";
 
-# ifdef COMPILE_UTILITY
-if (!(encoded_key = xtextencode(key->data, key->len)))
-  return EXIM_DBPUTB_DUP;
-res = snprintf(NULL, 0, FMT, encoded_key) +1;		/* res includes nul */
-if (!(qry = malloc(res))) return SQLITE_NOMEM;
-snprintf(CS qry, res, FMT, encoded_key);
-res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
-free(qry);
+DEBUG(D_hints_lookup) debug_printf_indent(EXIM_DBTYPE " del key: len=%d, strlen=%d, key=%.*s\n", key->len, Ustrlen(key->data), key->len, key->data);
+if (!is_cstring(key)) return -1;
 
-# else
-encoded_key = xtextencode(key->data, key->len);
-qry = string_sprintf(FMT, encoded_key);
-res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
+if (SQLITE_OK != sqlite3_prepare_v2(dbp, query, sizeof(query)-1, &stmt, NULL))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " prepare %s: %s\n", query, sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
 
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent("query: %s\n", sqlite3_sql(stmt));
 # endif
 
-return res == SQLITE_OK ? EXIM_DBPUTB_OK : EXIM_DBPUTB_DUP;
-# undef FMT
-}
+if (SQLITE_OK != sqlite3_bind_text(stmt, 1, CCS key->data, key->len-1, SQLITE_STATIC))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " bind value 1: %s\n", sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
 
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent("expanded query: %s\n", sqlite3_expanded_sql(stmt));
+# endif
+
+if (SQLITE_DONE != sqlite3_step(stmt))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " step: %s: %s\n", sqlite3_expanded_sql(stmt), sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
+
+res = 0;
+
+DONE:
+sqlite3_finalize(stmt);
+return res;
+}
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
 /* Cursors are inefficiently emulated by repeating searches */
@@ -282,43 +334,65 @@ return c;
 
 /* EXIM_DBSCAN */
 /* Note that we return the (next) key, not the record value.
-We allocate memory for the return. */
-
+ * We've to add the zero terminator, as this isn't stored in the database */
 static inline BOOL
-exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res, BOOL first,
-  EXIM_CURSOR * cursor)
+exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res /* unusied */, BOOL first /*unused*/, EXIM_CURSOR * cursor)
 {
-# define FMT "SELECT ky FROM tbl ORDER BY ky LIMIT 1 OFFSET %d;"
-uschar * qry;
-EXIM_DATUM encoded_key;
-BOOL ret;
+BOOL more = FALSE;
+sqlite3_stmt *stmt = NULL;
+const char query[] = "SELECT ky FROM tbl ORDER BY ky LIMIT 1 OFFSET ?";
 
-# ifdef COMPILE_UTILITY
-int i = snprintf(NULL, 0, FMT, *cursor)+1;
-
-if (!(qry = malloc(i))) return FALSE;
-snprintf(CS qry, i, FMT, *cursor);
-DEBUG(D_hints_lookup) debug_printf_indent("exim_dbscan(%s)\n", qry);
-ret = exim_dbget__(dbp, qry, &encoded_key);
-free(qry);
-
-# else	/*!COMPILE_UTILITY*/
-qry = string_sprintf(FMT, *cursor);
-DEBUG(D_hints_lookup) debug_printf_indent("exim_dbscan(%s)\n", qry);
-ret = exim_dbget__(dbp, qry, &encoded_key);
-
-# endif	/*COMPILE_UTILITY*/
-
-DEBUG(D_hints_lookup)
-  debug_printf_indent("exim_dbscan ret %c\n", ret ? 'T':'F');
-
-if (ret)
+if (SQLITE_OK != sqlite3_prepare_v2(dbp, query, sizeof(query)-1, &stmt, NULL))
   {
-  key->len = xtextdecode(encoded_key.data, &key->data);
-  *cursor = *cursor + 1;
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " prepare %s: %s\n", query, sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
   }
-return ret;
-# undef FMT
+
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent("prepared query: %s\n", sqlite3_sql(stmt));
+# endif
+
+if (SQLITE_OK != sqlite3_bind_int(stmt, 1, *cursor))
+  {
+# ifdef SQL_DEBUG
+  fprintf(stderr, EXIM_DBTYPE " bind value 1: %s\n", query, sqlite3_errmsg(dbp));
+# endif
+  goto DONE;
+  }
+
+# ifdef SQL_DEBUG
+DEBUG(D_hints_lookup) debug_printf_indent("expanded query: %s\n", sqlite3_expanded_sql(stmt));
+# endif
+
+switch (sqlite3_step(stmt))
+  {
+    case SQLITE_DONE: goto DONE;
+    case SQLITE_ROW: (*cursor)++;
+                      key->len = sqlite3_column_bytes(stmt, 0);
+#ifdef COMPILE_UTILITY
+                      if (!(key->data = malloc(key->len+1))) goto DONE;
+#else
+                      key->data = store_get(key->len+1, GET_TAINTED); // TAINTED? We're talking about the key!
+#endif
+                      memcpy(key->data, sqlite3_column_blob(stmt, 0), key->len);
+                      key->data[key->len] = '\0';
+# ifdef SQL_DEBUG
+                      DEBUG(D_hints_lookup) debug_printf_indent("key length=%d, val=%s\n", key->len, key->data);
+# endif
+                      more = TRUE;
+                      goto DONE;
+    default:
+# ifdef SQL_DEBUG
+                      fprintf(stderr, EXIM_DBTYPE " step: %s: %s\n", sqlite3_expanded_sql(stmt), sqlite3_errmsg(dbp));
+# endif
+                      goto DONE;
+  }
+
+DONE:
+sqlite3_finalize(stmt);
+return more;
 }
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation. */
@@ -332,10 +406,9 @@ store_free(cursor);
 # endif
 }
 
-
 /* EXIM_DBCLOSE */
 static inline void
-exim_dbclose_multi__(EXIM_DB * dbp)
+exim_dbclose_multi__(EXIM_DB *dbp)
 {
 sqlite3_close(dbp);
 }
@@ -357,18 +430,17 @@ exim_dbclose_multi__(dbp);
 static uschar *
 exim_datum_data_get(EXIM_DATUM * dp)
 { return US dp->data; }
+
 static void
 exim_datum_data_set(EXIM_DATUM * dp, void * s)
 { dp->data = s; }
- 
+
 static unsigned
 exim_datum_size_get(EXIM_DATUM * dp)
 { return dp->len; }
 static void
 exim_datum_size_set(EXIM_DATUM * dp, unsigned n)
 { dp->len = n; }
-
-
 
 static inline void
 exim_datum_init(EXIM_DATUM * dp)
@@ -384,7 +456,7 @@ exim_datum_free(EXIM_DATUM * dp)
 
 # define EXIM_DB_RLIMIT	150
 
-
 /* End of hints_sqlite.h */
 /* vi: aw ai sw=2
+ *
 */
