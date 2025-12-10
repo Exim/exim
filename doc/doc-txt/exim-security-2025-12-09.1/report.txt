@@ -1,0 +1,402 @@
+From andrew.fasano@nist.gov Sat Nov 22 02:40:13 2025
+Subject: Multiple vulnerabilities in Exim 4.99 SQLite integration: SQL
+ injection + heap buffer overflow
+From: "Fasano, Andrew S. (Fed)" <andrew.fasano@nist.gov>
+To: "security@exim.org" <security@exim.org>
+Date: Sat, 22 Nov 2025 01:39:46 +0000
+Return-Path: <andrew.fasano@nist.gov>
+Authentication-Results: mx10.schlittermann.de; iprev=pass (cumin.exim.org)
+ smtp.remote-ip=152.53.204.32; spf=permerror smtp.mailfrom=nist.gov;
+ dkim=pass header.d=nist.gov header.s=selector2 header.a=rsa-sha256;
+ dmarc=pass header.from=nist.gov
+Authentication-Results: exim.org; iprev=pass
+ (mail-northcentralusazon11011052.outbound.protection.outlook.com)
+ smtp.remote-ip=40.107.199.52; spf=pass smtp.mailfrom=nist.gov; dkim=pass
+ header.d=nist.gov header.s=selector2 header.a=rsa-sha256; dmarc=pass
+ header.from=nist.gov; arc=pass (i=1) header.s=arcselector10001
+ arc.oldest-pass=1 smtp.remote-ip=40.107.199.52
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nist.gov;
+X-Spam-Score: -2.3 (--)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+
+Hello,
+
+I'm writing to disclose two security vulnerabilities in Exim 4.99's
+SQLite hints database implementation. One is related to the recently patched
+CVE-2025-26794 (SQL injection), but the fix doesn't fully address the issue.
+I've also discovered a new heap buffer overflow vulnerability in the same
+code path.
+
+In vulnerable configurations, a remote, unauthenticated attacker can achieve
+heap corruption. I was unable to develop an end-to-end exploit chain for
+remote code execution, but it may be possible with further work. I'm reporting
+this to you immediately upon discovery so you can assess and  remediate.
+
+================================================================================
+OVERVIEW
+================================================================================
+
+Two distinct vulnerabilities exist in the SQLite hints database code:
+
+1. Incomplete SQL injection fix - CVE-2025-26794's patch doesn't escape
+   single quotes
+
+2. Heap buffer overflow - Unvalidated database field used as array bound (NEW)
+
+IMPORTANT: Only specific ratelimit configurations expose these vulnerabilities.
+
+================================================================================
+VULNERABILITY #1: SQL INJECTION VIA RATELIMIT KEY (SAME ROOT CAUSE AS CVE-2025-26794)
+================================================================================
+
+Related to: CVE-2025-26794 (same vulnerable code, different attack vector)
+CWE: CWE-89
+
+--------------------------------------------------------------------------------
+Background
+--------------------------------------------------------------------------------
+
+CVE-2025-26794 was assigned for SQL injection via ETRN commands when SQLite
+hints are used. That vulnerability was fixed by hashing ETRN input before
+using it as a database key. However, the underlying SQL injection primitive in
+xtextencode() was not fixed, and the commit message noted: "The hints db
+remains injectable, in case of USE_SQLITE."
+
+This report documents a separate attack vector exploiting the same vulnerable
+code via ratelimit ACLs, which warrants a new CVE as it affects different
+configurations and users.
+
+--------------------------------------------------------------------------------
+Technical Details
+--------------------------------------------------------------------------------
+
+The xtextencode() function sanitizes database keys before SQL query
+construction, but doesn't handle single quotes (ASCII 39):
+
+    // xtextencode.c:35-37<https://github.com/Exim/exim/blob/1fd121860e713f4d2783be54939b92a297a82dd4/src/src/xtextencode.c#L35-L37>
+    for(uschar ch; len > 0; len--, clear++)
+      g = (ch = *clear) < 33 || ch > 126 || ch '+' || ch '='
+        ? string_fmt_append(g, "+%.02X", ch)    // Only encodes: <33, >126, +, =
+        : string_catn(g, clear, 1);             // Single quote (39) passes through!
+
+This encoded key is directly interpolated into SQL:
+
+    // hints_sqlite.h:129<https://github.com/Exim/exim/blob/1fd121860e713f4d2783be54939b92a297a82dd4/src/src/hintsdb/hints_sqlite.h#L129>
+    # define FMT "SELECT dat FROM tbl WHERE ky = '%s';"
+    // hints_sqlite.h:137, 153<https://github.com/Exim/exim/blob/1fd121860e713f4d2783be54939b92a297a82dd4/src/src/hintsdb/hints_sqlite.h#L137-L153>
+    encoded_key = xtextencode(key->data, key->len);
+    qry = string_sprintf(FMT, encoded_key);  // No escaping!
+
+--------------------------------------------------------------------------------
+Exploitation
+--------------------------------------------------------------------------------
+
+An attacker can inject SQL via quoted SMTP addresses:
+
+    MAIL FROM:<"x'/**/UNION/**/SELECT/**/X'<hex_blob>'--"@attacker.com>
+
+The single quote breaks out of the SQL string context, allowing arbitrary
+queries including returning attacker-controlled binary blobs.
+
+--------------------------------------------------------------------------------
+Configuration Requirement
+--------------------------------------------------------------------------------
+
+This is only exploitable when attacker-controlled data flows into the database
+key. For ratelimit ACLs, this happens when:
+
+- Using an explicit key parameter:
+  ratelimit = 100 / 1h / per_rcpt / $sender_address
+
+- Using per_addr with an explicit key:
+  ratelimit = 100 / 1h / per_addr / $sender_address
+
+- Using unique= with attacker data:
+  ratelimit = 100 / 1h / per_rcpt / unique=$sender_address
+
+NOT VULNERABLE: Default per_addr (without explicit key) uses client IP
+address, which isn't attacker-controlled via SMTP.
+
+--------------------------------------------------------------------------------
+Remediation
+--------------------------------------------------------------------------------
+
+Add single quote escaping to xtextencode():
+
+    case '\'':
+      g = string_catn(g, US"+27", 3);
+      break;
+
+Alternatively (preferred), migrate to parameterized queries throughout the
+SQLite integration.
+
+================================================================================
+VULNERABILITY #2: HEAP BUFFER OVERFLOW VIA UNVALIDATED DATABASE FIELD
+================================================================================
+
+CWE: CWE-122, CWE-787, CWE-843
+
+--------------------------------------------------------------------------------
+Technical Details
+--------------------------------------------------------------------------------
+
+Database records are cast directly to internal structures without validation:
+
+    // acl.c:2666<https://github.com/Exim/exim/blob/1fd121860e713f4d2783be54939b92a297a82dd4/src/src/acl.c#L2666>
+    dbdb = dbfn_read_with_length(dbm, key, &dbdb_size);
+    // acl.c:2671-2675<https://github.com/Exim/exim/blob/1fd121860e713f4d2783be54939b92a297a82dd4/src/src/acl.c#L2671-L2675>
+    if (dbdb)
+      {
+      /* Locate the basic ratelimit block inside the DB data. */
+      HDEBUG(D_acl) debug_printf_indent("ratelimit found key in database\n");
+      dbd = &dbdb->dbd;  // Direct cast, trusting database content
+
+The structure definition:
+   // hintsdb_structs.h:142-147<https://github.com/Exim/exim/blob/1fd121860e713f4d2783be54939b92a297a82dd4/src/src/hintsdb_structs.h#L142-L147>
+    typedef struct {
+      dbdata_ratelimit dbd;
+      time_t   bloom_epoch;   // 8 bytes
+      unsigned bloom_size;    // 4 bytes - ATTACKER CONTROLLED
+      uschar   bloom[40];     // Fixed 40 bytes, but bloom_size can be larger!
+    } dbdata_ratelimit_unique;
+
+No validation occurs to ensure bloom_size matches the actual array size. This
+value is then used directly as an array bound in the bloom filter code:
+
+    // acl.c:2798-2808<https://github.com/Exim/exim/blob/1fd121860e713f4d2783be54939b92a297a82dd4/src/src/acl.c#L2798-L2808>
+    seen = TRUE;
+    for (n = 0; n < 8; n++, hash += hinc)
+      {
+      int bit = 1 << (hash % 8);
+      int byte = (hash / 8) % dbdb->bloom_size;  // bloom_size from DB, not validated!
+      if ((dbdb->bloom[byte] & bit) == 0)
+        {
+        dbdb->bloom[byte] |= bit;  // HEAP BUFFER OVERFLOW!
+        seen = FALSE;
+        }
+      }
+
+The bloom array is declared as 40 bytes, but if bloom_size is set to a large
+value, writes can occur far beyond the allocated buffer.
+
+--------------------------------------------------------------------------------
+Configuration Requirement
+--------------------------------------------------------------------------------
+
+The bloom filter code only executes when a unique value is set. The unique parameter
+is set either:
+1. Explicitly: unique=$sender_address
+2. Implicitly via per_addr mode in RCPT context (sets unique to recipient)
+
+NOT VULNERABLE: Ratelimit ACLs without unique= or per_addr never enter the
+bloom filter code.
+
+--------------------------------------------------------------------------------
+Exploitation
+--------------------------------------------------------------------------------
+
+Using the SQL injection from vulnerability #1, an attacker injects an 80-byte
+blob with bloom_size set to values far exceeding the actual 40-byte allocation
+(e.g., 1505996). When the bloom filter code executes, this oversized value is
+used as the modulo bound for calculating array indexes:
+
+    int byte = (hash / 8) % dbdb->bloom_size;  // If bloom_size = 1505996...
+    dbdb->bloom[byte] |= bit;                   // ...writes up to 1.5MB past buffer
+
+The write offset is determined by the MD5 hash of the unique value:
+
+    hash = first_4_bytes(MD5(unique_value));
+    byte_offset = (hash / 8) % bloom_size;
+    bit_value = 1 << (hash % 8);
+    bloom[byte_offset] |= bit_value;
+
+This provides:
+- Controlled offset: Choose recipient addresses to target specific heap
+  locations
+- Bit-level control: Each recipient performs a bitwise OR operation
+- Arbitrary byte values: Multiple recipients can OR together to construct
+  0x00-0xFF
+
+--------------------------------------------------------------------------------
+Proof of Concept Results
+--------------------------------------------------------------------------------
+
+I successfully demonstrated:
+- Using bloom_size = 1505996 (37,649x larger than the 40-byte array)
+- Targeting specific heap offsets by pre-computing recipient addresses with
+  desired MD5 hashes
+- Writing arbitrary byte values through multiple recipients that OR together
+- Reliable crash oracle distinguishing valid vs. invalid heap addresses
+
+--------------------------------------------------------------------------------
+Why RCE Wasn't Achieved
+--------------------------------------------------------------------------------
+
+The theoretical exploitation path involves corrupting SQLite internal
+structures to gain arbitrary write capability, then overwriting GOT entries
+to hijack control flow. However, this requires knowledge of PIE base, libc
+base, and heap addresses to defeat ASLR/PIE. I couldn't find a reliable
+information leak to get around this. But it may be possible.
+
+--------------------------------------------------------------------------------
+Remediation
+--------------------------------------------------------------------------------
+
+Validate database records before using their contents:
+
+    if (dbdb_size < sizeof(dbdata_ratelimit_unique))
+      {
+      log_write(0, LOG_MAIN, "ratelimit: invalid record size %d", dbdb_size);
+      dbdb = NULL;
+      }
+    else if (dbdb->bloom_size == 0 || dbdb->bloom_size > sizeof(dbdb->bloom))
+      {
+      HDEBUG(D_acl)
+        debug_printf_indent("ratelimit: invalid bloom_size %u (max %zu)\n",
+                            dbdb->bloom_size, sizeof(dbdb->bloom));
+      log_write(0, LOG_MAIN, "ratelimit: bloom_size %u exceeds maximum %zu",
+                dbdb->bloom_size, sizeof(dbdb->bloom));
+      dbdb->bloom_size = sizeof(dbdb->bloom);  // Clamp to safe value
+      dbdb->bloom_epoch = 0;  // Invalidate bloom filter
+      seen = FALSE;
+      }
+
+================================================================================
+AFFECTED CONFIGURATIONS
+================================================================================
+
+--------------------------------------------------------------------------------
+Compilation Requirement
+--------------------------------------------------------------------------------
+
+Exim must be compiled with SQLite support (USE_SQLITE=yes and
+hints_database = sqlite in configuration).
+
+--------------------------------------------------------------------------------
+Exploitable Configurations
+--------------------------------------------------------------------------------
+
+The full vulnerability chain requires BOTH conditions:
+
+Condition 1: Attacker data used in ratelimit database key (for SQL injection)
+Condition 2: Bloom filter triggered (for heap overflow)
+
+Examples:
+
+EXPLOITABLE - per_addr with explicit key:
+
+    warn ratelimit = 100 / 1h / per_addr / $sender_address
+
+  [✓] Sender address goes into key (SQL injection)
+  [✓] Recipient address triggers bloom filter (heap overflow)
+
+EXPLOITABLE - explicit unique with attacker data:
+
+    warn ratelimit = 100 / 1h / per_rcpt / unique=$sender_address
+
+  [✓] Sender address goes into key (SQL injection)
+  [✓] Sender address triggers bloom filter (heap overflow)
+
+NOT EXPLOITABLE - default per_addr:
+
+    warn ratelimit = 100 / 1h / per_addr
+
+  [✗] Client IP in key (not attacker-controlled via SMTP)
+  [✓] Recipient address triggers bloom filter
+  Result: Heap overflow reachable but can't inject malicious blob
+
+NOT EXPLOITABLE - per_rcpt without unique:
+
+    deny ratelimit = 50 / 1h / per_rcpt
+
+  [✗] No unique parameter (bloom filter never runs)
+  Result: Even with SQL injection, no heap overflow
+
+NOT EXPLOITABLE - per_mail:
+
+    accept ratelimit = 10 / 1h / per_mail
+
+  [✗] No unique parameter (bloom filter never runs)
+  Result: Even with SQL injection, no heap overflow
+
+--------------------------------------------------------------------------------
+Key Construction
+--------------------------------------------------------------------------------
+
+The database key is built from configuration parameters:
+
+    key = string_sprintf("%s/%s/%s%s",
+      sender_rate_period,
+      ratelimit_option_string[mode],
+      unique == NULL ? "" : "unique/",
+      key);
+
+With ratelimit = 100 / 1h / per_addr / $sender_address, the key becomes:
+
+    1h/per_rcpt/unique/"x'UNION SELECT..."@attacker.com
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        Attacker-controlled
+
+With ratelimit = 100 / 1h / per_addr (no explicit key), it becomes:
+
+    1h/per_rcpt/unique/192.168.1.100
+                        ^^^^^^^^^^^^^
+                        Client IP (not attacker-controlled)
+
+--------------------------------------------------------------------------------
+Real-World Impact
+--------------------------------------------------------------------------------
+
+I successfully tested the exploit against the per_addr / $sender_address  pattern.
+
+The vulnerabilities require specific configuration, but these patterns are
+not unreasonable for production deployments. Administrators using ratelimit
+with sender-based keys for granular rate limiting would be affected.
+
+================================================================================
+CVE ASSIGNMENT RECOMMENDATIONS
+================================================================================
+
+I recommend two new CVEs:
+
+1. SQL Injection via Ratelimit (NEW) - Same root cause as CVE-2025-26794 but
+   different attack vector. Requires ratelimit ACLs with attacker-controlled
+   keys (e.g., $sender_address). The fix for CVE-2025-26794 addressed ETRN
+   specifically and does not protect ratelimit configurations.
+
+2. Heap Buffer Overflow (NEW) - Unvalidated database field used as array
+   bound, requires validation of bloom_size before use.
+
+================================================================================
+DISCLOSURE TIMELINE
+================================================================================
+
+I'm disclosing this immediately upon discovery. I will not publish details
+publicly until the following conditions are met, or 60 days have passed.
+
+- You've had adequate time to develop and test patches
+- We agree on a coordinated disclosure date
+- CVEs are assigned (if appropriate)
+
+I'm happy to provide additional technical details, testing assistance, or
+clarification on any points.
+
+Thank you for maintaining Exim. I look forward to working with you on
+remediation.
+
+Thanks,
+Andrew
+
+
+
+–
+
+Andrew Fasano, PhD
+
+Cyber Lead
+Center for AI Standards and Innovation (CAISI)
+National Institute of Standards and Technology
+U.S. Department of Commerce

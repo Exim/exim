@@ -1,0 +1,7 @@
+2025-11-22: we received a report to security@exim.org
+2025-11-25: acknowledged the report to the reporter
+2025-12-10: notification to oss-security@openwall.com and exim-maintainers@lists.exim.org
+2025-12-10: requested CVE at mitre.org
+2025-12-11: updated notification to oss-security and exim-maintainers about the release schedule
+2025-12-15: (planned 15:00UTC) publish for the distro packages on https://code.exim.org/exim/exim-distros
+2025-12-18: (planned 15:00UTC) publish on https://code.exim.org/exim/exim

@@ -2,6 +2,15 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Exim version 4.99.1
+-------------------
+
+This is a security release, addressing Exim-Security-2025-12-09.1, which
+basically is a re-incarnation of CVE02025-26794.
+
+BQ/01,HS/01 Port 4.98.1 and 4.98.2 to exim-4.99+fixes.
+
+
 Exim version 4.99
 -----------------
 
@@ -220,6 +229,7 @@ JH/01 Fix use-after-free notified by Trend Micro (ref: ZDI-CAN-26250).
       the use of this buffer by the storage management checks the pointer
       for non-null before using it.
 
+
 Exim version 4.98.1
 -------------------
 
@@ -229,6 +239,8 @@ JH/01 Serialization of SMTP commands is based on the MD5 sum of
       the command's argument.
 
 HS/01 Prevent SQL injection for the hints database.
+
+
 Exim version 4.98
 -----------------
 

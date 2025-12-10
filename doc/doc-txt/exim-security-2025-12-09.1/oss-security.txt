@@ -1,0 +1,55 @@
+Subject: [oss-security] EXIM-Security-2025-12-09.1: Exim 4.99: Remote heap
+ corruption
+From: Heiko Schlittermann <hs@nodmarc.schlittermann.de>
+To: oss-security <oss-security@lists.openwall.com>
+Date: Wed, 10 Dec 2025 13:51:13 +0100
+Return-Path: <oss-security-return-31767-hs=nodmarc.schlittermann.de@lists.openwall.com>
+Authentication-Results: mx10.schlittermann.de; iprev=pass
+ (second.openwall.net) smtp.remote-ip=193.110.157.125; spf=pass
+ smtp.mailfrom=lists.openwall.com; dkim=fail (body hash mismatch; body
+ probably modified in transit) 	 header.d=nodmarc.schlittermann.de
+ header.s=2020-06-19 header.a=rsa-sha256; dmarc=none
+ header.from=nodmarc.schlittermann.de
+Reply-To: oss-security@lists.openwall.com
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+
+Dear Exim users,
+
+we got reported two possible (related) vulnerabilities in the
+latest 4.99 release. From the original report:
+
+,---
+| In vulnerable configurations, a remote, unauthenticated attacker can
+| achieve heap corruption. I was unable to develop an end-to-end exploit
+| chain for remote code execution, but it may be possible with further
+| work.
+`---
+
+We do not publish any further details yet, until the fix goes public.
+
+While we do not support older versions, please note, that 4.98.1 is not
+affected. Other versions might or might not be subject to the same
+attack vector.
+
+2025-11-22: we received a report to security@exim.org
+2025-11-25: acknowledged the report to the reporter
+2025-12-10: this notification
+
+~2025-12-15: publish the fix via the distros repo (accessible for the distro packagers)
+~2025-12-18: publish the fix via the default repo (accessible for the public)
+
+Once the fixes passed internal testing, we'll update the schedule and send
+another notification about the coordinated release date(s) for distros and
+the public.
+
+    Best regards from Dresden/Germany
+    Viele Grüße aus Dresden
+    Heiko Schlittermann
+-- 
+ SCHLITTERMANN.de ---------------------------- internet & unix support -
+ Heiko Schlittermann, Dipl.-Ing. (TU) - {fon,fax}: +49.351.802998{1,3} -
+ gnupg encrypted messages are welcome --------------- key ID: F69376CE -
+
+
