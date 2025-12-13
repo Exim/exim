@@ -1,0 +1,362 @@
+
+******** SERVER ********
+Exim version x.yz ....
+Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SRV' in 'SRV'
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+ macros_expand: matched 'SERVER' in 'condition =	${if or {{eq {SERVER}{server}} {queue_running}}}'
+readconf_rest: transports
+readconf_rest: retry
+>>>>>>>>>>>>>>>> Exim pid=p1238 (cipher-validate) terminating with rc=0 >>>>>>>>>>>>>>>>
+daemon_smtp_port overridden by -oX:
+  <: PORT_D: PORT_S
+creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
+listening on all interfaces (IPv6) port PORT_D
+listening on all interfaces (IPv4) port PORT_D
+listening on all interfaces (IPv6) port PORT_S
+listening on all interfaces (IPv4) port PORT_S
+pid written to TESTSUITE/spool/exim-daemon.pid
+LOG: MAIN
+  exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D port PORT_S
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Connection request from ip4.ip4.ip4.ip4 port 10001
+p1239 Process p1239 is handling incoming connection from [ip4.ip4.ip4.ip4]
+p1239 Process p1239 is ready for new message
+p1239 test.ex in helo_lookup_domains? no (end of list)
+p1239 host in chunking_advertise_hosts? no (end of list)
+p1239 userd in "rcpt_defer"? no (end of list)
+p1239  Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
+p1239  connected
+1 SMTP accept process running
+Connection request from 127.0.0.1 port sssss
+p1240 Process p1240 is handling incoming connection from [127.0.0.1]
+p1240 Process p1240 is ready for new message
+p1239    SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+p1239    SMTP>> EHLO myhost.test.ex
+p1239  cmd buf flush 21 bytes
+2 SMTP accept processes running
+p1240 host in chunking_advertise_hosts? no (end of list)
+p1239    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+p1239           250-SIZE 52428800
+p1239           250-LIMITS MAILMAX=1000 RCPTMAX=50000
+p1239           250-8BITMIME
+p1239           250-PIPELINING
+p1239           250-STARTTLS
+p1239           250 HELP
+p1239    SMTP>> STARTTLS
+p1239  cmd buf flush 10 bytes
+p1239    SMTP<< 220 TLS go ahead
+p1239  127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
+p1239    SMTP>> EHLO myhost.test.ex
+p1239  cmd buf flush 21 bytes
+p1240 host in chunking_advertise_hosts? no (end of list)
+p1239    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+p1239           250-SIZE 52428800
+p1239           250-LIMITS MAILMAX=1000 RCPTMAX=50000
+p1239           250-8BITMIME
+p1239           250-PIPELINING
+p1239           250 HELP
+p1239 using PIPELINING
+p1239 not using DSN
+p1239    SMTP|> MAIL FROM:<userc@ok.example>
+p1239    SMTP>> RCPT TO:<userd@test.ex>
+p1239  cmd buf flush 55 bytes
+p1239 sync_responses expect mail
+p1240 userd in "rcpt_defer"? no (end of list)
+p1240 host in "ip4.ip4.ip4.ip4"? no (end of list)
+p1239    SMTP<< 250 OK
+p1239 sync_responses expect rcpt for userd@test.ex
+p1239    SMTP<< 250 Accepted
+LOG: MAIN
+  <= userc@ok.example H=(test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss
+forked delivery process p1244 
+Process p1239 is ready for new message
+LOG: smtp_connection MAIN
+  SMTP connection from (test.ex) [ip4.ip4.ip4.ip4] D=q.qqqs closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=p1239 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1236 child p1239 ended: status=0x0
+p1236   normal exit, 0
+p1236 1 SMTP accept process now running
+p1244 Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=p1244 D=20080000
+p1244 Hints DB:
+p1244 macros_trusted overridden to true by whitelisting
+p1244 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+p1244 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1244 macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+p1244 macros_expand: matched '_HAVE_PIPE_CONNECT' in '.ifdef _HAVE_PIPE_CONNECT'
+p1244 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1244 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1244 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1244 macros_expand: matched 'SRV' in 'SRV'
+p1244 configuration file is TESTSUITE/test-config
+p1244 trusted user
+p1244 admin user
+p1244 dropping to exim gid; retaining priv uid
+p1244 readconf_rest: acl
+p1244 readconf_rest: routers
+p1244  macros_expand: matched 'SERVER' in 'condition =	${if or {{eq {SERVER}{server}} {queue_running}}}'
+p1244 readconf_rest: transports
+p1244 readconf_rest: retry
+p1244 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
+p1244 --------> userd@test.ex <--------
+p1247 t1 transport entered
+p1247   userd@test.ex
+p1247 hostlist:
+p1247   '127.0.0.1' IP 127.0.0.1 port PORT_D
+p1247 already connected to 127.0.0.1 [127.0.0.1]:10003 (on fd 0)
+p1247 checking retry status of 127.0.0.1
+p1247 127.0.0.1 [127.0.0.1]:10003 retry-status = usable
+p1247 delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userd@test.ex)
+p1247 continued connection, proxied TLS
+p1247   SMTP>> DATA
+p1247 cmd buf flush 6 bytes
+p1247 sync_responses expect data
+p1247   SMTP<< 354 Enter message, ending with "." on a line by itself
+p1247   SMTP>> (writing message)
+p1247 cannot use sendfile for body: spoolfile not wireformat
+p1247   SMTP>> .
+p1247 writing data block fd=0 size=sss timeout=300
+LOG: MAIN
+  <= userc@ok.example H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss
+p1247   SMTP<< 250 OK id=10HmaY-000000005vi-0000
+p1247 ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
+p1247   SMTP+> QUIT
+p1247 cmd buf flush 6 bytes (more expected)
+p1247   SMTP(shutdown)>>
+forked delivery process p1248 
+Process p1240 is ready for new message
+p1247   SMTP<< 221 myhost.test.ex closing connection
+p1247   SMTP(close)>>
+p1247 cmdlog: 'DATA:354:.:250:QUIT+:221'
+p1247 Leaving t1 transport
+p1247 >>>>>>>>>>>>>>>> Exim pid=p1247 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  => userd@test.ex R=passon T=t1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-000000005vi-0000"
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=p1244 (daemon-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1248 Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=p1248 D=20080000
+p1248 Hints DB:
+p1248 macros_trusted overridden to true by whitelisting
+p1248 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+p1248 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1248 macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+p1248 macros_expand: matched '_HAVE_PIPE_CONNECT' in '.ifdef _HAVE_PIPE_CONNECT'
+p1248 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1248 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1248 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1248 macros_expand: matched 'SRV' in 'SRV'
+p1248 configuration file is TESTSUITE/test-config
+p1248 trusted user
+p1248 admin user
+p1248 dropping to exim gid; retaining priv uid
+p1248 readconf_rest: acl
+p1248 readconf_rest: routers
+p1248  macros_expand: matched 'SERVER' in 'condition =	${if or {{eq {SERVER}{server}} {queue_running}}}'
+p1248 readconf_rest: transports
+p1248 readconf_rest: retry
+LOG: MAIN
+  => :blackhole: <userd@test.ex> R=target
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=p1248 (daemon-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1246 >>>>>>>>>>>>>>>> Exim pid=p1246 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1240 LOG: smtp_connection MAIN
+p1240   SMTP connection from localhost (myhost.test.ex) [127.0.0.1] D=q.qqqs closed by QUIT
+p1240 >>>>>>>>>>>>>>>> Exim pid=p1240 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1236 child p1240 ended: status=0x0
+p1236   normal exit, 0
+p1236 0 SMTP accept processes now running
+p1236 SIGTERM/SIGINT seen
+p1236 >>>>>>>>>>>>>>>> Exim pid=p1236 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+Hints DB:
+macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SERVER' in '.ifdef SERVER'
+macros_expand: matched 'SRV' in 'SRV'
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+readconf_rest: acl
+readconf_rest: routers
+ macros_expand: matched 'SERVER' in 'condition =	${if or {{eq {SERVER}{server}} {queue_running}}}'
+readconf_rest: transports
+readconf_rest: retry
+>>>>>>>>>>>>>>>> Exim pid=p1250 (cipher-validate) terminating with rc=0 >>>>>>>>>>>>>>>>
+daemon_smtp_port overridden by -oX:
+  <: PORT_D: PORT_S
+creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
+listening on all interfaces (IPv6) port PORT_D
+listening on all interfaces (IPv4) port PORT_D
+listening on all interfaces (IPv6) port PORT_S
+listening on all interfaces (IPv4) port PORT_S
+pid written to TESTSUITE/spool/exim-daemon.pid
+LOG: MAIN
+  exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D port PORT_S
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Connection request from ip4.ip4.ip4.ip4 port 10004
+p1251 Process p1251 is handling incoming connection from [ip4.ip4.ip4.ip4]
+p1251 Process p1251 is ready for new message
+p1251 test.ex in helo_lookup_domains? no (end of list)
+p1251 host in chunking_advertise_hosts? no (end of list)
+p1251 userf in "rcpt_defer"? no (end of list)
+p1251  Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
+p1251  connected
+1 SMTP accept process running
+Connection request from 127.0.0.1 port sssss
+p1252 Process p1252 is handling incoming connection from [127.0.0.1]
+p1252 Process p1252 is ready for new message
+p1251    SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+p1251    SMTP>> EHLO myhost.test.ex
+p1251  cmd buf flush 21 bytes
+2 SMTP accept processes running
+p1252 host in chunking_advertise_hosts? no (end of list)
+p1251    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+p1251           250-SIZE 52428800
+p1251           250-LIMITS MAILMAX=1000 RCPTMAX=50000
+p1251           250-8BITMIME
+p1251           250-PIPELINING
+p1251           250-STARTTLS
+p1251           250 HELP
+p1251    SMTP>> STARTTLS
+p1251  cmd buf flush 10 bytes
+p1251    SMTP<< 220 TLS go ahead
+p1251  127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
+p1251    SMTP>> EHLO myhost.test.ex
+p1251  cmd buf flush 21 bytes
+p1252 host in chunking_advertise_hosts? no (end of list)
+p1251    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+p1251           250-SIZE 52428800
+p1251           250-LIMITS MAILMAX=1000 RCPTMAX=50000
+p1251           250-8BITMIME
+p1251           250-PIPELINING
+p1251           250 HELP
+p1251 using PIPELINING
+p1251 not using DSN
+p1251    SMTP|> MAIL FROM:<usere@ok.example>
+p1251    SMTP>> RCPT TO:<userf@test.ex>
+p1251  cmd buf flush 55 bytes
+p1251 sync_responses expect mail
+p1252 userf in "rcpt_defer"? no (end of list)
+p1252 host in "ip4.ip4.ip4.ip4"? no (end of list)
+p1251    SMTP<< 250 OK
+p1251 sync_responses expect rcpt for userf@test.ex
+p1251    SMTP<< 250 Accepted
+LOG: MAIN
+  <= usere@ok.example H=(test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss
+forked delivery process p1256 
+Process p1251 is ready for new message
+LOG: smtp_connection MAIN
+  SMTP connection from (test.ex) [ip4.ip4.ip4.ip4] D=q.qqqs closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=p1251 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1237 child p1251 ended: status=0x0
+p1237   normal exit, 0
+p1237 1 SMTP accept process now running
+p1256 Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=p1256 D=20080000
+p1256 Hints DB:
+p1256 macros_trusted overridden to true by whitelisting
+p1256 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+p1256 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1256 macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+p1256 macros_expand: matched '_HAVE_PIPE_CONNECT' in '.ifdef _HAVE_PIPE_CONNECT'
+p1256 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1256 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1256 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1256 macros_expand: matched 'SRV' in 'SRV'
+p1256 configuration file is TESTSUITE/test-config
+p1256 trusted user
+p1256 admin user
+p1256 dropping to exim gid; retaining priv uid
+p1256 readconf_rest: acl
+p1256 readconf_rest: routers
+p1256  macros_expand: matched 'SERVER' in 'condition =	${if or {{eq {SERVER}{server}} {queue_running}}}'
+p1256 readconf_rest: transports
+p1256 readconf_rest: retry
+p1256 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
+p1256 --------> userf@test.ex <--------
+p1259 t1 transport entered
+p1259   userf@test.ex
+p1259 hostlist:
+p1259   '127.0.0.1' IP 127.0.0.1 port PORT_D
+p1259 already connected to 127.0.0.1 [127.0.0.1]:10003 (on fd 0)
+p1259 checking retry status of 127.0.0.1
+p1259 127.0.0.1 [127.0.0.1]:10003 retry-status = usable
+p1259 delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userf@test.ex)
+p1259 continued connection, proxied TLS
+p1259   SMTP>> DATA
+p1259 cmd buf flush 6 bytes
+p1259 sync_responses expect data
+p1259   SMTP<< 354 Enter message, ending with "." on a line by itself
+p1259   SMTP>> (writing message)
+p1259 cannot use sendfile for body: spoolfile not wireformat
+p1259   SMTP>> .
+p1259 writing data block fd=0 size=sss timeout=300
+LOG: MAIN
+  <= usere@ok.example H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss
+p1259   SMTP<< 250 OK id=10HmbA-000000005vi-0000
+p1259 ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
+p1259   SMTP+> QUIT
+p1259 cmd buf flush 6 bytes (more expected)
+p1259   SMTP(shutdown)>>
+forked delivery process p1260 
+Process p1252 is ready for new message
+p1259   SMTP<< 221 myhost.test.ex closing connection
+p1259   SMTP(close)>>
+p1259 cmdlog: 'DATA:354:.:250:QUIT+:221'
+p1259 Leaving t1 transport
+p1259 >>>>>>>>>>>>>>>> Exim pid=p1259 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  => userf@test.ex R=passon T=t1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbA-000000005vi-0000"
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=p1256 (daemon-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1260 Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=p1260 D=20080000
+p1260 Hints DB:
+p1260 macros_trusted overridden to true by whitelisting
+p1260 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
+p1260 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1260 macros_expand: matched 'SERVER' in 'log_file_path = TESTSUITE/spool/log/SERVER%slog'
+p1260 macros_expand: matched '_HAVE_PIPE_CONNECT' in '.ifdef _HAVE_PIPE_CONNECT'
+p1260 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1260 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1260 macros_expand: matched 'SERVER' in '.ifdef SERVER'
+p1260 macros_expand: matched 'SRV' in 'SRV'
+p1260 configuration file is TESTSUITE/test-config
+p1260 trusted user
+p1260 admin user
+p1260 dropping to exim gid; retaining priv uid
+p1260 readconf_rest: acl
+p1260 readconf_rest: routers
+p1260  macros_expand: matched 'SERVER' in 'condition =	${if or {{eq {SERVER}{server}} {queue_running}}}'
+p1260 readconf_rest: transports
+p1260 readconf_rest: retry
+LOG: MAIN
+  => :blackhole: <userf@test.ex> R=target
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=p1260 (daemon-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1258 >>>>>>>>>>>>>>>> Exim pid=p1258 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1252 LOG: smtp_connection MAIN
+p1252   SMTP connection from localhost (myhost.test.ex) [127.0.0.1] D=q.qqqs closed by QUIT
+p1252 >>>>>>>>>>>>>>>> Exim pid=p1252 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+p1237 child p1252 ended: status=0x0
+p1237   normal exit, 0
+p1237 0 SMTP accept processes now running
+p1237 SIGTERM/SIGINT seen
+p1237 >>>>>>>>>>>>>>>> Exim pid=p1237 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
