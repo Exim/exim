@@ -1334,11 +1334,13 @@ Currently they are output in misc_mod_add() */
   show_string(is_stdout, g);
   g = NULL;
 
+  /* Has to be before the lookups as the spf lookup calls into the spf module */
+  init_misc_mod_list();
+
   init_lookup_list();
   tree_walk(lookups_tree, lookup_version_report_cb, &g);
   show_string(is_stdout, g);
   g = NULL;
-  init_misc_mod_list();
 
 #ifdef WHITELIST_D_MACROS
   g = string_fmt_append(g, "WHITELIST_D_MACROS: %q\n", WHITELIST_D_MACROS);
