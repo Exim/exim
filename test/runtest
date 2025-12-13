@@ -1430,12 +1430,16 @@ RESET_AFTER_EXTRA_LINE_READ:
 	      | searchtype\ \w+\ not\ initially\ found
 	      | Loaded\ "\w+"\ \(\d+\ lookup\ types?\)
 	      | Loading\ lookup\ modules\ from
-	      | Loaded\ \d+\ lookup\ modules
-	      | Total\ \d+\ built-in\ lookups)/x;
+	      | Loaded\ \d+\ dynamic\ lookup\ modules
+	      | Total\ \d+\ built-in\ lookups
+	      | Loaded\ module\ \"
+	      )/x;
 
-    # drop loads of dyn-module drivers
+    # drop loads of non-lookup dyn-module drivers
     next if /^$time_pid?(?:Loading\ \w+\ (?:router|transport|auth)\ driver\ from
-			  | Loaded\ \w+\ (?:router|transport|auth)$)/x;
+			| Loaded\ module\ "\w+"\ \((?:router|transport|auth)\)$
+			| \s*(?:Load(?:ing|ed)\ module|Module\ init:)\ \"
+			)/x;
 
     # drop compiler information
     next if /^$time_pid?Compiler:/;

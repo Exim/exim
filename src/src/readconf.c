@@ -3853,7 +3853,7 @@ else
     if ((errormsg = dlerror()))
       {
       log_write(0, LOG_MAIN|LOG_PANIC,
-		"%s does not appear to be a %s module (%s)\n", fname, class, errormsg);
+	"%s does not appear to be a %s module (%s)\n", fname, class, errormsg);
       dlclose(dl);
       break;
       }
@@ -3864,7 +3864,8 @@ else
 	store_pool = POOL_PERM;
 	add_driver_info(info_anchor, di, size_of_info);
 	store_pool = old_pool;
-	DEBUG(D_any) debug_printf("Loaded %s %s\n", d->driver_name, class);
+	DEBUG(D_any)
+	  debug_printf("Loaded module %q (%s)\n", d->driver_name, class);
 	closedir(dd);
 	goto found;
 	}

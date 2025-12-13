@@ -287,7 +287,7 @@ void * dl;
 struct misc_module_info * mi;
 const char * errormsg;
 
-EARLY_DEBUG(D_any, "loading module %q\n", name);
+EARLY_DEBUG(D_any, "Loading module %q\n", name);
 if (!(dl = mod_open(name, US"miscmod", errstr)))
   {
   if (errstr) EARLY_DEBUG(D_any, " mod_open: %s\n", *errstr);
@@ -313,7 +313,7 @@ if (mi->dyn_magic != MISC_MODULE_MAGIC)
   return FALSE;
   }
 
-EARLY_DEBUG(D_lookup, "loaded %q\n", name);
+EARLY_DEBUG(D_lookup, "Loaded module %q\n", name);
 misc_mod_add(mi);
 return mi;
 }
