@@ -31,8 +31,8 @@ auths.a:	$(OBJ)
 
 SO_FLAGS = -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS)
 .c.so:;		@echo "$(CC) -shared $*.c"
-		$(FE)$(CC) $(SO_FLAGS) $(AUTH_$*_INCLUDE) $(AUTH_$*_LIBS) \
-			$*.c -o $@
+		$(FE)$(CC) $(SO_FLAGS) $(AUTH_$*_INCLUDE) $*.c $(AUTH_$*_LIBS) \
+			-o $@
 
 
 $(OBJ) $(MOD): $(HDRS)

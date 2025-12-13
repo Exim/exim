@@ -313,7 +313,13 @@ fi
 cp ../src/lookups/Makefile $look_mf_pre
 EGREP="$egrep" ../scripts/lookups-Makefile
 
-# make the Makefiles for routers, transports, auths and miscmods
+# Make the Makefiles for routers, transports, auths and miscmods
+#
+# Columns in the here-file:
+#  1		"class"		the subdir name to work in
+#  2		"classdef"	is a prefix on the driver name, used for pulling
+#  				construction data from Local/Makefile
+#  (remainder)	"names"		a list of driver names, in caps
 # An _ prefix on a name means the control in Local/Makefile is DISABLED_<name>
 #
 while read class classdef names

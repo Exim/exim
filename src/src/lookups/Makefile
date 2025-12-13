@@ -48,7 +48,9 @@ lookups.a:       avail_static_lookups.o $(OBJS)
 		 $(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $*.c
 
 .c.so:;          @echo "$(CC) -shared $*.c"
-		 $(FE)$(CC) $(LOOKUP_$*_INCLUDE) $(LOOKUP_$*_LIBS) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) $*.c -o $@
+		 $(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) \
+		 	$(LOOKUP_$*_INCLUDE) $(INCLUDE) $(DLFLAGS) $*.c \
+		 	$(LOOKUP_$*_LIBS) -o $@
 
 cdb.o cdb.so:           $(HDRS) cdb.c
 dbmdb.o dbmdb.so:       $(HDRS) dbmdb.c

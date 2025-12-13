@@ -26,7 +26,8 @@ routers.a:       $(OBJ)
 		 $(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $*.c
 
 .c.so:;          @echo "$(CC) -shared $*.c"
-		 $(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) $*.c -o $@
+		 $(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) \
+			$(DLFLAGS) $*.c -o $@
 
 
 

@@ -27,9 +27,9 @@ miscmods.a:	$(OBJ)
 		$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $*.c
 
 .c.so:;         @echo "$(CC) -shared $*.c"
-		$(FE)$(CC) $(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
-			-DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) \
-			$(DLFLAGS) $*.c -o $@
+		$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) \
+			$(SUPPORT_$*_INCLUDE) $(INCLUDE) $(DLFLAGS) $*.c \
+			$(SUPPORT_$*_LIBS) -o $@
 
 # Note that the sources from pdkim/ are linked into the build.../miscmods/ dir
 # by scripts/Makelinks.
@@ -68,10 +68,10 @@ dkim.o:
 # Similarly, we want a single .so for the dynamic-load module
 dkim.so:
 	@echo "$(CC) -shared dkim.c dkim_transport.c pdkim.c signing.c"
-	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) -o $@ \
-		$(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
-		$(CFLAGS) $(INCLUDE) $(TLS_INCLUDE) $(DLFLAGS) \
-		dkim.c dkim_transport.c pdkim.c signing.c
+	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) \
+		$(SUPPORT_$*_INCLUDE) $(INCLUDE) $(TLS_INCLUDE) $(DLFLAGS) \
+		dkim.c dkim_transport.c pdkim.c signing.c $(SUPPORT_$*_LIBS)  \
+		-o $@
 
 # spf_perl is special; Configure-Makefile asks for it but we actually
 # build resulting in a file named spf.so because the module-loading
@@ -81,9 +81,9 @@ dkim.so:
 
 spf_perl.so:
 	@echo "$(CC) -shared $*.c"
-	$(FE)$(CC) $(SUPPORT_SPF_PERL_INCLUDE) $(SUPPORT_SPF_PERL_LIBS) \
-			-DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) \
-			$(DLFLAGS) spf_perl.c -o spf.so
+	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) \
+		$(SUPPORT_SPF_PERL_INCLUDE) $(INCLUDE) $(DLFLAGS) \
+		spf_perl.c $(SUPPORT_SPF_PERL_LIBS) -o spf.so
 
 # DMARC
 dmarc.o dmarc_native.o:
@@ -96,10 +96,9 @@ dmarc.o dmarc_native.o:
 # dmarc_native is special in the same way as spf_perl
 dmarc.so dmarc_native.so:
 	@echo "$(CC) -shared $*.c dmarc_common.c"
-	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) -o dmarc.so \
-		$(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
-		$(CFLAGS) $(INCLUDE) $(TLS_INCLUDE) $(DLFLAGS) \
-		$*.c dmarc_common.c
+	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) \
+		$(SUPPORT_$*_INCLUDE) $(INCLUDE) $(TLS_INCLUDE) $(DLFLAGS) \
+		$*.c dmarc_common.c $(SUPPORT_$*_LIBS) -o dmarc.so
 
 # Compile instructions for static perl.o for when EXIM_PERL is set
 # Dynamic is managed all via scripts/Configure-Makefile
