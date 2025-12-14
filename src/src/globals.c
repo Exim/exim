@@ -286,15 +286,15 @@ struct global_flags f =
 	.parse_allow_group      = FALSE,
 	.parse_found_group      = FALSE,
 	.pipelining_enable      = TRUE,
-#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
-	.proxy_session_failed   = FALSE,
-#endif
 
 	.queue_2stage           = FALSE,
 	.queue_only_policy      = FALSE,
 	.queue_run_local        = FALSE,
 	.queue_running          = FALSE,
 	.queue_smtp             = FALSE,
+#if defined(SUPPORT_PROXY)
+	.quit_cmd_only		= FALSE,
+#endif
 
 	.really_exim            = TRUE,
 	.receive_call_bombout   = FALSE,

@@ -1308,8 +1308,8 @@ if required. */
 for (smtp_cmd_list * p = cmd_list; p < cmd_list + nelem(cmd_list); p++)
   {
 #ifdef SUPPORT_PROXY
-  /* Only allow QUIT command if Proxy Protocol parsing failed */
-  if (proxy_session && f.proxy_session_failed && p->cmd != QUIT_CMD)
+  /* If Proxy Protocol parsing failed, only allow QUIT command */
+  if (f.quit_cmd_only && p->cmd != QUIT_CMD)
     continue;
 #endif
   if (  p->len
@@ -1363,8 +1363,8 @@ for (smtp_cmd_list * p = cmd_list; p < cmd_list + nelem(cmd_list); p++)
   }
 
 #ifdef SUPPORT_PROXY
-/* Only allow QUIT command if Proxy Protocol parsing failed */
-if (proxy_session && f.proxy_session_failed)
+/* If Proxy Protocol parsing failed, only allow QUIT command */
+if (f.quit_cmd_only)
   return PROXY_FAIL_IGNORE_CMD;
 #endif
 
@@ -2668,11 +2668,20 @@ proxy_session = FALSE;
 /* If valid Proxy Protocol source is connecting, set up session.
 Failure will not allow any SMTP function other than QUIT. */
 
-f.proxy_session_failed = FALSE;
-if (proxy_protocol_host())
+f.quit_cmd_only = FALSE;
+if (hosts_proxy)
   {
-  os_non_restarting_signal(SIGALRM, command_timeout_handler);
-  proxy_protocol_setup();
+  uschar * dummy_errmsg;
+  misc_module_info * mi;
+  typedef BOOL (*fn_t) (void);
+
+  if (!(mi = misc_mod_find(US"proxy", &dummy_errmsg)))
+    {
+    smtp_closedown(US"Temporary local problem - please try later");
+    return FALSE;
+    }
+  if (!((fn_t *) mi->functions)[PROXY_PROTO_START] ())
+    f.quit_cmd_only = TRUE;
   }
 #endif
 

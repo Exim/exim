@@ -504,6 +504,9 @@ extern misc_module_info pam_module_info;
 #if defined(EXIM_PERL) && (!defined(SUPPORT_PERL) || SUPPORT_PERL!=2)
 extern misc_module_info perl_module_info;
 #endif
+#if defined(SUPPORT_PROXY) && SUPPORT_PROXY!=2
+extern misc_module_info proxy_module_info;
+#endif
 #if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADIUS!=2)
 extern misc_module_info radius_module_info;
 #endif
@@ -552,6 +555,9 @@ onetime = TRUE;
 #endif
 #if defined(EXIM_PERL) && (!defined(SUPPORT_PERL) || SUPPORT_PERL!=2)
   misc_mod_add(&perl_module_info);
+#endif
+#if defined(SUPPORT_PROXY) && SUPPORT_PROXY!=2
+  misc_mod_add(&proxy_module_info);
 #endif
 #if !defined(DISABLE_EXIM_FILTER) && (!defined(SUPPORT_EXIM_FILTER) || SUPPORT_EXIM_FILTER!=2)
   misc_mod_add(&exim_filter_module_info);

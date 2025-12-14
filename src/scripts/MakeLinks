@@ -106,6 +106,7 @@ for f in dummy.c \
 	exim_filter.c exim_filter_api.h \
 	pam.c pam_api.h \
 	perl.c perl_api.h \
+	proxy.c proxy_api.h \
 	radius.c radius_api.h \
 	sieve_filter.c sieve_filter_api.h \
 	socks.c socks_api.h \
@@ -139,7 +140,7 @@ for f in blob.h dbfunctions.h exim.h functions.h globals.h \
   debug.c deliver.c directory.c dns.c dnsbl.c drtables.c dummies.c enq.c \
   exim.c exim_dbmbuild.c exim_dbutil.c exim_lock.c expand.c filtertest.c \
   globals.c hash.c header.c host.c host_address.c ip.c log.c lss.c match.c \
-  md5.c moan.c parse.c priv.c proxy.c queue.c rda.c readconf.c receive.c \
+  md5.c moan.c parse.c priv.c queue.c rda.c readconf.c receive.c \
   retry.c rewrite.c regex_cache.c rfc2047.c route.c search.c setenv.c \
   environment.c smtp_in.c smtp_out.c spool_in.c spool_out.c std-crypto.c \
   store.c string.c tls.c tlscert-gnu.c tlscert-openssl.c tls-cipher-stdname.c \

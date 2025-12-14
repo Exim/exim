@@ -11,9 +11,17 @@
 *            Proxy-Protocol support             *
 ************************************************/
 
-#include "exim.h"
+#include "../exim.h"
 
 #ifdef SUPPORT_PROXY
+
+
+static void
+command_timeout_handler(int sig)
+{
+had_command_timeout = sig;
+}
+
 /*************************************************
 *       Check if host is required proxy host     *
 *************************************************/
@@ -25,7 +33,7 @@ Arguments: none
 Returns:   boolean for Proxy Protocol needed
 */
 
-BOOL
+static BOOL
 proxy_protocol_host(void)
 {
 if (  sender_host_address
@@ -34,6 +42,7 @@ if (  sender_host_address
   {
   DEBUG(D_receive)
     debug_printf("Detected proxy protocol configured host\n");
+  /* having this set when we could still fail is ugly */
   proxy_session = TRUE;
   }
 return proxy_session;
@@ -114,6 +123,7 @@ debug_printf("PROXY<<%3.*H\n", (int)(end - start), buf + start);
 }
 
 
+/*API*/
 /*************************************************
 *         Setup host for proxy protocol          *
 *************************************************/
@@ -123,11 +133,11 @@ so exit with an error if do not find the exact required pieces. This
 includes an incorrect number of spaces separating args.
 
 Arguments: none
-Returns:   Boolean success
+Returns:   TRUE iff success
 */
 
-void
-proxy_protocol_setup(void)
+static BOOL
+proxy_protocol(void)
 {
 union {
   struct {
@@ -201,6 +211,10 @@ const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
 uschar * iptype;  /* To display debug info */
 BOOL yield = FALSE;
 
+if (!proxy_protocol_host())
+  return TRUE;
+
+os_non_restarting_signal(SIGALRM, command_timeout_handler);
 ALARM(proxy_protocol_timeout);
 
 do
@@ -496,6 +510,8 @@ done:
 should cause a synchronization failure */
 
 proxyfail:
+
+  ALARM(0);
   DEBUG(D_receive) if (had_command_timeout)
     debug_printf("Timeout while reading proxy header\n");
 
@@ -506,15 +522,29 @@ proxyfail:
     host_build_sender_fullhost();
     }
   else
-    {
-    f.proxy_session_failed = TRUE;
     DEBUG(D_receive)
       debug_printf("Failure to extract proxied host, only QUIT allowed\n");
-    }
 
-ALARM(0);
-return;
+return yield;
 }
+
+
+/******************************************************************************/
+/* Module API */
+
+static void * proxy_functions[] = {
+  [PROXY_PROTO_START] =	(void *) proxy_protocol,
+};
+
+misc_module_info proxy_module_info =
+{
+  .name =		US"proxy",
+# ifdef DYNLOOKUP
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+  .functions =		proxy_functions,
+  .functions_count =	nelem(proxy_functions),
+};
 #endif	/*SUPPORT_PROXY*/
 
 /* vi: aw ai sw=2

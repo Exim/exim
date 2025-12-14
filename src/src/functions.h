@@ -407,10 +407,6 @@ const misc_module_info * perl_startup(const uschar *);
 
 extern void priv_drop_temp(const uid_t, const gid_t);
 extern void priv_restore(void);
-#ifdef SUPPORT_PROXY
-extern BOOL	proxy_protocol_host(void);
-extern void	proxy_protocol_setup(void);
-#endif
 
 extern BOOL    queue_action(const uschar *, int, const uschar **, int, int);
 extern void    queue_check_only(void);

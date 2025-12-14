@@ -256,15 +256,15 @@ extern struct global_flags {
  BOOL   parse_allow_group		:1; /* Allow group syntax */
  BOOL   parse_found_group		:1; /* In the middle of a group */
  BOOL   pipelining_enable		:1; /* As it says */
-#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
- BOOL   proxy_session_failed		:1; /* TRUE if required proxy negotiation failed */
-#endif
 
  BOOL   queue_2stage			:1; /* Run queue in 2-stage manner */
  BOOL   queue_only_policy		:1; /* ACL or local_scan wants queue_only */
  BOOL   queue_run_local			:1; /* Local deliveries only in queue run */
  BOOL   queue_running			:1; /* TRUE for queue running process and */
  BOOL   queue_smtp			:1; /* Disable all immediate SMTP (-odqs)*/
+#ifdef SUPPORT_PROXY
+ BOOL   quit_cmd_only			:1; /* TRUE if required proxy negotiation failed */
+#endif
 
  BOOL   really_exim			:1; /* FALSE in utilities */
  BOOL   receive_call_bombout		:1; /* Flag for crashing log */

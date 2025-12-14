@@ -46,6 +46,7 @@ dummy.o:			dummy.c
 exim_filter.o	exim_filter.so:	$(HDRS) exim_filter.c
 pam.o   	pam.so:		$(HDRS) pam.c
 perl.o		perl.so:       	$(HDRS) perl.c
+proxy.o		proxy.so:	$(HDRS) proxy_api.h proxy.c
 radius.o	radius.so:	$(HDRS) radius.c
 sieve_filter.o	sieve_filter.so: $(HDRS) sieve_filter.c
 socks.o		socks.so:	$(HDRS) socks_api.h ../transports/smtp.h socks.c

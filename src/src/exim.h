@@ -567,6 +567,9 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef EXIM_PERL
 # include "miscmods/perl_api.h"
 #endif
+#ifdef SUPPORT_PROXY
+# include "miscmods/proxy_api.h"
+#endif
 #ifdef SUPPORT_SOCKS
 # include "miscmods/socks_api.h"
 #endif
