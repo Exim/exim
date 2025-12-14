@@ -26,7 +26,7 @@ body
 .
 ??? 250
 XCLIENT NAME=proxylookedupname.net ADDR=127.0.0.2 PORT=4242
-??? 550
+??? 501
 QUIT
 ??? 221
 ****

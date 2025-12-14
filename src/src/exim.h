@@ -561,9 +561,6 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef SUPPORT_DSCP
 # include "miscmods/dscp_api.h"
 #endif
-#ifdef RADIUS_CONFIG_FILE
-# include "miscmods/radius_api.h"
-#endif
 #ifdef SUPPORT_PAM
 # include "miscmods/pam_api.h"
 #endif
@@ -572,6 +569,12 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #endif
 #ifdef SUPPORT_SOCKS
 # include "miscmods/socks_api.h"
+#endif
+#ifdef RADIUS_CONFIG_FILE
+# include "miscmods/radius_api.h"
+#endif
+#ifdef EXPERIMENTAL_XCLIENT
+# include "miscmods/xclient_api.h"
 #endif
 #include "miscmods/exim_filter_api.h"
 #include "miscmods/sieve_filter_api.h"

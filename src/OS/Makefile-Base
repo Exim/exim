@@ -541,8 +541,7 @@ OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
 OBJ_EXPERIMENTAL =	dane.o \
 			dcc.o \
 			imap_utf7.o \
-			utf8.o \
-			xclient.o
+			utf8.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
@@ -939,7 +938,6 @@ dane.o:		$(HDRS) dane.c dane-openssl.c
 dcc.o:		$(HDRS) dcc.h dcc.c
 imap_utf7.o:	$(HDRS) imap_utf7.c
 utf8.o:		$(HDRS) utf8.c
-xclient.o:	$(HDRS) xclient.c
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles

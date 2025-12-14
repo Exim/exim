@@ -17,7 +17,7 @@
 
 **** SMTP testing: that is not a real message id!
 
-550 XCLIENT command used when not advertised
+501 XCLIENT command used when not advertised
 221 myhost.test.ex closing connection
 ### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress
 

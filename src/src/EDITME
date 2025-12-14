@@ -707,7 +707,8 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following line to add SRV smtps support
 # EXPERIMENTAL_SRV_SMTPS=yes
 #
-# Uncomment the following line to add XCLIENT support
+# Uncomment the following line to add XCLIENT support.
+# Set to 2 for a dynamic-load module.
 # EXPERIMENTAL_XCLIENT=yes
 
 ###############################################################################

@@ -109,7 +109,8 @@ for f in dummy.c \
 	radius.c radius_api.h \
 	sieve_filter.c sieve_filter_api.h \
 	socks.c socks_api.h \
-	spf.c spf_perl.c spf.h spf_api.h
+	spf.c spf_perl.c spf.h spf_api.h \
+	xclient.c xclient_api.h
 do
   ln -s ../../src/$d/$f `basename $f`
 done
@@ -158,7 +159,7 @@ done
 
 # EXPERIMENTAL_*
 for f in  dcc.c dcc.h dane.c dane-openssl.c \
-  danessl.h imap_utf7.c utf8.c xclient.c
+  danessl.h imap_utf7.c utf8.c
 do
   ln -s ../src/$f $f
 done

@@ -43,14 +43,15 @@ dmarc_native.o dmarc_native.so:	$(HDRS) spf.h pdkim.h dmarc.h \
 				dmarc_native.c dmarc_common.c
 dscp.o  dscp.so:		$(HDRS) dscp.c
 dummy.o:			dummy.c
-exim_filter.o exim_filter.so:	$(HDRS) exim_filter.c
-pam.o   pam.so:			$(HDRS) pam.c
-perl.o perl.so:         	$(HDRS) perl.c
-radius.o radius.so:		$(HDRS) radius.c
-sieve_filter.o sieve_filter.so:	$(HDRS) sieve_filter.c
-socks.o socks.so:		$(HDRS) socks_api.h ../transports/smtp.h socks.c
-spf.o   spf.so:			$(HDRS) spf.h spf.c
-spf_perl.o spf_perl.so:		$(HDRS) spf.h spf_perl.c
+exim_filter.o	exim_filter.so:	$(HDRS) exim_filter.c
+pam.o   	pam.so:		$(HDRS) pam.c
+perl.o		perl.so:       	$(HDRS) perl.c
+radius.o	radius.so:	$(HDRS) radius.c
+sieve_filter.o	sieve_filter.so: $(HDRS) sieve_filter.c
+socks.o		socks.so:	$(HDRS) socks_api.h ../transports/smtp.h socks.c
+spf.o   	spf.so:		$(HDRS) spf.h spf.c
+spf_perl.o	spf_perl.so:	$(HDRS) spf.h spf_perl.c
+xclient.o	xclient.so:	$(HDRS) xclient_api.h xclient.c
 
 
 

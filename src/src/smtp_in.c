@@ -3811,6 +3811,9 @@ smtp_setup_msg(void)
 int done = 0;
 BOOL toomany = FALSE, discarded = FALSE, last_was_rej_mail = FALSE,
     last_was_rcpt = FALSE;
+#ifdef EXPERIMENTAL_XCLIENT
+static misc_module_info * xclient_mi = NULL;
+#endif
 rmark reset_point = store_mark();
 
 DEBUG(D_receive) debug_printf("smtp_setup_msg entered\n");
@@ -4433,8 +4436,17 @@ while (done <= 0)
 #ifdef EXPERIMENTAL_XCLIENT
 	if (proxy_session || verify_check_host(&hosts_xclient) != FAIL)
 	  {
+	  uschar * dummy_errmsg;
+	  typedef gstring * (*fn_t) (gstring *);
+
+	  if (  !xclient_mi
+	     && !(xclient_mi = misc_mod_find(US"xclient", &dummy_errmsg)))
+	    {
+	    smtp_closedown(US"Temporary local problem - please try later");
+	    return FALSE;
+	    }
 	  g = string_catn(g, smtp_code, 3);
-	  g = xclient_smtp_advertise_str(g);
+	  g = ((fn_t *) xclient_mi->functions)[XCLIENT_PROTO_ADVERTISE] (g);
 	  }
 #endif
 #ifndef DISABLE_PRDR
@@ -4516,37 +4528,21 @@ while (done <= 0)
 
 #ifdef EXPERIMENTAL_XCLIENT
     case XCLIENT_CMD:
-      {
-      BOOL fatal = fl.helo_seen;
-      uschar * errmsg;
-      int resp;
-
       HAD(SCH_XCLIENT);
       smtp_mailcmd_count++;
 
-      if ((errmsg = xclient_smtp_command(smtp_cmd_data, &resp, &fatal)))
-	if (fatal)
-	  done = synprot_error(L_smtp_syntax_error, resp, NULL, errmsg);
-	else
-	  {
-	  smtp_printf("%d %s\r\n", SP_NO_MORE, resp, errmsg);
-	  log_write(0, LOG_MAIN|LOG_REJECT, "rejected XCLIENT from %s: %s",
-	    host_and_ident(FALSE), errmsg);
-	  }
+      if (!xclient_mi)
+	done = synprot_error(L_smtp_syntax_error, 501, NULL,
+	  US"XCLIENT command used when not advertised");
       else
 	{
-	fl.helo_seen = FALSE;			/* Require another EHLO */
-	smtp_code = string_sprintf("%d", resp);
-
-	/*XXX unclear in spec. if this needs to be an ESMTP banner,
-	nor whether we get the original client's HELO after (or a proxy fake).
-	We require that we do; the following HELO/EHLO handling will set
-	sender_helo_name as normal. */
-
-	smtp_printf("%s XCLIENT success\r\n", SP_NO_MORE, smtp_code);
+	typedef BOOL (*fn_t) (const uschar *, int *, BOOL);
+	BOOL started = ((fn_t *) xclient_mi->functions)[XCLIENT_PROTO_START]
+					  (smtp_cmd_data, &done, fl.helo_seen);
+	if (started)
+	  fl.helo_seen = FALSE;			/* Require another EHLO */
 	}
       break; /* XCLIENT */
-      }
 #endif
 
 
