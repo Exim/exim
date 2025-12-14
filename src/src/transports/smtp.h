@@ -250,9 +250,4 @@ extern BOOL smtp_transport_entry(transport_instance *, address_item *);
 extern void smtp_transport_closedown(transport_instance *);
 
 
-
-#ifdef SUPPORT_SOCKS
-extern int     socks_sock_connect(smtp_connect_args *, const blob *);
-#endif
-
 /* End of transports/smtp.h */

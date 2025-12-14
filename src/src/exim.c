@@ -3093,6 +3093,8 @@ on the second character (the one after '-'), to save some effort. */
 
 #ifdef SUPPORT_SOCKS
     /* -MCp: Socks proxy in use; nearside IP, port, external IP, port */
+    /*XXX Neatness might have this code in the socks module, but having to
+    load a dynamic version puely for this?  However, of logging moved there...*/
 	case 'p': proxy_session = TRUE;
 		  if (++i < argc)
 		    {

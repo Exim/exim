@@ -10,14 +10,9 @@
 /* SOCKS version 5 proxy, client-mode */
 
 #include "../exim.h"
-#include "smtp.h"
+#include "../transports/smtp.h"
 
 #ifdef SUPPORT_SOCKS /* entire file */
-
-#ifndef nelem
-# define nelem(arr) (sizeof(arr)/sizeof(*arr))
-#endif
-
 
 /* Defaults */
 #define SOCKS_PORT	1080
@@ -187,18 +182,18 @@ return -1;
 
 
 
-/* Make a connection via a socks proxy
+/*API: Make a connection via a socks proxy
 
 Arguments:
  sc		details for making connection: host, af, interface, transport
  early_data	data to send down the smtp channel (once proxied)
 
 Return value:
- 0 on success; -1 on failure, with errno set
+ connected file descriptor on success; -1 on failure, with errno set
 */
 
-int
-socks_sock_connect(smtp_connect_args * sc, const blob * early_data)
+static int
+socks_sock_connect(const smtp_connect_args * sc, const blob * early_data)
 {
 transport_instance * tb = sc->tblock;
 smtp_transport_options_block * ob = tb->drinst.options_block;
@@ -406,6 +401,24 @@ rcv_err:
   else if (errno == ENOENT) errno = ECONNABORTED;
   return -1;
 }
+
+/******************************************************************************/
+/* Module API */
+
+static void * socks_functions[] = {
+  [SOCKS_CONNECT] =	(void *) socks_sock_connect,
+};
+
+misc_module_info socks_module_info =
+{
+  .name =		US"socks",
+# ifdef DYNLOOKUP
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+
+  .functions =		socks_functions,
+  .functions_count =	nelem(socks_functions),
+};
 
 #endif	/* entire file */
 /* vi: aw ai sw=2

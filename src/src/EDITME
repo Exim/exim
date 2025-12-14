@@ -1131,7 +1131,7 @@ ZCAT_COMMAND=/usr/bin/zcat
 # Proxying.
 #
 # If you may want to use outbound (client-side) proxying, using Socks5,
-# uncomment the line below.
+# uncomment the line below.  To build as a dynamic module set it to 2.
 
 # SUPPORT_SOCKS=yes
 

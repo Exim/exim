@@ -520,7 +520,12 @@ if (ob->socks_proxy)
     return -1;
     }
   if (*ob->socks_proxy)
-    return socks_sock_connect(sc, early_data);
+    {
+    uschar * dummy_errmsg;
+    misc_module_info * mi = misc_mod_find(US"socks", &dummy_errmsg);
+    typedef int (*fn_t) (const smtp_connect_args *, const blob *);
+    return mi ? ((fn_t *) mi->functions)[SOCKS_CONNECT] (sc, early_data) : -1;
+    }
   }
 #endif
 

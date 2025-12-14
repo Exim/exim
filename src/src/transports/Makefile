@@ -11,12 +11,12 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
-OBJ += smtp_socks.o tf_maildir.o
+OBJ += tf_maildir.o
 
 all:	transports.a $(MODS)
 	$(FE):
 
-transports.a:    $(OBJ) smtp_socks.o tf_maildir.o
+transports.a:    $(OBJ) tf_maildir.o
 		 @$(RM_COMMAND) -f transports.a
 		 @echo "$(AR) transports.a"
 		 @$(AR) transports.a $(OBJ)
@@ -39,7 +39,6 @@ lmtp.o lmtp.so:			lmtp.c lmtp.h
 pipe.o pipe.so:			pipe.c pipe.h
 queuefile.o queuefile.so:	queuefile.c queuefile.h
 smtp.o:				smtp.c smtp.h
-smtp_socks.o:			smtp_socks.c smtp.h
 
 tf_maildir.o:			tf_maildir.c tf_maildir.h appendfile.h
 

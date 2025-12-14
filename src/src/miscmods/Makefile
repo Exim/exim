@@ -48,6 +48,7 @@ pam.o   pam.so:			$(HDRS) pam.c
 perl.o perl.so:         	$(HDRS) perl.c
 radius.o radius.so:		$(HDRS) radius.c
 sieve_filter.o sieve_filter.so:	$(HDRS) sieve_filter.c
+socks.o socks.so:		$(HDRS) socks_api.h ../transports/smtp.h socks.c
 spf.o   spf.so:			$(HDRS) spf.h spf.c
 spf_perl.o spf_perl.so:		$(HDRS) spf.h spf_perl.c
 

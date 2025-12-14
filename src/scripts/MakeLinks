@@ -66,7 +66,7 @@ cd $d
 # Makefile is generated
 for f in README appendfile.h appendfile.c autoreply.h \
   autoreply.c lmtp.h lmtp.c pipe.h pipe.c queuefile.c queuefile.h \
-  smtp.h smtp.c smtp_socks.c tf_maildir.c tf_maildir.h
+  smtp.h smtp.c tf_maildir.c tf_maildir.h
 do
   ln -s ../../src/$d/$f $f
 done
@@ -108,6 +108,7 @@ for f in dummy.c \
 	perl.c perl_api.h \
 	radius.c radius_api.h \
 	sieve_filter.c sieve_filter_api.h \
+	socks.c socks_api.h \
 	spf.c spf_perl.c spf.h spf_api.h
 do
   ln -s ../../src/$d/$f `basename $f`

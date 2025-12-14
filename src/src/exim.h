@@ -570,6 +570,9 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef EXIM_PERL
 # include "miscmods/perl_api.h"
 #endif
+#ifdef SUPPORT_SOCKS
+# include "miscmods/socks_api.h"
+#endif
 #include "miscmods/exim_filter_api.h"
 #include "miscmods/sieve_filter_api.h"
 

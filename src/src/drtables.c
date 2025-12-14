@@ -513,6 +513,9 @@ extern misc_module_info exim_filter_module_info;
 #if !defined(DISABLE_SIEVE_FILTER) && (!defined(SUPPORT_SIEVE_FILTER) || SUPPORT_SIEVE_FILTER!=2)
 extern misc_module_info sieve_filter_module_info;
 #endif
+#if defined(SUPPORT_SOCKS) && SUPPORT_SOCKS!=2
+extern misc_module_info socks_module_info;
+#endif
 
 void
 init_misc_mod_list(void)
@@ -537,9 +540,6 @@ onetime = TRUE;
 #if defined(SUPPORT_DSCP) && SUPPORT_DSCP!=2
   misc_mod_add(&dscp_module_info);
 #endif
-#if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADIUS!=2)
-  misc_mod_add(&radius_module_info);
-#endif
 #if defined(SUPPORT_PAM) && SUPPORT_PAM!=2
   misc_mod_add(&pam_module_info);
 #endif
@@ -551,6 +551,12 @@ onetime = TRUE;
 #endif
 #if !defined(DISABLE_SIEVE_FILTER) && (!defined(SUPPORT_SIEVE_FILTER) || SUPPORT_SIEVE_FILTER!=2)
   misc_mod_add(&sieve_filter_module_info);
+#endif
+#if defined(SUPPORT_SOCKS) && SUPPORT_SOCKS!=2
+  misc_mod_add(&socks_module_info);
+#endif
+#if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADIUS!=2)
+  misc_mod_add(&radius_module_info);
 #endif
 }
 

@@ -85,6 +85,8 @@ basically is a re-incarnation of CVE02025-26794.
 
 BQ/01,HS/01 Port 4.98.1 and 4.98.2 to exim-4.99+fixes.
 
+JH/19 Support for connections via a SOCKS proxy can now be built as a
+      dynamically-loaded module.
 
 Exim version 4.99
 -----------------
