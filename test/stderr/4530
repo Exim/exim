@@ -15,7 +15,7 @@ readconf_rest: transports
  macros_expand: matched 'SELECTOR' in '.ifdef SELECTOR'
  macros_expand: matched 'SELECTOR' in 'dkim_selector =	SELECTOR'
  macros_expand: matched 'DDIR' in '}{DDIR/$value}}'
- macros_expand: matched 'OPT' in 'dkim_sign_headers =	OPT'
+ macros_expand: matched 'OPTION' in 'dkim_sign_headers =	OPTION'
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
@@ -37,7 +37,7 @@ readconf_rest: transports
  macros_expand: matched 'SELECTOR' in '.ifdef SELECTOR'
  macros_expand: matched 'SELECTOR' in 'dkim_selector =	SELECTOR'
  macros_expand: matched 'DDIR' in '}{DDIR/$value}}'
- macros_expand: matched 'OPT' in 'dkim_sign_headers =	OPT'
+ macros_expand: matched 'OPTION' in 'dkim_sign_headers =	OPTION'
 Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_D ...
 connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -45,7 +45,6 @@ connected
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -58,7 +57,6 @@ ip4.ip4.ip4.ip4 in tls_verify_cert_hostnames? no (end of list)
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP

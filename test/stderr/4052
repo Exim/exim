@@ -3,7 +3,6 @@ Hints DB:
 macro_create: 'CONNECTCOND' ''
 macro_create: 'RETRY' '7d'
 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
-macros_expand: matched '_OPT_MAIN_LIMITS_ADVERTISE_HOSTS' in '.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS'
 macros_expand: matched 'CONNECTCOND' in 'pipelining_connect_advertise_hosts = CONNECTCOND'
 macros_expand: matched 'RETRY' in 'retry_data_expire = RETRY'
 configuration file is TESTSUITE/test-config
@@ -19,7 +18,6 @@ Hints DB:
 macro_create: 'CONNECTCOND' ''
 macro_create: 'RETRY' '7d'
 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
-macros_expand: matched '_OPT_MAIN_LIMITS_ADVERTISE_HOSTS' in '.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS'
 macros_expand: matched 'CONNECTCOND' in 'pipelining_connect_advertise_hosts = CONNECTCOND'
 macros_expand: matched 'RETRY' in 'retry_data_expire = RETRY'
 configuration file is TESTSUITE/test-config

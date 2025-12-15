@@ -17,7 +17,7 @@ queue_only
 begin acl
 
 check_recipient:
-  require verify = sender=OPT
+  require verify = sender=OPTION
   accept
 
 # ----- Routers -----

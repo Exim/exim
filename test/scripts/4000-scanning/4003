@@ -112,7 +112,7 @@ server 7833
 >
 *eof
 ****
-exim -odi -oMt fromuser -bs -DOPT='127.0.0.1 7833 retry=10s'
+exim -odi -oMt fromuser -bs -DOPTION='127.0.0.1 7833 retry=10s'
 ehlo test.ex
 mail from:<fromuser@myhost.test.ex>
 rcpt to:<userx@test.ex>
@@ -171,7 +171,7 @@ server -i 2 7833
 >
 *eof
 ****
-exim -odi -oMt fromuser -bs -DOPT='127.0.0.1 7833 retry=4s'
+exim -odi -oMt fromuser -bs -DOPTION='127.0.0.1 7833 retry=4s'
 ehlo test.ex
 mail from:<fromuser@myhost.test.ex>
 rcpt to:<userx@test.ex>
@@ -231,7 +231,7 @@ server 7833
 >
 *eof
 ****
-exim -odi -oMt fromuser -bs -DOPT='<; 127.0.0.1 7833 ; HOSTIPV4 7834 pri=2 tmo=2s'
+exim -odi -oMt fromuser -bs -DOPTION='<; 127.0.0.1 7833 ; HOSTIPV4 7834 pri=2 tmo=2s'
 ehlo test.ex
 mail from:<fromuser@myhost.test.ex>
 rcpt to:<userx@test.ex>

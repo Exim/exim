@@ -4051,9 +4051,7 @@ uschar * message = NULL;
 smtp_context * sx = store_get(sizeof(*sx), GET_TAINTED);
 
 BOOL pass_message = FALSE;
-#ifndef DISABLE_ESMTP_LIMITS
 BOOL mail_limit = FALSE;
-#endif
 #ifdef SUPPORT_DANE
 BOOL dane_held;
 #endif
@@ -4971,7 +4969,6 @@ DEBUG(D_transport)
     sx->send_rset, f.continue_more, yield, sx->first_addr ? "not " : "");
 
 if (sx->completed_addr && sx->ok && sx->send_quit)
-#ifndef DISABLE_ESMTP_LIMITS
   if (mail_limit = continue_sequence >= sx->max_mail)
     {
     DEBUG(D_transport)
@@ -4984,7 +4981,6 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
     process. */
     }
   else
-#endif
     {
     BOOL send_rst;
     smtp_compare_t t_compare =
@@ -5299,7 +5295,6 @@ if (dane_held)
   }
 #endif
 
-#ifndef DISABLE_ESMTP_LIMITS
 if (mail_limit && sx->first_addr)
   {
   /* Reset the sequence count since we closed the connection.  This is flagged
@@ -5309,7 +5304,6 @@ if (mail_limit && sx->first_addr)
   continue_sequence = 1;			/* for consistency */
   goto REPEAT_CONN;				/* open a fresh connection */
   }
-#endif
 
 OUT:
   smtp_debug_cmd_report();

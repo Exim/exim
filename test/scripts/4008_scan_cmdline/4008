@@ -1,7 +1,7 @@
 # content scan interface: cmdline
 #
 #
-exim -DOPT=accept -odi -bs -DINSERT=
+exim -DOPTION=accept -odi -bs -DINSERT=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -16,7 +16,7 @@ quit
 #
 # the defer_ok should not prevent rejection
 #
-exim -DOPT=reject -odi -bs -DINSERT="/defer_ok"
+exim -DOPTION=reject -odi -bs -DINSERT="/defer_ok"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -30,7 +30,7 @@ quit
 #
 #
 #
-exim -DOPT=pause3 -odi -bs -DINSERT="/tmo=2s"
+exim -DOPTION=pause3 -odi -bs -DINSERT="/tmo=2s"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -44,7 +44,7 @@ quit
 #
 #
 #
-exim -DOPT=pause3 -odi -bs -DINSERT="/tmo=2s/defer_ok"
+exim -DOPTION=pause3 -odi -bs -DINSERT="/tmo=2s/defer_ok"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>

@@ -52,7 +52,7 @@ Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
-macros_expand: matched 'OPT' in 'smtp_receive_timeout = OPT'
+macros_expand: matched 'OPTION' in 'smtp_receive_timeout = OPTION'
 environment after trimming:
  PATH=<munged>
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys

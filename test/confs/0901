@@ -17,7 +17,7 @@ tls_advertise_hosts = ${if eq {SRV}{tls} {*}}
 .ifdef _HAVE_DMARC
 dmarc_tld_file =
 .endif
-.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS
+.ifdef _HAVE_ESMTP_LIMITS
 limits_advertise_hosts = !*
 .endif
 
@@ -69,7 +69,7 @@ begin routers
 to_server:
   driver = accept
   condition =	${if !eq {SERVER}{server}}
-  transport =	remote_smtp${if eq {OPT}{dkim} {_dkim}}
+  transport =	remote_smtp${if eq {OPTION}{dkim} {_dkim}}
   errors_to =	""
 
 fail_remote_domains:
@@ -117,7 +117,7 @@ remote_smtp_dkim:
   command_timeout = 2s
   final_timeout = 2s
 
-.ifdef OPT
+.ifdef OPTION
   dkim_domain =		test.ex
   dkim_selector =	sel
   dkim_private_key =	DIR/aux-fixed/dkim/dkim.private

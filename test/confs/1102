@@ -10,7 +10,7 @@ tls_advertise_hosts = *
 
 tls_certificate = DIR/tmp/certs/servercert
 tls_privatekey =  DIR/tmp/certs/serverkey
-.ifdef OPT
+.ifdef OPTION
 tls_ocsp_file =   DIR/tmp/certs/ocsp_proof
 .endif
 

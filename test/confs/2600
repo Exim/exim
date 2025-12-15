@@ -7,7 +7,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 domainlist local_domains = @
-.ifdef OPT
+.ifdef OPTION
 hostlist   relay_hosts = sqlite,file=DIR/aux-fixed/sqlitedb; \
                                      select * from them where \
                                      id='$sender_host_address'

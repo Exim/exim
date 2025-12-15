@@ -2,11 +2,11 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-macro_create: 'OPT' ''
+macro_create: 'OPTION' ''
 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-macros_expand: matched 'OPT' in 'OPT'
+macros_expand: matched 'OPTION' in 'OPTION'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -47,7 +47,7 @@ changed uid/gid: forcing real = effective
 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-macros_expand: matched 'OPT' in 'OPT'
+macros_expand: matched 'OPTION' in 'OPTION'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -125,11 +125,11 @@ Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
-macro_create: 'OPT' ''
+macro_create: 'OPTION' ''
 macros_expand: matched 'EXIM_PATH' in 'exim_path = EXIM_PATH'
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-macros_expand: matched 'OPT' in 'OPT'
+macros_expand: matched 'OPTION' in 'OPTION'
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

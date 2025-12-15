@@ -6,8 +6,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello testclient [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250 HELP
 <<< 250 HELP
 End of script
@@ -19,8 +17,6 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-DSN
 <<< 250-DSN
 ??? 250 HELP
@@ -53,8 +49,6 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-DSN
 <<< 250-DSN
 ??? 250 HELP
@@ -84,8 +78,6 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-DSN
 <<< 250-DSN
 ??? 250 HELP
@@ -115,8 +107,6 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-DSN
 <<< 250-DSN
 ??? 250 HELP
@@ -146,8 +136,6 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-DSN
 <<< 250-DSN
 ??? 250 HELP
@@ -179,8 +167,6 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-DSN
 <<< 250-DSN
 ??? 250 HELP

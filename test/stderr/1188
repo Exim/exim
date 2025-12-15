@@ -7,7 +7,6 @@ connected
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -17,7 +16,6 @@ connected
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP
@@ -46,7 +44,6 @@ TCP_FASTOPEN tcpi_unacked 2
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -56,7 +53,6 @@ TCP_FASTOPEN tcpi_unacked 2
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP
@@ -85,7 +81,6 @@ connected
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -95,7 +90,6 @@ connected
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP

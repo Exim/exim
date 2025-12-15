@@ -74,8 +74,7 @@ size_addition = 1024
 
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
-OPT =
-# 5 "TESTSUITE/test-config"
+# 3 "TESTSUITE/test-config"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/tls_conf_prefix"
@@ -90,7 +89,7 @@ gecos_name = CALLER_NAME
 dns_cname_loops = 9
 chunking_advertise_hosts =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
-# 5 "TESTSUITE/test-config"
+# 3 "TESTSUITE/test-config"
 primary_hostname = myhost.test.ex
 log_selector = +outgoing_port
 domainlist local_domains = test.ex : *.test.ex
@@ -118,8 +117,7 @@ begin transports
 
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
-OPT =
-# 5 "TESTSUITE/test-config"
+# 3 "TESTSUITE/test-config"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/tls_conf_prefix"
@@ -134,7 +132,7 @@ gecos_name = CALLER_NAME
 dns_cname_loops = 9
 chunking_advertise_hosts =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
-# 5 "TESTSUITE/test-config"
+# 3 "TESTSUITE/test-config"
 primary_hostname = myhost.test.ex
 log_selector = +outgoing_port
 domainlist local_domains = test.ex : *.test.ex

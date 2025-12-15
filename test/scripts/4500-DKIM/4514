@@ -3,7 +3,7 @@
 exim -bd -DSERVER=server -DFAKE=test.dkim.dom.ain -oX PORT_D
 ****
 #
-exim -DSELECTOR=ses:sel -DOPT=From:To:Subject -odf c@test.ex
+exim -DSELECTOR=ses:sel -DOPTION=From:To:Subject -odf c@test.ex
 From: nobody@example.com
 
 content

@@ -24,8 +24,6 @@ SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP>- ◀flush▶
 SMTP<< ehlo x.y
- list element: *
-  in limits_advertise_hosts? yes (matched "*")
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts?
  list element: *
@@ -34,7 +32,6 @@ SMTP<< ehlo x.y
  in chunking_advertise_hosts? no (end of list)
 SMTP>| 250-myhost.test.ex Hello CALLER at x.y
        250-SIZE 52428800
-       250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
        250-PIPELINING
        250 HELP

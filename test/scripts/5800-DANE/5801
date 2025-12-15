@@ -48,14 +48,14 @@ exim -odq t50@mxdane512ee.test.ex
 ****
 exim -odq t51@mxnondane512ee.test.ex
 ****
-exim -DOPT=MY-SNI -q
+exim -DOPTION=MY-SNI -q
 ****
 # DANE followed by non-DANE, SNI set, 2-Pqr
 exim -odq t60@mxdane512ee.test.ex
 ****
 exim -odq t61@mxnondane512ee.test.ex
 ****
-exim -DOPT=MY-SNI -qq
+exim -DOPTION=MY-SNI -qq
 ****
 #
 # non-DANE followed by DANE, 2-pqr
@@ -70,7 +70,7 @@ exim -odq t80@mxnondane512ee.test.ex
 ****
 exim -odq t91@mxdane512ee.test.ex
 ****
-exim -DOPT=SNISNISNISNI -qq
+exim -DOPTION=SNISNISNISNI -qq
 ****
 #
 #

@@ -9,7 +9,7 @@ server PORT_S
 #
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -31,7 +31,7 @@ server PORT_S
 #
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>

@@ -648,6 +648,7 @@ unsigned continue_flags	       = 0;
 unsigned continue_limit_mail   = 0;
 unsigned continue_limit_rcpt   = 0;
 unsigned continue_limit_rcptdom= 0;
+#endif
 int	continue_fd	       = -1;
 uschar *continue_proxy_cipher  = NULL;
 BOOL    continue_proxy_dane    = FALSE;
@@ -661,7 +662,6 @@ const uschar *continue_transport = NULL;
 #ifndef COMPILE_UTILITY
 open_db *continue_retry_db     = NULL;
 open_db *continue_wait_db      = NULL;
-#endif
 #endif
 
 uschar *csa_status             = NULL;

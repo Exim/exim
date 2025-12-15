@@ -2,7 +2,7 @@
 # DANE/GnuTLS - ciphers option
 
 SERVER=
-OPT=
+OPTION=
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -54,7 +54,7 @@ send_to_server:
 
   # Some commonly-available cipher, we hope
   tls_require_ciphers =		NORMAL:-CIPHER-ALL:+AES-128-CBC
-  dane_require_tls_ciphers =	OPT
+  dane_require_tls_ciphers =	OPTION
 
 # ----- Retry -----
 begin retry

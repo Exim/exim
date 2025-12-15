@@ -361,8 +361,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>  list element: @
 >>>  list element: @[]
 >>> rhubarb in helo_lookup_domains? no (end of list)
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

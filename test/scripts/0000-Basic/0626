@@ -1,6 +1,6 @@
 # ACL 'seen' condition
 #
-exim -DOPT='-1s' -bh 127.0.0.1
+exim -DOPTION='-1s' -bh 127.0.0.1
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>
@@ -12,21 +12,21 @@ dump seen
 #
 sleep 1
 # should now see old-enough record
-exim -DOPT='-1s' -bh 127.0.0.1
+exim -DOPTION='-1s' -bh 127.0.0.1
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>
 QUIT
 ****
 # force an update (visible via debug output in stdout for -bh)
-exim -DOPT='-1s / write' -bh 127.0.0.1
+exim -DOPTION='-1s / write' -bh 127.0.0.1
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>
 QUIT
 ****
 # default key should change with ip
-exim -DOPT='-1s' -bh HOSTIPV4
+exim -DOPTION='-1s' -bh HOSTIPV4
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>
@@ -34,7 +34,7 @@ QUIT
 ****
 dump seen
 # explicit key (also checking expansion)
-exim -DOPT='-1s / key=${sender_host_address}_foo' -bh 127.0.0.1
+exim -DOPTION='-1s / key=${sender_host_address}_foo' -bh 127.0.0.1
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>
@@ -43,7 +43,7 @@ QUIT
 dump seen
 # check refresh
 sleep 1
-exim -DOPT='-1s / refresh=1s' -bh 127.0.0.1
+exim -DOPTION='-1s / refresh=1s' -bh 127.0.0.1
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>
@@ -58,7 +58,7 @@ QUIT
 # that previous one should be no older than 5s, so this should pass
 # do not update
 # check list-parsing spaceless while we're here
-exim -DOPT='5s/key=${sender_host_address}_foo/readonly' -bh 127.0.0.1
+exim -DOPTION='5s/key=${sender_host_address}_foo/readonly' -bh 127.0.0.1
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>
@@ -67,14 +67,14 @@ QUIT
 # check the above no-update by waiting longer than the later-than interval; should fail
 # should update
 sleep 2
-exim -DOPT='1s / key=${sender_host_address}_foo' -bh 127.0.0.1
+exim -DOPTION='1s / key=${sender_host_address}_foo' -bh 127.0.0.1
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>
 QUIT
 ****
 # having updated, should pass
-exim -DOPT='1s / key=${sender_host_address}_foo' -bh 127.0.0.1
+exim -DOPTION='1s / key=${sender_host_address}_foo' -bh 127.0.0.1
 HELO test
 MAIL FROM:<tester@test.ex>
 RCPT TO:<a1@test.ex>

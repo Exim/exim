@@ -38,7 +38,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -DOPT=CUTTHROUGH -bs -odf
+exim -DOPTION=CUTTHROUGH -bs -odf
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<dest@domain.com>

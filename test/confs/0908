@@ -16,7 +16,7 @@ pipelining_connect_advertise_hosts =
 .ifdef _HAVE_DMARC
 dmarc_tld_file =
 .endif
-.ifdef _EXP_LIMITS
+.ifdef _HAVE_ESMTP_LIMITS
 limits_advertise_hosts = !*
 .endif
 
@@ -58,7 +58,7 @@ begin routers
 to_server:
   driver = accept
   condition =	${if = {$received_port}{PORT_S}}
-  transport =	remote_smtp${if eq {OPT}{dkim} {_dkim}}
+  transport =	remote_smtp${if eq {OPTION}{dkim} {_dkim}}
   errors_to =	""
 
 fail_remote_domains:
@@ -99,7 +99,7 @@ remote_smtp_dkim:
   hosts_try_fastopen = :
   allow_localhost
 
-.ifdef OPT
+.ifdef OPTION
   dkim_domain =		test.ex
   dkim_selector =	sel
   dkim_private_key =	DIR/aux-fixed/dkim/dkim.private

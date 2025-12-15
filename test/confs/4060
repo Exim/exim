@@ -2,7 +2,7 @@
 # Pipelining the early part of the SMTP conversation, starttls
 
 CONTROL=*
-OPT=
+OPTION=
 CONNECTCOND=
 
 keep_environment = PATH
@@ -20,7 +20,7 @@ log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 dns_cname_loops = 9
-chunking_advertise_hosts = OPT
+chunking_advertise_hosts = OPTION
 tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/cert1
 

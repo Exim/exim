@@ -1,16 +1,16 @@
 # host_find_failed=ignore
 1
-exim -DFAKE=# -DOPT=# -bt userx@test.ex
+exim -DFAKE=# -DOPTION=# -bt userx@test.ex
 ****
 1
-exim -DOPT=# -DHOSTS=a.non-exist.test.ex -bt userx@test.ex
+exim -DOPTION=# -DHOSTS=a.non-exist.test.ex -bt userx@test.ex
 ****
 1
-exim -DOPT=# -DHOSTS=a.non-exist.test.ex:b.non-exist.test.ex -bt userx@test.ex
+exim -DOPTION=# -DHOSTS=a.non-exist.test.ex:b.non-exist.test.ex -bt userx@test.ex
 ****
-exim -DOPT=# -DHOSTS=a.non-exist.test.ex:127.0.0.1 -bt userx@test.ex
+exim -DOPTION=# -DHOSTS=a.non-exist.test.ex:127.0.0.1 -bt userx@test.ex
 ****
-exim -DOPT=# -DHOSTS=127.0.0.1:b.non-exist.test.ex:127.0.0.2 -bt userx@test.ex
+exim -DOPTION=# -DHOSTS=127.0.0.1:b.non-exist.test.ex:127.0.0.2 -bt userx@test.ex
 ****
 1
 exim -DHOSTS=a.non-exist.test.ex -DHAI=defer -bt userx@test.ex

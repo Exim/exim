@@ -19,7 +19,7 @@ server DIR/eximdir/fsec_sock
 #
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -50,7 +50,7 @@ server DIR/eximdir/fsec_sock
 #
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -70,7 +70,7 @@ server DIR/eximdir/fsec_sock
 #
 #
 #
-exim -odi -bs -DOPT=";tmo=2s"
+exim -odi -bs -DOPTION=";tmo=2s"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -90,7 +90,7 @@ server DIR/eximdir/fsec_sock
 #
 #
 #
-exim -odi -bs -DOPT=";defer_ok;tmo=2s"
+exim -odi -bs -DOPTION=";defer_ok;tmo=2s"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -121,7 +121,7 @@ server DIR/eximdir/fsec_sock
 #
 #
 #
-exim -odi -bs -DOPT="; defer_ok ; tmo=5h"
+exim -odi -bs -DOPTION="; defer_ok ; tmo=5h"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>

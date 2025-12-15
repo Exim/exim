@@ -217,7 +217,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -DOPT=verify=recipient/callout=use_sender -bs
+exim -DOPTION=verify=recipient/callout=use_sender -bs
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userh@domain.com>
@@ -239,7 +239,7 @@ RCPT TO:
 QUIT
 250 OK
 ****
-exim -DOPT=verify=recipient/callout=use_sender -bs
+exim -DOPTION=verify=recipient/callout=use_sender -bs
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<useri@domain.com>

@@ -1,7 +1,7 @@
 # Exim test configuration 4040
 
 SERVER=
-OPT=
+OPTION=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -21,7 +21,7 @@ check_wellknown:
     logwrite =          [$sender_host_address] $smtp_command
     condition =		${if == {${received_port}}{PORT_D}}
     set acl_c_wellknown = ${lookup {${xtextd:$smtp_command_argument}} \
-				dsearch,ret=full,filter=fileOPT \
+				dsearch,ret=full,filter=fileOPTION \
 				{DIR/aux-fixed/TESTNUM}}
     logwrite =          [$sender_host_address] -> '$acl_c_wellknown'
     control =           wellknown/$acl_c_wellknown

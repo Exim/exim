@@ -1,6 +1,6 @@
 # Exim test configuration 0465
 
-OPT=
+OPTION=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -12,7 +12,7 @@ acl_smtp_rcpt = accept
 acl_smtp_data = check_data
 queue_only
 trusted_users = CALLER
-OPT
+OPTION
 
 
 begin acl

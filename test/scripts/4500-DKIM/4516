@@ -13,7 +13,7 @@ finish line last
 ****
 #
 # single header signed
-exim -DOPT=From -odf a@test.ex
+exim -DOPTION=From -odf a@test.ex
 From: nobody@example.com
 
 :file: long_line_file

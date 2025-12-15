@@ -1,6 +1,6 @@
 # Exim test configuration 0580
 
-OPT =
+OPTION =
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -11,7 +11,7 @@ primary_hostname = myhost.test.ex
 acl_smtp_rcpt = check_rcpt
 
 log_selector = +received_recipients
-OPT
+OPTION
 
 # ----- ACLs -----
 

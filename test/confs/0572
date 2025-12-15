@@ -1,7 +1,5 @@
 # Exim test configuration 0572
 
-OPT =
-
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex

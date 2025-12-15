@@ -1,6 +1,6 @@
 # Exim test configuration 4020
 
-OPT =
+OPTION =
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -47,7 +47,7 @@ my_smtp:
   socks_proxy =		${if eq {1}{1} {}}
 .else
   port =		25
-  hide socks_proxy =	HOSTIPV4 port=PORT_D OPT
+  hide socks_proxy =	HOSTIPV4 port=PORT_D OPTION
 .endif
   hosts_try_fastopen =	${if eq {$local_part}{user_tfo} {*}}
   debug_print =		transport_name <$transport_name>

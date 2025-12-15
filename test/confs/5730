@@ -41,7 +41,7 @@ tls_privatekey = ${if eq {SERVER}{server}\
 fail}
 
 # from cmdline define
-tls_ocsp_file = OPT
+tls_ocsp_file = OPTION
 
 
 # ------ ACL ------

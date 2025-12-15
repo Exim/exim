@@ -12,7 +12,7 @@ exim -DSERVER=server -bd -oX PORT_D
 # running and listening on 1080
 #
 # a mail sender
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>

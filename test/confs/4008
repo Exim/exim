@@ -6,7 +6,7 @@
 log_selector = +subject
 primary_hostname = myhost.test.ex
 
-av_scanner = cmdline : DIR/aux-fixed/TESTNUM.script -o OPT %s : found in file : ^(\S*)
+av_scanner = cmdline : DIR/aux-fixed/TESTNUM.script -o OPTION %s : found in file : ^(\S*)
 
 # ----- Main settings -----
 

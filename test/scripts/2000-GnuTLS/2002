@@ -21,12 +21,10 @@ ehlo rhu.barb
 ??? 250-
 ??? 250-
 ??? 250-
-??? 250-
 ??? 250
 starttls
 ??? 220
 ehlo rhu.barb
-??? 250-
 ??? 250-
 ??? 250-
 ??? 250-
@@ -47,7 +45,6 @@ quit
 client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
-??? 250-
 ??? 250-
 ??? 250-
 ??? 250-
@@ -77,7 +74,6 @@ client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RS
 ehlo rhu.barb
 ??? 250-
 ??? 250-SIZE
-??? 250-LIMITS
 ??? 250-8BITMIME
 ??? 250-PIPELINING
 ??? 250-STARTTLS
@@ -98,7 +94,6 @@ exim -DSERVER=server -bd -oX PORT_D
 client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.pem DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key
 ??? 220
 ehlo rhu.barb
-??? 250-
 ??? 250-
 ??? 250-
 ??? 250-
@@ -136,7 +131,6 @@ ehlo rhu.barb
 ??? 250-
 ??? 250-
 ??? 250-
-??? 250-
 ??? 250
 starttls
 ??? 220
@@ -161,7 +155,6 @@ quit
 client-gnutls -p NONE:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+KX-ALL:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
-??? 250-
 ??? 250-
 ??? 250-
 ??? 250-

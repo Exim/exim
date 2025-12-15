@@ -291,8 +291,6 @@ LOG: 10HmaZ-000000005vi-0000 H=(test) [127.0.0.1] F=<userx@test.ex> temporarily 
 >>>  list element: @
 >>>  list element: @[]
 >>> foo.bar in helo_lookup_domains? no (end of list)
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -306,8 +304,6 @@ LOG: 10HmaZ-000000005vi-0000 H=(test) [127.0.0.1] F=<userx@test.ex> temporarily 
 >>>  list element: @
 >>>  list element: @[]
 >>> foo.bar in helo_lookup_domains? no (end of list)
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -318,8 +314,6 @@ LOG: 10HmaZ-000000005vi-0000 H=(test) [127.0.0.1] F=<userx@test.ex> temporarily 
 >>>  list element: @
 >>>  list element: @[]
 >>> foo.bar in helo_lookup_domains? no (end of list)
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -330,8 +324,6 @@ LOG: 10HmaZ-000000005vi-0000 H=(test) [127.0.0.1] F=<userx@test.ex> temporarily 
 >>>  list element: @
 >>>  list element: @[]
 >>> foo.bar in helo_lookup_domains? no (end of list)
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

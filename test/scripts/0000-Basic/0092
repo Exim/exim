@@ -32,7 +32,7 @@ The quick brown fox
 # stdin-smtp, cmds then pause in dataphase, smtp command timeout 2s
 # late-expansion of smtp_receive_timeout
 1
-3 exim -d+expand '-DOPT=${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s' -bh V4NET.0.0.1
+3 exim -d+expand '-DOPTION=${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s' -bh V4NET.0.0.1
 helo test
 mail from:userx@test.ex
 rcpt to:userx@test.ex

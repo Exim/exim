@@ -49,7 +49,6 @@ p1239  cmd buf flush 21 bytes
 p1240 host in chunking_advertise_hosts? no (end of list)
 p1239    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
 p1239           250-SIZE 52428800
-p1239           250-LIMITS MAILMAX=1000 RCPTMAX=50000
 p1239           250-8BITMIME
 p1239           250-PIPELINING
 p1239           250-STARTTLS
@@ -63,7 +62,6 @@ p1239  cmd buf flush 21 bytes
 p1240 host in chunking_advertise_hosts? no (end of list)
 p1239    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
 p1239           250-SIZE 52428800
-p1239           250-LIMITS MAILMAX=1000 RCPTMAX=50000
 p1239           250-8BITMIME
 p1239           250-PIPELINING
 p1239           250 HELP
@@ -229,7 +227,6 @@ p1251  cmd buf flush 21 bytes
 p1252 host in chunking_advertise_hosts? no (end of list)
 p1251    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
 p1251           250-SIZE 52428800
-p1251           250-LIMITS MAILMAX=1000 RCPTMAX=50000
 p1251           250-8BITMIME
 p1251           250-PIPELINING
 p1251           250-STARTTLS
@@ -243,7 +240,6 @@ p1251  cmd buf flush 21 bytes
 p1252 host in chunking_advertise_hosts? no (end of list)
 p1251    SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
 p1251           250-SIZE 52428800
-p1251           250-LIMITS MAILMAX=1000 RCPTMAX=50000
 p1251           250-8BITMIME
 p1251           250-PIPELINING
 p1251           250 HELP

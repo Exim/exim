@@ -8,9 +8,9 @@ exim -odi plain@test.ex
 killdaemon
 #
 # plaintext client against gsasl server
-exim -DSERVER=server -DOPT=y -bd -oX PORT_D
+exim -DSERVER=server -DOPTION=y -bd -oX PORT_D
 ****
-exim -odi -DOPT=y plain@test.ex
+exim -odi -DOPTION=y plain@test.ex
 ****
 killdaemon
 no_msglog_check

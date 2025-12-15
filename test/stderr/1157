@@ -27,7 +27,6 @@ connected
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -40,7 +39,6 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP
@@ -132,7 +130,6 @@ connected
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -145,7 +142,6 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP
@@ -235,7 +231,6 @@ connected
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -248,7 +243,6 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP
@@ -265,7 +259,6 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -285,7 +278,6 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP
@@ -302,7 +294,6 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -321,7 +312,6 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP

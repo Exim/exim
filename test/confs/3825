@@ -33,7 +33,7 @@ smtp:
 
 begin authenticators
 
-.ifndef OPT
+.ifndef OPTION
 sasl1:
   driver =		plaintext
   public_name =		PLAIN

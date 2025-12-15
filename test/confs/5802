@@ -2,7 +2,7 @@
 # DANE and MX chains
 
 SERVER=
-OPT=
+OPTION=
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -10,7 +10,7 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-.ifndef OPT
+.ifndef OPTION
 acl_smtp_rcpt = accept
 .else
 acl_smtp_rcpt = accept verify = recipient/callout
@@ -76,7 +76,7 @@ send_to_server:
 .else
   hosts_try_dane     =	*
 .endif
-  tls_sni =		OPT
+  tls_sni =		OPTION
   tls_verify_certificates =
 
 

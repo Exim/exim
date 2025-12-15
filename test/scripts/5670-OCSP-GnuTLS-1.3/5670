@@ -17,7 +17,7 @@ exim -z '1: TLS1.2 Server sends good leaf-staple on request, to client requiring
 sudo exim -bd -oX PORT_D -DSERVER=server -DTRUSTED=TLS1.2
 ****
 #
-exim -odf -DOPT=rsa -DTRUSTED=TLS1.2 rsa.auth@test.ex
+exim -odf -DOPTION=rsa -DTRUSTED=TLS1.2 rsa.auth@test.ex
 Subject: test
 
 .
@@ -31,7 +31,7 @@ exim -z '2: TLS1.3 Server sends good 3-element staple on request, to client requ
 # Prefix with sudo to get SSLKEYLOGFILE to work.  Only works on the server.
 exim -bd -oX PORT_D -DSERVER=server -DTRUSTED=TLS1.3
 ****
-exim -odf -DOPT=rsa rsa.auth@test.ex
+exim -odf -DOPTION=rsa rsa.auth@test.ex
 Subject: test
 
 .
@@ -45,7 +45,7 @@ exim -z '3: TLS1.3 Server sends bad nonleaf staple, client detects it'
 #
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server -DTRUSTED=TLS1.3 -DCONTROL=bad
 ****
-exim -odf -DOPT=rsa rsa.auth@test.ex
+exim -odf -DOPTION=rsa rsa.auth@test.ex
 Subject: test
 
 .

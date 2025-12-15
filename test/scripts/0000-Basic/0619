@@ -1,34 +1,34 @@
 # domainlist match values
 #
-exim -bs -DOPT=:
+exim -bs -DOPTION=:
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@notmatched.ex>
 QUIT
 ****
 #
-exim -bs '-DOPT=notthis : plainstring.ex : nothiseither'
+exim -bs '-DOPTION=notthis : plainstring.ex : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@plainstring.ex>
 QUIT
 ****
 #
-exim -bs '-DOPT=notthis : *tail.ex : nothiseither'
+exim -bs '-DOPTION=notthis : *tail.ex : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@headtail.ex>
 QUIT
 ****
 #
-exim -bs '-DOPT=notthis : ^.*r(e.)ex : nothiseither'
+exim -bs '-DOPTION=notthis : ^.*r(e.)ex : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@headregextail.ex>
 QUIT
 ****
 #
-exim -bs '-DOPT=notthis : @ : nothiseither'
+exim -bs '-DOPTION=notthis : @ : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@primaryhostname.ex>
@@ -36,7 +36,7 @@ QUIT
 ****
 #
 #
-exim -bs '-DOPT=notthis : @[] : nothiseither'
+exim -bs '-DOPTION=notthis : @[] : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@[127.0.0.1]>
@@ -44,7 +44,7 @@ QUIT
 ****
 #
 # malformed
-exim -bs '-DOPT=notthis : @[] : nothiseither'
+exim -bs '-DOPTION=notthis : @[] : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@127.0.0.1]>
@@ -52,7 +52,7 @@ QUIT
 ****
 #
 # malformed
-exim -bs '-DOPT=notthis : @[] : nothiseither'
+exim -bs '-DOPTION=notthis : @[] : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@[127.0.0.1>
@@ -60,7 +60,7 @@ QUIT
 ****
 #
 #
-exim -bs '-DOPT=notthis : @mx_any/ignore=1.1.1.1 : nothiseither'
+exim -bs '-DOPTION=notthis : @mx_any/ignore=1.1.1.1 : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@mx46.test.ex>

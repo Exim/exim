@@ -1,7 +1,7 @@
 # test config 4058
 # Early-pipelining with TCP Fast Open
 
-OPT=
+OPTION=
 
 keep_environment = PATH
 exim_path = EXIM_PATH
@@ -18,7 +18,7 @@ log_selector = +received_recipients +millisec +pipelining
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 dns_cname_loops = 9
-chunking_advertise_hosts = OPT
+chunking_advertise_hosts = OPTION
 tls_advertise_hosts =
 
 .ifdef _HAVE_DMARC

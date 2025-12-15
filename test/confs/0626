@@ -16,7 +16,7 @@ acl_smtp_rcpt = chk_rcpt
 begin acl
 
 chk_rcpt:
-  accept	seen = OPT
+  accept	seen = OPTION
 
 # seen = never / $sender_host_addreee / per_call
 # seen = before=10s

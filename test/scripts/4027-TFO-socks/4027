@@ -37,7 +37,7 @@ QUIT
 ****
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<user_tfo@test.ex>
@@ -75,7 +75,7 @@ QUIT
 ****
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<user_tfo@test.ex>
@@ -114,7 +114,7 @@ QUIT
 ****
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<user_tfo@test.ex>

@@ -1184,7 +1184,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^arc_sign =/;
 
     # LIMITS is not always supported by the build
+    # - we generally run with limits disabled, via aux-va-src/tls_conf_prefix
     next if /^limits_advertise_hosts =/;
+#    next if /^250-LIMITS/;
+    next if /^macro '_HAVE_ESMTP_LIMITS' ->/;
 
     # PRDR
     next if /^hosts_try_prdr = \*$/;
@@ -1667,7 +1670,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Experimental_REQUIRETLS
     next if / in tls_advertise_requiretls?\? no \(end of list\)/;
 
-    # Experimental_LIMITS
+    # LIMITS
+    # - we generally run with limits disabled, via aux-va-src/tls_conf_prefix
     if ( /^((>>>)?\s*host)? in limits_advertise_hosts\?$/ )
       {
       $_ = <IN>;
@@ -1675,6 +1679,8 @@ RESET_AFTER_EXTRA_LINE_READ:
       goto RESET_AFTER_EXTRA_LINE_READ;
       }
     next if / in limits_advertise_hosts?\? no \(matched "!\*"\)/;
+    # but we want to also be able to run vs. a non-LIMITS build
+    next if /^$time_pid?macros_expand: matched '_HAVE_ESMTP_LIMITS'/;
 
     # Experimental_XCLIENT
     next if / in hosts_xclient\? no \(option unset\)/;
@@ -1963,6 +1969,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Not all buildfarm animals have ipv6
     next if /<dns:fail> <DNS_(?:NOMATCH|AGAIN):.*:AAAA>$/ ;
+
+    # LIMITS is not always supported by the build
+    # - we generally run with limits disabled, via aux-va-src/tls_conf_prefix
+#    s/event smtp:ehlo data\\n.*\K250-LIMITS MAILMAX=1000 RCPTMAX=50000\n(?=250)//;
     }
 
   # ======== mail ========

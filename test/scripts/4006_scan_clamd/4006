@@ -11,7 +11,7 @@ server DIR/eximdir/clam_sock
 #
 #
 #
-exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPT=
+exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -34,7 +34,7 @@ server DIR/eximdir/clam_sock
 #
 #
 #
-exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPT=
+exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -57,7 +57,7 @@ server DIR/eximdir/clam_sock
 #
 #
 #
-exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPT=/defer_ok
+exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPTION=/defer_ok
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -78,7 +78,7 @@ server DIR/eximdir/clam_sock
 #
 #
 #
-exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPT="/ tmo=2s"
+exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPTION="/ tmo=2s"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -99,7 +99,7 @@ server DIR/eximdir/clam_sock
 #
 #
 #
-exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPT="/ tmo=2s / defer_ok"
+exim -odi -bs -DSRV=DIR/eximdir/clam_sock -DOPTION="/ tmo=2s / defer_ok"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -159,7 +159,7 @@ server PORT_D
 *eof
 ****
 #
-exim -odi -bs -DSRV="127.0.0.1 PORT_D" -DOPT=
+exim -odi -bs -DSRV="127.0.0.1 PORT_D" -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>

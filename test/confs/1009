@@ -1,6 +1,6 @@
 # Exim test configuration 1009
 
-OPT=
+OPTION=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -17,7 +17,7 @@ begin routers
 .ifdef ROUTE_DATA
 r0:
   driver = manualroute
-  route_data = ROUTE_DATA OPT
+  route_data = ROUTE_DATA OPTION
   transport = t1
   self = send
 
@@ -27,7 +27,7 @@ r1:
   driver = dnslookup
   transport = t1
   self = send
-  OPT
+  OPTION
 .endif
 
 

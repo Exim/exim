@@ -13,8 +13,6 @@
 >>> [V4NET.9.8.7] in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "[V4NET.9.8.7]"
 >>> matched host address
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

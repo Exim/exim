@@ -1,7 +1,7 @@
 # Exim test configuration 4002
 # Content-scan: spamassassin interface
 
-OPT= 127.0.0.1 7833
+OPTION= 127.0.0.1 7833
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -11,7 +11,7 @@ primary_hostname = myhost.test.ex
 # we need to set the sender
 trusted_users = CALLER
 
-spamd_address = OPT
+spamd_address = OPTION
 
 # ----- Main settings -----
 

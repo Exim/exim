@@ -1,7 +1,7 @@
 # Exim test configuration 0557
 
 FAKE=
-OPT=
+OPTION=
 HOSTS=
 HAI=
 
@@ -20,7 +20,7 @@ r1:
   driver = manualroute
   route_list = * HOSTS
 FAKE host_find_failed = ignore
-OPT  host_all_ignored = HAI
+OPTION host_all_ignored = HAI
   no_more
   self = send
   transport = t1

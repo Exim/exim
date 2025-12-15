@@ -7,8 +7,8 @@ admin user
 readconf_rest: routers
  macros_expand: matched 'VALUE' in 'transport = VALUE'
 readconf_rest: transports
- macros_expand: matched 'OPT' in 'maildir_tag = OPT'
- macros_expand: matched 'OPT' in 'maildir_tag = OPT'
+ macros_expand: matched 'OPTION' in 'maildir_tag = OPTION'
+ macros_expand: matched 'OPTION' in 'maildir_tag = OPTION'
 readconf_rest: retry
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
@@ -22,8 +22,8 @@ dropping to exim gid; retaining priv uid
 readconf_rest: routers
  macros_expand: matched 'VALUE' in 'transport = VALUE'
 readconf_rest: transports
- macros_expand: matched 'OPT' in 'maildir_tag = OPT'
- macros_expand: matched 'OPT' in 'maildir_tag = OPT'
+ macros_expand: matched 'OPTION' in 'maildir_tag = OPTION'
+ macros_expand: matched 'OPTION' in 'maildir_tag = OPTION'
 readconf_rest: retry
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------

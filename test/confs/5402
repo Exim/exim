@@ -15,7 +15,7 @@ acl_smtp_rcpt = acl_rcpt
 begin acl
 
 acl_rcpt:
-.ifdef OPT
+.ifdef OPTION
     warn	control = cutthrough_delivery
 .endif
     accept	verify = recipient/callout=use_sender

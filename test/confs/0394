@@ -1,6 +1,6 @@
 # Exim test configuration 0394
 
-OPT=
+OPTION=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -15,6 +15,6 @@ host_lookup = *
 begin ACL
 
 connect:
-  require verify = OPT
+  require verify = OPTION
 
 # End

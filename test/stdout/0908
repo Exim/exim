@@ -7,8 +7,6 @@ Connecting to 127.0.0.1 port PORT_S ... connected
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
-??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING

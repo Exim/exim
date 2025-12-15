@@ -1,7 +1,7 @@
 # Exim test configuration 3414
 
 ACL=
-OPT=
+OPTION=
 
 exim_path = EXIM_PATH
 keep_environment =
@@ -13,14 +13,14 @@ gecos_pattern = ""
 gecos_name = CALLER_NAME
 chunking_advertise_hosts =
 tls_advertise_hosts =
-.ifdef _EXP_LIMITS
+.ifdef _HAVE_ESMTP_LIMITS
 limits_advertise_hosts = !*
 .endif
 
 # ----- Main settings -----
 
 acl_smtp_mail = mail
-OPT acl_smtp_mailauth=ACL
+OPTION acl_smtp_mailauth=ACL
 
 
 # ----- ACLs -----

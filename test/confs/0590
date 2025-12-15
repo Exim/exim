@@ -1,12 +1,12 @@
 # Exim test configuration 0590
 
-OPT =
+OPTION =
 
 .include DIR/aux-var/std_conf_prefix
 
 
 # ----- Main settings -----
 
-OPT
+OPTION
 
 # End

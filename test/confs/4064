@@ -1,6 +1,8 @@
 # test config 4064
 # Early-pipe, AUTH, GnuTLS
 
+OPTION =
+
 keep_environment = PATH
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -15,7 +17,7 @@ log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 dns_cname_loops = 9
-chunking_advertise_hosts = OPT
+chunking_advertise_hosts = OPTION
 tls_advertise_hosts = *
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 

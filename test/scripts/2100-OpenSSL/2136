@@ -17,7 +17,6 @@ EHLO test.ex
 ??? 250-
 ??? 250-
 ??? 250-
-??? 250-
 ??? 250 
 MAIL FROM:<userc@ok.example>
 ??? 250
@@ -40,13 +39,12 @@ exim -q
 #
 #
 # smtp send, deliver_drop_priv
-exim -d-all+transport -bd -DSERVER=server -DSRV="" -DOPT=deliver_drop_privilege -oX PORT_D:PORT_S
+exim -d-all+transport -bd -DSERVER=server -DSRV="" -DOPTION=deliver_drop_privilege -oX PORT_D:PORT_S
 ****
 #
 client HOSTIPV4 PORT_S
 ??? 220
 EHLO test.ex
-??? 250-
 ??? 250-
 ??? 250-
 ??? 250-

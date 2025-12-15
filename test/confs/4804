@@ -1,7 +1,7 @@
 # Exim test configuration 4804
 
 SERVER=
-OPT=
+OPTION=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -12,7 +12,7 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = accept
 
-log_selector = OPT
+log_selector = OPTION
 
 # ------ ACL ------
 

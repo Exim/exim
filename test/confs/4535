@@ -1,7 +1,7 @@
 # Exim test configuration 4535
 
 SERVER=
-OPT=
+OPTION=
 FAKE =
 
 keep_environment = PATH
@@ -93,7 +93,7 @@ send_to_server:
 				}{DDIR/$value}}
 
 .ifndef HEADERS_MAXSIZE
-  dkim_sign_headers =	OPT
+  dkim_sign_headers =	OPTION
 .else
   dkim_identity =	allheaders@$dkim_domain
 .endif

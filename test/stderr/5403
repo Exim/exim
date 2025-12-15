@@ -11,8 +11,6 @@
 >>>  myhost.test.ex in helo_lookup_domains? yes (matched "@")
 >>> looking up host name for 1.2.3.4
 LOG: no host name found for IP address 1.2.3.4
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -47,8 +45,6 @@ LOG: 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex H=(myhost.test.ex) [1.2.3.
 >>>  myhost.test.ex in helo_lookup_domains? yes (matched "@")
 >>> looking up host name for 1.2.3.4
 LOG: no host name found for IP address 1.2.3.4
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

@@ -16,7 +16,7 @@ acl_smtp_rcpt = chk_rcpt
 begin acl
 
 chk_rcpt:
-  accept	domains = OPT
+  accept	domains = OPTION
 		logwrite = domain $domain
 		logwrite = value  $domain_data
 		logwrite = \$0 '$0'  \$1 '$1'

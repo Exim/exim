@@ -10,7 +10,7 @@ server PORT_S
 #
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -32,7 +32,7 @@ server PORT_S
 #
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -54,7 +54,7 @@ server PORT_S
 #
 #
 #
-exim -odi -bs -DOPT="/tmo=2s"
+exim -odi -bs -DOPTION="/tmo=2s"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -75,7 +75,7 @@ server PORT_S
 #
 #
 #
-exim -odi -bs -DOPT="/tmo=2s/defer_ok"
+exim -odi -bs -DOPTION="/tmo=2s/defer_ok"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>

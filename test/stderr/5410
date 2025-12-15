@@ -32,8 +32,6 @@ try option 'smtp_banner'
  ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 try option 'acl_smtp_helo'
- list element: *
-  in limits_advertise_hosts? yes (matched "*")
  in dsn_advertise_hosts? no (option unset)
 try option 'acl_smtp_atrn'
 try option 'acl_smtp_etrn'
@@ -157,7 +155,6 @@ try option 'helo_data'
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -278,7 +275,6 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250 HELP
@@ -716,8 +712,6 @@ try option 'smtp_banner'
  ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 try option 'acl_smtp_helo'
- list element: *
-  in limits_advertise_hosts? yes (matched "*")
  in dsn_advertise_hosts? no (option unset)
 try option 'acl_smtp_atrn'
 try option 'acl_smtp_etrn'
@@ -841,7 +835,6 @@ try option 'helo_data'
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
@@ -1350,8 +1343,6 @@ try option 'smtp_banner'
  ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 try option 'acl_smtp_helo'
- list element: *
-  in limits_advertise_hosts? yes (matched "*")
  in dsn_advertise_hosts? no (option unset)
 try option 'acl_smtp_atrn'
 try option 'acl_smtp_etrn'
@@ -1475,7 +1466,6 @@ try option 'helo_data'
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
-         250-LIMITS MAILMAX=1000 RCPTMAX=50000
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS

@@ -2,7 +2,7 @@
 
 .include DIR/aux-var/std_conf_prefix
 
-OPT =
+OPTION =
 
 primary_hostname = myhost.test.ex
 
@@ -36,7 +36,7 @@ maildir_tagged_appendfile:
   directory = DIR/test-mail
   envelope_to_add
   maildir_format
-  maildir_tag = OPT
+  maildir_tag = OPTION
   message_prefix =
   quota = 20K
   quota_size_regex = S=(\d+)$
@@ -48,7 +48,7 @@ maildir_taggedX_appendfile:
   directory = DIR/test-mail
   envelope_to_add
   maildir_format
-  maildir_tag = OPT
+  maildir_tag = OPTION
   message_prefix =
   quota = 20K
   quota_size_regex = ,S=(\d+):

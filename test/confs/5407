@@ -4,7 +4,7 @@
 CONTROL=
 
 # optional verify-callout
-OPT=
+OPTION=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -27,7 +27,7 @@ begin acl
 ar:
   accept
 	control = cutthrough_deliveryCONTROL
-	OPT
+	OPTION
 	logwrite = rcpt for $local_part@$domain
 
 # ----- Routers -----

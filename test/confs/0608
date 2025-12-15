@@ -10,9 +10,9 @@ primary_hostname = myhost.test.ex
 acl_smtp_rcpt = accept
 log_selector = +received_recipients +millisec
 
-.ifdef OPT
-bounce_message_file = OPT
-warn_message_file = OPT
+.ifdef OPTION
+bounce_message_file = OPTION
+warn_message_file = OPTION
 .endif
 
 delay_warning =	2s

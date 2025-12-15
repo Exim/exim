@@ -85,8 +85,6 @@ LOG: smtp_connection MAIN
 >>>  list element: @
 >>>  list element: @[]
 >>> x.y.z in helo_lookup_domains? no (end of list)
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

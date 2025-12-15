@@ -9,29 +9,29 @@ exim -DVALUE=maildir_appendfile -odi userx <test-data
 ****
 exim -DVALUE=maildir_appendfile -odi userx <test-data
 ****
-exim -DVALUE=maildir_tagged_appendfile -DOPT=S370 -odi userx
+exim -DVALUE=maildir_tagged_appendfile -DOPTION=S370 -odi userx
 This is a test message
 ****
 sleep 1
-exim -DVALUE=maildir_tagged_appendfile -DOPT=,S=370 -odi userx
+exim -DVALUE=maildir_tagged_appendfile -DOPTION=,S=370 -odi userx
 This is a test message
 ****
 sleep 1
-exim -DVALUE=maildir_tagged_appendfile -DOPT='${if eq{0}{1}{rhubarb}fail}' -odi userx
+exim -DVALUE=maildir_tagged_appendfile -DOPTION='${if eq{0}{1}{rhubarb}fail}' -odi userx
 This is a test message
 ****
 sleep 1
 # deliberate syntax fail
-exim -DVALUE=maildir_tagged_appendfile -DOPT='${if eq{0}{1}{rhubarb}' -odi userx
+exim -DVALUE=maildir_tagged_appendfile -DOPTION='${if eq{0}{1}{rhubarb}' -odi userx
 This is a test message
 ****
 sleep 1
 # overlongname
-exim -DVALUE=maildir_tagged_appendfile -DOPT=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -odi userx
+exim -DVALUE=maildir_tagged_appendfile -DOPTION=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -odi userx
 This is a test message
 ****
 sleep 1
-exim -DVALUE=maildir_taggedX_appendfile -DOPT=,S=10694953:2,S -odi userx
+exim -DVALUE=maildir_taggedX_appendfile -DOPTION=,S=10694953:2,S -odi userx
 ****
-exim -d-all+transport -DVALUE=maildir_taggedX_appendfile -DOPT=,S=412:2,S -odi userx
+exim -d-all+transport -DVALUE=maildir_taggedX_appendfile -DOPTION=,S=412:2,S -odi userx
 ****

@@ -4,7 +4,6 @@
 .include DIR/aux-var/std_conf_prefix
 
 pipelining_advertise_hosts = :
-limits_advertise_hosts = :
 
 # ----- Main settings -----
 

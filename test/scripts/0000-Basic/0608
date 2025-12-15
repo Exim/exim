@@ -3,46 +3,46 @@
 exim -odf a@test.ex
 Subject: test 1.1 - Default deny message
 ****
-exim -odf -DOPT=DIR/aux-fixed/TESTNUM.bounce.tmpl	b@test.ex
+exim -odf -DOPTION=DIR/aux-fixed/TESTNUM.bounce.tmpl	b@test.ex
 Subject: test 1.2 - Specified deny message file
 ****
-exim -odf -DOPT=DIR/aux-fixed/TESTNUM.nonexist.tmpl	c@test.ex
+exim -odf -DOPTION=DIR/aux-fixed/TESTNUM.nonexist.tmpl	c@test.ex
 Subject: test 1.3 - Specified, missing deny message file
 ****
-exim -odf -DOPT=relative_file_path			d@test.ex
+exim -odf -DOPTION=relative_file_path			d@test.ex
 Subject: test 1.4 - Specified, non-absolute
 ****
-exim -odf -DOPT='$acl_m_unset'				e@test.ex
+exim -odf -DOPTION='$acl_m_unset'				e@test.ex
 Subject: test 1.5 - Specified, expansion empty
 ****
-exim -odf -DOPT='DIR/aux-fixed/TESTNUM.$sender_address'	f@test.ex
+exim -odf -DOPTION='DIR/aux-fixed/TESTNUM.$sender_address'	f@test.ex
 Subject: test 1.6 - Specified, expansion tainted
 ****
-exim -odf -DOPT='${if ={0}{0} {DIR/aux-fixed/TESTNUM.bounce.tmpl}{bad}}' g@test.ex
+exim -odf -DOPTION='${if ={0}{0} {DIR/aux-fixed/TESTNUM.bounce.tmpl}{bad}}' g@test.ex
 Subject: test 1.7 - Specified, expansion good
 ****
 #
 exim -odf delay_p@test.ex
 Subject: test 2.1 - Default delay message
 ****
-exim -odf -DOPT=DIR/aux-fixed/TESTNUM.bounce.tmpl			delay_q@test.ex
+exim -odf -DOPTION=DIR/aux-fixed/TESTNUM.bounce.tmpl			delay_q@test.ex
 Subject: test 2.2 - Specified delay message file
 ****
-exim -odf -DOPT=DIR/aux-fixed/TESTNUM.nonexist.tmpl			delay_r@test.ex
+exim -odf -DOPTION=DIR/aux-fixed/TESTNUM.nonexist.tmpl			delay_r@test.ex
 Subject: test 2.3 - Specified, missing delay message file
 ****
-exim -odf -DOPT='${if ={0}{0} {DIR/aux-fixed/TESTNUM.bounce.tmpl}{bad}}' delay_s@test.ex
+exim -odf -DOPTION='${if ={0}{0} {DIR/aux-fixed/TESTNUM.bounce.tmpl}{bad}}' delay_s@test.ex
 Subject: test 2.7 - Specified, expansion good
 ****
 # Wait past the delay_warning interval
 sleep 3
 exim -M $msg1
 ****
-exim -DOPT=DIR/aux-fixed/TESTNUM.bounce.tmpl -M $msg2
+exim -DOPTION=DIR/aux-fixed/TESTNUM.bounce.tmpl -M $msg2
 ****
-exim -DOPT=DIR/aux-fixed/TESTNUM.nonexist.tmpl -M $msg3
+exim -DOPTION=DIR/aux-fixed/TESTNUM.nonexist.tmpl -M $msg3
 ****
-exim -DOPT=DIR/aux-fixed/TESTNUM.bounce.tmpl -M $msg4
+exim -DOPTION=DIR/aux-fixed/TESTNUM.bounce.tmpl -M $msg4
 ****
 #sleep 1
 #

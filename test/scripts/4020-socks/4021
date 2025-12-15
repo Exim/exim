@@ -2,7 +2,7 @@
 #
 munge loopback
 #
-exim -odq -bs -DOPT=
+exim -odq -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -14,7 +14,7 @@ Queued body
 .
 quit
 ****
-exim -odq -bs -DOPT=
+exim -odq -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<usery@test.ex>
@@ -61,7 +61,7 @@ QUIT
 #
 #
 #
-exim -DOPT= -qq
+exim -DOPTION= -qq
 ****
 #
 #

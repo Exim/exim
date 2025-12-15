@@ -10,7 +10,7 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-.ifndef OPT
+.ifndef OPTION
 acl_smtp_rcpt = accept logwrite = "rcpt ACL"
 .else
 acl_smtp_rcpt = accept verify = recipient/callout
@@ -71,7 +71,7 @@ send_to_server:
 
   hosts_try_dane =     CONTROL
   hosts_require_dane = HOSTIPV4
-  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  tls_verify_cert_hostnames = ${if eq {OPTION}{no_certname} {}{*}}
   tls_try_verify_hosts = thishost.test.ex
   tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
 

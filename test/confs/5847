@@ -22,7 +22,7 @@ dmarc_tld_file =
 
 domainlist local_domains = test.ex : *.test.ex
 
-.ifndef OPT
+.ifndef OPTION
 acl_smtp_rcpt = check_recipient
 .else
 acl_smtp_rcpt = accept verify = recipient/callout
@@ -102,7 +102,7 @@ send_to_server1:
   port =		PORT_D
   hosts_try_fastopen =	:
   tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
-  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  tls_verify_cert_hostnames = ${if eq {OPTION}{no_certname} {}{*}}
   hosts_try_dane =	*
   hosts_require_tls =	*
   hosts_request_ocsp =	:
@@ -116,7 +116,7 @@ send_to_server2:
   port =		PORT_D
   hosts_try_fastopen =	:
   tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
-  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  tls_verify_cert_hostnames = ${if eq {OPTION}{no_certname} {}{*}}
   hosts_try_dane =	*
   hosts_require_tls =	*
 # note no ocsp mention here
@@ -131,7 +131,7 @@ send_to_server3:
   hosts_try_fastopen =	:
   helo_data =		helo.data.changed
   tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
-  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  tls_verify_cert_hostnames = ${if eq {OPTION}{no_certname} {}{*}}
   hosts_try_dane =	*
   hosts_require_tls =	*
   hosts_require_ocsp =	*

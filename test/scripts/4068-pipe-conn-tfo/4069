@@ -47,7 +47,7 @@ killdaemon
 #
 # And again with CHUNKING
 #
-exim -bd -DSERVER=server -DOPT=* -oX PORT_D
+exim -bd -DSERVER=server -DOPTION=* -oX PORT_D
 ****
 #
 # First try has wrong cached info for early-pipe; the chunking advertisement

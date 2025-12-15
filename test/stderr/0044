@@ -38,8 +38,6 @@ exim.test.ex in helo_lookup_domains? no (end of list)
 sender_fullhost = (exim.test.ex) [V4NET.11.12.13]
 sender_rcvhost = [V4NET.11.12.13] (helo=exim.test.ex)
 set_process_info: pppp handling incoming connection from (exim.test.ex) [V4NET.11.12.13]
- list element: *
-  host in limits_advertise_hosts? yes (matched "*")
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *
@@ -48,7 +46,6 @@ host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
 SMTP>| 250-the.local.host.name Hello exim.test.ex [V4NET.11.12.13]
        250-SIZE 52428800
-       250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
        250-PIPELINING
        250 HELP
@@ -197,8 +194,6 @@ search_tidyup called
 >>>  list element: @
 >>>  list element: @[]
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
->>>  list element: *
->>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -270,8 +265,6 @@ exim.test.ex in helo_lookup_domains? no (end of list)
 sender_fullhost = (exim.test.ex) [V4NET.99.99.99]
 sender_rcvhost = [V4NET.99.99.99] (helo=exim.test.ex)
 set_process_info: pppp handling incoming connection from (exim.test.ex) [V4NET.99.99.99]
- list element: *
-  host in limits_advertise_hosts? yes (matched "*")
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *
@@ -280,7 +273,6 @@ host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
 SMTP>| 250-the.local.host.name Hello exim.test.ex [V4NET.99.99.99]
        250-SIZE 52428800
-       250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
        250-PIPELINING
        250 HELP

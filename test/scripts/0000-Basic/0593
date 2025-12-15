@@ -12,7 +12,7 @@ quit
 #
 # taint trap defated by using create_file
 # goes on to fail on perms
-exim -bs -odi -DOPT=DIR/test-mail
+exim -bs -odi -DOPTION=DIR/test-mail
 helo test
 mail from:someone@some.domain
 rcpt to:bill@HOSTNAME

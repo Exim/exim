@@ -6,8 +6,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-the.local.host.name Hello client [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -43,8 +41,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-the.local.host.name Hello client [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -90,7 +86,6 @@ End of script
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-the.local.host.name Hello CALLER at client.bh
 250-SIZE 52428800
-250-LIMITS MAILMAX=1000 RCPTMAX=50000
 250-8BITMIME
 250-PIPELINING
 250-SMTPUTF8
@@ -108,8 +103,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-the.local.host.name Hello client [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING

@@ -1,7 +1,7 @@
 # Exim test configuration 4006
 # Content-scan: clamav interface
 
-OPT=
+OPTION=
 SRV=unset
 CONTROL=
 
@@ -20,7 +20,7 @@ acl_smtp_data = c_data
 begin acl
 
 c_data:
-  accept !malware = * OPT
+  accept !malware = * OPTION
   deny	 logwrite = malware_name $malware_name
 
 # ----- Routers -----

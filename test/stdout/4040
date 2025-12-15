@@ -6,8 +6,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello test [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -37,8 +35,6 @@ Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello test [ip4.ip4.ip4.ip4]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -57,8 +53,6 @@ Connecting to 127.0.0.1 port PORT_D2 ... connected
 <<< 250-myhost.test.ex Hello test [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -82,8 +76,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello test [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -107,8 +99,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello test [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -138,8 +128,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello test [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -169,8 +157,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello test [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING
@@ -194,8 +180,6 @@ Connecting to 127.0.0.1 port PORT_D ... connected
 <<< 250-myhost.test.ex Hello test [127.0.0.1]
 ??? 250-SIZE
 <<< 250-SIZE 52428800
-??? 250-LIMITS
-<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-8BITMIME
 <<< 250-8BITMIME
 ??? 250-PIPELINING

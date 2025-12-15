@@ -4,7 +4,7 @@
 CONTROL=
 
 # optional verify-callout
-OPT=
+OPTION=
 
 # return_path on transport
 RETURN=
@@ -30,7 +30,7 @@ begin acl
 ar:
   accept
 	control = cutthrough_deliveryCONTROL
-	OPT
+	OPTION
 	logwrite = rcpt for $local_part@$domain
 
 # ----- Routers -----

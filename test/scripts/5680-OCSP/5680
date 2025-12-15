@@ -6,8 +6,8 @@ cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
 cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key   DIR/tmp/certs/serverkey
 cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp DIR/tmp/certs/ocsp_proof
 #
-#exim -d-all+tls+receive+timestamp -DSERVER=server -DOPT=ocsp -bd -oX PORT_D
-exim -DSERVER=server -DOPT=ocsp -bd -oX PORT_D
+#exim -d-all+tls+receive+timestamp -DSERVER=server -DOPTION=ocsp -bd -oX PORT_D
+exim -DSERVER=server -DOPTION=ocsp -bd -oX PORT_D
 ****
 client-anytls -ocsp DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem 127.0.0.1 PORT_D
 ??? 220

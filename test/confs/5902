@@ -1,6 +1,6 @@
 # Exim test configuration 5902
 
-OPT=
+OPTION=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -15,7 +15,7 @@ begin routers
 
 scan:
    driver = accept
-   condition = ${if eq {OPT}{scan} {y}}
+   condition = ${if eq {OPTION}{scan} {y}}
    transport = scan
 
 local:

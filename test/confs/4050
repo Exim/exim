@@ -25,7 +25,7 @@ tls_advertise_hosts =
 .ifdef _HAVE_DMARC
 dmarc_tld_file =
 .endif
-.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS
+.ifdef _HAVE_ESMTP_LIMITS
 limits_advertise_hosts = !*
 .endif
 

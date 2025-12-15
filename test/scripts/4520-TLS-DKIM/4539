@@ -1,6 +1,6 @@
 # DKIM, CHUNKING, wireformat-spoolfile
 #
-exim -bd -DSERVER=server -DSRV=tls -DOPT=dkim -DLIST=Subject -oX PORT_S:PORT_D
+exim -bd -DSERVER=server -DSRV=tls -DOPTION=dkim -DLIST=Subject -oX PORT_S:PORT_D
 ****
 #
 # 1: non-CHUNKING injection; will not be stored as wireformat therefore
@@ -8,7 +8,6 @@ exim -bd -DSERVER=server -DSRV=tls -DOPT=dkim -DLIST=Subject -oX PORT_S:PORT_D
 client-anytls 127.0.0.1 PORT_S
 ??? 220
 EHLO xxx
-??? 250-
 ??? 250-
 ??? 250-
 ??? 250-
@@ -45,7 +44,6 @@ sleep 1
 client-anytls 127.0.0.1 PORT_S
 ??? 220
 EHLO xxx
-??? 250-
 ??? 250-
 ??? 250-
 ??? 250-

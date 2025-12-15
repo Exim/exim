@@ -26,7 +26,7 @@ QUIT
 #
 #
 #
-exim -odi -bs -DOPT=
+exim -odi -bs -DOPTION=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -67,7 +67,7 @@ QUIT
 #
 #
 #
-exim -odi -bs -DOPT="auth=name name=fred pass=fubar"
+exim -odi -bs -DOPTION="auth=name name=fred pass=fubar"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>

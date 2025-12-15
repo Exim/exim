@@ -1,6 +1,6 @@
 # Exim test configuration 0593
 
-OPT=
+OPTION=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -38,6 +38,6 @@ begin transports
 local_delivery:
   driver =	appendfile
   file =	DIR/test-mail/$local_part
-  create_file =	OPT
+  create_file =	OPTION
 
 # End

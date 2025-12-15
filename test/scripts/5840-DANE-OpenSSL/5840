@@ -15,7 +15,7 @@ exim -qf
 #
 #
 ### Recipient callout
-exim -DOPT=callout -bhc 127.0.0.1
+exim -DOPTION=callout -bhc 127.0.0.1
 HELO test
 MAIL FROM: <t3@myhost.test.ex>
 RCPT TO: <rcptuser@dane256ee.test.ex>
@@ -56,7 +56,7 @@ exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 exim -odf -DDETAILS=ca t7@thishost.test.ex
 Testing
 ****
-exim -DOPT=no_certname -qf
+exim -DOPTION=no_certname -qf
 ****
 killdaemon
 #
