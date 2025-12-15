@@ -1695,6 +1695,13 @@ int fd;
 
 DEBUG(D_queue_run) debug_printf("%s: %s\n", __FUNCTION__, msgid);
 
+if (  deliver_queue_load_max >= 0
+   && os_getloadavg() > deliver_queue_load_max)
+  {
+  DEBUG(D_queue_run) debug_printf(" - avoided due to load-avg\n");
+  return;
+  }
+
 buf[0] = NOTIFY_MSG_QRUN;
 memcpy(buf+1, msgid, MESSAGE_ID_LENGTH+1);
 Ustrcpy(buf+1+MESSAGE_ID_LENGTH+1, queue_name);
