@@ -308,6 +308,7 @@ __
             chdir $docdir or die "$ME: Can't chdir to $docdir: $!\n";
             system('./OS-Fixups') == 0 or exit $?;
             exec $context->{make_cmd},
+                ($ENV{DOCBOOK2TEXI} ? "DOCBOOK2TEXI=$ENV{DOCBOOK2TEXI}" : ()),
                 "EXIM_VER=$context->{v}{release}", 'everything'
                 or die "$ME: [$cwd] Cannot exec $context->{make_cmd}: $!\n";
         }

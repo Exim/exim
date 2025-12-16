@@ -67,6 +67,7 @@ required by Exim's process transitions)?
 
 /* Include file ordering problem */
 extern void    debug_printf_indent(const char *, ...) PRINTF_FUNCTION(1,2);
+static inline BOOL is_tainted(const void *);
 
 
 #ifdef USE_SQLITE
@@ -102,14 +103,7 @@ the default is the NDBM interface (which seems to be a wrapper for GDBM) */
 #endif /* !USE_GDBM */
 
 
-
-
-
-
 /* Wrappers for open/close with debug tracing */
-
-extern void debug_printf_indent(const char *, ...);
-static inline BOOL is_tainted(const void *);
 
 static inline EXIM_DB *
 exim_dbopen(const uschar * name, const uschar * dirname, int flags,
