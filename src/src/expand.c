@@ -8753,8 +8753,7 @@ uschar *
 expand_string_copy(const uschar * string)
 {
 const uschar * yield = expand_string(string);
-if (yield == string) yield = string_copy(string);
-return US yield;
+return yield == string ? string_copy(string) : US yield;
 }
 
 

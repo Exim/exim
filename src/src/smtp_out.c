@@ -276,10 +276,7 @@ Update those with the state.  Return the fd, or -1 with errno set.
 int
 smtp_boundsock(smtp_connect_args * sc)
 {
-transport_instance * tb = sc->tblock;
-smtp_transport_options_block * ob = tb->drinst.options_block;
-const uschar * dscp = ob->dscp;
-int sock, dscp_value, dscp_level, dscp_option;
+int sock;
 
 if ((sock = ip_socket(SOCK_STREAM, sc->host_af)) < 0)
   return -1;
@@ -290,23 +287,23 @@ if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, US &on, sizeof(on)))
   HDEBUG(D_transport|D_acl|D_v)
     debug_printf_indent("failed to set NODELAY: %s ", strerror(errno));
 
+#ifdef SUPPORT_DSCP
 /* Set DSCP value, if we can. For now, if we fail to set the value, we don't
 bomb out, just log it and continue in default traffic class. */
-
-GET_OPTION("dscp");
-if (dscp && dscp_lookup(dscp, sc->host_af, &dscp_level, &dscp_option, &dscp_value))
   {
-  HDEBUG(D_transport|D_acl|D_v)
-    debug_printf_indent("DSCP %q=%x ", dscp, dscp_value);
-  if (setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value)) < 0)
-    HDEBUG(D_transport|D_acl|D_v)
-      debug_printf_indent("failed to set DSCP: %s ", strerror(errno));
-  /* If the kernel supports IPv4 and IPv6 on an IPv6 socket, we need to set the
-  option for both; ignore failures here */
-  if (sc->host_af == AF_INET6 &&
-      dscp_lookup(dscp, AF_INET, &dscp_level, &dscp_option, &dscp_value))
-    (void) setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value));
+  transport_instance * tb = sc->tblock;
+  smtp_transport_options_block * ob = tb->drinst.options_block;
+  GET_OPTION("dscp");
+  if (ob->dscp)
+    {
+    uschar * dummy_errstr;
+    misc_module_info * mi = misc_mod_find(US"dscp", &dummy_errstr);
+    typedef void (*fn_t)(int, const uschar *, int);
+    if (mi)
+      ((fn_t *) mi->functions)[DSCP_TRANSPORT] (sock, ob->dscp, sc->host_af);
+    }
   }
+#endif
 
 /* Bind to a specific interface if requested. Caller must ensure the interface
 is the same type (IPv4 or IPv6) as the outgoing address. */

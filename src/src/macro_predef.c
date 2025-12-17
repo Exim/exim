@@ -212,6 +212,9 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_DCC
   builtin_macro_create(US"_HAVE_DCC");
 #endif
+#ifdef SUPPORT_DSCP
+  builtin_macro_create(US"_HAVE_DSCP");
+#endif
 #ifdef EXPERIMENTAL_DSN_INFO
   builtin_macro_create(US"_HAVE_DSN_INFO");
 #endif

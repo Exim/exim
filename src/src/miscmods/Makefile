@@ -41,6 +41,7 @@ dmarc.o dmarc.so:		$(HDRS) spf.h pdkim.h dmarc.h \
 				dmarc.c dmarc_common.c
 dmarc_native.o dmarc_native.so:	$(HDRS) spf.h pdkim.h dmarc.h \
 				dmarc_native.c dmarc_common.c
+dscp.o  dscp.so:		$(HDRS) dscp.c
 dummy.o:			dummy.c
 exim_filter.o exim_filter.so:	$(HDRS) exim_filter.c
 pam.o   pam.so:			$(HDRS) pam.c

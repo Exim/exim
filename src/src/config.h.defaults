@@ -155,6 +155,7 @@ Do not put spaces between # and the 'define'.
 #define SUPPORT_DMARC
 #define DMARC_API 100400
 #define DMARC_TLD_FILE "/etc/exim/opendmarc.tlds"
+#define SUPPORT_DSCP
 #define SUPPORT_I18N
 #define SUPPORT_I18N_2008
 #define SUPPORT_MAILDIR

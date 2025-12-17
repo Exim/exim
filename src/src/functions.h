@@ -216,8 +216,6 @@ extern void    dns_pattern_init(void);
 extern int     dns_special_lookup(dns_answer *, const uschar *, int, const uschar **);
 extern dns_record *dns_next_rr(const dns_answer *, dns_scan *, int);
 extern uschar *dns_text_type(int);
-extern void    dscp_list_to_stream(FILE *);
-extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
 
 extern void    enq_end(uschar *);
 extern unsigned enq_start(uschar *, unsigned);
@@ -290,7 +288,6 @@ extern int     ip_bind(int, int, const uschar *, int);
 extern int     ip_connect(int, int, const uschar *, int, int, const blob *);
 extern int     ip_connectedsocket(int, const uschar *, int, int,
                  int, host_item *, uschar **, const blob *);
-extern int     ip_get_address_family(int);
 extern void    ip_keepalive(int, const uschar *, BOOL);
 extern int     ip_recv(client_conn_ctx *, uschar *, int, time_t);
 extern int     ip_socket(int, int);

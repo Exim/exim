@@ -73,6 +73,10 @@ JH/18 Bug 1994: Fix DMARC for empty envelope senders.  Previously, the HELO
       name was not being used for the processing of SPF results, as it should
       be for that case.
 
+JH/19 DSCP support is now a build-time option. It can be built statically or as
+      a dynamically-looded module.
+
+
 Exim version 4.99.1
 -------------------
 

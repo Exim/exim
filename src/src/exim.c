@@ -1186,6 +1186,9 @@ g = string_cat(g, US"Support for:");
 #ifndef DISABLE_DNSSEC
   g = string_cat(g, US" DNSSEC");
 #endif
+#ifdef SUPPORT_DSCP
+  g = string_cat(g, US" DSCP");
+#endif
 #ifndef DISABLE_ESMTP_LIMITS
   g = string_cat(g, US" ESMTP_Limits");
 #endif
@@ -1382,7 +1385,9 @@ switch(request)
 "If the string is not recognised, you'll get this help (on stderr).\n"
 "\n"
 "  exim -bI:help    this information\n"
+#ifdef SUPPORT_DSCP
 "  exim -bI:dscp    list of known dscp value keywords\n"
+#endif
 "  exim -bI:sieve   list of supported sieve extensions\n"
 );
     return;
@@ -1396,9 +1401,16 @@ switch(request)
       fprintf(stream, "Sieve filtering not available\n");
     }
     return;
+#ifdef SUPPORT_DSCP
   case CMDINFO_DSCP:
-    dscp_list_to_stream(stream);
+    {
+    uschar * dummy_errstr;
+    misc_module_info * mi = misc_mod_find(US"dscp", &dummy_errstr);
+    typedef void (*fn_t)(FILE *);
+    if (mi) ((fn_t *) mi->functions)[DSCP_KEYWORDS] (stream);
+    }
     return;
+#endif
   }
 }
 
@@ -2419,15 +2431,11 @@ on the second character (the one after '-'), to save some effort. */
 	    info_flag = CMDINFO_HELP;
 	    if (Ustrlen(p))
 	      if (strcmpic(p, CUS"sieve") == 0)
-		{
-		info_flag = CMDINFO_SIEVE;
-		info_stdout = TRUE;
-		}
+		{ info_flag = CMDINFO_SIEVE; info_stdout = TRUE; }
+#ifdef SUPPORT_DSCP
 	      else if (strcmpic(p, CUS"dscp") == 0)
-		{
-		info_flag = CMDINFO_DSCP;
-		info_stdout = TRUE;
-		}
+		{ info_flag = CMDINFO_DSCP; info_stdout = TRUE; }
+#endif
 	      else if (strcmpic(p, CUS"help") == 0)
 		info_stdout = TRUE;
 	    }

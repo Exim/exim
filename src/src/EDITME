@@ -577,6 +577,9 @@ SUPPORT_DANE=yes
 
 # SUPPORT_SIEVE_FILTER=2
 
+# Uncomment the line to include DSCP support.  Set to 2 for a module build.
+# SUPPORT_DSCP
+
 #------------------------------------------------------------------------------
 # Compiling Exim with content scanning support: If you want to compile Exim
 # with support for message body content scanning, set WITH_CONTENT_SCAN to

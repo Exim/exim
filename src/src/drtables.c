@@ -356,7 +356,7 @@ return NULL;
 
 int
 misc_mod_conn_init(const uschar * sender_helo_name,
-  const uschar * sender_host_address, const uschar * * errstr)
+  const uschar * sender_host_address, const uschar ** errstr)
 {
 for (const misc_module_info * mi = misc_module_list; mi; mi = mi->next)
   if (mi->conn_init)
@@ -495,6 +495,9 @@ extern misc_module_info spf_module_info;
 #if defined(EXPERIMENTAL_ARC) && (!defined(SUPPORT_ARC) || SUPPORT_ARC!=2)
 extern misc_module_info arc_module_info;
 #endif
+#if defined(SUPPORT_DSCP) && SUPPORT_DSCP!=2
+extern misc_module_info dscp_module_info;
+#endif
 #if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADIUS!=2)
 extern misc_module_info radius_module_info;
 #endif
@@ -530,6 +533,9 @@ onetime = TRUE;
 #if defined(EXIM_HAVE_DMARC) && EXIM_HAVE_DMARC!=2
 /* dmarc depends on spf/dkim/arc so this add must go after, for the both-static case */
   misc_mod_add(&dmarc_module_info);
+#endif
+#if defined(SUPPORT_DSCP) && SUPPORT_DSCP!=2
+  misc_mod_add(&dscp_module_info);
 #endif
 #if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADIUS!=2)
   misc_mod_add(&radius_module_info);

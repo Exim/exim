@@ -3498,44 +3498,18 @@ for (; cb; cb = cb->next)
 	  f.dmarc_enable_forensic = TRUE;
 	  break;
 #endif
-
+#ifdef SUPPORT_DSCP
 	case CONTROL_DSCP:
-	  if (*p == '/')
-	    {
-	    int af, socklevel, optname, value;
-	    /* If we are acting on stdin, the setsockopt may fail if stdin is not
-	    a socket; we can accept that, we'll just debug-log failures anyway. */
-	    if (smtp_in_fd < 0) return ERROR;
-	    if ((af = ip_get_address_family(smtp_in_fd)) < 0)
-	      {
-	      HDEBUG(D_acl)
-		debug_printf_indent("smtp input is probably not a socket [%s], not setting DSCP\n",
-		    strerror(errno));
-	      break;
-	      }
-	    if (dscp_lookup(p+1, af, &socklevel, &optname, &value))
-	      if (setsockopt(smtp_in_fd, socklevel, optname,
-			    &value, sizeof(value)) < 0)
-		{
-		HDEBUG(D_acl) debug_printf_indent("failed to set input DSCP[%s]: %s\n",
-		    p+1, strerror(errno));
-		}
-	      else
-		{
-		HDEBUG(D_acl) debug_printf_indent("set input DSCP to %q\n", p+1);
-		}
-	    else
-	      {
-	      *log_msgptr = string_sprintf("unrecognised DSCP value in \"control=%s\"", arg);
-	      return ERROR;
-	      }
-	    }
-	  else
-	    {
-	    *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
-	    return ERROR;
-	    }
+	  {
+	  misc_module_info * mi = misc_mod_find(US"dscp", &log_message);
+	  typedef uschar * (*fn_t)(const uschar *, const uschar *);
+	  if (!mi)
+	    rc = DEFER;
+	  else if ((*log_msgptr = ((fn_t *) mi->functions)[DSCP_ACL] (arg, p)))
+	    rc = ERROR;
 	  break;
+	  }
+#endif
 
 	case CONTROL_ERROR:
 	  return ERROR;

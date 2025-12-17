@@ -90,7 +90,7 @@ done
 cd ..
 
 # miscellaneous modules
-# Note that the file in the miscmods/pdkim/ source subdir get linked to the 
+# Note that the files in the miscmods/pdkim/ source subdir get linked to the 
 # destination miscmods/ dir
 d="miscmods"
 mkdir $d
@@ -102,6 +102,7 @@ for f in dummy.c \
 	pdkim/crypt_ver.h pdkim/pdkim.c pdkim/pdkim.h \
 	pdkim/pdkim_hash.h pdkim/signing.c pdkim/signing.h \
 	dmarc.c dmarc_common.c dmarc.h dmarc_api.h dmarc_native.c \
+	dscp.c dscp_api.h \
 	exim_filter.c exim_filter_api.h \
 	pam.c pam_api.h \
 	perl.c perl_api.h \
