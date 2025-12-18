@@ -763,6 +763,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	else
 	  {
 	  uschar * s = keybuffer + Ustrlen(keybuffer) - 5;
+#ifndef DISABLE_PIPE_CONNECT
 	  if (s > keybuffer && Ustrcmp(s, ".EHLO") == 0)
 	    {
 	    ehlo_resp_precis * erp = &((dbdata_ehlo_resp *)recp)->data;
@@ -778,6 +779,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	    putchar('\n');
 	    }
 	  else
+#endif
 	    printf("%s\n", string_sprintf("%.*q\n", dlen, dp));
 	  }
 	break;
@@ -847,7 +849,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	break;
 
       case type_dbm:
-	printf("%s\t%.*s\n", keybuffer, length, value);
+	printf("%s\t%.*s\n", keybuffer, length, CS value);
       }
   store_reset(reset_point);
   }
