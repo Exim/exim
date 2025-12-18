@@ -41049,7 +41049,7 @@ key of a database record can then be entered, and the data for that record is
 displayed.
 
 If &"d"& is typed at the next prompt, the entire record is deleted.
-For all except the &'retry'&, &'callout'&, and '&ratelimit'& databases,
+For all except the &'retry'&, &'callout'&, and &'ratelimit'& databases,
 that is the only operation that can be carried
 out.
 For the modifiable ones, each field is output preceded by a number, and
