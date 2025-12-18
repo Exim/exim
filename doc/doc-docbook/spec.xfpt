@@ -6865,7 +6865,16 @@ you need to obtain a cdb distribution in order to do this.
 .cindex "lookup" "dbm"
 .cindex "binary zero" "in lookup key"
 Calls to DBM library functions are used to extract data from the given
-DBM file by looking up the record with the given key. A terminating binary
+DBM file by looking up the record with the given key.
+.new
+DBM files can be generated using the &%exim_dbmbuild%& utility.
+Each entry in the database consists (only) of a key and some data.
+The underlying support for these lookups is that used for Exim's
+hints databases, so whichever DB mechanism chosen at build time for those
+is also used here.
+.wen
+
+A terminating binary
 zero is included in the key that is passed to the DBM library. See section
 &<<SECTdb>>& for a discussion of DBM libraries.
 

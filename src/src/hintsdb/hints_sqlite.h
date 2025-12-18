@@ -187,6 +187,11 @@ return more;
 }
 
 /* EXIM_DBGET - returns the value associated with the key. */
+/* Callers:
+	dbfn_read_klen			lookup-dbm, hints general
+	autoreply_transport_entry	autoreply tpt
+	dbfn_read_with_length		utils
+*/
 static inline BOOL
 exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
@@ -208,6 +213,12 @@ return (SQLITE_DONE == exim_sqlprep_step(dbp, sql, key, data, NULL )) ? EXIM_DBP
 }
 
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
+/* Callers:
+	dbfn_write				hints general
+	autoreply_transport_entry		autoreply tpt
+	main(dbmbuild)				utils
+	dbfn_write				utils
+*/
 static inline int
 exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 {
@@ -229,6 +240,10 @@ return exim_s_dbp(dbp, key, data, "INSERT OR ABORT INTO tblblob (ky, dat) VALUES
 }
 
 /* EXIM_DBDEL */
+/* Callers
+	dbfn_delete			hints general
+	dnfn_delete			utils
+*/
 static inline int
 exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 {

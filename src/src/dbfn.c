@@ -381,6 +381,16 @@ no guarantee of alignment. Since all the records used by Exim need
 to be properly aligned to pick out the timestamps, etc., we might as
 well do the copying centrally here.
 
+Callers:
+	dbfn_read_with_length		(below)
+	  dbfn_read			dbfunctions.h
+	   (assorted hintsdb uses)
+	  (assorted hintsdb uses)
+	  dbfn_read_enforce_length	(below)
+	    (assorted hintsdb uses)
+	  exim_dbutil.c			utils
+	lookups/dbmdb.c			lookup dbm
+
 Arguments:
   dbblock   a pointer to an open database block
   key       the key of the record to be read
