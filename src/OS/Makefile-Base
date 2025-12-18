@@ -616,7 +616,7 @@ exim_fixdb:  $(OBJ_FIXDB)
 
 # The utility for tidying the contents of an exim database
 
-OBJ_TIDYDB = exim_tidydb.o util-os.o util-store.o
+OBJ_TIDYDB = exim_tidydb.o util-os.o util-store.o util-string.o
 
 exim_tidydb: $(OBJ_TIDYDB)
 	@echo "$(LNCC) -o exim_tidydb"
