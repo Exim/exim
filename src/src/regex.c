@@ -113,7 +113,7 @@ for (int i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
 
 
 int
-regex(const uschar ** listptr, BOOL cacheable)
+exim_regex(const uschar ** listptr, BOOL cacheable)
 {
 unsigned long mbox_size;
 FILE * mbox_file;

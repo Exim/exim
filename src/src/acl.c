@@ -4095,7 +4095,7 @@ for (; cb; cb = cb->next)
 
 #ifdef WITH_CONTENT_SCAN
     case ACLC_REGEX:
-      rc = regex(&arg, textonly);
+      rc = exim_regex(&arg, textonly);
       break;
 #endif
 

@@ -446,7 +446,7 @@ extern int_eximarith_t receive_statvfs(BOOL, int *);
 extern void    receive_swallow_smtp(void);
 extern int     recv_fd_from_sock(int);
 #ifdef WITH_CONTENT_SCAN
-extern int     regex(const uschar **, BOOL);
+extern int     exim_regex(const uschar **, BOOL);
 extern void    regex_vars_clear(void);
 #endif
 extern void    regex_at_daemon(const uschar *);
