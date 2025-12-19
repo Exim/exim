@@ -1254,7 +1254,7 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 	break;
 
       case type_dbm:
-	printf("0 value:  %.*s\n", oldlength, record);
+	printf("0 value:  %.*s\n", oldlength, CS record);
       }
     }
 

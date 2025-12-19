@@ -15,7 +15,7 @@ extern BOOL		dmarc_local_init(void);
 extern void		dmarc_local_msg_init(void);
 extern gstring *	dmarc_version_report(gstring *);
 extern int		dmarc_process(void);
-extern const uschar *	dmarc_result_inlist(const uschar * const *);
+extern int		dmarc_result_inlist(const uschar * const *);
 
 
 /* Other modules needed for services */

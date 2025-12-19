@@ -1126,8 +1126,6 @@ sx->pending_EHLO = FALSE;
 
 if (pending_BANNER)
   {
-  const uschar * s;
-
   DEBUG(D_transport) debug_printf("%s expect banner\n", __FUNCTION__);
   (*countp)--;
   if (!smtp_reap_banner(sx))
@@ -1140,9 +1138,12 @@ if (pending_BANNER)
 
 # if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
   GET_OPTION("host_name_extract");
-  s = ((smtp_transport_options_block *)sx->conn_args.ob)->host_name_extract;
-  if (!s) s = HNE_DEFAULT;
-  ehlo_response_lbserver(sx, s);
+    {
+    const uschar * s;
+    s = ((smtp_transport_options_block *)sx->conn_args.ob)->host_name_extract;
+    if (!s) s = HNE_DEFAULT;
+    ehlo_response_lbserver(sx, s);
+    }
 # endif
   }
 
@@ -2677,8 +2678,6 @@ goto SEND_QUIT;
 #ifndef DISABLE_TLS
   if (sx->smtps)
     {
-    const uschar * s;
-
     smtp_peer_options |= OPTION_TLS;
     suppress_tls = FALSE;
     ob->tls_tempfail_tryclear = FALSE;
@@ -2690,8 +2689,11 @@ goto SEND_QUIT;
     force resumption attempts. */
 
     GET_OPTION("host_name_extract");
-    if (!(s = ob->host_name_extract)) s = US"never-LB";
-    ehlo_response_lbserver(sx, s);
+      {
+      const uschar * s;
+      if (!(s = ob->host_name_extract)) s = US"never-LB";
+      ehlo_response_lbserver(sx, s);
+      }
 # endif
     smtp_record_protocol_sequence(sx, US"s");
     goto TLS_NEGOTIATE;
@@ -2784,8 +2786,6 @@ goto SEND_QUIT;
     if (!sx->early_pipe_active)
 #endif
       {
-      const uschar * s;
-
       sx->peer_offered = ehlo_response(sx->buffer,
 	OPTION_TLS	/* others checked later */
 #ifndef DISABLE_PIPE_CONNECT
@@ -2824,8 +2824,11 @@ goto SEND_QUIT;
 #endif
 #if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
       GET_OPTION("host_name_extract");
-      if (!(s = ob->host_name_extract)) s = HNE_DEFAULT;
-      ehlo_response_lbserver(sx, s);
+	{
+	const uschar * s;
+	if (!(s = ob->host_name_extract)) s = HNE_DEFAULT;
+	ehlo_response_lbserver(sx, s);
+	}
 #endif
       }
 

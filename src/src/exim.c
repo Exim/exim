@@ -85,7 +85,11 @@ function_store_nullfree(void * block, void * tag)
 *************************************************/
 
 enum commandline_info { CMDINFO_NONE=0,
-  CMDINFO_HELP, CMDINFO_SIEVE, CMDINFO_DSCP };
+  CMDINFO_HELP, CMDINFO_SIEVE,
+#ifdef SUPPORT_DSCP
+  CMDINFO_DSCP
+#endif
+};
 
 
 
