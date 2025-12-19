@@ -1,5 +1,5 @@
 ### (1) non-prox plain receive (not advertised) (2) XCLIENT refules when not advertised
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO plainclient
@@ -36,7 +36,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 221 myhost.test.ex closing connection
 End of script
 ### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress (4) bad: missing EHLO after XCLIENT
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO xclientproxy
@@ -134,7 +134,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 <<< 221 myhost.test.ex closing connection
 End of script
 ###          (5) no operands to XCLIENT (6,7) unrecognised operands
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO xclientproxy
@@ -168,7 +168,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 Expected EOF read
 End of script
 ###          (7) operand with zero-len value (8) operand with no value
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO xclientproxy

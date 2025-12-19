@@ -142,7 +142,6 @@ try option 'interface'
 try option 'port'
 try option 'protocol'
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
-try option 'dscp'
 connected
 try option 'helo_data'
  ╭considering: $primary_hostname
@@ -159,44 +158,6 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
-try option 'host_name_extract'
- ╭considering: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  cond: and
-   cond: match
-   ╎╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──────value: 127.0.0.1
-   ╎├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: $host
-   ╎╰─────result: 127.0.0.1
-   ╎╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───────text: .outlook.com
-   ╎├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├backslashed: '\$'
-   ╎├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: .outlook.com\$
-   ╎╰─────result: .outlook.com$
-   cond: match
-   ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├────────var: item
-   ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: $item
-   ╎├─────result:  ◀skipped▶
-   ╎╰───skipping: result is not used
-   ╎╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──protected: ^250-([\w.]+)\s
-   ╎├───scanning: }}}░{$1}}
-   ╎├───expanded: \N^250-([\w.]+)\s\N
-   ╎├─────result:  ◀skipped▶
-   ╎╰───skipping: result is not used
- ├──condition: and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}
- ├─────result: false
-  ╭───scanning: $1}}
-  ├───scanning: }}
-  ├───expanded: $1
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
- ├───expanded: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
- ╰─────result: 
  ╭considering: ${if░eq░{$address_data}{usery}{*}{:}}
   cond: eq
    ╭considering: $address_data}{usery}{*}{:}}
@@ -823,7 +784,6 @@ try option 'interface'
 try option 'port'
 try option 'protocol'
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
-try option 'dscp'
 connected
 try option 'helo_data'
  ╭considering: $primary_hostname
@@ -840,44 +800,6 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
-try option 'host_name_extract'
- ╭considering: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  cond: and
-   cond: match
-   ╎╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──────value: 127.0.0.1
-   ╎├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: $host
-   ╎╰─────result: 127.0.0.1
-   ╎╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───────text: .outlook.com
-   ╎├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├backslashed: '\$'
-   ╎├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: .outlook.com\$
-   ╎╰─────result: .outlook.com$
-   cond: match
-   ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├────────var: item
-   ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: $item
-   ╎├─────result:  ◀skipped▶
-   ╎╰───skipping: result is not used
-   ╎╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──protected: ^250-([\w.]+)\s
-   ╎├───scanning: }}}░{$1}}
-   ╎├───expanded: \N^250-([\w.]+)\s\N
-   ╎├─────result:  ◀skipped▶
-   ╎╰───skipping: result is not used
- ├──condition: and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}
- ├─────result: false
-  ╭───scanning: $1}}
-  ├───scanning: }}
-  ├───expanded: $1
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
- ├───expanded: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
- ╰─────result: 
  ╭considering: ${if░eq░{$address_data}{usery}{*}{:}}
   cond: eq
    ╭considering: $address_data}{usery}{*}{:}}
@@ -1454,7 +1376,6 @@ try option 'interface'
 try option 'port'
 try option 'protocol'
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
-try option 'dscp'
 connected
 try option 'helo_data'
  ╭considering: $primary_hostname
@@ -1471,44 +1392,6 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
-try option 'host_name_extract'
- ╭considering: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  cond: and
-   cond: match
-   ╎╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──────value: 127.0.0.1
-   ╎├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: $host
-   ╎╰─────result: 127.0.0.1
-   ╎╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───────text: .outlook.com
-   ╎├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├backslashed: '\$'
-   ╎├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: .outlook.com\$
-   ╎╰─────result: .outlook.com$
-   cond: match
-   ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├────────var: item
-   ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├───expanded: $item
-   ╎├─────result:  ◀skipped▶
-   ╎╰───skipping: result is not used
-   ╎╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──protected: ^250-([\w.]+)\s
-   ╎├───scanning: }}}░{$1}}
-   ╎├───expanded: \N^250-([\w.]+)\s\N
-   ╎├─────result:  ◀skipped▶
-   ╎╰───skipping: result is not used
- ├──condition: and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}
- ├─────result: false
-  ╭───scanning: $1}}
-  ├───scanning: }}
-  ├───expanded: $1
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
- ├───expanded: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
- ╰─────result: 
  ╭considering: ${if░eq░{$address_data}{usery}{*}{:}}
   cond: eq
    ╭considering: $address_data}{usery}{*}{:}}

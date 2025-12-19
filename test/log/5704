@@ -1,6 +1,6 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 qualify/rewrite: missing or malformed local part (expected word or "<")
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** >**bad-reply** <userx-filter@domain1> R=router_filter T=reply: filter autoreply generated syntactically invalid recipient
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** >**bad-reply** <userx-filter@domain1> R=router_filter T=reply : filter autoreply generated syntactically invalid recipient
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:delivery
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 . refused by fdqn <> local_part <>**bad-reply**> domain <> errstr <filter autoreply generated syntactically invalid recipient>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 >**bad-reply** <userx-filter@domain1>: error ignored

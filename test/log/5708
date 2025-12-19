@@ -1,7 +1,7 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:internal
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 . local_part <userx> domain <domain1> reason <failed in filter file>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@domain1 R=filter_file_fail: failed in filter file
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@domain1 R=filter_file_fail : failed in filter file
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <CALLER@the.local.host.name> R=dump_bounces
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed

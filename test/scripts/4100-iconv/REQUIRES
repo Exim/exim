@@ -1,2 +1,2 @@
 support iconv()
-support Exim-filter
+support Exim_filter

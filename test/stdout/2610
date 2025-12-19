@@ -4,14 +4,14 @@
 ### insert some data
 ### -be tests
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro 'PARTIAL' -> '127.0.0.1::1223'
-macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
-macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
-macro 'PARTIAL' -> '127.0.0.1::1223'
-macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
-macro 'PARTIAL' -> '127.0.0.1::1223'
-macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
-macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
+macro 'PARTIAL' -> '127.0.0.1::PORT_N'
+macro 'SSPEC' -> '127.0.0.1::PORT_N/test/root/pass'
+macro 'SSPEC' -> '127.0.0.1::PORT_N/test/root/pass'
+macro 'PARTIAL' -> '127.0.0.1::PORT_N'
+macro 'SSPEC' -> '127.0.0.1::PORT_N/test/root/pass'
+macro 'PARTIAL' -> '127.0.0.1::PORT_N'
+macro 'SSPEC' -> '127.0.0.1::PORT_N/test/root/pass'
+macro 'SSPEC' -> '127.0.0.1::PORT_N/test/root/pass'
 > Philip Hazel
 > Philip Hazel
 > 

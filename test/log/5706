@@ -1,7 +1,7 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1234 -qqf
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1]:1111
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1]:10001
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:connect
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 . banner <220 ESMTP>
@@ -12,17 +12,17 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:delivery
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 . refused by fdqn <127.0.0.1> local_part <usery> domain <domain1> errstr <SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** usery@domain1 <userx@domain1> R=route_smtp T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** usery@domain1 <userx@domain1> R=route_smtp T=smtp H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . [127.0.0.1]:1111
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 . [127.0.0.1]:10001
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 event tcp:close
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to initial connection
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:host:defer
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . host deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 . host deferral ip <127.0.0.1> port <PORT_S> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:defer
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . message deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 . message deferral ip <127.0.0.1> port <PORT_S> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 == CALLER@the.local.host.name R=route_smtp T=smtp defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to initial connection
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 ** CALLER@the.local.host.name: retry timeout exceeded
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:fail:delivery
