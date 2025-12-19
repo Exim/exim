@@ -329,15 +329,16 @@ for the DB access mode will error out here. */
 
 if (dbmdb)
   {
-  if (asprintf(CSS &filename, "%s.lockfile", name) < 0)
-    return NULL;
+  filename = string_sprintf("%s.lockfile", name);
   dname = Ustrchr(name, '/')		/* path has dirs */
     ? US dirname(CS string_copy(name))
     : US ".";
   }
-else if (  asprintf(CSS &dname, "%s/db", spool_directory) < 0
-	|| asprintf(CSS &filename, "%s/%s.lockfile", dname, name) < 0)
-  return NULL;
+else
+  {
+  dname = string_sprintf("%s/db", spool_directory);
+  filename = string_sprintf("%s/%s.lockfile", dname, name);
+  }
 
 dbblock->readonly = (flags & O_ACCMODE) == O_RDONLY;
 dbblock->lockfd = -1;
