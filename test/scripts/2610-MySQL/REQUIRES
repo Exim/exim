@@ -1,1 +1,3 @@
 lookup mysql
+file DIR/bin.sys/mysqld
+file DIR/bin.sys/mysql

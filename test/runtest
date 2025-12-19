@@ -4556,6 +4556,7 @@ DIR: for (my $i = 0; $i < @test_dirs; $i++)
       {
       next if /^\s*$/;
       s/\s+$//;
+      do_substitute(0);
       if (/^support (.*)$/)
         {
         if (!defined $parm_support{$1}) { $wantthis = 0; last; }
@@ -4584,6 +4585,10 @@ DIR: for (my $i = 0; $i < @test_dirs; $i++)
         {
         if (!defined $parm_malware{$1}) { $wantthis = 0; last; }
         }
+      elsif (/^file (.*)$/)
+	{
+        if (! -r $1) { $wantthis = 0; last; }
+	}
       elsif (/^(not )?feature (.*)$/)
         {			#a macro name, or lack thereof - -bP macros
 	# move to a subroutine?

@@ -1,1 +1,5 @@
 lookup pgsql
+file DIR/bin.sys/postgres
+file DIR/bin.sys/pg_ctl
+file DIR/bin.sys/initdb
+file DIR/bin.sys/psql
