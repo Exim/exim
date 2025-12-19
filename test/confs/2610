@@ -60,7 +60,7 @@ check_recipient:
 check_notsmtp:
   accept
 	  # the quoted status of this var should survive being passed via spoolfile
-	  set acl_m_qtest = ${quote_mysql:$recipients}
+	  set acl_m_qtest = X${quote_mysql:$recipients}X
 
 # ----- Routers -----
 
@@ -72,7 +72,9 @@ r1:
   debug_print =	acl_m_qtest: <$acl_m_qtest> lkup: <${lookup mysql{select name from them where id='$acl_m_qtest'}}>
 
   # this tests the unquoted case, but will need enhancement when we enforce (vs. just logging), else no transport call
-  address_data = ${lookup mysql{select name from them where id='$local_part' limit 1}}
+  # The Z here vs. the X in $acl_m_qtest just points out which one, if either
+  # goes wrong
+  address_data = ${lookup mysql{select name from them where id='Z${local_part}Z' limit 1}}
   transport = t1
 
 
@@ -82,6 +84,7 @@ begin transports
 
 t1:
   driver = appendfile
+  # no paniclog, because tpt proc has no privs.  main log only.
   file = DIR/test-mail/\
     ${lookup mysql{select id from them where id='$local_part'}{$value}fail}
   user = CALLER

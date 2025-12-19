@@ -1,6 +1,8 @@
 ### start a db server
 ### wait for db startup, set password on the root user
 ### create testdb and extra users
+### insert some data
+### -be tests
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
 macro 'PARTIAL' -> '127.0.0.1::1223'
 macro 'SSPEC' -> '127.0.0.1::1223/test/root/pass'
@@ -44,8 +46,14 @@ name=Aristotle id=aaaa
 250 OK
 550 relay not permitted
 221 myhost.test.ex closing connection
+### admin shutdown
+### killdaemon
 
 ******** SERVER ********
 ### start a db server
 ### wait for db startup, set password on the root user
 ### create testdb and extra users
+### insert some data
+### -be tests
+### admin shutdown
+### killdaemon

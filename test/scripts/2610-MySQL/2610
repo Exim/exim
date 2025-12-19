@@ -40,7 +40,7 @@ if (length($line) == 0) {
 ****
 #
 #
-# wait for db startup, insert some data
+### insert some data
 echo Insert some data
 perl
 system 'DIR/bin.sys/mysql --protocol=TCP -P PORT_N -u root -ppass -D test \
@@ -57,9 +57,10 @@ system 'DIR/bin.sys/mysql --protocol=TCP -P PORT_N -u root -ppass -D test \
  "';
 ****
 echo Populated DB
-sudo rm test-stderr-server
+#sudo rm test-stderr-server
 #
 #
+### -be tests
 exim -d-all+lookup -be
 ${lookup mysql {select name from them where id='ph10';}}
 ${lookup mysql {select name from them where id='ph10';}}
@@ -83,6 +84,8 @@ ${lookup mysql {SELECT name FROM them WHERE id IN ('ph10', 'aaaa');}}
 ${lookup mysql {SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');}}
 ${lookup mysql {delete from them where id='aaaa'}}
 ****
+#
+# -bh test
 exim -d+all -bh 10.0.0.0
 helo test
 mail from:<a@b>
@@ -91,13 +94,19 @@ quit
 ****
 # Check the quote-tracking of tainted data.
 # Currently this will log but continue.
+#
+# -odi test
 exim -odi -d ph10
 Test message
 .
 ****
+millisleep 500
 #
+### admin shutdown
 perl
 system 'mysqladmin --protocol=TCP -P PORT_N -u root -ppass shutdown';
 ****
+millisleep 500
+### killdaemon
 killdaemon
 sudo rm -fr DIR/mysql

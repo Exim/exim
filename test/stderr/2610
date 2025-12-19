@@ -1,6 +1,8 @@
 ### start a db server
 ### wait for db startup, set password on the root user
 ### create testdb and extra users
+### insert some data
+### -be tests
 Exim version x.yz ....
 Hints DB:
 macro_create: 'PARTIAL' '127.0.0.1::PORT_N'
@@ -812,8 +814,8 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check_notsmtp"
 processing ACL check_notsmtp "accept" (TESTSUITE/test-config 61)
-check set acl_m_qtest = ${quote_mysql:$recipients}
-                      = ph10@myhost.test.ex
+check set acl_m_qtest = X${quote_mysql:$recipients}X
+                      = Xph10@myhost.test.exX
 accept: condition test succeeded in ACL check_notsmtp
 end of ACL check_notsmtp: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-000000005vi-0000
@@ -879,35 +881,36 @@ routing ph10@myhost.test.ex
  local_part=ph10 domain=myhost.test.ex
   search_open: mysql "NULL"
   search_find: file="NULL"
-    key="select name from them where id='ph10@myhost.test.ex'" partial=-1 affix=NULL starflags=0 opts=NULL
+    key="select name from them where id='Xph10@myhost.test.exX'" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
   internal_search_find: file=<NULL>
-    type=mysql key="select name from them where id='ph10@myhost.test.ex'" opts=NULL
-  database lookup required for select name from them where id='ph10@myhost.test.ex'
+    type=mysql key="select name from them where id='Xph10@myhost.test.exX'" opts=NULL
+  database lookup required for select name from them where id='Xph10@myhost.test.exX'
                                (tainted, quoted:mysql)
-  MySQL query: "select name from them where id='ph10@myhost.test.ex'" opts 'NULL'
+  MySQL query: "select name from them where id='Xph10@myhost.test.exX'" opts 'NULL'
   MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
   MYSQL: no data found
   creating new cache entry
   lookup failed
-acl_m_qtest: <ph10@myhost.test.ex> lkup: <>
+acl_m_qtest: <Xph10@myhost.test.exX> lkup: <>
  processing address_data
   search_open: mysql "NULL"
   search_find: file="NULL"
-    key="select name from them where id='ph10' limit 1" partial=-1 affix=NULL starflags=0 opts=NULL
+    key="select name from them where id='Zph10Z' limit 1" partial=-1 affix=NULL starflags=0 opts=NULL
   LRU list:
   internal_search_find: file=<NULL>
-    type=mysql key="select name from them where id='ph10' limit 1" opts=NULL
-  database lookup required for select name from them where id='ph10' limit 1
+    type=mysql key="select name from them where id='Zph10Z' limit 1" opts=NULL
+  database lookup required for select name from them where id='Zph10Z' limit 1
                                (tainted)
 No quoter name for addr
 LOG: MAIN PANIC
-  tainted search query is not properly quoted (router r1, TESTSUITE/test-config 69): select name from them where id='ph10' limit 1
+  tainted search query is not properly quoted (router r1, TESTSUITE/test-config 69): select name from them where id='Zph10Z' limit 1
   required_quoter_id (mysql) quoting -1 (NULL)
-  MySQL query: "select name from them where id='ph10' limit 1" opts 'NULL'
+  MySQL query: "select name from them where id='Zph10Z' limit 1" opts 'NULL'
   MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
+  MYSQL: no data found
   creating new cache entry
-  lookup yielded: Philip░Hazel
+  lookup failed
  calling r1 router
  r1 router called for ph10@myhost.test.ex
    domain = myhost.test.ex
@@ -947,7 +950,7 @@ appendfile transport entered
                               (tainted)
 No quoter name for addr
 LOG: MAIN
-  tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 83): select id from them where id='ph10'
+  tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 85): select id from them where id='ph10'
  required_quoter_id (mysql) quoting -1 (NULL)
  MySQL query: "select id from them where id='ph10'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
@@ -1004,3 +1007,14 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+### admin shutdown
+### killdaemon
+
+******** SERVER ********
+### start a db server
+### wait for db startup, set password on the root user
+### create testdb and extra users
+### insert some data
+### -be tests
+### admin shutdown
+### killdaemon

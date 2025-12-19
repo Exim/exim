@@ -1,1 +1,1 @@
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 tainted search query is not properly quoted (router r1, TESTSUITE/test-config 69): select name from them where id='ph10' limit 1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 tainted search query is not properly quoted (router r1, TESTSUITE/test-config 69): select name from them where id='Zph10Z' limit 1
