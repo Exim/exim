@@ -33,14 +33,14 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
-macro 'PARTIAL' -> 'localhost::1223'
+macro 'PARTIAL' -> 'localhost::PORT_N'
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro 'SERVERS' -> 'localhost::1223/test/CALLER/'
-macro 'SERVERS' -> 'localhost::1223/test/CALLER/'
-macro 'PARTIAL' -> 'localhost::1223'
-macro 'SERVERS' -> 'localhost::1223/test/CALLER/'
-macro 'SERVERS' -> 'localhost::1223/test/CALLER/'
-macro 'SERVERS' -> 'localhost::1223/test/CALLER/'
+macro 'SERVERS' -> 'localhost::PORT_N/test/CALLER/'
+macro 'SERVERS' -> 'localhost::PORT_N/test/CALLER/'
+macro 'PARTIAL' -> 'localhost::PORT_N'
+macro 'SERVERS' -> 'localhost::PORT_N/test/CALLER/'
+macro 'SERVERS' -> 'localhost::PORT_N/test/CALLER/'
+macro 'SERVERS' -> 'localhost::PORT_N/test/CALLER/'
 > Philip Hazel
 > Philip Hazel
 > 
@@ -77,14 +77,14 @@ name=Aristotle id=aaaa
 550 relay not permitted
 550 relay not permitted
 221 myhost.test.ex closing connection
-macro 'PARTIAL' -> 'localhost::1223'
+macro 'PARTIAL' -> 'localhost::PORT_N'
 macro 'EXIM_PATH' -> 'TESTSUITE/eximdir/exim'
-macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/'
-macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/'
-macro 'PARTIAL' -> 'localhost::1223'
-macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/'
-macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/'
-macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/'
+macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/'
+macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/'
+macro 'PARTIAL' -> 'localhost::PORT_N'
+macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/'
+macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/'
+macro 'SERVERS' -> '(TESTSUITE/pgsql/.s.PGSQL.PORT_N)/test/CALLER/'
 > Philip Hazel
 > 
 waiting for server to shut down.... done

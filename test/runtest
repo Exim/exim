@@ -522,7 +522,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   # and exinext
   s/Transport: (?:[a-z0-9.]+|\[[^\]]+]) (?:[0-9.]+|\[[^\]]+]):\K$parm_port_s /PORT_S /;
   # maybe -bh ?
-  s/^macro .*127\.0\.0\.1::\K$parm_port_n/PORT_N/;
+  s/^macro .*(?:127\.0\.0\.1|localhost)::\K$parm_port_n/PORT_N/;
+  s/^macro .*(?:127\.0\.0\.1|localhost)::\K$parm_port_n/PORT_N/;
+  s/^macro 'SERVERS'.*PGSQL\.\K$parm_port_n/PORT_N/;
 
 
   # port numbers in stderr
@@ -1160,8 +1162,11 @@ RESET_AFTER_EXTRA_LINE_READ:
       ssl\/tls\ (alert\ (?:unknown\ ca|certificate\ revoked))$
      /dddddddd:SSL routines:ssl3_read_bytes:sslv3 $1/x;
 
-    # gnutls version variances
+    # GnuTLS version variances
     next if /^Error in the pull function./;
+
+    # DISABLE_OCSP
+    next if /^_OPT_TRANSPORT_SMTP_HOSTS_REQU(?:EST|IRE)_OCSP=y$/;
 
     # Retry DB record gets truncated when TESTDIR is a long string
     s/T:.*\(MTA-imposed quota exceeded while writing to\K.*$/ <elided>)/;
@@ -1658,8 +1663,13 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /try option 'acl_(?:not_)?smtp_mime'$/;
 
     # DISABLE_OCSP
-    next if /in hosts_requ(?:est|ire)_ocsp\?/;
-    next if /^_OPT_TRANSPORT_SMTP_HOSTS_REQUIRE_OCSP=y$/;
+    next if /^_OPT_TRANSPORT_SMTP_HOSTS_REQU(?:EST|IRE)_OCSP=y$/;
+    if (/in hosts_requ(?:est|ire)_ocsp\?/)
+      {
+      $_ = <IN>;
+      while ( /^(>>>)?\s*list element:/ ) { $_ = <IN>; }
+      goto RESET_AFTER_EXTRA_LINE_READ;
+      }
 
     # WELLKNOWN
     next if / in wellknown_advertise_hosts\?/;
