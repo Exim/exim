@@ -174,8 +174,10 @@ deliver_set_expansions(address_item * addr)
 {
 if (!addr)
   {
-  const uschar ***p = address_expansions;
-  while (*p) **p++ = NULL;
+  for (const uschar ***p = address_expansions; *p; ) **p++ = NULL;
+  deliver_host_port = 0;
+  deliver_recipients = NULL;
+  router_var = NULL;
   return;
   }
 

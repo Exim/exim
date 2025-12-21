@@ -188,6 +188,8 @@ when verifying one address while routing/verifying another. We have to have
 the size explicit, because it is referenced from more than one module. */
 
 const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
+  CUSS &address_file,
+  CUSS &address_pipe,
   CUSS &deliver_address_data,
   CUSS &deliver_domain,
   CUSS &deliver_domain_data,
@@ -198,12 +200,13 @@ const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
   CUSS &deliver_localpart_orig,
   CUSS &deliver_localpart_parent,
   CUSS &deliver_localpart_prefix,
+  CUSS &deliver_localpart_prefix_v,
   CUSS &deliver_localpart_suffix,
+  CUSS &deliver_localpart_suffix_v,
   CUSS (uschar **)(&deliver_recipients),
   CUSS &deliver_host,
+  CUSS &deliver_host_address,
   CUSS &deliver_home,
-  CUSS &address_file,
-  CUSS &address_pipe,
   CUSS &self_hostname,
   NULL };
 

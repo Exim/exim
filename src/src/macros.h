@@ -119,7 +119,7 @@ don't make the file descriptors two-way. */
 verifying. This has to be explicit because it is referenced in more than one
 source module. */
 
-#define ADDRESS_EXPANSIONS_COUNT 19
+#define ADDRESS_EXPANSIONS_COUNT 21
 
 /* The maximum permitted number of command-line (-D) macro definitions. We
 need a limit only to make it easier to generate argument vectors for re-exec

@@ -1736,6 +1736,8 @@ Returns:    a replacement reset point
 rmark
 smtp_reset(rmark reset_point)
 {
+deliver_set_expansions(NULL);
+
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
@@ -1760,11 +1762,8 @@ f.active_local_from_check = local_from_check;		/* Can be set by ACL */
 f.active_local_sender_retain = local_sender_retain;	/* Can be set by ACL */
 sending_ip_address = NULL;
 return_path = sender_address = NULL;
-deliver_localpart_data = deliver_domain_data =
 recipient_data = sender_data = NULL;			/* Can be set by ACL */
 recipient_verify_failure = NULL;
-deliver_localpart_parent = deliver_localpart_orig = NULL;
-deliver_domain_parent = deliver_domain_orig = NULL;
 callout_address = NULL;
 submission_name = NULL;					/* Can be set by ACL */
 raw_sender = NULL;                  /* After SMTP rewrite, before qualifying */
@@ -1778,7 +1777,6 @@ dnslist_domain = dnslist_matched = NULL;
 
 dsn_ret = 0;
 dsn_envid = NULL;
-deliver_host = deliver_host_address = NULL;	/* Can be set by ACL */
 #ifndef DISABLE_TLS
  memset(&tls_out, 0, sizeof(tls_out));		/* Can be set by callout */
  tls_out.active.sock = -1;

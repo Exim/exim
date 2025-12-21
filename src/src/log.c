@@ -1323,7 +1323,7 @@ va_end(ap);
 }
 
 /* As the above, but adds in LOG_PANIC_DIE.
-We have this as a wripper so that we can mark it as never returning,
+We have this as a wrapper so that we can mark it as never returning,
 for the benefit of static analysers. */
 
 void
