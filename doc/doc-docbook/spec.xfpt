@@ -2070,7 +2070,10 @@ Other features that can be built this way include all the router and
 authentication drivers,
 all the transport drivers except smtp,
 both filter types (exim and sieve),
-SPF, DKIM, DMARC, ARC and perl.
+SPF, DKIM, DMARC, ARC,  perl,
+.new
+DSCP, socks, xclient and proxy-protocol.
+.wen
 
 For building
 set &`LOOKUP_MODULE_DIR`& to the directory into which the modules will be
@@ -2102,6 +2105,10 @@ For building, as above but using
 &`AUTH_*`&, &`ROUTER_*`& and &`TRANSPORT_*`& instead of &`LOOKUP_*`&,
 
 Detail for each module type is given in the EDITME file.
+.new
+The &`-bI:modules`& command line option to exim will list the
+modules that are installed on a system.
+.wen
 
 
 .section "The building process" "SECID29"
@@ -3110,6 +3117,13 @@ options shall cause Exim to exit after producing the requested output.
 .cindex "DSCP" "values"
 This option causes Exim to emit an alphabetically sorted list of all
 recognised DSCP names.
+
+.new
+.cmdopt -bI:modules
+.cindex "dynamic modules" "list installed"
+This option causes Exim to emit a list of dynamic-load modules that
+are installed on the system.
+.wen
 
 .cmdopt -bI:sieve
 .cindex "Sieve filter" "capabilities"

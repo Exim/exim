@@ -376,6 +376,7 @@ extern void    moan_write_references(FILE *, uschar *);
 #ifdef LOOKUP_MODULE_DIR
 //extern void    mod_load_check(const uschar *);
 #endif
+extern void    mod_names(FILE *);
 extern FILE   *modefopen(const uschar *, const char *, mode_t);
 
 extern int     open_cutthrough_connection(address_item *, BOOL);

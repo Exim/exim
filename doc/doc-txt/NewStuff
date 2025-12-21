@@ -16,6 +16,8 @@ Since Version 4.99
 
  3. Log selectors "spf", "spf_verbose", "dmarc", "dmarc_verbose".
 
+ 4. Ommandline option "-bI:modules" for listing installed dynamic-load modules.
+
 
 Version 4.99
 ------------

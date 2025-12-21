@@ -224,6 +224,7 @@ const pcre2_code * regex_islookupmod = regex_must_compile(
 if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
   g = string_cat(g, US"FAIL exim_opendir");
 else
+  {
   for (struct dirent * ent; ent = readdir(dd); )
     {
     void * dl;
@@ -246,6 +247,8 @@ else
       dlclose(dl);
       }
     }
+  closedir(dd);
+  }
 #endif	/*!LOOKUP_MODULE_DIR*/
 return g;
 }
@@ -570,6 +573,38 @@ onetime = TRUE;
 #endif
 #if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADIUS!=2)
   misc_mod_add(&radius_module_info);
+#endif
+}
+
+
+void
+mod_names(FILE * stream)
+{
+#ifdef LOOKUP_MODULE_DIR
+DIR * dd;
+gstring * list = NULL;
+const pcre2_code * regex_ismodule = regex_must_compile(
+  US"^([a-z0-9]+)_(?:lookup|auth|router|transport|miscmod)\\."
+    DYNLIB_FN_EXT "$",
+  MCS_NOFLAGS, TRUE);
+
+if ((dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
+  {
+  for (struct dirent * ent; ent = readdir(dd); )
+    if (regex_match_and_setup(regex_ismodule, US ent->d_name, 0, 0))
+      list = string_append_listele(list, ' ', expand_nstring[1]);
+  closedir(dd);
+
+  if (list)
+    fprintf(stream, "Installed modules: %s\n", string_from_gstring(list));
+  else
+    fprintf(stream, "No modules are installed\n");
+  }
+else
+  fprintf(stream, "Modules directory not readable\n");
+
+#else
+fprintf(stream, "Loadable-module support is not available\n");
 #endif
 }
 

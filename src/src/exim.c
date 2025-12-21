@@ -85,7 +85,7 @@ function_store_nullfree(void * block, void * tag)
 *************************************************/
 
 enum commandline_info { CMDINFO_NONE=0,
-  CMDINFO_HELP, CMDINFO_SIEVE,
+  CMDINFO_HELP, CMDINFO_SIEVE, CMDINFO_MODULES,
 #ifdef SUPPORT_DSCP
   CMDINFO_DSCP
 #endif
@@ -1392,8 +1392,12 @@ switch(request)
 #ifdef SUPPORT_DSCP
 "  exim -bI:dscp    list of known dscp value keywords\n"
 #endif
+"  exim -bI:modules list of loadable modules\n"
 "  exim -bI:sieve   list of supported sieve extensions\n"
 );
+    return;
+  case CMDINFO_MODULES:
+    mod_names(stream);
     return;
   case CMDINFO_SIEVE:
     {
@@ -2436,6 +2440,8 @@ on the second character (the one after '-'), to save some effort. */
 	    if (Ustrlen(p))
 	      if (strcmpic(p, CUS"sieve") == 0)
 		{ info_flag = CMDINFO_SIEVE; info_stdout = TRUE; }
+	      else if (strcmpic(p, CUS"modules") == 0)
+		{ info_flag = CMDINFO_MODULES; info_stdout = TRUE; }
 #ifdef SUPPORT_DSCP
 	      else if (strcmpic(p, CUS"dscp") == 0)
 		{ info_flag = CMDINFO_DSCP; info_stdout = TRUE; }
