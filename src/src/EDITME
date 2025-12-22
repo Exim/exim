@@ -566,7 +566,6 @@ SUPPORT_DANE=yes
 
 # SUPPORT_EXIM_FILTER=2
 
-#------------------------------------------------------------------------------
 # Compiling with support for Sieve filters is the default. To disable this
 # uncomment the line below.
 
@@ -577,6 +576,7 @@ SUPPORT_DANE=yes
 
 # SUPPORT_SIEVE_FILTER=2
 
+#------------------------------------------------------------------------------
 # Uncomment the line to include DSCP support.  Set to 2 for a module build.
 # SUPPORT_DSCP
 

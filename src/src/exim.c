@@ -85,7 +85,10 @@ function_store_nullfree(void * block, void * tag)
 *************************************************/
 
 enum commandline_info { CMDINFO_NONE=0,
-  CMDINFO_HELP, CMDINFO_SIEVE, CMDINFO_MODULES,
+  CMDINFO_HELP, CMDINFO_MODULES,
+#ifndef DISABLE_SIEVE_FILTER
+  CMDINFO_SIEVE,
+#endif
 #ifdef SUPPORT_DSCP
   CMDINFO_DSCP
 #endif
@@ -1393,27 +1396,30 @@ switch(request)
 "  exim -bI:dscp    list of known dscp value keywords\n"
 #endif
 "  exim -bI:modules list of loadable modules\n"
+#ifndef DISABLE_SIEVE_FILTER
 "  exim -bI:sieve   list of supported sieve extensions\n"
+#endif
 );
     return;
   case CMDINFO_MODULES:
     mod_names(stream);
     return;
+#ifndef DISABLE_SIEVE_FILTER
   case CMDINFO_SIEVE:
     {
-    const misc_module_info * mi;
+    misc_module_info * mi = misc_mod_find(US"sieve_filter", NULL);
     typedef void (*fn_t)(FILE *);
-    if ((mi = misc_mod_find(US"sieve_filter", NULL)))
+    if (mi)
       (((fn_t *) mi->functions)[SIEVE_EXTENSIONS]) (stream);
     else
       fprintf(stream, "Sieve filtering not available\n");
     }
     return;
+#endif
 #ifdef SUPPORT_DSCP
   case CMDINFO_DSCP:
     {
-    uschar * dummy_errstr;
-    misc_module_info * mi = misc_mod_find(US"dscp", &dummy_errstr);
+    misc_module_info * mi = misc_mod_find(US"dscp", NULL);
     typedef void (*fn_t)(FILE *);
     if (mi) ((fn_t *) mi->functions)[DSCP_KEYWORDS] (stream);
     }
@@ -2438,10 +2444,12 @@ on the second character (the one after '-'), to save some effort. */
 	    const uschar * p = argrest+1;
 	    info_flag = CMDINFO_HELP;
 	    if (Ustrlen(p))
-	      if (strcmpic(p, CUS"sieve") == 0)
-		{ info_flag = CMDINFO_SIEVE; info_stdout = TRUE; }
-	      else if (strcmpic(p, CUS"modules") == 0)
+	      if (strcmpic(p, CUS"modules") == 0)
 		{ info_flag = CMDINFO_MODULES; info_stdout = TRUE; }
+#ifndef DISABLE_SIEVE_FILTER
+	      else if (strcmpic(p, CUS"sieve") == 0)
+		{ info_flag = CMDINFO_SIEVE; info_stdout = TRUE; }
+#endif
 #ifdef SUPPORT_DSCP
 	      else if (strcmpic(p, CUS"dscp") == 0)
 		{ info_flag = CMDINFO_DSCP; info_stdout = TRUE; }

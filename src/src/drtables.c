@@ -348,8 +348,9 @@ if ((mi = misc_mod_findonly(name))) return mi;
 #ifdef LOOKUP_MODULE_DIR
 return misc_mod_load(name, errstr);
 #else
-*errstr = string_sprintf("module %q not built-in, and"
-	" no setting for LOOKUP_MODULE_DIR", name);
+if (errstr)
+  *errstr = string_sprintf("module %q not built-in, and"
+	  " no setting for LOOKUP_MODULE_DIR", name);
 return NULL;
 #endif	/*LOOKUP_MODULE_DIR*/
 }

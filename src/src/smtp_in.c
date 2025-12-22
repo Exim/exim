@@ -2669,11 +2669,10 @@ Failure will not allow any SMTP function other than QUIT. */
 f.quit_cmd_only = FALSE;
 if (hosts_proxy)
   {
-  uschar * dummy_errmsg;
   misc_module_info * mi;
   typedef BOOL (*fn_t) (void);
 
-  if (!(mi = misc_mod_find(US"proxy", &dummy_errmsg)))
+  if (!(mi = misc_mod_find(US"proxy", NULL)))
     {
     smtp_closedown(US"Temporary local problem - please try later");
     return FALSE;
@@ -4443,11 +4442,10 @@ while (done <= 0)
 #ifdef EXPERIMENTAL_XCLIENT
 	if (proxy_session || verify_check_host(&hosts_xclient) != FAIL)
 	  {
-	  uschar * dummy_errmsg;
 	  typedef gstring * (*fn_t) (gstring *);
 
 	  if (  !xclient_mi
-	     && !(xclient_mi = misc_mod_find(US"xclient", &dummy_errmsg)))
+	     && !(xclient_mi = misc_mod_find(US"xclient", NULL)))
 	    {
 	    smtp_closedown(US"Temporary local problem - please try later");
 	    return FALSE;

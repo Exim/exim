@@ -77,6 +77,9 @@ JH/19 Support for DSCP, SOCKS, Proxy-Protocol and (the experimental) XCLIENT
       are now build-time options. They can each be built statically or as
       dynamically- looded modules.
 
+JH/20 Bug 3184: Disable the -bI:sieve command-line option when built without
+      Sieve support.  Previously it was available but would crash.
+
 
 Exim version 4.99.1
 -------------------

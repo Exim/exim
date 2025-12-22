@@ -84,8 +84,7 @@ return FAIL;
 gstring *
 spf_version_report(gstring * g)
 {
-uschar * dummy_errmsg;
-misc_module_info * mi = misc_mod_find(US"spf", &dummy_errmsg);
+misc_module_info * mi = misc_mod_find(US"spf", NULL);
 return mi && mi->lib_vers_report ? mi->lib_vers_report(g) : g;
 }
 

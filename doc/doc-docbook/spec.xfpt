@@ -3115,7 +3115,8 @@ options shall cause Exim to exit after producing the requested output.
 
 .cmdopt -bI:dscp
 .cindex "DSCP" "values"
-This option causes Exim to emit an alphabetically sorted list of all
+If Exim was built with DSCP support
+this option causes Exim to emit an alphabetically sorted list of all
 recognised DSCP names.
 
 .new
@@ -3127,7 +3128,8 @@ are installed on the system.
 
 .cmdopt -bI:sieve
 .cindex "Sieve filter" "capabilities"
-This option causes Exim to emit an alphabetically sorted list of all supported
+If Exim was built with Sieve support
+this option causes Exim to emit an alphabetically sorted list of all supported
 Sieve protocol extensions on stdout, one per line.  This is anticipated to be
 useful for ManageSieve
 (&url(https://datatracker.ietf.org/doc/html/rfc5804.html,RFC 5804))

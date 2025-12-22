@@ -2802,7 +2802,8 @@ switch(cond_type = identify_operator(&s, &opname))
     case ECOND_RADIUS:
 #ifdef RADIUS_CONFIG_FILE
       {
-      const misc_module_info * mi = misc_mod_find(US"radius", NULL);
+      uschar * dummy_errstr;
+      const misc_module_info * mi = misc_mod_find(US"radius", &dummy_errstr);
       typedef int (*fn_t)(const uschar *, uschar **);
       if (!mi)
 	goto COND_FAILED_NOT_COMPILED;

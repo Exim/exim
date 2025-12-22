@@ -296,8 +296,7 @@ bomb out, just log it and continue in default traffic class. */
   GET_OPTION("dscp");
   if (ob->dscp)
     {
-    uschar * dummy_errstr;
-    misc_module_info * mi = misc_mod_find(US"dscp", &dummy_errstr);
+    misc_module_info * mi = misc_mod_find(US"dscp", NULL);
     typedef void (*fn_t)(int, const uschar *, int);
     if (mi)
       ((fn_t *) mi->functions)[DSCP_TRANSPORT] (sock, ob->dscp, sc->host_af);
@@ -521,8 +520,7 @@ if (ob->socks_proxy)
     }
   if (*ob->socks_proxy)
     {
-    uschar * dummy_errmsg;
-    misc_module_info * mi = misc_mod_find(US"socks", &dummy_errmsg);
+    misc_module_info * mi = misc_mod_find(US"socks", NULL);
     typedef int (*fn_t) (const smtp_connect_args *, const blob *);
     return mi ? ((fn_t *) mi->functions)[SOCKS_CONNECT] (sc, early_data) : -1;
     }
