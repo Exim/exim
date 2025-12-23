@@ -1327,7 +1327,7 @@ if (f.running_in_test_harness && f.testsuite_delays) millisleep(millisec);
 /* Taint-checked file opens. Return values/errno per open(2). */
 
 static inline int
-exim_open2(const char *pathname, int flags)
+exim_open2(const char * pathname, int flags)
 {
 if (!is_tainted(pathname)) return open(pathname, flags);
 log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
@@ -1344,7 +1344,7 @@ return -1;
 }
 #ifdef EXIM_HAVE_OPENAT
 static inline int
-exim_openat(int dirfd, const char *pathname, int flags)
+exim_openat(int dirfd, const char * pathname, int flags)
 {
 if (!is_tainted(pathname)) return openat(dirfd, pathname, flags);
 log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
@@ -1362,7 +1362,7 @@ return -1;
 #endif
 
 static inline FILE *
-exim_fopen(const char *pathname, const char *mode)
+exim_fopen(const char * pathname, const char * mode)
 {
 if (!is_tainted(pathname)) return fopen(pathname, mode);
 log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
@@ -1378,6 +1378,18 @@ log_write(0, LOG_MAIN|LOG_PANIC, "Tainted dirname '%s'", name);
 errno = EACCES;
 return NULL;
 }
+
+#ifdef LOOKUP_MODULE_DIR
+static inline DIR *
+open_module_dir(void)
+{
+if (module_dir)
+  rewinddir(module_dir);
+else
+  module_dir = exim_opendir(CUS LOOKUP_MODULE_DIR);
+return module_dir;
+}
+#endif
 
 /******************************************************************************/
 # if !defined(COMPILE_UTILITY)

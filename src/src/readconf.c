@@ -3819,7 +3819,7 @@ for (di = *info_anchor; di; di = di->next)
 #ifdef LOOKUP_MODULE_DIR
 /* Potentially a loadable module. Look for a file with the right name. */
 
-if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
+if (!(dd = open_module_dir()))
   log_write(0, LOG_MAIN|LOG_PANIC,
 	  "Couldn't open %s: not loading driver modules\n", LOOKUP_MODULE_DIR);
 else
@@ -3828,7 +3828,7 @@ else
 				  d->driver_name, class);
   const char * errormsg;
 
-  DEBUG(D_any) debug_printf("Loading %s %s driver from %s\n",
+  DEBUG(D_any) debug_printf("Loading %q %s driver from %s\n",
 			    d->driver_name, class, LOOKUP_MODULE_DIR);
 
   for(struct dirent * ent; ent = readdir(dd); ) if (Ustrcmp(ent->d_name, fname) == 0)
@@ -3866,7 +3866,6 @@ else
 	store_pool = old_pool;
 	DEBUG(D_any)
 	  debug_printf("Loaded module %q (%s)\n", d->driver_name, class);
-	closedir(dd);
 	goto found;
 	}
 
@@ -3876,7 +3875,6 @@ else
     dlclose(dl);
     break;
     }
-  closedir(dd);
   }
 #endif	/* LOOKUP_MODULE_DIR */
 

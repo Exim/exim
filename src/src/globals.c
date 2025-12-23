@@ -1101,6 +1101,9 @@ int     mime_is_coverletter    = 0;
 int     mime_is_rfc822         = 0;
 int     mime_part_count        = -1;
 #endif
+#ifdef LOOKUP_MODULE_DIR
+DIR *	module_dir	       = NULL;
+#endif
 
 uid_t  *never_users            = NULL;
 uschar *notifier_socket        = US"$spool_directory/" NOTIFIER_SOCKET_NAME ;

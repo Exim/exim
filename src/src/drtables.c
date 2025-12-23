@@ -221,7 +221,7 @@ DIR * dd;
 const pcre2_code * regex_islookupmod = regex_must_compile(
   US"^([a-z0-9]+)_lookup\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
 
-if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
+if (!(dd = open_module_dir()))
   g = string_cat(g, US"FAIL exim_opendir");
 else
   {
@@ -247,7 +247,6 @@ else
       dlclose(dl);
       }
     }
-  closedir(dd);
   }
 #endif	/*!LOOKUP_MODULE_DIR*/
 return g;
@@ -448,7 +447,7 @@ DEBUG(D_lookup) debug_printf_indent("Total %d built-in lookups\n", lookup_list_c
 
 
 #ifdef LOOKUP_MODULE_DIR
-if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
+if (!(dd = open_module_dir()))
   {
   EARLY_DEBUG(D_lookup, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
   log_write(0, LOG_MAIN|LOG_PANIC,
@@ -476,7 +475,6 @@ else
 	log_write(0, LOG_MAIN|LOG_PANIC, "%s", errstr);
 	}
       }
-  closedir(dd);
   }
 
 EARLY_DEBUG(D_lookup, "Loaded %d dynamic lookup modules\n", countmodules);
@@ -589,12 +587,11 @@ const pcre2_code * regex_ismodule = regex_must_compile(
     DYNLIB_FN_EXT "$",
   MCS_NOFLAGS, TRUE);
 
-if ((dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
+if ((dd = open_module_dir()))
   {
   for (struct dirent * ent; ent = readdir(dd); )
     if (regex_match_and_setup(regex_ismodule, US ent->d_name, 0, 0))
       list = string_append_listele(list, ' ', expand_nstring[1]);
-  closedir(dd);
 
   if (list)
     fprintf(stream, "Installed modules: %s\n", string_from_gstring(list));

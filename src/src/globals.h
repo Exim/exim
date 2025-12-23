@@ -769,6 +769,9 @@ extern int     mime_is_coverletter;
 extern int     mime_is_rfc822;
 extern int     mime_part_count;
 #endif
+#ifdef LOOKUP_MODULE_DIR
+extern DIR *   module_dir;
+#endif
 
 extern BOOL    mua_wrapper;            /* TRUE when Exim is wrapping an MUA */
 

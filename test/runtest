@@ -1452,7 +1452,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 	      )/x;
 
     # drop loads of non-lookup dyn-module drivers
-    next if /^$time_pid?(?:Loading\ \w+\ (?:router|transport|auth)\ driver\ from
+    next if /^$time_pid?(?:Loading\ "\w+"\ (?:router|transport|auth)\ driver\ from
 			| Loaded\ module\ "\w+"\ \((?:router|transport|auth)\)$
 			| \s*(?:Load(?:ing|ed)\ module|Module\ init:)\ \"
 			)/x;
