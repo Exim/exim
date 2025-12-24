@@ -751,6 +751,8 @@ DISABLE_MAL_MKS=yes
 # sqlite
 # USE_SQLITE = yes
 # DBMLIB = -lsqlite3
+#  If using Gnu Make this is usable:
+# DBMLIB = $(shell pkg-config --libs sqlite3)
 
 
 #------------------------------------------------------------------------------
