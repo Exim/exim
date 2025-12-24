@@ -307,6 +307,8 @@ extern void    log_write_die(unsigned, int, const char * format, ...)
 
 extern const lookup_info * lookup_with_acq_num(unsigned);
 extern gstring *lookup_dynamic_supported(gstring *);
+extern const lookup_info * lookup_find(const uschar *, uschar **);
+extern const lookup_info * lookup_findonly(const uschar *);
 #ifdef LOOKUP_MODULE_DIR
 extern BOOL    lookup_one_mod_load(const uschar *, uschar **);
 #endif

@@ -47,7 +47,7 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_data_prdr",       opt_stringptr,   {&acl_smtp_data_prdr} },
 #endif
 #ifndef DISABLE_DKIM
-  { "acl_smtp_dkim",            opt_module,	 {US"dkim"} },
+  { "acl_smtp_dkim",            opt_misc_module, {US"dkim"} },
 #endif
   { "acl_smtp_etrn",            opt_stringptr,   {&acl_smtp_etrn} },
   { "acl_smtp_expn",            opt_stringptr,   {&acl_smtp_expn} },
@@ -118,16 +118,16 @@ static optionlist optionlist_config[] = {
 #endif
   { "disable_ipv6",             opt_bool,        {&disable_ipv6} },
 #ifndef DISABLE_DKIM
-  { "dkim_verify_hashes",       opt_module,	 {US"dkim"} },
-  { "dkim_verify_keytypes",     opt_module,	 {US"dkim"} },
-  { "dkim_verify_min_keysizes", opt_module,	 {US"dkim"} },
-  { "dkim_verify_minimal",      opt_module,	 {US"dkim"} },
-  { "dkim_verify_signers",      opt_module,	 {US"dkim"} },
+  { "dkim_verify_hashes",       opt_misc_module, {US"dkim"} },
+  { "dkim_verify_keytypes",     opt_misc_module, {US"dkim"} },
+  { "dkim_verify_min_keysizes", opt_misc_module, {US"dkim"} },
+  { "dkim_verify_minimal",      opt_misc_module, {US"dkim"} },
+  { "dkim_verify_signers",      opt_misc_module, {US"dkim"} },
 #endif
 #ifdef EXIM_HAVE_DMARC
-  { "dmarc_forensic_sender",    opt_module,	 {US"dmarc"} },
-  { "dmarc_history_file",       opt_module,	 {US"dmarc"} },
-  { "dmarc_tld_file",           opt_module,	 {US"dmarc"} },
+  { "dmarc_forensic_sender",    opt_misc_module, {US"dmarc"} },
+  { "dmarc_history_file",       opt_misc_module, {US"dmarc"} },
+  { "dmarc_tld_file",           opt_misc_module, {US"dmarc"} },
 #endif
   { "dns_again_means_nonexist", opt_stringptr,   {&dns_again_means_nonexist} },
   { "dns_check_names_pattern",  opt_stringptr,   {&check_dns_names_pattern} },
@@ -192,15 +192,15 @@ static optionlist optionlist_config[] = {
   { "keep_environment",         opt_stringptr,   {&keep_environment} },
   { "keep_malformed",           opt_time,        {&keep_malformed} },
 #ifdef LOOKUP_LDAP
-  { "ldap_ca_cert_dir",         opt_stringptr,   {&eldap_ca_cert_dir} },
-  { "ldap_ca_cert_file",        opt_stringptr,   {&eldap_ca_cert_file} },
-  { "ldap_cert_file",           opt_stringptr,   {&eldap_cert_file} },
-  { "ldap_cert_key",            opt_stringptr,   {&eldap_cert_key} },
-  { "ldap_cipher_suite",        opt_stringptr,   {&eldap_cipher_suite} },
-  { "ldap_default_servers",     opt_stringptr,   {&eldap_default_servers} },
-  { "ldap_require_cert",        opt_stringptr,   {&eldap_require_cert} },
-  { "ldap_start_tls",           opt_bool,        {&eldap_start_tls} },
-  { "ldap_version",             opt_int,         {&eldap_version} },
+  { "ldap_ca_cert_dir",         opt_lookup_module, {US"ldap"} },
+  { "ldap_ca_cert_file",        opt_lookup_module, {US"ldap"} },
+  { "ldap_cert_file",           opt_lookup_module, {US"ldap"} },
+  { "ldap_cert_key",            opt_lookup_module, {US"ldap"} },
+  { "ldap_cipher_suite",        opt_lookup_module, {US"ldap"} },
+  { "ldap_default_servers",     opt_lookup_module, {US"ldap"} },
+  { "ldap_require_cert",        opt_lookup_module, {US"ldap"} },
+  { "ldap_start_tls",           opt_lookup_module, {US"ldap"} },
+  { "ldap_version",             opt_lookup_module, {US"ldap"} },
 #endif
 #ifndef DISABLE_ESMTP_LIMITS
   { "limits_advertise_hosts", opt_stringptr, {&limits_advertise_hosts} },
@@ -231,7 +231,7 @@ static optionlist optionlist_config[] = {
 #endif
   { "mua_wrapper",              opt_bool,        {&mua_wrapper} },
 #ifdef LOOKUP_MYSQL
-  { "mysql_servers",            opt_stringptr,   {&mysql_servers} },
+  { "mysql_servers",            opt_lookup_module, {US"mysql"} },
 #endif
   { "never_users",              opt_uidlist,     {&never_users} },
   { "notifier_socket",          opt_stringptr,   {&notifier_socket} },
@@ -239,7 +239,7 @@ static optionlist optionlist_config[] = {
   { "openssl_options",          opt_stringptr,   {&openssl_options} },
 #endif
 #ifdef LOOKUP_ORACLE
-  { "oracle_servers",           opt_stringptr,   {&oracle_servers} },
+  { "oracle_servers",           opt_lookup_module, {US"oracle"} },
 #endif
   { "panic_coredump",           opt_bool,        {&panic_coredump} },
   { "percent_hack_domains",     opt_stringptr,   {&percent_hack_domains} },
@@ -249,7 +249,7 @@ static optionlist optionlist_config[] = {
   { "perl_taintmode",           opt_bool,        {&opt_perl_taintmode} },
 #endif
 #ifdef LOOKUP_PGSQL
-  { "pgsql_servers",            opt_stringptr,   {&pgsql_servers} },
+  { "pgsql_servers",            opt_lookup_module, {US"pgsql"} },
 #endif
   { "pid_file_path",            opt_stringptr,   {&pid_file_path} },
   { "pipelining_advertise_hosts", opt_stringptr, {&pipelining_advertise_hosts} },
@@ -290,7 +290,7 @@ static optionlist optionlist_config[] = {
   { "recipients_max",           opt_stringptr,   {&recipients_max} },
   { "recipients_max_reject",    opt_bool,        {&recipients_max_reject} },
 #ifdef LOOKUP_REDIS
-  { "redis_servers",            opt_stringptr,   {&redis_servers} },
+  { "redis_servers",            opt_lookup_module, {US"redis"} },
 #endif
   { "remote_max_parallel",      opt_int,         {&remote_max_parallel} },
   { "remote_sort_domains",      opt_stringptr,   {&remote_sort_domains} },
@@ -336,15 +336,15 @@ static optionlist optionlist_config[] = {
   { "spamd_address",            opt_stringptr,   {&spamd_address} },
 #endif
 #ifdef EXIM_HAVE_SPF
-  { "spf_guess",                opt_module,	 {US"spf"} },
-  { "spf_smtp_comment_template",opt_module,	 {US"spf"} },
+  { "spf_guess",                opt_misc_module, {US"spf"} },
+  { "spf_smtp_comment_template",opt_misc_module, {US"spf"} },
 #endif
   { "split_spool_directory",    opt_bool,        {&split_spool_directory} },
   { "spool_directory",          opt_stringptr,   {&spool_directory} },
   { "spool_wireformat",         opt_bool,        {&spool_wireformat} },
 #ifdef LOOKUP_SQLITE
-  { "sqlite_dbfile",            opt_stringptr,   {&sqlite_dbfile} },
-  { "sqlite_lock_timeout",      opt_int,         {&sqlite_lock_timeout} },
+  { "sqlite_dbfile",            opt_lookup_module, {US"sqlite"} },
+  { "sqlite_lock_timeout",      opt_lookup_module, {US"sqlite"} },
 #endif
   { "strict_acl_vars",          opt_bool,        {&strict_acl_vars} },
   { "strip_excess_angle_brackets", opt_bool,     {&strip_excess_angle_brackets} },
@@ -1762,13 +1762,10 @@ Returns:        TRUE if an option was read successfully,
 */
 
 static BOOL
-readconf_handle_option(uschar *buffer, optionlist *oltop, int last,
-  void *data_block, uschar *unknown_txt)
+readconf_handle_option(uschar * buffer, optionlist * oltop, int last,
+  void * data_block, uschar * unknown_txt)
 {
-int ptr;
-int offset = 0;
-int count, type, value;
-int issecure = 0;
+int ptr, offset = 0, count, type, value, issecure = 0;
 uid_t uid;
 gid_t gid;
 BOOL boolvalue = TRUE;
@@ -2507,10 +2504,23 @@ switch (type)
     ol->v.fn(name, s, 0);
     break;
 
-  case opt_module:
+  case opt_lookup_module:
     {
     uschar * errstr;
-    misc_module_info * mi = misc_mod_find(US ol->v.value, &errstr);
+    const lookup_info * li = lookup_find(US ol->v.value, &errstr);
+    if (!li)
+      log_write_die(0, LOG_CONFIG_IN,
+	"failed to find %s module for %s: %s", US ol->v.value, name, errstr);
+
+    oltop = li->options;
+    last = li->options_count;
+    goto sublist;
+    }
+
+  case opt_misc_module:
+    {
+    uschar * errstr;
+    const misc_module_info * mi = misc_mod_find(US ol->v.value, &errstr);
     if (!mi)
       log_write_die(0, LOG_CONFIG_IN,
 	"failed to find %s module for %s: %s", US ol->v.value, name, errstr);

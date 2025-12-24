@@ -12,6 +12,9 @@
 
 #include <sqlite3.h>
 
+static uschar * sqlite_dbfile = NULL;	/* Filename for database */
+static int	sqlite_lock_timeout = 5;/* Internal lock waiting timeout */
+
 
 /*************************************************
 *              Open entry point                  *
@@ -173,20 +176,31 @@ g = string_fmt_append(g,
 return g;
 }
 
+/******************************************************************************/
+/* Module API */
+
+static optionlist sqlite_options[] = {
+  { "sqlite_dbfile",            opt_stringptr,   {&sqlite_dbfile} },
+  { "sqlite_lock_timeout",      opt_int,         {&sqlite_lock_timeout} },
+};
+
 static lookup_info _lookup_info = {
-  .name = US"sqlite",			/* lookup name */
-  .type = lookup_absfilequery,		/* query-style lookup, starts with file name */
-  .open = sqlite_open,			/* open function */
-  .check = NULL,			/* no check function */
-  .find = sqlite_find,			/* find function */
-  .close = sqlite_close,		/* close function */
-  .tidy = NULL,				/* no tidy function */
-  .quote = sqlite_quote,		/* quoting function */
-  .version_report = sqlite_version_report          /* version reporting */
+  .name =	US"sqlite",			/* lookup name */
+  .type =	lookup_absfilequery,		/* query-style lookup, starts with file name */
+  .open =	sqlite_open,			/* open function */
+  .check =	NULL,				/* no check function */
+  .find =	sqlite_find,			/* find function */
+  .close =	sqlite_close,			/* close function */
+  .tidy =	NULL,				/* no tidy function */
+  .quote =	sqlite_quote,			/* quoting function */
+  .version_report = sqlite_version_report,	/* version reporting */
+
+  .options =	sqlite_options,
+  .options_count = nelem(sqlite_options),
 };
 
 #ifdef DYNLOOKUP
-#define sqlite_lookup_module_info _lookup_module_info
+# define sqlite_lookup_module_info _lookup_module_info
 #endif
 
 static lookup_info *_lookup_list[] = { &_lookup_info };

@@ -54,8 +54,8 @@ static rmark search_reset_point = NULL;
 *      Validate a plain lookup type name         *
 *************************************************/
 
-static const lookup_info *
-internal_search_findtype(const uschar * name)
+const lookup_info *
+lookup_findonly(const uschar * name)
 {
 tree_node * t = tree_search(lookups_tree, name);
 return t ? t->data.ptr : NULL;
@@ -81,7 +81,7 @@ const lookup_info * li;
 
 if (name[len])
   name = string_copyn(name, len);
-if ((li = internal_search_findtype(name)))
+if ((li = lookup_findonly(name)))
   return li;
 
 #ifdef LOOKUP_MODULE_DIR
@@ -89,7 +89,7 @@ if ((li = internal_search_findtype(name)))
       debug_printf_indent("searchtype %s not initially found\n", name);
 
     if (lookup_one_mod_load(name, NULL))
-      if ((li = internal_search_findtype(name)))
+      if ((li = lookup_findonly(name)))
 	return li;
       else
 	{ DEBUG(D_lookup) debug_printf_indent("find retry failed\n"); }

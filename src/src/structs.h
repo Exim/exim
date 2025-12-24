@@ -1012,7 +1012,8 @@ enum vtypes {
 #ifndef DISABLE_DKIM
   vtype_dkim,           /* Lookup of value in DKIM signature */
 #endif
-  vtype_module,		/* variable lives in a module; value is module name */
+  vtype_lookup_module,	/* variable lives in a module; value is module name */
+  vtype_misc_module,	/* variable lives in a module; value is module name */
 };
 
 /* Type for main variable table */

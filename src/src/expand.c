@@ -459,10 +459,10 @@ static var_entry var_table[] = {
   { "address_file",        vtype_stringptr,   &address_file },
   { "address_pipe",        vtype_stringptr,   &address_pipe },
 #ifdef EXPERIMENTAL_ARC
-  { "arc_domains",         vtype_module,	US"arc" },
-  { "arc_oldest_pass",     vtype_module,	US"arc" },
-  { "arc_state",           vtype_module,	US"arc" },
-  { "arc_state_reason",    vtype_module,	US"arc" },
+  { "arc_domains",         vtype_misc_module,	US"arc" },
+  { "arc_oldest_pass",     vtype_misc_module,	US"arc" },
+  { "arc_state",           vtype_misc_module,	US"arc" },
+  { "arc_state_reason",    vtype_misc_module,	US"arc" },
 #endif
   { "atrn_host",	   vtype_stringptr,   &atrn_host },
   { "atrn_mode",	   vtype_stringptr,   &atrn_mode },
@@ -491,36 +491,36 @@ static var_entry var_table[] = {
   { "dcc_result",          vtype_stringptr,   &dcc_result },
 #endif
 #ifndef DISABLE_DKIM
-  { "dkim_algo",           vtype_module,	US"dkim" },
-  { "dkim_bodylength",     vtype_module,	US"dkim" },
-  { "dkim_canon_body",     vtype_module,	US"dkim" },
-  { "dkim_canon_headers",  vtype_module,	US"dkim" },
-  { "dkim_copiedheaders",  vtype_module,	US"dkim" },
-  { "dkim_created",        vtype_module,	US"dkim" },
-  { "dkim_cur_signer",     vtype_module,	US"dkim" },
-  { "dkim_domain",         vtype_module,	US"dkim" },
-  { "dkim_expires",        vtype_module,	US"dkim" },
-  { "dkim_headernames",    vtype_module,	US"dkim" },
-  { "dkim_identity",       vtype_module,	US"dkim" },
-  { "dkim_key_granularity",vtype_module,	US"dkim" },
-  { "dkim_key_length",     vtype_module,	US"dkim" },
-  { "dkim_key_nosubdomains",vtype_module,	US"dkim" },
-  { "dkim_key_notes",      vtype_module,	US"dkim" },
-  { "dkim_key_srvtype",    vtype_module,	US"dkim" },
-  { "dkim_key_testing",    vtype_module,	US"dkim" },
-  { "dkim_selector",       vtype_module,	US"dkim" },
-  { "dkim_signers",        vtype_module,	US"dkim" },
-  { "dkim_verify_reason",  vtype_module,	US"dkim" },
-  { "dkim_verify_signers", vtype_module,	US"dkim" },
-  { "dkim_verify_status",  vtype_module,	US"dkim" },
+  { "dkim_algo",           vtype_misc_module,	US"dkim" },
+  { "dkim_bodylength",     vtype_misc_module,	US"dkim" },
+  { "dkim_canon_body",     vtype_misc_module,	US"dkim" },
+  { "dkim_canon_headers",  vtype_misc_module,	US"dkim" },
+  { "dkim_copiedheaders",  vtype_misc_module,	US"dkim" },
+  { "dkim_created",        vtype_misc_module,	US"dkim" },
+  { "dkim_cur_signer",     vtype_misc_module,	US"dkim" },
+  { "dkim_domain",         vtype_misc_module,	US"dkim" },
+  { "dkim_expires",        vtype_misc_module,	US"dkim" },
+  { "dkim_headernames",    vtype_misc_module,	US"dkim" },
+  { "dkim_identity",       vtype_misc_module,	US"dkim" },
+  { "dkim_key_granularity",vtype_misc_module,	US"dkim" },
+  { "dkim_key_length",     vtype_misc_module,	US"dkim" },
+  { "dkim_key_nosubdomains",vtype_misc_module,	US"dkim" },
+  { "dkim_key_notes",      vtype_misc_module,	US"dkim" },
+  { "dkim_key_srvtype",    vtype_misc_module,	US"dkim" },
+  { "dkim_key_testing",    vtype_misc_module,	US"dkim" },
+  { "dkim_selector",       vtype_misc_module,	US"dkim" },
+  { "dkim_signers",        vtype_misc_module,	US"dkim" },
+  { "dkim_verify_reason",  vtype_misc_module,	US"dkim" },
+  { "dkim_verify_signers", vtype_misc_module,	US"dkim" },
+  { "dkim_verify_status",  vtype_misc_module,	US"dkim" },
 #endif
 #ifdef EXIM_HAVE_DMARC
-  { "dmarc_alignment_dkim",vtype_module,	US"dmarc" },
-  { "dmarc_alignment_spf", vtype_module,	US"dmarc" },
-  { "dmarc_domain_policy", vtype_module,	US"dmarc" },
-  { "dmarc_status",        vtype_module,	US"dmarc" },
-  { "dmarc_status_text",   vtype_module,	US"dmarc" },
-  { "dmarc_used_domain",   vtype_module,	US"dmarc" },
+  { "dmarc_alignment_dkim",vtype_misc_module,	US"dmarc" },
+  { "dmarc_alignment_spf", vtype_misc_module,	US"dmarc" },
+  { "dmarc_domain_policy", vtype_misc_module,	US"dmarc" },
+  { "dmarc_status",        vtype_misc_module,	US"dmarc" },
+  { "dmarc_status_text",   vtype_misc_module,	US"dmarc" },
+  { "dmarc_used_domain",   vtype_misc_module,	US"dmarc" },
 #endif
   { "dnslist_domain",      vtype_stringptr,   &dnslist_domain },
   { "dnslist_matched",     vtype_stringptr,   &dnslist_matched },
@@ -554,7 +554,7 @@ static var_entry var_table[] = {
   { "interface_port",      vtype_int,         &interface_port },
   { "item",                vtype_stringptr,   &iterate_item },
 #ifdef LOOKUP_LDAP
-  { "ldap_dn",             vtype_stringptr,   &eldap_dn },
+  { "ldap_dn",             vtype_lookup_module, US"ldap" },
 #endif
   { "load_average",        vtype_load_avg,    NULL },
   { "local_part",          vtype_stringptr,   &deliver_localpart },
@@ -713,13 +713,13 @@ static var_entry var_table[] = {
   { "spam_score_int",      vtype_stringptr,   &spam_score_int },
 #endif
 #ifdef EXIM_HAVE_SPF
-  { "spf_guess",           vtype_module,	US"spf" },
-  { "spf_header_comment",  vtype_module,	US"spf" },
-  { "spf_received",        vtype_module,	US"spf" },
-  { "spf_result",          vtype_module,	US"spf" },
-  { "spf_result_guessed",  vtype_module,	US"spf" },
-  { "spf_smtp_comment",    vtype_module,	US"spf" },
-  { "spf_used_domain",	   vtype_module,	US"spf" },
+  { "spf_guess",           vtype_misc_module,	US"spf" },
+  { "spf_header_comment",  vtype_misc_module,	US"spf" },
+  { "spf_received",        vtype_misc_module,	US"spf" },
+  { "spf_result",          vtype_misc_module,	US"spf" },
+  { "spf_result_guessed",  vtype_misc_module,	US"spf" },
+  { "spf_smtp_comment",    vtype_misc_module,	US"spf" },
+  { "spf_used_domain",	   vtype_misc_module,	US"spf" },
 #endif
   { "spool_directory",     vtype_stringptr,   &spool_directory },
   { "spool_inodes",        vtype_pinodes,     (void *)TRUE },
@@ -2161,7 +2161,7 @@ switch (vp->type)
     }
 #endif
 
-  case vtype_module:
+  case vtype_misc_module:
     {
     uschar * errstr;
     misc_module_info * mi = misc_mod_find(val, &errstr);

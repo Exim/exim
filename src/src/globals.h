@@ -40,39 +40,6 @@ extern BOOL    opt_perl_taintmode;     /* Enable taint mode in Perl */
 extern tree_node *dlobj_anchor;        /* Tree of dynamically-loaded objects */
 #endif
 
-#ifdef LOOKUP_LDAP
-extern uschar *eldap_ca_cert_dir;      /* Directory with CA certificates */
-extern uschar *eldap_ca_cert_file;     /* CA certificate file */
-extern uschar *eldap_cert_file;        /* Certificate file */
-extern uschar *eldap_cert_key;         /* Certificate key file */
-extern uschar *eldap_cipher_suite;     /* Allowed cipher suite */
-extern uschar *eldap_default_servers;  /* List of default servers */
-extern uschar *eldap_require_cert;     /* Peer certificate checking strategy */
-extern BOOL    eldap_start_tls;        /* Use STARTTLS */
-extern int     eldap_version;          /* LDAP version */
-#endif
-
-#ifdef LOOKUP_MYSQL
-extern uschar *mysql_servers;          /* List of servers and connect info */
-#endif
-
-#ifdef LOOKUP_ORACLE
-extern uschar *oracle_servers;         /* List of servers and connect info */
-#endif
-
-#ifdef LOOKUP_PGSQL
-extern uschar *pgsql_servers;          /* List of servers and connect info */
-#endif
-
-#ifdef LOOKUP_REDIS
-extern uschar *redis_servers;          /* List of servers and connect info */
-#endif
-
-#ifdef LOOKUP_SQLITE
-extern uschar *sqlite_dbfile;	       /* Filname for database */
-extern int     sqlite_lock_timeout;    /* Internal lock waiting timeout */
-#endif
-
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
 extern BOOL    move_frozen_messages;   /* Get them out of the normal directory */
 #endif
@@ -677,7 +644,6 @@ extern int     journal_fd;             /* Fd for journal file */
 extern uschar *keep_environment;       /* Whitelist for environment variables */
 extern int     keep_malformed;         /* Time to keep malformed messages */
 
-extern uschar *eldap_dn;               /* Where LDAP DNs are left */
 extern const uschar *letter_digit_hyphen_dot; /* Legitimate DNS host name chars */
 #ifndef DISABLE_ESMTP_LIMITS
 extern uschar *limits_advertise_hosts; /* for banner/EHLO pipelining */

@@ -16,6 +16,9 @@ socket extension. */
 
 #include <libpq-fe.h>       /* The system header */
 
+
+static uschar * pgsql_servers = NULL;	/* List of servers and connect info */
+
 /* Structure and anchor for caching connections. */
 
 typedef struct pgsql_connection {
@@ -490,16 +493,26 @@ return g;
 }
 
 
+/******************************************************************************/
+/* Module API */
+
+static optionlist pgsql_options[] = {
+  { "pgsql_servers",	opt_stringptr,	{&pgsql_servers} }
+};
+
 static lookup_info _lookup_info = {
-  .name = US"pgsql",			/* lookup name */
-  .type = lookup_querystyle,		/* query-style lookup */
-  .open = pgsql_open,			/* open function */
-  .check = NULL,			/* no check function */
-  .find = pgsql_find,			/* find function */
-  .close = NULL,			/* no close function */
-  .tidy = pgsql_tidy,			/* tidy function */
-  .quote = pgsql_quote,			/* quoting function */
-  .version_report = pgsql_version_report           /* version reporting */
+  .name =	US"pgsql",			/* lookup name */
+  .type =	lookup_querystyle,		/* query-style lookup */
+  .open =	pgsql_open,			/* open function */
+  .check =	NULL,				/* no check function */
+  .find =	pgsql_find,			/* find function */
+  .close =	NULL,				/* no close function */
+  .tidy =	pgsql_tidy,			/* tidy function */
+  .quote =	pgsql_quote,			/* quoting function */
+  .version_report = pgsql_version_report,	/* version reporting */
+
+  .options =	pgsql_options,
+  .options_count = nelem(pgsql_options),
 };
 
 #ifdef DYNLOOKUP

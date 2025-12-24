@@ -64,6 +64,8 @@ with versions before 10.2, as they do not define there there specific symbols.
 #endif
 
 
+static uschar * mysql_servers = NULL;	/* List of servers and connect info */
+
 /* Structure and anchor for caching connections. */
 
 typedef struct mysql_connection {
@@ -478,18 +480,28 @@ g = string_fmt_append(g,
 return g;
 }
 
+/******************************************************************************/
+/* Module API */
+
+static optionlist mysql_glbl_options[] = {
+  { "mysql_servers",	opt_stringptr,	{&mysql_servers} }
+};
+
 /* These are the lookup_info blocks for this driver */
 
 static lookup_info mysql_lookup_info = {
-  .name = US"mysql",			/* lookup name */
-  .type = lookup_querystyle,		/* query-style lookup */
-  .open = mysql_open,			/* open function */
-  .check = NULL,			/* no check function */
-  .find = mysql_find,			/* find function */
-  .close = NULL,			/* no close function */
-  .tidy = mysql_tidy,			/* tidy function */
-  .quote = mysql_quote,			/* quoting function */
-  .version_report = mysql_version_report           /* version reporting */
+  .name =	US"mysql",			/* lookup name */
+  .type =	lookup_querystyle,		/* query-style lookup */
+  .open =	mysql_open,			/* open function */
+  .check =	NULL,				/* no check function */
+  .find =	mysql_find,			/* find function */
+  .close =	NULL,				/* no close function */
+  .tidy =	mysql_tidy,			/* tidy function */
+  .quote =	mysql_quote,			/* quoting function */
+  .version_report = mysql_version_report,	/* version reporting */
+
+  .options =	mysql_glbl_options,
+  .options_count = nelem(mysql_glbl_options),
 };
 
 #ifdef DYNLOOKUP

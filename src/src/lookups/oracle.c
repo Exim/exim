@@ -69,6 +69,11 @@ typedef struct Ora_Define {
   ub2   col_retlen, col_retcode;
 } Ora_Define;
 
+
+
+static uschar * oracle_servers = NULL;	/* List of servers and connect info */
+
+
 /* Structure and anchor for caching connections. */
 
 typedef struct oracle_connection {
@@ -604,16 +609,26 @@ return g;
 }
 
 
+/******************************************************************************/
+/* Module API */
+
+static optionlist oracle_options[] = {
+  { "oracle_servers",	opt_stringptr,	{&oracle_servers} }
+};
+
 static lookup_info _lookup_info = {
-  .name = US"oracle",			/* lookup name */
-  .type = lookup_querystyle,		/* query-style lookup */
-  .open = oracle_open,			/* open function */
-  .check = NULL,			/* check function */
-  .find = oracle_find,			/* find function */
-  .close = NULL,			/* no close function */
-  .tidy = oracle_tidy,			/* tidy function */
-  .quote = oracle_quote,		/* quoting function */
-  .version_report = oracle_version_report          /* version reporting */
+  .name =	US"oracle",			/* lookup name */
+  .type =	lookup_querystyle,		/* query-style lookup */
+  .open =	oracle_open,			/* open function */
+  .check =	NULL,				/* check function */
+  .find =	oracle_find,			/* find function */
+  .close =	NULL,				/* no close function */
+  .tidy =	oracle_tidy,			/* tidy function */
+  .quote =	oracle_quote,			/* quoting function */
+  .version_report = oracle_version_report,	/* version reporting */
+
+  .options =	oracle_options,
+  .options_count = nelem(oracle_options),
 };
 
 #ifdef DYNLOOKUP

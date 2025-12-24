@@ -74,6 +74,19 @@ LDAP_LIB_OPENLDAP1
 SEARCH_LDAP_DN lookup). */
 
 
+static uschar * eldap_ca_cert_dir      = NULL; /* Directory with CA certificates */
+static uschar * eldap_ca_cert_file     = NULL; /* CA certificate file */
+static uschar * eldap_cert_file        = NULL; /* Certificate file */
+static uschar * eldap_cert_key         = NULL; /* Certificate key file */
+static uschar * eldap_cipher_suite     = NULL; /* Allowed cipher suite */
+static uschar * eldap_default_servers  = NULL; /* List of default servers */
+static uschar * eldap_require_cert     = NULL; /* Peer certificate checking strategy */
+static int      eldap_version          = -1;	/* Use STARTTLS */
+static BOOL     eldap_start_tls        = FALSE; /* LDAP version */
+
+static uschar * eldap_dn;			/* Where LDAP DNs are left */
+
+
 /* Structure and anchor for caching connections. */
 
 typedef struct ldap_connection {
@@ -87,7 +100,7 @@ typedef struct ldap_connection {
   LDAP *ld;
 } LDAP_CONNECTION;
 
-static LDAP_CONNECTION *ldap_connections = NULL;
+static LDAP_CONNECTION * ldap_connections = NULL;
 
 
 
@@ -1587,16 +1600,42 @@ return string_cat(g, "Library version: LDAP: (unknown)\n");
 }
 
 
+/******************************************************************************/
+/* Module API */
+
+static optionlist eldap_options[] = {
+  { "ldap_ca_cert_dir",         opt_stringptr,   {&eldap_ca_cert_dir} },
+  { "ldap_ca_cert_file",        opt_stringptr,   {&eldap_ca_cert_file} },
+  { "ldap_cert_file",           opt_stringptr,   {&eldap_cert_file} },
+  { "ldap_cert_key",            opt_stringptr,   {&eldap_cert_key} },
+  { "ldap_cipher_suite",        opt_stringptr,   {&eldap_cipher_suite} },
+  { "ldap_default_servers",     opt_stringptr,   {&eldap_default_servers} },
+  { "ldap_require_cert",        opt_stringptr,   {&eldap_require_cert} },
+  { "ldap_start_tls",           opt_bool,        {&eldap_start_tls} },
+  { "ldap_version",             opt_int,         {&eldap_version} },
+};
+
+static var_entry eldap_variables[] = {
+  { "ldap_dn",             vtype_stringptr,   &eldap_dn },
+};
+
 static lookup_info ldap_lookup_info = {
-  .name = US"ldap",			/* lookup name */
-  .type = lookup_querystyle,		/* query-style lookup */
-  .open = eldap_open,			/* open function */
-  .check = NULL,			/* check function */
-  .find = eldap_find,			/* find function */
-  .close = NULL,			/* no close function */
-  .tidy = eldap_tidy,			/* tidy function */
-  .quote = eldap_quote,			/* quoting function */
-  .version_report = ldap_version_report	/* version reporting */
+  .name =	US"ldap",			/* lookup name */
+  .type =	lookup_querystyle,		/* query-style lookup */
+  .open =	eldap_open,			/* open function */
+  .check =	NULL,				/* check function */
+  .find =	eldap_find,			/* find function */
+  .close =	NULL,				/* no close function */
+  .tidy =	eldap_tidy,			/* tidy function */
+  .quote =	eldap_quote,			/* quoting function */
+  .version_report = ldap_version_report,	/* version reporting */
+
+  /* This lookup name matches the modules name, so access options here */
+  .options =	eldap_options,
+  .options_count = nelem(eldap_options),
+
+  .variables =	eldap_variables,
+  .variables_count = nelem(eldap_variables),
 };
 
 static lookup_info ldapdn_lookup_info = {

@@ -134,7 +134,7 @@ JH/09 Not a change, but worthy of note: There is no test coverage of the
       driver).  Confidence in its operation is lacking.
 
 JH/10 Bug 3108: On platforms not providing strchrnul() [OpenBSD] supply a proper
-      prototype (as well as implementaton).  Previously, a return type "int"
+      prototype (as well as implementation).  Previously, a return type "int"
       was assumed, resulting in type-conversion bugs when int and pointer had
       different size.  This resulted in crashes while processing DKIM signatures
       of received messages.  Identification and fix from Qualys Security.

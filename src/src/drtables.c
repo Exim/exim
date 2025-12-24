@@ -152,7 +152,7 @@ return dl;
 /* Try to load a lookup module with the given name.
 
 Arguments:
-    name		name of the lookup
+    name		name of the module
     errstr		if not NULL, place "open fail" error message here
 
 Return: boolean success
@@ -210,6 +210,15 @@ return TRUE;
 }
 
 #endif	/*LOOKUP_MODULE_DIR*/
+
+const lookup_info *
+lookup_find(const uschar * name, uschar ** errstr)
+{
+const lookup_info * li;
+if ((li = lookup_findonly(name))) return li;
+lookup_mod_load(name, errstr);
+return lookup_findonly(name);
+}
 
 /* Look at all the lookup module files and add a name from each lookup type */
 

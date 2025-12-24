@@ -58,39 +58,6 @@ BOOL    opt_perl_taintmode     = FALSE;
 tree_node *dlobj_anchor        = NULL;
 #endif
 
-#ifdef LOOKUP_LDAP
-uschar *eldap_ca_cert_dir      = NULL;
-uschar *eldap_ca_cert_file     = NULL;
-uschar *eldap_cert_file        = NULL;
-uschar *eldap_cert_key         = NULL;
-uschar *eldap_cipher_suite     = NULL;
-uschar *eldap_default_servers  = NULL;
-uschar *eldap_require_cert     = NULL;
-int     eldap_version          = -1;
-BOOL    eldap_start_tls        = FALSE;
-#endif
-
-#ifdef LOOKUP_MYSQL
-uschar *mysql_servers          = NULL;
-#endif
-
-#ifdef LOOKUP_ORACLE
-uschar *oracle_servers         = NULL;
-#endif
-
-#ifdef LOOKUP_PGSQL
-uschar *pgsql_servers          = NULL;
-#endif
-
-#ifdef LOOKUP_REDIS
-uschar *redis_servers          = NULL;
-#endif
-
-#ifdef LOOKUP_SQLITE
-uschar *sqlite_dbfile	       = NULL;
-int     sqlite_lock_timeout    = 5;
-#endif
-
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
 BOOL    move_frozen_messages   = FALSE;
 #endif
@@ -908,7 +875,6 @@ uschar *keep_environment       = NULL;
 
 int     keep_malformed         = 4*24*60*60;    /* 4 days */
 
-uschar *eldap_dn               = NULL;
 const uschar *letter_digit_hyphen_dot =
     US"abcdefghijklmnopqrstuvwxyz"
       ".-0123456789"

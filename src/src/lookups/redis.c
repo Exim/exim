@@ -15,9 +15,7 @@
 
 #include <hiredis/hiredis.h>
 
-#ifndef nele
-# define nele(arr) (sizeof(arr) / sizeof(*arr))
-#endif
+static uschar * redis_servers = NULL;	/* List of servers and connect info */
 
 /* Structure and anchor for caching connections. */
 typedef struct redis_connection {
@@ -26,7 +24,7 @@ typedef struct redis_connection {
   redisContext    *handle;
 } redis_connection;
 
-static redis_connection *redis_connections = NULL;
+static redis_connection * redis_connections = NULL;
 
 
 static void *
@@ -210,7 +208,7 @@ if(sdata[1])
 
   Uskip_whitespace(&s);
 
-  for (i = 0; *s && i < nele(argv); i++)
+  for (i = 0; *s && i < nelem(argv); i++)
     {
     gstring * g;
 
@@ -438,17 +436,27 @@ return string_fmt_append(g, "Library version: REDIS: Compile: %d.%d.%d\n",
 
 
 
+/******************************************************************************/
+/* Module API */
+
+static optionlist redis_options[] = {
+  { "redis_servers",	opt_stringptr,	{&redis_servers} }
+};
+
 /* These are the lookup_info blocks for this driver */
 static lookup_info redis_lookup_info = {
-  .name = US"redis",			/* lookup name */
-  .type = lookup_querystyle,		/* query-style lookup */
-  .open = redis_open,			/* open function */
-  .check = NULL,			/* no check function */
-  .find = redis_find,			/* find function */
-  .close = NULL,			/* no close function */
-  .tidy = redis_tidy,			/* tidy function */
-  .quote = redis_quote,			/* quoting function */
-  .version_report = redis_version_report           /* version reporting */
+  .name =	US"redis",			/* lookup name */
+  .type =	lookup_querystyle,		/* query-style lookup */
+  .open =	redis_open,			/* open function */
+  .check =	NULL,				/* no check function */
+  .find =	redis_find,			/* find function */
+  .close =	NULL,				/* no close function */
+  .tidy =	redis_tidy,			/* tidy function */
+  .quote =	redis_quote,			/* quoting function */
+  .version_report = redis_version_report,	/*  version reporting */
+
+  .options =	redis_options,
+  .options_count = nelem(redis_options),
 };
 
 #ifdef DYNLOOKUP

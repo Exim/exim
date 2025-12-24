@@ -50,15 +50,21 @@ typedef struct lookup_info {
     unsigned);			  /* lookup type index */
   gstring * (*version_report)(    /* diagnostic function */
     gstring *);                   /* string to appand to */
+
+  void *	options;
+  unsigned	options_count;
+  void *	variables;
+  unsigned	variables_count;
 } lookup_info;
 
 /* This magic number is used by the following lookup_module_info structure
    for checking API compatibility. It used to be equivalent to the string"LMM3" */
-#define LOOKUP_MODULE_INFO_MAGIC 0x4c4d4935
+#define LOOKUP_MODULE_INFO_MAGIC 0x4c4d4936
 /* Version 2 adds: version_report */
 /* Version 3 change: non/cache becomes TTL in seconds */
 /* Version 4 add: index on quoting function */
 /* Version 5 change: version report now adds to a gstring */
+/* Version 6 add: options */
 
 typedef struct lookup_module_info {
   uint		magic;
