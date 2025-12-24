@@ -214,9 +214,11 @@ return TRUE;
 const lookup_info *
 lookup_find(const uschar * name, uschar ** errstr)
 {
+#ifdef LOOKUP_MODULE_DIR
 const lookup_info * li;
 if ((li = lookup_findonly(name))) return li;
 lookup_mod_load(name, errstr);
+#endif
 return lookup_findonly(name);
 }
 
