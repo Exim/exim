@@ -639,6 +639,7 @@ cut_t   cutthrough = {	/* All remaining items 0/FALSE/NULL */
   .cctx =		{.sock = -1},			/* open connection */
 };
 
+uschar *daemon_modules_load    = NULL;
 int	daemon_notifier_fd     = -1;
 uschar *daemon_smtp_port       = US"smtp";
 int     daemon_startup_retries = 9;

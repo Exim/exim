@@ -376,7 +376,7 @@ extern BOOL    moan_to_sender(int, const error_block *, const header_line *,
 extern void    moan_write_from(FILE *);
 extern void    moan_write_references(FILE *, uschar *);
 #ifdef LOOKUP_MODULE_DIR
-//extern void    mod_load_check(const uschar *);
+extern void    mod_load_anyclass(const uschar *);
 #endif
 extern void    mod_names(FILE *);
 extern FILE   *modefopen(const uschar *, const char *, mode_t);

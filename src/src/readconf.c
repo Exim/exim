@@ -98,6 +98,7 @@ static optionlist optionlist_config[] = {
   { "check_spool_space",        opt_Kint,        {&check_spool_space} },
   { "chunking_advertise_hosts", opt_stringptr,	 {&chunking_advertise_hosts} },
   { "commandline_checks_require_admin", opt_bool,{&commandline_checks_require_admin} },
+  { "daemon_modules_load",	opt_stringptr,   {&daemon_modules_load} },
   { "daemon_smtp_port",         opt_stringptr|opt_hidden, {&daemon_smtp_port} },
   { "daemon_smtp_ports",        opt_stringptr,   {&daemon_smtp_port} },
   { "daemon_startup_retries",   opt_int,         {&daemon_startup_retries} },
@@ -1289,12 +1290,6 @@ if (strncmpic(s, US"begin ", 6) == 0)
   Ustrcpy(next_section, s);
   return NULL;
   }
-
-#ifdef LOOKUP_MODULE_DIR
-/* Check for any required module load operations */
-
-//mod_load_check(s);
-#endif
 
 /* Return the first non-blank character. */
 
@@ -4420,9 +4415,9 @@ store_pool = POOL_PERM;
   }
 store_pool = old_pool;
 
-/* Read the config file "authenticators" section, creating an auth instance list.
-For any yet-undiscovered driver, check for a loadable module and add it to
-those available. */
+/* Read the config file "authenticators" section, creating an auth instance
+list.  For any yet-undiscovered driver, check for a loadable module and add it
+to those available. */
 
 readconf_driver_init((driver_instance **)&auths,      /* chain anchor */
   (driver_info **)&auths_available,  /* available drivers */

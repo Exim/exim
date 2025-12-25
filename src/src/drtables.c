@@ -209,6 +209,35 @@ if (!lookup_mod_load(name, errstr)) return FALSE;
 return TRUE;
 }
 
+
+/* Try to load a module of any class, given just the name.
+This is used for the daemon_modules_load option.
+Do not bother with class auth,router,transport - readconf will load if used.
+*/
+
+void
+mod_load_anyclass(const uschar * name)
+{
+DIR * dd;
+const pcre2_code * regex_class;
+
+/* Find the class for this name, by checking the lookup modules dir.
+We assume the .so files there are properly worded, and that the names
+are distinct. */
+
+if (!(dd = open_module_dir())) return;
+
+regex_class = regex_must_compile(
+  string_sprintf("^%s_(lookup|miscmod)\\." DYNLIB_FN_EXT "$", name),
+  MCS_NOFLAGS, TRUE);
+
+for (struct dirent * ent; ent = readdir(dd); )
+  if (regex_match_and_setup(regex_class, US ent->d_name, 0, 0))
+    if (Ustrcmp(expand_nstring[1], "miscmod") == 0)
+      (void) misc_mod_find(name, NULL);
+    else	/* assume "lookup" */
+      if (!tree_search(lookups_tree, name)) lookup_one_mod_load(name, NULL);
+}
 #endif	/*LOOKUP_MODULE_DIR*/
 
 const lookup_info *
@@ -303,7 +332,7 @@ const char * errormsg;
 EARLY_DEBUG(D_any, "Loading module %q\n", name);
 if (!(dl = mod_open(name, US"miscmod", errstr)))
   {
-  if (errstr) EARLY_DEBUG(D_any, " mod_open: %s\n", *errstr);
+  if (errstr && *errstr) EARLY_DEBUG(D_any, " mod_open: %s\n", *errstr);
   return NULL;
   }
 

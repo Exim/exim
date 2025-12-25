@@ -14990,6 +14990,7 @@ listed in more than one group.
 
 .section "Daemon" "SECID104"
 .table2
+.row &%daemon_modules_load%&         "dynamic-module load control"
 .row &%daemon_smtp_ports%&           "default ports"
 .row &%daemon_startup_retries%&      "number of times to retry"
 .row &%daemon_startup_sleep%&        "time to sleep between tries"
@@ -15836,6 +15837,22 @@ This affects most of the &%-b*%& options, such as &%-be%&.
 This option, when true, enables extra checking in Exim's internal memory
 management.  For use when a memory corruption issue is being investigated,
 it should normally be left as default.
+
+.new
+.option daemon_modules_load main "string list" unset
+.cindex "dynamic modules" "preload in daemon"
+This option may be used to give a list of dynamic-load modules
+which should be loaded at daemon startup.
+
+This should give better performance on any module used in the daemon
+process or any directly forked process,
+by amortizing the symbol-resolution cost of the module load
+over all the child processes.
+It will have no effect for those where the initial parsing
+of the configuration can simply detect the need for a module
+(eg. auths, routers, transports, certain DB lookups, SPF, DKIM, DMARC)
+because those are always loaded.
+.wen
 
 .option daemon_smtp_ports main string &`smtp`&
 .cindex "port" "for daemon"

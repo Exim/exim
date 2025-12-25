@@ -461,6 +461,7 @@ typedef struct {
 } cut_t;
 extern cut_t cutthrough;               /* Deliver-concurrently */
 
+extern uschar *daemon_modules_load;    /* Dyn-load modules to preload */
 extern int     daemon_notifier_fd;     /* Unix socket for notifications */
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
 extern int     daemon_startup_retries; /* Number of times to retry */

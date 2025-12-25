@@ -385,6 +385,7 @@ avail_list(drtable, tag, US"static", FALSE);
 avail_list(drtable, tag, US"dynamic", TRUE);
 }
 
+/* Make lists of the drivers (by class, and static/dynamic) we are building */
 static void
 avail(void)
 {

@@ -1667,6 +1667,21 @@ return string_from_gstring(g);
 }
 
 
+
+static void
+daemon_preload_modules(void)
+{
+#ifdef LOOKUP_MODULE_DIR
+uschar namebuf[32];
+const uschar * list = daemon_modules_load, * ele;
+int sep = 0;
+
+while (ele = string_nextinlist(&list, &sep, namebuf, sizeof(namebuf)))
+  mod_load_anyclass(ele);
+#endif
+}
+
+
 /*************************************************
 *              Exim Daemon Mainline              *
 *************************************************/
@@ -1732,6 +1747,10 @@ process_purpose = US"daemon";
 debugging lines get the pid added. */
 
 DEBUG(D_any|D_v) debug_selector |= D_pid;
+
+/* Get any requested dynamic-load modules loaded */
+
+daemon_preload_modules();
 
 /* Allocate enough pollstructs for inetd mode plus the ancillary sockets;
 also used when there are no listen sockets. */

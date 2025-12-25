@@ -1756,10 +1756,6 @@ len = Ustrlen(big_buffer);
 
 (void) macros_expand(0, &len, &macro_found);
 
-#ifdef LOOKUP_MODULE_DIR
-//mod_load_check(big_buffer);
-#endif
-
 if (isupper(big_buffer[0]) && !(macro_found & MACRO_FIRST))
   {
   if (macro_read_assignment(big_buffer))

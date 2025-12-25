@@ -155,6 +155,7 @@ create_directory                     boolean         true          appendfile
 create_file                          string          "anywhere"    appendfile
 current_directory                    string          unset         transports        4.00
                                                      unset         queryprogram      4.00
+daemon_modules_load		     string list     unset	   main		     4.100
 daemon_smtp_ports                    string          unset         main              1.75  pluralised in 4.21
 daemon_startup_retries               int             9             main              4.52
 daemon_startup_sleep                 time            30s           main              4.52
