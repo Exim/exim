@@ -136,11 +136,8 @@ static char search_text_trans[] =
 
 /* ARGSUSED */
 void
-_XawTextDoSearchAction(w, event, params, num_params)
-Widget w;
-XEvent *event;
-String * params;
-Cardinal * num_params;
+_XawTextDoSearchAction(Widget w, XEvent * event, String * params,
+  Cardinal * num_params)
 {
   TextWidget tw = (TextWidget) XtParent(XtParent(XtParent(w)));
   Boolean popdown = FALSE;
@@ -162,11 +159,8 @@ Cardinal * num_params;
 
 /* ARGSUSED */
 void
-_XawTextPopdownSearchAction(w, event, params, num_params)
-Widget w;
-XEvent *event;
-String * params;
-Cardinal * num_params;
+_XawTextPopdownSearchAction(Widget w, XEvent * event, String * params,
+  Cardinal * num_params)
 {
   TextWidget tw = (TextWidget) XtParent(XtParent(XtParent(w)));
 
@@ -183,10 +177,7 @@ Cardinal * num_params;
 
 /* ARGSUSED */
 static void
-PopdownSearch(w, closure, call_data)
-Widget w;
-XtPointer closure;
-XtPointer call_data;
+PopdownSearch(Widget w, XtPointer closure, XtPointer call_data)
 {
   struct SearchAndReplace * search = (struct SearchAndReplace *) closure;
 
@@ -204,10 +195,7 @@ XtPointer call_data;
 
 /* ARGSUSED */
 static void
-SearchButton(w, closure, call_data)
-Widget w;
-XtPointer closure;
-XtPointer call_data;
+SearchButton(Widget w, XtPointer closure, XtPointer call_data)
 {
   (void) DoSearch( (struct SearchAndReplace *) closure );
 }
@@ -235,11 +223,7 @@ XtPointer call_data;
 #define SEARCH_HEADER ("Text Widget - Search():")
 
 void
-_XawTextSearch(w, event, params, num_params)
-Widget w;
-XEvent *event;
-String * params;
-Cardinal * num_params;
+_XawTextSearch(Widget w, XEvent *event, String * params, Cardinal * num_params)
 {
   TextWidget ctx = (TextWidget)w;
   XawTextScanDirection dir;
@@ -337,9 +321,7 @@ replace_active = replace_active; /* PH - shuts compilers up */
  */
 
 static void
-AddSearchChildren(form, ptr, tw)
-Widget form, tw;
-char * ptr;
+AddSearchChildren(Widget form, char * ptr, Widget tw)
 {
   Arg args[10];
   Cardinal num_args;
@@ -455,8 +437,7 @@ char * ptr;
 
 /* ARGSUSED */
 static Boolean
-DoSearch(search)
-struct SearchAndReplace * search;
+DoSearch(struct SearchAndReplace * search)
 {
   char msg[BUFSIZ];
   Widget tw = XtParent(search->search_popup);
@@ -530,10 +511,7 @@ msg2 = msg2; /* PH - shuts compilers up */
  */
 
 static void
-SetResource(w, res_name, value)
-Widget w;
-char * res_name;
-XtArgVal value;
+SetResource(Widget w, char * res_name, XtArgVal value)
 {
   Arg args[1];
 
@@ -548,8 +526,7 @@ XtArgVal value;
  */
 
 static String
-GetString(text)
-Widget text;
+GetString(Widget text)
 {
   String string;
   Arg args[1];
@@ -570,9 +547,7 @@ Widget text;
  */
 
 static void
-CenterWidgetOnPoint(w, event)
-Widget w;
-XEvent *event;
+CenterWidgetOnPoint(Widget w, XEvent *event)
 {
   Arg args[3];
   Cardinal num_args;
@@ -668,8 +643,7 @@ CreateDialog(Widget parent, String ptr, String name,
   */
 
 static Widget
-GetShell(w)
-Widget w;
+GetShell(Widget w)
 {
     while ((w != NULL) && !XtIsShell(w))
 	w = XtParent(w);
@@ -677,14 +651,7 @@ Widget w;
     return (w);
 }
 
-/* Add proper prototype to keep IRIX 6 compiler happy. PH */
-
-static Boolean InParams(String, String *, Cardinal);
-
-static Boolean InParams(str, p, n)
-    String str;
-    String *p;
-    Cardinal n;
+static Boolean InParams(String str, String *p, Cardinal n)
 {
     int i;
     for (i=0; i < n; p++, i++)
@@ -694,11 +661,11 @@ static Boolean InParams(str, p, n)
 
 static char *WM_DELETE_WINDOW = "WM_DELETE_WINDOW";
 
-static void WMProtocols(w, event, params, num_params)
-    Widget w;		/* popup shell */
-    XEvent *event;
-    String *params;
-    Cardinal *num_params;
+static void WMProtocols(
+    Widget w,		/* popup shell */
+    XEvent *event,
+    String *params,
+    Cardinal *num_params)
 {
     Atom wm_delete_window;
     Atom wm_protocols;
@@ -730,8 +697,8 @@ static void WMProtocols(w, event, params, num_params)
     }
 }
 
-static void SetWMProtocolTranslations(w)
-    Widget	w;	/* realized popup shell */
+static void SetWMProtocolTranslations(
+    Widget	w)	/* realized popup shell */
 {
     int i;
     XtAppContext app_context;
