@@ -11,14 +11,14 @@
 
 #ifdef SUPPORT_I18N
 
-uschar *
-imap_utf7_encode(uschar *string, const uschar *charset, uschar sep,
-  uschar *specials, uschar **error)
+const uschar *
+imap_utf7_encode(const uschar * string, const uschar * charset, uschar sep,
+  const uschar * specials, uschar ** error)
 {
 static uschar encode_base64[64] =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,";
 size_t slen;
-uschar *sptr;
+const uschar * sptr;
 gstring * yield = NULL;
 int i = 0;	/* compiler quietening */
 uschar c = 0;	/* compiler quietening */
@@ -26,7 +26,7 @@ BOOL base64mode = FALSE;
 BOOL lastsep = FALSE;
 uschar utf16buf[256];
 uschar *utf16ptr;
-uschar *s;
+const uschar * s;
 uschar outbuf[256];
 uschar *outptr = outbuf;
 #if HAVE_ICONV

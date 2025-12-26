@@ -279,8 +279,8 @@ extern int     host_nmtoa(int, const int *, int, uschar *, int);
 extern uschar *host_ntoa(int, const void *, uschar *, int *);
 extern int     host_scan_for_local_hosts(host_item *, host_item **, BOOL *);
 
-extern uschar *imap_utf7_encode(uschar *, const uschar *,
-				 uschar, uschar *, uschar **);
+extern const uschar *imap_utf7_encode(const uschar *, const uschar *,
+				 uschar, const uschar *, uschar **);
 
 extern void    invert_address(uschar *, uschar *);
 extern int     ip_addr(void *, int, const uschar *, int);

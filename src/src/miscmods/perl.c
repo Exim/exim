@@ -275,7 +275,7 @@ yield string */
 
 static gstring *
 call_perl_cat(gstring * yield, uschar ** errstrp,
-  uschar * name, const uschar ** arg)
+  const uschar * name, const uschar ** arg)
 {
 dSP;
 SV * sv;
@@ -294,7 +294,7 @@ SAVETMPS;
 PUSHMARK(SP);
 while (*arg) XPUSHs(newSVpv(CCS (*arg++), 0));
 PUTBACK;
-items = perl_call_pv(CS name, G_SCALAR|G_EVAL);
+items = perl_call_pv(CS string_copy(name), G_SCALAR|G_EVAL);
 items = items;	/* stupid compiler quietening */
 SPAGAIN;
 sv = POPs;

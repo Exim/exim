@@ -2227,8 +2227,9 @@ Returns:     -1 OK; string pointer updated, but in "skipping" mode
 */
 
 static int
-read_subs(uschar ** sub, int n, int m, const uschar ** sptr, esi_flags flags,
-  BOOL check_end, uschar * name, BOOL * resetok, unsigned * textonly_p)
+read_subs(const uschar ** sub, int n, int m, const uschar ** sptr,
+  esi_flags flags, BOOL check_end, uschar * name,
+  BOOL * resetok, unsigned * textonly_p)
 {
 const uschar * s = *sptr;
 unsigned textonly_l = 0;
@@ -2864,7 +2865,7 @@ switch(cond_type = identify_operator(&s, &opname))
     Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
-    switch(read_subs(sub, nelem(sub), 1, &s,
+    switch(read_subs(CUSS sub, nelem(sub), 1, &s,
 	yield ? ESI_NOFLAGS : ESI_SKIPPING, TRUE, name, resetok, NULL))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
@@ -2913,7 +2914,7 @@ switch(cond_type = identify_operator(&s, &opname))
     goto COND_FAILED_NOT_COMPILED;
 #else
     {
-    uschar *sub[4];
+    const uschar * sub[4];
     Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     switch(read_subs(sub, nelem(sub), 2, &s,
@@ -3521,15 +3522,15 @@ switch(cond_type = identify_operator(&s, &opname))
   case ECOND_BOOL:
   case ECOND_BOOL_LAX:
     {
-    uschar *sub_arg[1];
-    uschar *t, *t2;
+    uschar * sub_arg[1];
+    uschar * t, * t2;
     uschar *ourname;
     size_t len;
     BOOL boolvalue = FALSE;
 
     if (Uskip_whitespace(&s) != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     ourname = cond_type == ECOND_BOOL_LAX ? US"bool_lax" : US"bool";
-    switch(read_subs(sub_arg, 1, 1, &s,
+    switch(read_subs(CUSS sub_arg, 1, 1, &s,
 	    yield ? ESI_NOFLAGS : ESI_SKIPPING, FALSE, ourname, resetok, NULL))
       {
       case 1: expand_string_message = string_sprintf(
@@ -3590,7 +3591,7 @@ switch(cond_type = identify_operator(&s, &opname))
   case ECOND_INBOUND_SRS:
     /* ${if inbound_srs {local_part}{secret}  {yes}{no}} */
     {
-    uschar * sub[2];
+    const uschar * sub[2];
     const pcre2_code * re;
     pcre2_match_data * md;
     PCRE2_SIZE * ovec;
@@ -3622,7 +3623,7 @@ switch(cond_type = identify_operator(&s, &opname))
 
     if (sub[0][0] == '"')
       quoting = 1;
-    else for (uschar * s = sub[0]; *s; s++)
+    else for (const uschar * s = sub[0]; *s; s++)
       if (!isalnum(*s) && Ustrchr(".!#$%&'*+-/=?^_`{|}~", *s) == NULL)
 	{ quoting = 1; break; }
     if (quoting)
@@ -5023,7 +5024,7 @@ while (*s)	/* known to be untainted */
       uschar * user_msg;
       int rc;
 
-      switch(read_subs(sub, nelem(sub), 1, &s, flags, TRUE, name, &resetok, NULL))
+      switch(read_subs(CUSS sub, nelem(sub), 1, &s, flags, TRUE, name, &resetok, NULL))
         {
 	case -1: continue;		/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
@@ -5056,7 +5057,7 @@ while (*s)	/* known to be untainted */
     case EITEM_AUTHRESULTS:
       /* ${authresults {mysystemname}} */
       {
-      uschar * sub_arg[1];
+      const uschar * sub_arg[1];
 
       switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, flags, TRUE, name, &resetok, NULL))
         {
@@ -5131,8 +5132,7 @@ while (*s)	/* known to be untainted */
 #ifdef SUPPORT_I18N
     case EITEM_IMAPFOLDER:
       {				/* ${imapfolder {name}{sep}{specials}} */
-      uschar * sub_arg[3];
-      const uschar * encoded;
+      const uschar * sub_arg[3], * encoded;
 
       switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, flags, TRUE, name, &resetok, NULL))
         {
@@ -5357,7 +5357,7 @@ while (*s)	/* known to be untainted */
 
 #else   /* EXIM_PERL */
       {
-      uschar * sub_arg[EXIM_PERL_MAX_ARGS + 2];
+      const uschar * sub_arg[EXIM_PERL_MAX_ARGS + 2];
       gstring * new_yield;
       const misc_module_info * mi;
 
@@ -5386,10 +5386,10 @@ while (*s)	/* known to be untainted */
       sub_arg[EXIM_PERL_MAX_ARGS + 1] = NULL;
 	{
 	typedef gstring * (*fn_t)
-			    (gstring *, uschar **, uschar *, const uschar **);
+			(gstring *, uschar **, const uschar *, const uschar **);
 	new_yield = (((fn_t *) mi->functions)[PERL_CAT])
 					      (yield, &expand_string_message,
-						sub_arg[0], CUSS sub_arg + 1);
+						sub_arg[0], sub_arg + 1);
 	}
 
       /* NULL yield indicates failure; if the message pointer has been set to
@@ -5425,7 +5425,7 @@ while (*s)	/* known to be untainted */
       uschar * sub_arg[3], * domain;
       const uschar * p;
 
-      switch(read_subs(sub_arg, 3, 2, &s, flags, TRUE, name, &resetok, NULL))
+      switch(read_subs(CUSS sub_arg, 3, 2, &s, flags, TRUE, name, &resetok, NULL))
         {
 	case -1: continue;	/* If skipping, we don't actually do anything */
         case 1: goto EXPAND_FAILED_CURLY;
@@ -5477,7 +5477,7 @@ while (*s)	/* known to be untainted */
 
     case EITEM_PRVSCHECK:
       {
-      uschar * sub_arg[3], * p;
+      const uschar * sub_arg[3], * p;
       gstring * g;
       const pcre2_code * re;
 
@@ -5612,7 +5612,7 @@ while (*s)	/* known to be untainted */
     case EITEM_READFILE:
       {
       FILE * f;
-      uschar * sub_arg[2];
+      const uschar * sub_arg[2];
 
       if (expand_forbid & RDO_READFILE)
         {
@@ -5647,7 +5647,7 @@ while (*s)	/* known to be untainted */
     case EITEM_READSOCK:
       {
       const uschar * arg;
-      uschar * sub_arg[4];
+      const uschar * sub_arg[4];
 
       if (expand_forbid & RDO_READSOCK)
         {
@@ -5947,7 +5947,7 @@ while (*s)	/* known to be untainted */
       {
       int oldptr = gstring_length(yield);
       int o2m;
-      uschar * sub[3];
+      const uschar * sub[3];
 
       switch(read_subs(sub, 3, 3, &s, flags, TRUE, name, &resetok, NULL))
         {
@@ -5989,7 +5989,7 @@ while (*s)	/* known to be untainted */
       Ensure that sub[2] is set in the ${length } case. */
 
       sub[2] = NULL;
-      switch(read_subs(sub, item_type == EITEM_LENGTH ? 2:3, 2, &s, flags,
+      switch(read_subs(CUSS sub, item_type == EITEM_LENGTH ? 2:3, 2, &s, flags,
              TRUE, name, &resetok, NULL))
         {
 	case -1: continue;	/* skipping */
@@ -6056,14 +6056,15 @@ while (*s)	/* known to be untainted */
 
     case EITEM_HMAC:
       {
-      uschar * sub[3];
+      const uschar * sub[3];
       md5 md5_base;
       hctx sha1_ctx;
       void * use_base;
       int type;
       int hashlen;      /* Number of octets for the hash algorithm's output */
       int hashblocklen; /* Number of octets the hash algorithm processes */
-      uschar * keyptr, * p;
+      const uschar * keyptr;
+      uschar * p;
       unsigned int keylen;
 
       uschar keyhash[MAX_HASHLEN];
@@ -6162,7 +6163,7 @@ while (*s)	/* known to be untainted */
       int moffset, moffsetextra, slen;
       pcre2_match_data * md;
       int emptyopt;
-      uschar * subject, * sub[3];
+      const uschar * subject, * sub[3];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
       unsigned sub_textonly = 0;
@@ -6617,7 +6618,7 @@ while (*s)	/* known to be untainted */
 
     case EITEM_LISTQUOTE:
       {
-      uschar * sub[2];
+      const uschar * sub[2];
       switch(read_subs(sub, 2, 2, &s, flags, TRUE, name, &resetok, NULL))
         {
 	case -1: continue;	/* skipping */
@@ -7130,7 +7131,7 @@ while (*s)	/* known to be untainted */
         goto EXPAND_FAILED;
         }
 
-      switch(read_subs(argv, EXPAND_DLFUNC_MAX_ARGS + 2, 2, &s, flags,
+      switch(read_subs(CUSS argv, EXPAND_DLFUNC_MAX_ARGS + 2, 2, &s, flags,
            TRUE, name, &resetok, NULL))
         {
 	case -1: continue;	/* skipping */
@@ -7235,7 +7236,7 @@ while (*s)	/* known to be untainted */
     case EITEM_SRS_ENCODE:
       /* ${srs_encode {secret} {return_path} {orig_domain}} */
       {
-      uschar * sub[3];
+      const uschar * sub[3];
       uschar cksum[4];
       gstring * g = NULL;
       BOOL quoted = FALSE;
