@@ -1060,7 +1060,7 @@ return NULL;
 ************************************************/
 /* This function is used to build a list, returning an allocated null-terminated
 growable string. The given element has any embedded separator characters
-doubled.
+doubled. A zero-length element results in a single space addition.
 
 Despite having the same growable-string interface as string_cat() the list is
 always returned null-terminated.
@@ -1082,13 +1082,18 @@ uschar * sp;
 if (list && list->ptr)
   list = string_catn(list, &sep, 1);
 
-while((sp = Ustrchr(ele, sep)))
+if (!*ele)
+  list = string_catn(list, US" ", 1);
+else
   {
-  list = string_catn(list, ele, sp-ele+1);
-  list = string_catn(list, &sep, 1);
-  ele = sp+1;
+  while((sp = Ustrchr(ele, sep)))
+    {
+    list = string_catn(list, ele, sp-ele+1);
+    list = string_catn(list, &sep, 1);
+    ele = sp+1;
+    }
+  list = string_cat(list, ele);
   }
-list = string_cat(list, ele);
 (void) string_from_gstring(list);
 return list;
 }
