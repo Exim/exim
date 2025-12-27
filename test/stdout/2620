@@ -5,13 +5,13 @@ The database cluster will be initialized with locale "C".
 The default database encoding has accordingly been set to "SQL_ASCII".
 The default text search configuration will be set to "english".
 
-Data page checksums are disabled.
+Data page checksums are **abled.
 
 creating directory TESTSUITE/pgsql/data ... ok
 creating subdirectories ... ok
 selecting dynamic shared memory implementation ... posix
-selecting default max_connections ... 100
-selecting default shared_buffers ... 128MB
+selecting default "max_connections"... 100
+selecting default "shared_buffers"... 128MB
 selecting default time zone ... Europe/London
 creating configuration files ... ok
 running bootstrap script ... ok

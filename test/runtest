@@ -1182,6 +1182,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Postgres server takes varible time to shut down; lives in various places
     s/^waiting for server to shut down\.+ done$/waiting for server to shut down.... done/;
     s/^\/.*postgres /POSTGRES /;
+    # Postgres version variances
+    s/^Data page checksums are \K(?:dis|en)(?=abled\.$)/**/;
+    s/^selecting default \K"?(max_connections|shared_buffers)"? /"$1"/;
 
     # DMARC is not always supported by the build
     next if /^dmarc_tld_file =/;
