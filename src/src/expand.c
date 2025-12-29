@@ -2175,6 +2175,30 @@ switch (vp->type)
       "failed to find %s module for %s: %s", US val, name, errstr);
     return US"";
     }
+
+  case vtype_lookup_module:
+    {
+    uschar * errstr = NULL;
+    const tree_node * t = tree_search(lookups_tree, val);
+#ifdef LOOKUP_MODULE_DIR
+    if (!t)
+      {
+      lookup_one_mod_load(val, &errstr);
+      t = tree_search(lookups_tree, val);
+      }
+#endif
+    if (t)
+      {
+      const lookup_info * li = t->data.ptr;
+      table = li->variables;
+      table_count = li->variables_count;
+      goto sublist;
+      }
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "failed to find %s module for %s%s%s", US val, name,
+	errstr ? ": " : "", errstr);
+    return US"";
+    }
   }
 
 return NULL;  /* Unknown variable. Silences static checkers. */
