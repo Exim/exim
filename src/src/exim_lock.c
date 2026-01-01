@@ -281,7 +281,7 @@ if (*filename == '~')
     exit(EXIT_FAILURE);
     }
 
-  strcpy(buffer, pw->pw_dir);
+  strncpy(buffer, pw->pw_dir);
   strcat(buffer, filename);
   filename = buffer;
   }
